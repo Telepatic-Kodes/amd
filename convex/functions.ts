@@ -1,0 +1,836 @@
+import { v } from "convex/values";
+import { mutation, query, action } from "./_generated/server";
+import { Id } from "./_generated/dataModel";
+
+// ===========================================
+// AGENT QUERIES
+// ===========================================
+
+export const getAgent = query({
+  args: { agentId: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("agents")
+      .withIndex("by_agentId", (q) => q.eq("agentId", args.agentId))
+      .first();
+  },
+});
+
+export const getAgentById = query({
+  args: { id: v.id("agents") },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.id);
+  },
+});
+
+export const listAgents = query({
+  args: {
+    department: v.optional(v.string()),
+    status: v.optional(v.string()),
+    role: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    let q: any = ctx.db.query("agents");
+
+    if (args.department) {
+      q = q.withIndex("by_department", (q: any) => q.eq("department", args.department as any));
+    } else if (args.status) {
+      q = q.withIndex("by_status", (q: any) => q.eq("status", args.status as any));
+    } else if (args.role) {
+      q = q.withIndex("by_role", (q: any) => q.eq("role", args.role as any));
+    }
+
+    return await q.collect();
+  },
+});
+
+export const getAgentHierarchy = query({
+  args: { agentId: v.id("agents") },
+  handler: async (ctx, args) => {
+    const agent = await ctx.db.get(args.agentId);
+    if (!agent) return null;
+
+    const subordinates = await ctx.db
+      .query("agents")
+      .filter((q) => q.eq(q.field("reportsTo"), args.agentId))
+      .collect();
+
+    const superior = agent.reportsTo ? await ctx.db.get(agent.reportsTo) : null;
+
+    return {
+      agent,
+      superior,
+      subordinates,
+    };
+  },
+});
+
+// ===========================================
+// AGENT MUTATIONS
+// ===========================================
+
+export const createAgent = mutation({
+  args: {
+    agentId: v.string(),
+    name: v.string(),
+    description: v.string(),
+    department: v.union(
+      v.literal("leadership"),
+      v.literal("content"),
+      v.literal("social"),
+      v.literal("demandgen"),
+      v.literal("seo"),
+      v.literal("brand"),
+      v.literal("ops")
+    ),
+    role: v.union(v.literal("cmo"), v.literal("director"), v.literal("specialist")),
+    config: v.object({
+      systemPrompt: v.string(),
+      model: v.string(),
+      temperature: v.number(),
+      maxTokens: v.number(),
+      tools: v.optional(v.array(v.string())),
+    }),
+    triggers: v.array(v.string()),
+    reportsTo: v.optional(v.id("agents")),
+  },
+  handler: async (ctx, args) => {
+    const now = Date.now();
+
+    const agentId = await ctx.db.insert("agents", {
+      ...args,
+      triggers: args.triggers as any[],
+      status: "active",
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    // Log de auditoría
+    await ctx.db.insert("auditLog", {
+      action: "agent.created",
+      entityType: "agent",
+      entityId: args.agentId,
+      performedBy: "system",
+      metadata: { name: args.name, department: args.department },
+      timestamp: now,
+    });
+
+    return agentId;
+  },
+});
+
+export const updateAgentStatus = mutation({
+  args: {
+    id: v.id("agents"),
+    status: v.union(
+      v.literal("active"),
+      v.literal("paused"),
+      v.literal("error"),
+      v.literal("maintenance")
+    ),
+  },
+  handler: async (ctx, args) => {
+    const agent = await ctx.db.get(args.id);
+    if (!agent) throw new Error("Agent not found");
+
+    const previousStatus = agent.status;
+
+    await ctx.db.patch(args.id, {
+      status: args.status,
+      updatedAt: Date.now(),
+    });
+
+    await ctx.db.insert("auditLog", {
+      action: "agent.status_changed",
+      entityType: "agent",
+      entityId: agent.agentId,
+      performedBy: "system",
+      changes: { from: previousStatus, to: args.status },
+      timestamp: Date.now(),
+    });
+  },
+});
+
+export const updateAgentConfig = mutation({
+  args: {
+    id: v.id("agents"),
+    config: v.object({
+      systemPrompt: v.optional(v.string()),
+      model: v.optional(v.string()),
+      temperature: v.optional(v.number()),
+      maxTokens: v.optional(v.number()),
+      tools: v.optional(v.array(v.string())),
+    }),
+  },
+  handler: async (ctx, args) => {
+    const agent = await ctx.db.get(args.id);
+    if (!agent) throw new Error("Agent not found");
+
+    const newConfig = { ...agent.config, ...args.config };
+
+    await ctx.db.patch(args.id, {
+      config: newConfig,
+      updatedAt: Date.now(),
+    });
+  },
+});
+
+// ===========================================
+// TASK QUERIES
+// ===========================================
+
+export const getTask = query({
+  args: { taskId: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("tasks")
+      .withIndex("by_taskId", (q) => q.eq("taskId", args.taskId))
+      .first();
+  },
+});
+
+export const listTasks = query({
+  args: {
+    agentId: v.optional(v.id("agents")),
+    status: v.optional(v.string()),
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    let q: any = ctx.db.query("tasks");
+
+    if (args.agentId) {
+      q = q.withIndex("by_agent", (q: any) => q.eq("agentId", args.agentId!));
+    } else if (args.status) {
+      q = q.withIndex("by_status", (q: any) => q.eq("status", args.status as any));
+    }
+
+    q = q.order("desc");
+
+    if (args.limit) {
+      return await q.take(args.limit);
+    }
+
+    return await q.collect();
+  },
+});
+
+export const getPendingTasks = query({
+  args: { agentId: v.id("agents") },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("tasks")
+      .withIndex("by_agent", (q) => q.eq("agentId", args.agentId))
+      .filter((q) =>
+        q.or(q.eq(q.field("status"), "pending"), q.eq(q.field("status"), "queued"))
+      )
+      .collect();
+  },
+});
+
+// ===========================================
+// TASK MUTATIONS
+// ===========================================
+
+export const createTask = mutation({
+  args: {
+    title: v.string(),
+    type: v.string(),
+    priority: v.union(v.literal("low"), v.literal("medium"), v.literal("high"), v.literal("urgent")),
+    agentId: v.id("agents"),
+    assignedBy: v.optional(v.id("agents")),
+    input: v.any(),
+    parentTaskId: v.optional(v.id("tasks")),
+    scheduledFor: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const now = Date.now();
+    const taskId = `task_${now}_${Math.random().toString(36).substr(2, 9)}`;
+
+    const id = await ctx.db.insert("tasks", {
+      taskId,
+      title: args.title,
+      type: args.type,
+      priority: args.priority,
+      status: args.scheduledFor ? "queued" : "pending",
+      agentId: args.agentId,
+      assignedBy: args.assignedBy,
+      input: args.input,
+      parentTaskId: args.parentTaskId,
+      retryCount: 0,
+      maxRetries: 3,
+      scheduledFor: args.scheduledFor,
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    // Si hay tarea padre, actualizar sus childTaskIds
+    if (args.parentTaskId) {
+      const parentTask = await ctx.db.get(args.parentTaskId);
+      if (parentTask) {
+        const childIds = parentTask.childTaskIds || [];
+        await ctx.db.patch(args.parentTaskId, {
+          childTaskIds: [...childIds, id],
+          updatedAt: now,
+        });
+      }
+    }
+
+    return { id, taskId };
+  },
+});
+
+export const updateTaskStatus = mutation({
+  args: {
+    id: v.id("tasks"),
+    status: v.union(
+      v.literal("pending"),
+      v.literal("queued"),
+      v.literal("running"),
+      v.literal("waiting_review"),
+      v.literal("completed"),
+      v.literal("failed"),
+      v.literal("cancelled")
+    ),
+    output: v.optional(v.any()),
+    error: v.optional(
+      v.object({
+        message: v.string(),
+        code: v.optional(v.string()),
+        stack: v.optional(v.string()),
+      })
+    ),
+  },
+  handler: async (ctx, args) => {
+    const now = Date.now();
+    const task = await ctx.db.get(args.id);
+    if (!task) throw new Error("Task not found");
+
+    const updates: any = {
+      status: args.status,
+      updatedAt: now,
+    };
+
+    if (args.status === "running" && !task.startedAt) {
+      updates.startedAt = now;
+    }
+
+    if (args.status === "completed" || args.status === "failed") {
+      updates.completedAt = now;
+    }
+
+    if (args.output !== undefined) {
+      updates.output = args.output;
+    }
+
+    if (args.error !== undefined) {
+      updates.error = args.error;
+    }
+
+    await ctx.db.patch(args.id, updates);
+  },
+});
+
+export const retryTask = mutation({
+  args: { id: v.id("tasks") },
+  handler: async (ctx, args) => {
+    const task = await ctx.db.get(args.id);
+    if (!task) throw new Error("Task not found");
+
+    if (task.retryCount >= task.maxRetries) {
+      throw new Error("Max retries exceeded");
+    }
+
+    await ctx.db.patch(args.id, {
+      status: "pending",
+      retryCount: task.retryCount + 1,
+      error: undefined,
+      updatedAt: Date.now(),
+    });
+  },
+});
+
+// ===========================================
+// EXECUTION MUTATIONS
+// ===========================================
+
+export const logExecution = mutation({
+  args: {
+    taskId: v.id("tasks"),
+    agentId: v.id("agents"),
+    attempt: v.number(),
+    status: v.union(v.literal("success"), v.literal("failure")),
+    llmCalls: v.number(),
+    tokensUsed: v.object({
+      input: v.number(),
+      output: v.number(),
+      total: v.number(),
+    }),
+    duration: v.number(),
+    cost: v.number(),
+    steps: v.optional(
+      v.array(
+        v.object({
+          name: v.string(),
+          duration: v.number(),
+          tokensUsed: v.optional(v.number()),
+        })
+      )
+    ),
+    error: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.insert("executions", {
+      ...args,
+      timestamp: Date.now(),
+    });
+  },
+});
+
+// ===========================================
+// HANDOFF MUTATIONS
+// ===========================================
+
+export const createHandoff = mutation({
+  args: {
+    fromAgent: v.id("agents"),
+    toAgent: v.id("agents"),
+    taskId: v.id("tasks"),
+    reason: v.string(),
+    payload: v.any(),
+    instructions: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.insert("handoffs", {
+      ...args,
+      status: "pending",
+      timestamp: Date.now(),
+    });
+  },
+});
+
+export const updateHandoffStatus = mutation({
+  args: {
+    id: v.id("handoffs"),
+    status: v.union(
+      v.literal("pending"),
+      v.literal("accepted"),
+      v.literal("rejected"),
+      v.literal("completed")
+    ),
+  },
+  handler: async (ctx, args) => {
+    const now = Date.now();
+    const updates: any = { status: args.status };
+
+    if (args.status === "accepted") {
+      updates.acceptedAt = now;
+    } else if (args.status === "completed") {
+      updates.completedAt = now;
+    }
+
+    await ctx.db.patch(args.id, updates);
+  },
+});
+
+// ===========================================
+// CONTENT QUERIES & MUTATIONS
+// ===========================================
+
+export const getContent = query({
+  args: { contentId: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("content")
+      .withIndex("by_contentId", (q) => q.eq("contentId", args.contentId))
+      .first();
+  },
+});
+
+export const listContent = query({
+  args: {
+    type: v.optional(v.string()),
+    status: v.optional(v.string()),
+    createdBy: v.optional(v.id("agents")),
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    let q: any = ctx.db.query("content");
+
+    if (args.type && args.status) {
+      q = q.withIndex("by_type_status", (q: any) =>
+        q.eq("type", args.type as any).eq("status", args.status as any)
+      );
+    } else if (args.type) {
+      q = q.withIndex("by_type", (q: any) => q.eq("type", args.type as any));
+    } else if (args.status) {
+      q = q.withIndex("by_status", (q: any) => q.eq("status", args.status as any));
+    } else if (args.createdBy) {
+      q = q.withIndex("by_createdBy", (q: any) => q.eq("createdBy", args.createdBy!));
+    }
+
+    q = q.order("desc");
+
+    if (args.limit) {
+      return await q.take(args.limit);
+    }
+
+    return await q.collect();
+  },
+});
+
+export const createContent = mutation({
+  args: {
+    type: v.union(
+      v.literal("blog"),
+      v.literal("social_linkedin"),
+      v.literal("social_twitter"),
+      v.literal("social_instagram"),
+      v.literal("social_tiktok"),
+      v.literal("email"),
+      v.literal("newsletter"),
+      v.literal("ad_copy"),
+      v.literal("landing_page"),
+      v.literal("whitepaper"),
+      v.literal("case_study"),
+      v.literal("video_script")
+    ),
+    title: v.string(),
+    body: v.string(),
+    summary: v.optional(v.string()),
+    metadata: v.object({
+      wordCount: v.optional(v.number()),
+      readingTime: v.optional(v.number()),
+      targetKeywords: v.optional(v.array(v.string())),
+      targetAudience: v.optional(v.string()),
+      tone: v.optional(v.string()),
+      cta: v.optional(v.string()),
+      hashtags: v.optional(v.array(v.string())),
+    }),
+    seo: v.optional(
+      v.object({
+        metaTitle: v.string(),
+        metaDescription: v.string(),
+        slug: v.string(),
+        canonicalUrl: v.optional(v.string()),
+      })
+    ),
+    createdBy: v.id("agents"),
+    sourceTaskId: v.optional(v.id("tasks")),
+    parentContentId: v.optional(v.id("content")),
+  },
+  handler: async (ctx, args) => {
+    const now = Date.now();
+    const contentId = `content_${now}_${Math.random().toString(36).substr(2, 9)}`;
+
+    return await ctx.db.insert("content", {
+      contentId,
+      ...args,
+      status: "draft",
+      createdAt: now,
+      updatedAt: now,
+    });
+  },
+});
+
+export const updateContentStatus = mutation({
+  args: {
+    id: v.id("content"),
+    status: v.union(
+      v.literal("draft"),
+      v.literal("review"),
+      v.literal("revision_needed"),
+      v.literal("approved"),
+      v.literal("scheduled"),
+      v.literal("published"),
+      v.literal("archived")
+    ),
+    reviewedBy: v.optional(v.id("agents")),
+    approvedBy: v.optional(v.string()),
+    scheduledFor: v.optional(v.number()),
+    publishedUrl: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const now = Date.now();
+    const updates: any = {
+      status: args.status,
+      updatedAt: now,
+    };
+
+    if (args.reviewedBy) updates.reviewedBy = args.reviewedBy;
+    if (args.approvedBy) updates.approvedBy = args.approvedBy;
+    if (args.scheduledFor) updates.scheduledFor = args.scheduledFor;
+    if (args.publishedUrl) updates.publishedUrl = args.publishedUrl;
+
+    if (args.status === "published") {
+      updates.publishedAt = now;
+    }
+
+    await ctx.db.patch(args.id, updates);
+  },
+});
+
+// ===========================================
+// METRICS QUERIES
+// ===========================================
+
+export const getAgentMetrics = query({
+  args: {
+    agentId: v.id("agents"),
+    period: v.union(v.literal("daily"), v.literal("weekly"), v.literal("monthly")),
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const agent = await ctx.db.get(args.agentId);
+    if (!agent) return null;
+
+    const executions = await ctx.db
+      .query("executions")
+      .withIndex("by_agent", (q) => q.eq("agentId", args.agentId))
+      .order("desc")
+      .take(args.limit || 100);
+
+    const tasks = await ctx.db
+      .query("tasks")
+      .withIndex("by_agent", (q) => q.eq("agentId", args.agentId))
+      .order("desc")
+      .take(args.limit || 100);
+
+    // Calcular métricas
+    const totalExecutions = executions.length;
+    const successfulExecutions = executions.filter((e) => e.status === "success").length;
+    const totalTokens = executions.reduce((sum, e) => sum + e.tokensUsed.total, 0);
+    const totalCost = executions.reduce((sum, e) => sum + e.cost, 0);
+    const avgDuration =
+      executions.length > 0
+        ? executions.reduce((sum, e) => sum + e.duration, 0) / executions.length
+        : 0;
+
+    return {
+      agent,
+      metrics: {
+        totalExecutions,
+        successfulExecutions,
+        successRate: totalExecutions > 0 ? (successfulExecutions / totalExecutions) * 100 : 0,
+        totalTokens,
+        totalCost,
+        avgDuration,
+        tasksCompleted: tasks.filter((t) => t.status === "completed").length,
+        tasksFailed: tasks.filter((t) => t.status === "failed").length,
+      },
+      recentExecutions: executions.slice(0, 10),
+    };
+  },
+});
+
+export const getDashboardStats = query({
+  handler: async (ctx) => {
+    const agents = await ctx.db.query("agents").collect();
+    const tasks = await ctx.db.query("tasks").collect();
+    const content = await ctx.db.query("content").collect();
+
+    const now = Date.now();
+    const oneDayAgo = now - 24 * 60 * 60 * 1000;
+    const oneWeekAgo = now - 7 * 24 * 60 * 60 * 1000;
+
+    return {
+      agents: {
+        total: agents.length,
+        active: agents.filter((a) => a.status === "active").length,
+        paused: agents.filter((a) => a.status === "paused").length,
+        error: agents.filter((a) => a.status === "error").length,
+        byDepartment: agents.reduce((acc, a) => {
+          acc[a.department] = (acc[a.department] || 0) + 1;
+          return acc;
+        }, {} as Record<string, number>),
+      },
+      tasks: {
+        total: tasks.length,
+        pending: tasks.filter((t) => t.status === "pending" || t.status === "queued").length,
+        running: tasks.filter((t) => t.status === "running").length,
+        completed: tasks.filter((t) => t.status === "completed").length,
+        failed: tasks.filter((t) => t.status === "failed").length,
+        last24h: tasks.filter((t) => t.createdAt > oneDayAgo).length,
+        lastWeek: tasks.filter((t) => t.createdAt > oneWeekAgo).length,
+      },
+      content: {
+        total: content.length,
+        draft: content.filter((c) => c.status === "draft").length,
+        published: content.filter((c) => c.status === "published").length,
+        byType: content.reduce((acc, c) => {
+          acc[c.type] = (acc[c.type] || 0) + 1;
+          return acc;
+        }, {} as Record<string, number>),
+      },
+    };
+  },
+});
+
+// ===========================================
+// CAMPAIGN QUERIES & MUTATIONS
+// ===========================================
+
+export const listCampaigns = query({
+  args: {
+    type: v.optional(v.string()),
+    status: v.optional(v.string()),
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    let q: any = ctx.db.query("campaigns");
+
+    if (args.type) {
+      q = q.withIndex("by_type", (q: any) => q.eq("type", args.type as any));
+    } else if (args.status) {
+      q = q.withIndex("by_status", (q: any) => q.eq("status", args.status as any));
+    }
+
+    q = q.order("desc");
+
+    if (args.limit) {
+      return await q.take(args.limit);
+    }
+
+    return await q.collect();
+  },
+});
+
+export const getCampaign = query({
+  args: { campaignId: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("campaigns")
+      .withIndex("by_campaignId", (q) => q.eq("campaignId", args.campaignId))
+      .first();
+  },
+});
+
+// ===========================================
+// SETTINGS QUERIES & MUTATIONS
+// ===========================================
+
+export const listSettings = query({
+  handler: async (ctx) => {
+    return await ctx.db.query("settings").collect();
+  },
+});
+
+export const getSetting = query({
+  args: { key: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("settings")
+      .withIndex("by_key", (q) => q.eq("key", args.key))
+      .first();
+  },
+});
+
+export const updateSetting = mutation({
+  args: {
+    key: v.string(),
+    value: v.any(),
+    description: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const existing = await ctx.db
+      .query("settings")
+      .withIndex("by_key", (q) => q.eq("key", args.key))
+      .first();
+
+    if (existing) {
+      await ctx.db.patch(existing._id, {
+        value: args.value,
+        description: args.description,
+        updatedAt: Date.now(),
+      });
+      return existing._id;
+    } else {
+      return await ctx.db.insert("settings", {
+        key: args.key,
+        value: args.value,
+        description: args.description,
+        updatedAt: Date.now(),
+      });
+    }
+  },
+});
+
+// ===========================================
+// ANALYTICS QUERIES
+// ===========================================
+
+export const getAnalyticsOverview = query({
+  handler: async (ctx) => {
+    const executions = await ctx.db.query("executions").order("desc").take(100);
+    const tasks = await ctx.db.query("tasks").order("desc").take(100);
+    const agents = await ctx.db.query("agents").collect();
+
+    // Calculate totals
+    const totalTokens = executions.reduce((sum, e) => sum + e.tokensUsed.total, 0);
+    const totalCost = executions.reduce((sum, e) => sum + e.cost, 0);
+    const avgDuration = executions.length > 0
+      ? executions.reduce((sum, e) => sum + e.duration, 0) / executions.length
+      : 0;
+    const successRate = executions.length > 0
+      ? (executions.filter((e) => e.status === "success").length / executions.length) * 100
+      : 0;
+
+    // Tasks by day (last 7 days)
+    const now = Date.now();
+    const sevenDaysAgo = now - 7 * 24 * 60 * 60 * 1000;
+    const recentTasks = tasks.filter((t) => t.createdAt > sevenDaysAgo);
+
+    const tasksByDay: Record<string, { completed: number; failed: number; total: number }> = {};
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(now - i * 24 * 60 * 60 * 1000);
+      const dateStr = date.toISOString().split("T")[0];
+      tasksByDay[dateStr] = { completed: 0, failed: 0, total: 0 };
+    }
+
+    recentTasks.forEach((task) => {
+      const dateStr = new Date(task.createdAt).toISOString().split("T")[0];
+      if (tasksByDay[dateStr]) {
+        tasksByDay[dateStr].total++;
+        if (task.status === "completed") tasksByDay[dateStr].completed++;
+        if (task.status === "failed") tasksByDay[dateStr].failed++;
+      }
+    });
+
+    // Top agents by executions
+    const agentExecutions: Record<string, { count: number; success: number; tokens: number }> = {};
+    executions.forEach((exec) => {
+      const agentId = exec.agentId.toString();
+      if (!agentExecutions[agentId]) {
+        agentExecutions[agentId] = { count: 0, success: 0, tokens: 0 };
+      }
+      agentExecutions[agentId].count++;
+      if (exec.status === "success") agentExecutions[agentId].success++;
+      agentExecutions[agentId].tokens += exec.tokensUsed.total;
+    });
+
+    const topAgents = Object.entries(agentExecutions)
+      .map(([agentId, stats]) => {
+        const agent = agents.find((a) => a._id.toString() === agentId);
+        return {
+          agentId,
+          name: agent?.name || "Unknown",
+          ...stats,
+          successRate: stats.count > 0 ? (stats.success / stats.count) * 100 : 0,
+        };
+      })
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10);
+
+    return {
+      overview: {
+        totalExecutions: executions.length,
+        totalTokens,
+        totalCost,
+        avgDuration,
+        successRate,
+      },
+      tasksByDay,
+      topAgents,
+      recentExecutions: executions.slice(0, 10),
+    };
+  },
+});

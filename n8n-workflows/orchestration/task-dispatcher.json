@@ -1,0 +1,299 @@
+{
+  "name": "AI Agent - Task Dispatcher",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "dispatcher/execute",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "task-dispatcher-webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body;\n\n// Mapeo de tipos de tarea a agentes\nconst taskToAgentMap = {\n  // Content tasks\n  'write_blog': 'content-002',\n  'write_whitepaper': 'content-003',\n  'write_case_study': 'content-004',\n  'publish_content': 'content-005',\n  \n  // Social tasks\n  'create_linkedin_post': 'social-001',\n  'create_twitter_thread': 'social-002',\n  'write_youtube_script': 'social-003',\n  'create_short_video': 'social-004',\n  'analyze_engagement': 'social-006',\n  'schedule_posts': 'social-007',\n  \n  // Demand Gen tasks\n  'manage_meta_ads': 'demandgen-002',\n  'manage_google_ads': 'demandgen-003',\n  'manage_linkedin_ads': 'demandgen-004',\n  'analyze_ad_performance': 'demandgen-005',\n  'analyze_budget_pacing': 'demandgen-006',\n  \n  // SEO tasks\n  'keyword_research': 'seo-001',\n  'analyze_backlinks': 'seo-002',\n  'technical_seo_audit': 'seo-003',\n  'track_rankings': 'seo-004',\n  \n  // Brand tasks\n  'design_ad_creative': 'brand-001',\n  'build_landing_page': 'brand-002',\n  'organize_assets': 'brand-003',\n  \n  // Ops tasks\n  'write_newsletter': 'ops-002',\n  'build_nurture_campaign': 'ops-003',\n  'clean_email_list': 'ops-004',\n};\n\n// Mapeo de agentes a endpoints de n8n\nconst agentEndpoints = {\n  'content-002': '/webhook/agent/content-002/execute',\n  'content-003': '/webhook/agent/content-003/execute',\n  'content-004': '/webhook/agent/content-004/execute',\n  'content-005': '/webhook/agent/content-005/execute',\n  'social-001': '/webhook/agent/social-001/execute',\n  'social-002': '/webhook/agent/social-002/execute',\n  'social-003': '/webhook/agent/social-003/execute',\n  'social-004': '/webhook/agent/social-004/execute',\n  'social-006': '/webhook/agent/social-006/execute',\n  'social-007': '/webhook/agent/social-007/execute',\n  'demandgen-002': '/webhook/agent/demandgen-002/execute',\n  'demandgen-003': '/webhook/agent/demandgen-003/execute',\n  'demandgen-004': '/webhook/agent/demandgen-004/execute',\n  'demandgen-005': '/webhook/agent/demandgen-005/execute',\n  'demandgen-006': '/webhook/agent/demandgen-006/execute',\n  'seo-001': '/webhook/agent/seo-001/execute',\n  'seo-002': '/webhook/agent/seo-002/execute',\n  'seo-003': '/webhook/agent/seo-003/execute',\n  'seo-004': '/webhook/agent/seo-004/execute',\n  'brand-001': '/webhook/agent/brand-001/execute',\n  'brand-002': '/webhook/agent/brand-002/execute',\n  'brand-003': '/webhook/agent/brand-003/execute',\n  'ops-002': '/webhook/agent/ops-002/execute',\n  'ops-003': '/webhook/agent/ops-003/execute',\n  'ops-004': '/webhook/agent/ops-004/execute',\n};\n\nconst taskType = body.taskType;\nconst targetAgent = body.targetAgent || taskToAgentMap[taskType];\n\nif (!targetAgent) {\n  throw new Error(`No agent found for task type: ${taskType}`);\n}\n\nconst endpoint = agentEndpoints[targetAgent];\n\nif (!endpoint) {\n  throw new Error(`No endpoint configured for agent: ${targetAgent}`);\n}\n\nreturn {\n  targetAgent,\n  endpoint,\n  taskType,\n  payload: body\n};"
+      },
+      "id": "route-task",
+      "name": "Route Task to Agent",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.CONVEX_URL }}/api/mutation",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $env.CONVEX_DEPLOY_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"path\": \"functions:createTask\",\n  \"args\": {\n    \"title\": \"{{ $node['Webhook Trigger'].json.body.title || $json.taskType }}\",\n    \"type\": \"{{ $json.taskType }}\",\n    \"priority\": \"{{ $node['Webhook Trigger'].json.body.priority || 'medium' }}\",\n    \"agentId\": \"{{ $json.targetAgent }}\",\n    \"input\": {{ JSON.stringify($node['Webhook Trigger'].json.body.input || {}) }}\n  }\n}"
+      },
+      "id": "create-task",
+      "name": "Create Task in Convex",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.N8N_WEBHOOK_BASE_URL }}{{ $node['Route Task to Agent'].json.endpoint }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"taskId\": \"{{ $node['Create Task in Convex'].json.value.id }}\",\n  \"agentId\": \"{{ $node['Route Task to Agent'].json.targetAgent }}\",\n  \"taskType\": \"{{ $node['Route Task to Agent'].json.taskType }}\",\n  \"input\": {{ JSON.stringify($node['Webhook Trigger'].json.body.input || {}) }}\n}",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "id": "execute-agent",
+      "name": "Execute Agent Workflow",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.success }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "check-result",
+      "name": "Check Result",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const agentResult = $input.first().json;\nconst routeInfo = $node['Route Task to Agent'].json;\nconst taskInfo = $node['Create Task in Convex'].json;\n\n// Verificar si hay handoff pendiente\nconst handoffRules = {\n  'write_blog': [\n    { nextTask: 'publish_content', condition: 'always' },\n    { nextTask: 'create_linkedin_post', condition: 'always' },\n    { nextTask: 'create_twitter_thread', condition: 'always' }\n  ],\n  'keyword_research': [\n    { nextTask: 'write_blog', condition: 'keywords_found' }\n  ],\n  'publish_content': [\n    { nextTask: 'schedule_posts', condition: 'always' }\n  ]\n};\n\nconst rules = handoffRules[routeInfo.taskType] || [];\nconst handoffs = [];\n\nfor (const rule of rules) {\n  if (rule.condition === 'always' || agentResult[rule.condition]) {\n    handoffs.push({\n      taskType: rule.nextTask,\n      parentTaskId: taskInfo.value.id,\n      input: {\n        ...agentResult.output,\n        sourceTaskType: routeInfo.taskType\n      }\n    });\n  }\n}\n\nreturn {\n  success: true,\n  taskId: taskInfo.value.taskId,\n  agent: routeInfo.targetAgent,\n  result: agentResult,\n  handoffs: handoffs\n};"
+      },
+      "id": "process-success",
+      "name": "Process Success & Check Handoffs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1340, 200]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $json.handoffs.length }}",
+              "operation": "larger",
+              "value2": 0
+            }
+          ]
+        }
+      },
+      "id": "has-handoffs",
+      "name": "Has Handoffs?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1560, 200]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "handoffs",
+        "options": {}
+      },
+      "id": "split-handoffs",
+      "name": "Split Handoffs",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [1780, 100]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.N8N_WEBHOOK_BASE_URL }}/webhook/dispatcher/execute",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"taskType\": \"{{ $json.taskType }}\",\n  \"title\": \"Handoff: {{ $json.taskType }}\",\n  \"priority\": \"medium\",\n  \"input\": {{ JSON.stringify($json.input) }},\n  \"parentTaskId\": \"{{ $json.parentTaskId }}\"\n}",
+        "options": {
+          "timeout": 5000
+        }
+      },
+      "id": "trigger-handoff",
+      "name": "Trigger Handoff Tasks",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2000, 100]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"success\": true,\n  \"taskId\": \"{{ $node['Process Success & Check Handoffs'].json.taskId }}\",\n  \"agent\": \"{{ $node['Process Success & Check Handoffs'].json.agent }}\",\n  \"handoffsTriggered\": {{ $node['Process Success & Check Handoffs'].json.handoffs.length }}\n}"
+      },
+      "id": "respond-success",
+      "name": "Respond Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [2000, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseCode": 500,
+        "responseBody": "={\n  \"success\": false,\n  \"error\": \"{{ $node['Execute Agent Workflow'].json.error || 'Agent execution failed' }}\"\n}"
+      },
+      "id": "respond-error",
+      "name": "Respond Error",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1340, 400]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Route Task to Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Task to Agent": {
+      "main": [
+        [
+          {
+            "node": "Create Task in Convex",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Task in Convex": {
+      "main": [
+        [
+          {
+            "node": "Execute Agent Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Agent Workflow": {
+      "main": [
+        [
+          {
+            "node": "Check Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Result": {
+      "main": [
+        [
+          {
+            "node": "Process Success & Check Handoffs",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Success & Check Handoffs": {
+      "main": [
+        [
+          {
+            "node": "Has Handoffs?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Handoffs?": {
+      "main": [
+        [
+          {
+            "node": "Split Handoffs",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Handoffs": {
+      "main": [
+        [
+          {
+            "node": "Trigger Handoff Tasks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger Handoff Tasks": {
+      "main": [
+        [
+          {
+            "node": "Respond Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateId": "ai-agent-task-dispatcher",
+    "instanceId": "ai-marketing-department"
+  },
+  "tags": [
+    {
+      "name": "orchestration"
+    },
+    {
+      "name": "dispatcher"
+    }
+  ]
+}

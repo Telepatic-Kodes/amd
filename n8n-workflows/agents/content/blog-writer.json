@@ -1,0 +1,366 @@
+{
+  "name": "AI Agent - Blog Content Writer",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "agent/content-002/execute",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "blog-writer-webhook"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.CONVEX_URL }}/api/mutation",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $env.CONVEX_DEPLOY_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"path\": \"functions:updateTaskStatus\",\n  \"args\": {\n    \"id\": \"{{ $json.body.taskId }}\",\n    \"status\": \"running\"\n  }\n}"
+      },
+      "id": "update-task-running",
+      "name": "Update Task - Running",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.CONVEX_URL }}/api/query",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $env.CONVEX_DEPLOY_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"path\": \"functions:getAgentById\",\n  \"args\": {\n    \"id\": \"{{ $node['Webhook Trigger'].json.body.agentId }}\"\n  }\n}"
+      },
+      "id": "get-agent-config",
+      "name": "Get Agent Config",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $env.ANTHROPIC_API_KEY }}"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"{{ $node['Get Agent Config'].json.value.config.model }}\",\n  \"max_tokens\": {{ $node['Get Agent Config'].json.value.config.maxTokens }},\n  \"temperature\": {{ $node['Get Agent Config'].json.value.config.temperature }},\n  \"system\": \"{{ $node['Get Agent Config'].json.value.config.systemPrompt }}\",\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"Escribe un artículo de blog basado en el siguiente brief:\\n\\nTítulo: {{ $node['Webhook Trigger'].json.body.input.title }}\\nKeyword principal: {{ $node['Webhook Trigger'].json.body.input.keyword }}\\nPalabras objetivo: {{ $node['Webhook Trigger'].json.body.input.wordCount }}\\nTono: {{ $node['Webhook Trigger'].json.body.input.tone }}\\nAudiencia: {{ $node['Webhook Trigger'].json.body.input.audience }}\\n\\nInstrucciones adicionales:\\n{{ $node['Webhook Trigger'].json.body.input.instructions }}\\n\\nDevuelve el artículo completo en formato Markdown.\"\n    }\n  ]\n}"
+      },
+      "id": "call-claude",
+      "name": "Call Claude API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const response = $input.first().json;\nconst content = response.content[0].text;\nconst usage = response.usage;\n\n// Extraer título del contenido\nconst titleMatch = content.match(/^#\\s+(.+)$/m);\nconst title = titleMatch ? titleMatch[1] : $node['Webhook Trigger'].json.body.input.title;\n\n// Calcular métricas\nconst wordCount = content.split(/\\s+/).length;\nconst readingTime = Math.ceil(wordCount / 200);\n\nreturn {\n  content: {\n    title: title,\n    body: content,\n    wordCount: wordCount,\n    readingTime: readingTime,\n  },\n  usage: {\n    inputTokens: usage.input_tokens,\n    outputTokens: usage.output_tokens,\n    totalTokens: usage.input_tokens + usage.output_tokens,\n  },\n  timestamp: Date.now()\n};"
+      },
+      "id": "process-response",
+      "name": "Process Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.CONVEX_URL }}/api/mutation",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $env.CONVEX_DEPLOY_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"path\": \"functions:createContent\",\n  \"args\": {\n    \"type\": \"blog\",\n    \"title\": \"{{ $json.content.title }}\",\n    \"body\": {{ JSON.stringify($json.content.body) }},\n    \"metadata\": {\n      \"wordCount\": {{ $json.content.wordCount }},\n      \"readingTime\": {{ $json.content.readingTime }},\n      \"targetKeywords\": [\"{{ $node['Webhook Trigger'].json.body.input.keyword }}\"],\n      \"targetAudience\": \"{{ $node['Webhook Trigger'].json.body.input.audience }}\",\n      \"tone\": \"{{ $node['Webhook Trigger'].json.body.input.tone }}\"\n    },\n    \"createdBy\": \"{{ $node['Webhook Trigger'].json.body.agentId }}\",\n    \"sourceTaskId\": \"{{ $node['Webhook Trigger'].json.body.taskId }}\"\n  }\n}"
+      },
+      "id": "save-content",
+      "name": "Save Content to Convex",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1340, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.CONVEX_URL }}/api/mutation",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $env.CONVEX_DEPLOY_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"path\": \"functions:logExecution\",\n  \"args\": {\n    \"taskId\": \"{{ $node['Webhook Trigger'].json.body.taskId }}\",\n    \"agentId\": \"{{ $node['Webhook Trigger'].json.body.agentId }}\",\n    \"attempt\": 1,\n    \"status\": \"success\",\n    \"llmCalls\": 1,\n    \"tokensUsed\": {\n      \"input\": {{ $node['Process Response'].json.usage.inputTokens }},\n      \"output\": {{ $node['Process Response'].json.usage.outputTokens }},\n      \"total\": {{ $node['Process Response'].json.usage.totalTokens }}\n    },\n    \"duration\": {{ Date.now() - $node['Process Response'].json.timestamp }},\n    \"cost\": {{ ($node['Process Response'].json.usage.inputTokens * 0.000003) + ($node['Process Response'].json.usage.outputTokens * 0.000015) }}\n  }\n}"
+      },
+      "id": "log-execution",
+      "name": "Log Execution",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1560, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.CONVEX_URL }}/api/mutation",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $env.CONVEX_DEPLOY_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"path\": \"functions:updateTaskStatus\",\n  \"args\": {\n    \"id\": \"{{ $node['Webhook Trigger'].json.body.taskId }}\",\n    \"status\": \"completed\",\n    \"output\": {\n      \"contentId\": \"{{ $node['Save Content to Convex'].json.value }}\",\n      \"wordCount\": {{ $node['Process Response'].json.content.wordCount }},\n      \"tokensUsed\": {{ $node['Process Response'].json.usage.totalTokens }}\n    }\n  }\n}"
+      },
+      "id": "update-task-completed",
+      "name": "Update Task - Completed",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1780, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"success\": true,\n  \"taskId\": \"{{ $node['Webhook Trigger'].json.body.taskId }}\",\n  \"contentId\": \"{{ $node['Save Content to Convex'].json.value }}\",\n  \"metrics\": {\n    \"wordCount\": {{ $node['Process Response'].json.content.wordCount }},\n    \"readingTime\": {{ $node['Process Response'].json.content.readingTime }},\n    \"tokensUsed\": {{ $node['Process Response'].json.usage.totalTokens }}\n  }\n}"
+      },
+      "id": "respond-success",
+      "name": "Respond Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [2000, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.CONVEX_URL }}/api/mutation",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $env.CONVEX_DEPLOY_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"path\": \"functions:updateTaskStatus\",\n  \"args\": {\n    \"id\": \"{{ $node['Webhook Trigger'].json.body.taskId }}\",\n    \"status\": \"failed\",\n    \"error\": {\n      \"message\": \"{{ $json.error.message || 'Unknown error' }}\",\n      \"code\": \"EXECUTION_FAILED\"\n    }\n  }\n}"
+      },
+      "id": "update-task-failed",
+      "name": "Update Task - Failed",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1340, 500]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseCode": 500,
+        "responseBody": "={\n  \"success\": false,\n  \"taskId\": \"{{ $node['Webhook Trigger'].json.body.taskId }}\",\n  \"error\": \"{{ $json.error.message || 'Execution failed' }}\"\n}"
+      },
+      "id": "respond-error",
+      "name": "Respond Error",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1560, 500]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Update Task - Running",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Task - Running": {
+      "main": [
+        [
+          {
+            "node": "Get Agent Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Agent Config": {
+      "main": [
+        [
+          {
+            "node": "Call Claude API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Claude API": {
+      "main": [
+        [
+          {
+            "node": "Process Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Response": {
+      "main": [
+        [
+          {
+            "node": "Save Content to Convex",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Content to Convex": {
+      "main": [
+        [
+          {
+            "node": "Log Execution",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Execution": {
+      "main": [
+        [
+          {
+            "node": "Update Task - Completed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Task - Completed": {
+      "main": [
+        [
+          {
+            "node": "Respond Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Task - Failed": {
+      "main": [
+        [
+          {
+            "node": "Respond Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "errorWorkflow": "error-handler-workflow-id"
+  },
+  "staticData": null,
+  "meta": {
+    "templateId": "ai-agent-blog-writer",
+    "instanceId": "ai-marketing-department"
+  },
+  "tags": [
+    {
+      "name": "ai-agent"
+    },
+    {
+      "name": "content"
+    },
+    {
+      "name": "blog"
+    }
+  ]
+}

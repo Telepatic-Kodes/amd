@@ -1,0 +1,26 @@
+{
+  "name": "ai-marketing-department",
+  "version": "1.0.0",
+  "description": "Sistema de 37 Agentes de IA para automatizar un departamento de marketing completo",
+  "author": "AIAIAI Consulting",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "dev": "convex dev",
+    "deploy": "convex deploy",
+    "seed": "convex run seed:seedAgents",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "convex": "^1.17.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.0",
+    "eslint": "^8.55.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
