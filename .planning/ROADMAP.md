@@ -23,6 +23,13 @@ Phase 1 (Foundation) ──┐
 
 **Goal:** Establish reliable single-feed syncing with robust parsing and deduplication.
 
+**Plans:** 3 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Foundation setup (Feedsmith + database schema)
+- [ ] 01-02-PLAN.md — Core utilities (hash + validation)
+- [ ] 01-03-PLAN.md — Sync engine (fetchFeed + storeFeedItems)
+
 **Rationale:** Solve critical pitfalls (GUID unreliability, malformed XML) before scaling. Composite key deduplication must be correct from day one.
 
 ### Deliverables
@@ -355,4 +362,4 @@ Phase 1 ────────────────────────
 
 ---
 *Roadmap created: 2026-01-27*
-*Last updated: 2026-01-27 after requirements definition*
+*Last updated: 2026-01-27 after phase 1 planning*
