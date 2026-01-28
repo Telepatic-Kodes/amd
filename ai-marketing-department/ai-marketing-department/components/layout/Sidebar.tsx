@@ -13,7 +13,9 @@ import {
     BarChart3,
     Settings,
     LogOut,
-    Sparkles
+    Sparkles,
+    FolderOutput,
+    Rss,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -24,6 +26,8 @@ const navigation = [
     { name: "Org Chart", href: "/org", icon: Network },
     { name: "Campaigns", href: "/campaigns", icon: Rocket },
     { name: "Content", href: "/content", icon: FileText },
+    { name: "Feeds", href: "/feeds", icon: Rss },
+    { name: "Generado", href: "/generated", icon: FolderOutput },
     { name: "Analytics", href: "/analytics", icon: BarChart3 },
     { name: "Settings", href: "/settings", icon: Settings },
 ];
