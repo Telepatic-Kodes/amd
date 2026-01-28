@@ -130,6 +130,7 @@ export default defineSchema({
       )
     ),
     error: v.optional(v.string()),
+    feedItemsUsed: v.optional(v.array(v.id("feedItems"))), // Feed items used during execution (Phase 3)
     timestamp: v.number(),
   })
     .index("by_task", ["taskId"])
@@ -401,4 +402,80 @@ export default defineSchema({
     .index("by_action", ["action"])
     .index("by_timestamp", ["timestamp"])
     .index("by_performer", ["performedBy", "performerId"]),
+
+  // ===========================================
+  // FEEDS - RSS/Atom feeds para sincronización
+  // ===========================================
+  feeds: defineTable({
+    feedId: v.string(), // UUID identifier
+    url: v.string(), // Feed URL (unique)
+    name: v.string(), // Human-readable name
+    category: v.string(), // Category: "industry", "competitor", "technical"
+    status: v.union(
+      v.literal("active"),
+      v.literal("paused"),
+      v.literal("error")
+    ),
+    syncFrequency: v.union(
+      v.literal("hourly"),
+      v.literal("daily"),
+      v.literal("weekly")
+    ),
+    lastSyncAt: v.optional(v.number()), // Timestamp of last successful sync
+    consecutiveErrors: v.number(), // Error count for health tracking (SYNC-06)
+    lastErrorMessage: v.optional(v.string()), // Most recent error
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_feedId", ["feedId"])
+    .index("by_url", ["url"])
+    .index("by_status", ["status"])
+    .index("by_category", ["category"]),
+
+  // ===========================================
+  // FEED_ITEMS - Entradas de feeds con deduplicación
+  // ===========================================
+  feedItems: defineTable({
+    feedId: v.id("feeds"), // Reference to parent feed
+    contentHash: v.string(), // SHA-256 composite key for deduplication (SYNC-02)
+    guid: v.optional(v.string()), // Original GUID if present
+    title: v.string(), // Item title
+    link: v.string(), // Item URL
+    content: v.optional(v.string()), // Full content/description
+    summary: v.optional(v.string()), // Short summary (for truncated feeds)
+    author: v.optional(v.string()), // Author name if available
+    publishedAt: v.optional(v.number()), // Publication timestamp
+    categories: v.optional(v.array(v.string())), // Item categories/tags
+    createdAt: v.number(), // When we stored it
+    updatedAt: v.number(), // Last update
+  })
+    .index("by_contentHash", ["contentHash"]) // For deduplication lookups (STOR-05)
+    .index("by_feedId", ["feedId"])
+    .index("by_feedId_publishedAt", ["feedId", "publishedAt"]) // For chronological queries
+    .index("by_publishedAt", ["publishedAt"]) // For global timeline
+    .searchIndex("search_content", {
+      searchField: "title",
+      filterFields: ["feedId"],
+    }), // For agent feed queries (Phase 3)
+
+  // ===========================================
+  // FEED_SYNC_LOG - Historial de sincronizaciones
+  // ===========================================
+  feedSyncLog: defineTable({
+    feedId: v.id("feeds"), // Reference to feed
+    syncedAt: v.number(), // Execution timestamp
+    status: v.union(
+      v.literal("success"),
+      v.literal("partial"),
+      v.literal("failed")
+    ), // Sync outcome
+    itemsFound: v.number(), // Total items in feed
+    itemsAdded: v.number(), // New items stored
+    itemsSkipped: v.number(), // Duplicates skipped
+    duration: v.number(), // Sync duration in ms
+    errorMessage: v.optional(v.string()), // Error details if failed
+  })
+    .index("by_feedId", ["feedId"])
+    .index("by_syncedAt", ["syncedAt"])
+    .index("by_feedId_syncedAt", ["feedId", "syncedAt"]),
 });
