@@ -2,7 +2,7 @@
 
 **Started:** 2026-01-27
 **Current Phase:** Phase 2 - Multi-Feed Orchestration
-**Status:** In Progress (Plan 3/5 complete)
+**Status:** In Progress (Plan 4/5 complete)
 
 ## Project Reference
 
@@ -10,7 +10,7 @@ See: .planning/PROJECT.md (updated 2026-01-27)
 
 **Core value:** Los agentes de contenido tienen acceso a informacion fresca y relevante del mercado para crear contenido mas actual y competitivo.
 
-**Current focus:** Phase 2 - Multi-Feed Orchestration (Plan 03 complete)
+**Current focus:** Phase 2 - Multi-Feed Orchestration (Plan 04 complete)
 
 ## Progress
 
@@ -25,8 +25,9 @@ See: .planning/PROJECT.md (updated 2026-01-27)
 - [x] **Phase 2 Plan 01: Feed CRUD & Dashboard Queries**
 - [x] **Phase 2 Plan 02: Sync Orchestration & Cron**
 - [x] **Phase 2 Plan 03: Rate Limit Handling**
+- [x] **Phase 2 Plan 04: Feed Management Dashboard UI**
 
-### Phase 2 Plan 03 Implementation Details
+### Phase 2 Plan 04 Implementation Details
 
 **Completed 2026-01-28**
 
@@ -34,20 +35,30 @@ See: .planning/PROJECT.md (updated 2026-01-27)
 
 | File | Purpose |
 |------|---------|
-| `convex/feeds/utils/rateLimit.ts` | Rate limiting utilities (exponential backoff, Retry-After parsing) |
-| `convex/feeds/utils/index.ts` | Added rate limit exports |
-| `convex/feeds/fetchFeed.ts` | Added 429 handling with self-scheduling retry |
+| `components/feeds/FeedCard.tsx` | Individual feed card with status, stats, and actions |
+| `components/feeds/AddFeedForm.tsx` | Form to add new RSS/Atom feeds |
+| `components/feeds/FeedItemsList.tsx` | Displays feed items with pagination |
+| `components/feeds/index.ts` | Barrel export for feeds components |
+| `app/feeds/page.tsx` | Main feeds dashboard page |
+| `components/layout/Sidebar.tsx` | Added Feeds navigation entry |
 
 #### Requirements Covered:
 
-- **SYNC-05**: Rate limit handling - system detects 429, retries with backoff
+- **DASH-01**: User can see all feeds with status on /feeds page
+- **DASH-02**: Feed detail panel shows feed items
+- **DASH-03**: Recent items section across all feeds
+- **DASH-04**: Manual sync trigger from dashboard
+- **FEED-01**: User can add a new feed via form
+- **FEED-03**: User can pause/resume feeds from the UI
+- **FEED-04**: User can delete a feed
+- **FEED-05**: Search and filter functionality
 
 #### Key Implementation:
 
-- **Exponential Backoff**: 1s -> 2s -> 4s -> 8s with 5-minute cap
-- **Retry-After Support**: Parses both seconds and HTTP date formats
-- **Self-Scheduling**: fetchFeed schedules itself via ctx.scheduler.runAfter
-- **Max Retries**: 4 attempts before permanent failure
+- **FeedCard**: Status indicators, stats grid, action buttons
+- **AddFeedForm**: Animated slide-down form with validation
+- **Detail Panel**: Animated slide-in showing feed items
+- **Filters**: Status (server-side) and category (client-side)
 
 ### Upcoming Work
 
@@ -56,21 +67,21 @@ See: .planning/PROJECT.md (updated 2026-01-27)
 | 2 | 01 | Feed CRUD & Dashboard Queries | Complete |
 | 2 | 02 | Sync Orchestration & Cron | Complete |
 | 2 | 03 | Rate Limit Handling | Complete |
-| 2 | 04 | Feed Sync Monitoring Dashboard | Ready |
-| 2 | 05 | Integration Tests | Blocked by 02-04 |
+| 2 | 04 | Feed Management Dashboard UI | Complete |
+| 2 | 05 | Integration Tests | Ready |
 
 ### Phase Overview
 
 | Phase | Name | Status |
 |-------|------|--------|
 | 1 | Core Feed Sync Engine | Complete |
-| 2 | Multi-Feed Orchestration | In Progress (3/5) |
+| 2 | Multi-Feed Orchestration | In Progress (4/5) |
 | 3 | Agent Integration | Blocked by Phase 2 |
 | 4 | AI Enrichment | Blocked by Phase 3 |
 | 5 | Brand Monitoring | Blocked by Phase 4 |
 | 6 | Advanced Features | Blocked by Phase 5 |
 
-Progress: [######----] 60% (3/5 plans in current phase)
+Progress: [########--] 80% (4/5 plans in current phase)
 
 ## Key Decisions Log
 
@@ -90,6 +101,9 @@ Progress: [######----] 60% (3/5 plans in current phase)
 | 2026-01-28 | 4 max retry attempts for rate limiting | Balance persistence vs respecting server limits |
 | 2026-01-28 | 5-minute max delay cap | Prevent indefinite waits on large Retry-After |
 | 2026-01-28 | Treat 503 + Retry-After as rate limiting | Common server practice for overload handling |
+| 2026-01-28 | Direct mutation hooks in FeedCard | Immediate UI response without state management |
+| 2026-01-28 | Conditional useQuery in FeedItemsList | Different queries based on feedId presence |
+| 2026-01-28 | Client-side category filtering | Server handles status, client handles category for flexibility |
 
 ## Blockers
 
@@ -97,16 +111,16 @@ None currently.
 
 ## Session Continuity
 
-Last session: 2026-01-28T11:22:20Z
-Stopped at: Completed 02-03-PLAN.md
+Last session: 2026-01-28T11:23:19Z
+Stopped at: Completed 02-04-PLAN.md
 Resume file: None
 
 ## Next Actions
 
-1. Execute 02-04-PLAN.md (Feed Sync Monitoring Dashboard)
-2. Create sync status display components
-3. Add retry status visibility
+1. Execute 02-05-PLAN.md (Integration Tests)
+2. Test feed CRUD operations end-to-end
+3. Verify sync orchestration and cron jobs
 
 ---
 *State initialized: 2026-01-27*
-*Last updated: 2026-01-28 - Phase 2 Plan 03 complete*
+*Last updated: 2026-01-28 - Phase 2 Plan 04 complete*
