@@ -74,4 +74,27 @@ crons.weekly(
   { frequency: "weekly" }
 );
 
+// ===========================================
+// AI ENRICHMENT CRONS
+// ===========================================
+
+// Process unprocessed feed items through AI enrichment
+// Runs 30 minutes after daily feed sync to allow items to populate
+// Processes 10 items per run to control costs
+crons.daily(
+  "enrich-feed-items",
+  { hourUTC: 6, minuteUTC: 30 }, // 30 min after daily sync at 6:00
+  api.enrichment.orchestration.processBatch,
+  { batchSize: 10 }
+);
+
+// Hourly enrichment catch-up for newly synced items
+// Processes smaller batch (5) more frequently
+crons.hourly(
+  "enrich-feed-items-hourly",
+  { minuteUTC: 35 }, // 30 min after hourly sync at :05
+  api.enrichment.orchestration.processBatch,
+  { batchSize: 5 }
+);
+
 export default crons;
