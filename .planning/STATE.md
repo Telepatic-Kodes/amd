@@ -123,6 +123,15 @@ Last session: 2026-01-28T14:52:00Z
 Stopped at: Completed 04-03-PLAN.md (Cron & Integration)
 Resume file: None
 
+## Automated Enrichment
+
+✅ **Cron configurado:** Enriquecimiento automático cada hora
+- **Horario:** :35 de cada hora (sincronizado con feed sync)
+- **Batch size:** 10 items/run (240 items/día máx)
+- **Costo:** $0 (usa plan Claude Code MAX)
+- **Logs:** `logs/enrich-YYYYMMDD.log`
+- **Comando:** `crontab -l` para ver configuración
+
 ## Next Actions
 
 1. Execute Phase 5: Brand Monitoring
