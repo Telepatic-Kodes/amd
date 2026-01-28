@@ -2,8 +2,8 @@
  * Enrichment Processing Actions
  *
  * Internal actions for AI-powered feed item enrichment using Claude API.
- * Uses Claude Haiku 4.5 with structured outputs for cost-efficient,
- * reliable JSON responses.
+ * Uses Claude Haiku 3.5 with structured outputs for maximum cost efficiency
+ * ($0.25/$1.25 per MTok - 4x cheaper than Haiku 4.5) and reliable JSON responses.
  *
  * @module convex/enrichment/processItems
  */
@@ -19,7 +19,7 @@ import {
 } from "./prompts";
 
 /**
- * Enriches a single feed item using Claude Haiku 4.5
+ * Enriches a single feed item using Claude Haiku 3.5
  *
  * Fetches the feed item, constructs a prompt from its content, calls Claude
  * with structured outputs to extract topics, sentiment, summary, and relevance
@@ -27,6 +27,8 @@ import {
  *
  * Uses structured outputs beta header to guarantee valid JSON responses,
  * eliminating parsing failures.
+ *
+ * Cost: ~$0.07/day for 100 items (Haiku 3.5: $0.25/$1.25 per MTok)
  *
  * @param itemId - ID of the feedItem to enrich
  * @returns Success status, item ID, and tokens used for cost tracking
@@ -73,7 +75,7 @@ export const enrichFeedItem = internalAction({
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "claude-haiku-4-5-20250514",
+        model: "claude-3-5-haiku-20241022", // Haiku 3.5: 4x cheaper than 4.5
         max_tokens: 512,
         temperature: 0.3, // Lower temp for consistent classification
         system: ENRICHMENT_SYSTEM_PROMPT,
