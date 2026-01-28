@@ -145,6 +145,12 @@ Plans:
 
 **Goal:** Connect feed content to existing AMD agent system.
 
+**Plans:** 2 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — Schema update (search index) + agent feed query
+- [ ] 03-02-PLAN.md — executeAgent modification with feed context injection
+
 **Rationale:** Make feed data useful by injecting into agent contexts at execution time.
 
 ### Deliverables
@@ -164,8 +170,8 @@ Plans:
    - Enable per-agent feed access control
 
 4. Usage tracking:
-   - `usedInContentIds` field on feedItems
-   - Link consumed items to generated content
+   - `feedItemsUsed` field on executions table
+   - Link consumed items to agent execution logs
 
 ### Requirements Covered
 
@@ -173,21 +179,22 @@ Plans:
 
 ### Tech Decisions
 
-- Context injection format: JSON array with title, summary, link, date
-- Token budget: ~2000 tokens for feed context
-- Relevance scoring: keyword match count
+- Context injection format: Structured text with title, summary, link, date
+- Token budget: ~2000 tokens for feed context (5 items max)
+- Relevance: Convex text search with BM25 ranking
+- Search index on feedItems.title with feedId filter
 
 ### Success Criteria
 
 - [ ] Content agents receive relevant feed items
 - [ ] Social agents can curate from feeds
 - [ ] SEO agents monitor competitor content
-- [ ] Usage tracking links items to content
+- [ ] Usage tracking links items to executions
 - [ ] Keyword filtering works accurately
 
 ### Research Flag
 
-**Needs light research** — Prompt engineering for optimal feed context injection.
+**Research complete** — See 03-RESEARCH.md for implementation patterns.
 
 ---
 
@@ -371,4 +378,4 @@ Phase 1 ────────────────────────
 
 ---
 *Roadmap created: 2026-01-27*
-*Last updated: 2026-01-27 after phase 1 planning*
+*Last updated: 2026-01-28 after phase 3 planning*
