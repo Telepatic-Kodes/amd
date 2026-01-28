@@ -39,6 +39,7 @@ npm run agent:linkedin
 |-----------|-----------|-----------|
 | **ONBOARDING.md** | Manual completo con explicaciones | Nuevos usuarios |
 | **QUICK-START.md** | Guía de 5 minutos | Referencia rápida |
+| **SYSTEM-FLOW.md** | Diagramas visuales de flujos | Visual learners |
 | **CLAUDE.md** | Especificaciones técnicas | Desarrolladores |
 | **scripts/CRON-SETUP.md** | Configuración de automatización | Administradores |
 | **scripts/README.md** | Uso de scripts locales | DevOps |
