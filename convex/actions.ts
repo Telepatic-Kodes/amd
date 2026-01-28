@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { action } from "./_generated/server";
-import { api } from "./_generated/api";
+import { api, internal } from "./_generated/api";
+import { Id } from "./_generated/dataModel";
 
 /**
  * Action para llamar a Claude API
@@ -94,7 +95,50 @@ export const executeAgent = action({
       throw new Error(`Agent is not active: ${agent.status}`);
     }
 
-    // 2. Crear tarea
+    // 2. Get relevant feed context (non-blocking)
+    let feedItems: Array<{
+      _id: Id<"feedItems">;
+      title: string;
+      link: string;
+      summary: string | null;
+      content: string | null;
+      publishedAt: number | null;
+      feedName: string;
+    }> = [];
+    let feedItemIds: Id<"feedItems">[] = [];
+
+    try {
+      // Feed access gating strategy: OPT-IN
+      // - Feeds are enabled ONLY if agent.config.tools explicitly includes "feeds"
+      // - If tools is undefined or empty, feeds are NOT enabled (safe default)
+      // - This prevents unintended feed injection for agents not configured for it
+      const feedsEnabled =
+        Array.isArray(agent.config.tools) &&
+        agent.config.tools.includes("feeds");
+
+      if (feedsEnabled) {
+        const keywords = extractKeywords(args.taskType, args.input);
+        const categories = mapDepartmentToCategories(agent.department);
+
+        if (keywords) {
+          feedItems = await ctx.runQuery(
+            internal.feeds.agentQueries.getRelevantFeedItems,
+            {
+              keywords,
+              categories,
+              limit: 5,
+              daysBack: 7,
+            }
+          );
+          feedItemIds = feedItems.map((item) => item._id);
+        }
+      }
+    } catch (error: any) {
+      // Non-blocking: log warning but continue execution
+      console.warn("Failed to get feed context for agent:", error.message);
+    }
+
+    // 3. Crear tarea
     const taskResult = await ctx.runMutation(api.functions.createTask, {
       title: `${args.taskType} - ${new Date().toISOString()}`,
       type: args.taskType,
@@ -103,7 +147,7 @@ export const executeAgent = action({
       input: args.input,
     });
 
-    // 3. Actualizar estado a running
+    // 4. Actualizar estado a running
     await ctx.runMutation(api.functions.updateTaskStatus, {
       id: taskResult.id,
       status: "running",
@@ -112,12 +156,18 @@ export const executeAgent = action({
     const startTime = Date.now();
 
     try {
-      // 4. Construir mensaje para Claude basado en el tipo de tarea
+      // 5. Construir mensaje para Claude basado en el tipo de tarea
       const userMessage = buildUserMessage(args.taskType, args.input);
 
-      // 5. Llamar a Claude
+      // 6. Build enhanced prompt with feed context
+      const enhancedSystemPrompt = buildEnhancedSystemPrompt(
+        agent.config.systemPrompt,
+        feedItems
+      );
+
+      // 7. Llamar a Claude (enhanced with feed context)
       const claudeResponse = await ctx.runAction(api.actions.callClaude, {
-        systemPrompt: agent.config.systemPrompt,
+        systemPrompt: enhancedSystemPrompt,
         userMessage,
         model: agent.config.model,
         temperature: agent.config.temperature,
@@ -126,14 +176,14 @@ export const executeAgent = action({
 
       const duration = Date.now() - startTime;
 
-      // 6. Calcular costo según modelo
+      // 8. Calcular costo según modelo
       const cost = calculateCost(
         agent.config.model || "claude-sonnet-4-20250514",
         claudeResponse.usage.inputTokens,
         claudeResponse.usage.outputTokens
       );
 
-      // 7. Guardar ejecución
+      // 9. Guardar ejecución (with feed tracking)
       await ctx.runMutation(api.functions.logExecution, {
         taskId: taskResult.id,
         agentId: agent._id,
@@ -147,9 +197,10 @@ export const executeAgent = action({
         },
         duration,
         cost,
+        feedItemsUsed: feedItemIds.length > 0 ? feedItemIds : undefined,
       });
 
-      // 8. Actualizar tarea como completada
+      // 10. Actualizar tarea como completada
       await ctx.runMutation(api.functions.updateTaskStatus, {
         id: taskResult.id,
         status: "completed",
