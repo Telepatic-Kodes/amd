@@ -11,6 +11,9 @@
 import type * as actions from "../actions.js";
 import type * as agentSdk from "../agentSdk.js";
 import type * as crons from "../crons.js";
+import type * as enrichment_index from "../enrichment/index.js";
+import type * as enrichment_mutations from "../enrichment/mutations.js";
+import type * as enrichment_queries from "../enrichment/queries.js";
 import type * as feeds_agentQueries from "../feeds/agentQueries.js";
 import type * as feeds_fetchFeed from "../feeds/fetchFeed.js";
 import type * as feeds_index from "../feeds/index.js";
@@ -37,6 +40,9 @@ declare const fullApi: ApiFromModules<{
   actions: typeof actions;
   agentSdk: typeof agentSdk;
   crons: typeof crons;
+  "enrichment/index": typeof enrichment_index;
+  "enrichment/mutations": typeof enrichment_mutations;
+  "enrichment/queries": typeof enrichment_queries;
   "feeds/agentQueries": typeof feeds_agentQueries;
   "feeds/fetchFeed": typeof feeds_fetchFeed;
   "feeds/index": typeof feeds_index;
