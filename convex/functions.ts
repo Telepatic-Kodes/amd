@@ -175,6 +175,60 @@ export const updateAgentConfig = mutation({
   },
 });
 
+/**
+ * Actualizar el modelo de todos los agentes a la vez
+ * Útil para cambiar todos a Max Plan (Opus 4.5)
+ */
+export const upgradeAllAgentsModel = mutation({
+  args: {
+    model: v.string(),
+    department: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    let agents;
+
+    if (args.department) {
+      agents = await ctx.db
+        .query("agents")
+        .withIndex("by_department", (q) => q.eq("department", args.department as any))
+        .collect();
+    } else {
+      agents = await ctx.db.query("agents").collect();
+    }
+
+    const now = Date.now();
+    let updated = 0;
+
+    for (const agent of agents) {
+      await ctx.db.patch(agent._id, {
+        config: { ...agent.config, model: args.model },
+        updatedAt: now,
+      });
+      updated++;
+    }
+
+    // Log de auditoría
+    await ctx.db.insert("auditLog", {
+      action: "agents.model_upgraded",
+      entityType: "agents",
+      entityId: args.department || "all",
+      performedBy: "system",
+      metadata: {
+        model: args.model,
+        agentsUpdated: updated,
+        department: args.department || "all"
+      },
+      timestamp: now,
+    });
+
+    return {
+      success: true,
+      updated,
+      model: args.model
+    };
+  },
+});
+
 // ===========================================
 // TASK QUERIES
 // ===========================================
@@ -377,6 +431,7 @@ export const logExecution = mutation({
       )
     ),
     error: v.optional(v.string()),
+    feedItemsUsed: v.optional(v.array(v.id("feedItems"))), // Feed items referenced during execution (Phase 3)
   },
   handler: async (ctx, args) => {
     return await ctx.db.insert("executions", {
