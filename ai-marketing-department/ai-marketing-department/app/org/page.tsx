@@ -62,9 +62,9 @@ export default function OrgPage() {
   const stats = agents
     ? {
         total: agents.length,
-        active: agents.filter((a) => a.status === "active").length,
-        directors: agents.filter((a) => a.role === "director").length,
-        departments: new Set(agents.map((a) => a.department)).size,
+        active: agents.filter((a: { status: string }) => a.status === "active").length,
+        directors: agents.filter((a: { role: string }) => a.role === "director").length,
+        departments: new Set(agents.map((a: { department: string }) => a.department)).size,
       }
     : null;
 

@@ -372,9 +372,9 @@ export const fetchFeed = internalAction({
     }
 
     // 4. Validate and normalize items
-    // Feedsmith returns { format, feed } where feed.items contains the entries
-    const feedData = parsedFeed.feed as { items?: unknown[] };
-    const items = (feedData.items || []) as RawFeedItem[];
+    // Feedsmith returns { format, feed } where feed.items (RSS) or feed.entries (Atom) contains the entries
+    const feedData = parsedFeed.feed as { items?: unknown[]; entries?: unknown[] };
+    const items = (feedData.items || feedData.entries || []) as RawFeedItem[];
     const normalizedItems: Array<{
       title: string;
       link: string;

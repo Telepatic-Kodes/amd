@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@convex/_generated/api";
+import { motion } from "framer-motion";
 import {
   Settings,
   Key,
@@ -20,6 +21,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
+import { SimpleCounter } from "@/components/ui/AnimatedCounter";
 
 const SETTING_CATEGORIES = [
   { id: "integrations", label: "Integrations", icon: Key },
@@ -34,6 +36,7 @@ export default function SettingsPage() {
 
   const settings = useQuery(api.functions.listSettings);
   const updateSetting = useMutation(api.functions.updateSetting);
+  const upgradeAllAgents = useMutation(api.functions.upgradeAllAgentsModel);
 
   const [formState, setFormState] = useState<Record<string, any>>({});
 
@@ -81,13 +84,18 @@ export default function SettingsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
-            Settings
-          </h1>
-          <p className="text-zinc-400 mt-2">
-            Configure system preferences and integrations.
-          </p>
+        <div className="flex items-center gap-4">
+          <div className="p-3 rounded-xl bg-gradient-to-br from-zinc-500/20 to-slate-500/20 border border-zinc-500/30">
+            <Settings className="w-8 h-8 text-zinc-400" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+              Settings
+            </h1>
+            <p className="text-zinc-500 text-sm">
+              Configure system preferences and integrations
+            </p>
+          </div>
         </div>
         {saveStatus !== "idle" && (
           <Badge
@@ -150,7 +158,12 @@ export default function SettingsPage() {
         {/* Settings Content */}
         <div className="flex-1">
           {activeCategory === "integrations" && (
-            <div className="space-y-6">
+            <motion.div
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.2 }}
+              className="space-y-6"
+            >
               <Card>
                 <CardHeader>
                   <h3 className="flex items-center gap-2 font-semibold text-lg text-white">
@@ -269,10 +282,15 @@ export default function SettingsPage() {
                   </div>
                 </CardContent>
               </Card>
-            </div>
+            </motion.div>
           )}
 
           {activeCategory === "notifications" && (
+            <motion.div
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.2 }}
+            >
             <Card>
               <CardHeader>
                 <h3 className="flex items-center gap-2 font-semibold text-lg text-white">
@@ -392,10 +410,16 @@ export default function SettingsPage() {
                 </div>
               </CardContent>
             </Card>
+            </motion.div>
           )}
 
           {activeCategory === "agents" && (
-            <div className="space-y-6">
+            <motion.div
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.2 }}
+              className="space-y-6"
+            >
               <Card>
                 <CardHeader>
                   <h3 className="flex items-center gap-2 font-semibold text-lg text-white">
@@ -421,12 +445,13 @@ export default function SettingsPage() {
                       }}
                       className="w-full rounded-lg border border-zinc-800 bg-zinc-950/50 py-2 px-3 text-sm text-white focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     >
-                      <option value="claude-sonnet-4-20250514">Claude Sonnet 4</option>
+                      <option value="claude-opus-4-5-20251101">Claude Opus 4.5 (Max Plan)</option>
+                      <option value="claude-sonnet-4-20250514">Claude Sonnet 4 (Balanced)</option>
                       <option value="claude-opus-4-20250514">Claude Opus 4</option>
-                      <option value="claude-haiku-3-20250514">Claude Haiku 3</option>
+                      <option value="claude-haiku-3-20250514">Claude Haiku 3 (Fast & Cheap)</option>
                     </select>
                     <p className="text-xs text-zinc-500 mt-1">
-                      Model used for new agents by default
+                      Model used for new agents by default. Opus 4.5 is most capable but costs more.
                     </p>
                   </div>
 
@@ -527,11 +552,86 @@ export default function SettingsPage() {
                   </div>
                 </CardContent>
               </Card>
-            </div>
+
+              {/* Max Plan Upgrade */}
+              <Card>
+                <CardHeader>
+                  <h3 className="flex items-center gap-2 font-semibold text-lg text-white">
+                    <Zap className="h-5 w-5 text-amber-500" />
+                    Max Plan - Claude Opus 4.5
+                  </h3>
+                </CardHeader>
+                <CardContent className="p-6 pt-0 space-y-4">
+                  <div className="p-4 rounded-lg border border-amber-500/20 bg-amber-500/5">
+                    <p className="text-sm font-medium text-amber-400 mb-2">
+                      Upgrade All Agents to Max Plan
+                    </p>
+                    <p className="text-xs text-zinc-400 mb-4">
+                      Claude Opus 4.5 is the most powerful model with superior reasoning,
+                      creativity, and accuracy. Best for complex marketing strategies and content.
+                    </p>
+                    <div className="flex items-center gap-4">
+                      <button
+                        onClick={async () => {
+                          if (window.confirm("This will upgrade all 37 agents to Claude Opus 4.5 (Max Plan). This increases cost but improves quality. Continue?")) {
+                            setSaveStatus("saving");
+                            try {
+                              await upgradeAllAgents({ model: "claude-opus-4-5-20251101" });
+                              setSaveStatus("saved");
+                              setTimeout(() => setSaveStatus("idle"), 2000);
+                            } catch (error) {
+                              setSaveStatus("error");
+                              setTimeout(() => setSaveStatus("idle"), 3000);
+                            }
+                          }
+                        }}
+                        className="px-4 py-2 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 text-white text-sm font-medium hover:from-amber-600 hover:to-orange-600 transition-all shadow-lg shadow-amber-500/20"
+                      >
+                        <Zap className="h-4 w-4 inline mr-2" />
+                        Upgrade All to Opus 4.5
+                      </button>
+                      <button
+                        onClick={async () => {
+                          if (window.confirm("This will set all agents to Claude Sonnet 4 (balanced cost/quality). Continue?")) {
+                            setSaveStatus("saving");
+                            try {
+                              await upgradeAllAgents({ model: "claude-sonnet-4-20250514" });
+                              setSaveStatus("saved");
+                              setTimeout(() => setSaveStatus("idle"), 2000);
+                            } catch (error) {
+                              setSaveStatus("error");
+                              setTimeout(() => setSaveStatus("idle"), 3000);
+                            }
+                          }
+                        }}
+                        className="px-4 py-2 rounded-lg bg-zinc-700 text-white text-sm font-medium hover:bg-zinc-600 transition-colors"
+                      >
+                        Reset to Sonnet 4
+                      </button>
+                    </div>
+                    <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
+                      <div className="p-2 rounded bg-zinc-800/50">
+                        <span className="text-zinc-500">Opus 4.5 pricing:</span>
+                        <span className="text-white ml-1">$15/M input, $75/M output</span>
+                      </div>
+                      <div className="p-2 rounded bg-zinc-800/50">
+                        <span className="text-zinc-500">Sonnet 4 pricing:</span>
+                        <span className="text-white ml-1">$3/M input, $15/M output</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
           )}
 
           {activeCategory === "system" && (
-            <div className="space-y-6">
+            <motion.div
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.2 }}
+              className="space-y-6"
+            >
               <Card>
                 <CardHeader>
                   <h3 className="flex items-center gap-2 font-semibold text-lg text-white">
@@ -551,7 +651,9 @@ export default function SettingsPage() {
                     </div>
                     <div className="p-3 rounded-lg bg-zinc-900/50">
                       <p className="text-xs text-zinc-500">Total Settings</p>
-                      <p className="text-sm font-medium text-white">{settings.length}</p>
+                      <p className="text-sm font-medium text-white">
+                        <SimpleCounter value={settings.length} />
+                      </p>
                     </div>
                     <div className="p-3 rounded-lg bg-zinc-900/50">
                       <p className="text-xs text-zinc-500">Last Updated</p>
@@ -601,7 +703,7 @@ export default function SettingsPage() {
                   </div>
                 </CardContent>
               </Card>
-            </div>
+            </motion.div>
           )}
         </div>
       </div>

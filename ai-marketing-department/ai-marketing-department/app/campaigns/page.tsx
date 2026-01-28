@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@convex/_generated/api";
+import { motion } from "framer-motion";
 import {
   Rocket,
   Search,
@@ -14,10 +15,18 @@ import {
   MousePointer,
   Eye,
   Calendar,
+  BarChart3,
+  Zap,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/Card";
 import { StatusBadge, Badge } from "@/components/ui/Badge";
+import { SimpleCounter } from "@/components/ui/AnimatedCounter";
+import { TrendIndicator } from "@/components/ui/TrendIndicator";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { MiniDonut } from "@/components/charts/DonutChart";
+import { Sparkline } from "@/components/charts/Sparkline";
+import { chartColors } from "@/components/charts/theme";
 
 const CAMPAIGN_TYPES = [
   { value: "", label: "All Types" },
@@ -76,6 +85,17 @@ function formatDate(timestamp: number) {
   });
 }
 
+// Generate mock sparkline data for demo
+function generateSparklineData(length: number = 7) {
+  const data = [];
+  let value = Math.random() * 100 + 50;
+  for (let i = 0; i < length; i++) {
+    value = Math.max(10, value + (Math.random() - 0.45) * 20);
+    data.push({ value: Math.round(value) });
+  }
+  return data;
+}
+
 export default function CampaignsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
@@ -106,8 +126,32 @@ export default function CampaignsPage() {
 
   const selectedCampaignData = useMemo(() => {
     if (!selectedCampaign || !campaigns) return null;
-    return campaigns.find((c) => c.campaignId === selectedCampaign);
+    return campaigns.find((c: { campaignId: string }) => c.campaignId === selectedCampaign);
   }, [selectedCampaign, campaigns]);
+
+  // Calculate summary stats
+  const stats = useMemo(() => {
+    if (!campaigns || campaigns.length === 0) return null;
+
+    const active = campaigns.filter((c: { status: string }) => c.status === "active").length;
+    const totalBudget = campaigns.reduce((sum: number, c: { budget?: { total: number } }) =>
+      sum + (c.budget?.total || 0), 0);
+    const totalSpent = campaigns.reduce((sum: number, c: { budget?: { spent: number } }) =>
+      sum + (c.budget?.spent || 0), 0);
+    const totalImpressions = campaigns.reduce((sum: number, c: { metrics?: { impressions: number } }) =>
+      sum + (c.metrics?.impressions || 0), 0);
+    const totalClicks = campaigns.reduce((sum: number, c: { metrics?: { clicks: number } }) =>
+      sum + (c.metrics?.clicks || 0), 0);
+
+    return {
+      active,
+      totalBudget,
+      totalSpent,
+      totalImpressions,
+      totalClicks,
+      avgCtr: totalImpressions > 0 ? (totalClicks / totalImpressions) * 100 : 0,
+    };
+  }, [campaigns]);
 
   if (!campaigns) {
     return (
@@ -120,11 +164,21 @@ export default function CampaignsPage() {
             Manage and monitor your marketing campaigns.
           </p>
         </div>
-        <div className="space-y-4">
+        {/* Skeleton Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {[...Array(4)].map((_, i) => (
             <div
               key={i}
               className="h-32 rounded-xl border border-zinc-800 bg-zinc-950/50 animate-pulse"
+            />
+          ))}
+        </div>
+        {/* Skeleton List */}
+        <div className="space-y-4">
+          {[...Array(3)].map((_, i) => (
+            <div
+              key={i}
+              className="h-40 rounded-xl border border-zinc-800 bg-zinc-950/50 animate-pulse"
             />
           ))}
         </div>
@@ -135,14 +189,155 @@ export default function CampaignsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
-          Campaigns
-        </h1>
-        <p className="text-zinc-400 mt-2">
-          Manage and monitor your {campaigns.length} marketing campaigns.
-        </p>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <div className="p-3 rounded-xl bg-gradient-to-br from-green-500/20 to-emerald-500/20 border border-green-500/30">
+            <Rocket className="w-8 h-8 text-green-400" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+              Campaigns
+            </h1>
+            <p className="text-zinc-500 text-sm">
+              {campaigns.length} campaigns • {stats?.active || 0} active
+            </p>
+          </div>
+        </div>
       </div>
+
+      {/* Summary Stats */}
+      {stats && campaigns.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Active Campaigns */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0 }}
+          >
+            <Card className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="p-2 rounded-lg bg-green-500/10">
+                  <Zap className="w-5 h-5 text-green-400" />
+                </div>
+                <TrendIndicator value={12} size="sm" />
+              </div>
+              <p className="text-2xl font-bold text-white">
+                <SimpleCounter value={stats.active} />
+              </p>
+              <p className="text-sm text-zinc-500">Active Campaigns</p>
+              <div className="mt-2 h-8">
+                <Sparkline
+                  data={generateSparklineData()}
+                  height={32}
+                  color={chartColors.success}
+                  showTooltip={false}
+                />
+              </div>
+            </Card>
+          </motion.div>
+
+          {/* Total Impressions */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+          >
+            <Card className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="p-2 rounded-lg bg-blue-500/10">
+                  <Eye className="w-5 h-5 text-blue-400" />
+                </div>
+                <TrendIndicator value={8.5} size="sm" />
+              </div>
+              <p className="text-2xl font-bold text-white">
+                <SimpleCounter
+                  value={stats.totalImpressions}
+                  formatter={(v) => formatNumber(Math.round(v))}
+                />
+              </p>
+              <p className="text-sm text-zinc-500">Total Impressions</p>
+              <div className="mt-2 h-8">
+                <Sparkline
+                  data={generateSparklineData()}
+                  height={32}
+                  color={chartColors.departments.social}
+                  showTooltip={false}
+                />
+              </div>
+            </Card>
+          </motion.div>
+
+          {/* Average CTR */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <Card className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="p-2 rounded-lg bg-purple-500/10">
+                  <MousePointer className="w-5 h-5 text-purple-400" />
+                </div>
+                <TrendIndicator value={-2.1} size="sm" />
+              </div>
+              <p className="text-2xl font-bold text-white">
+                <SimpleCounter
+                  value={stats.avgCtr}
+                  formatter={(v) => `${v.toFixed(2)}%`}
+                />
+              </p>
+              <p className="text-sm text-zinc-500">Average CTR</p>
+              <div className="mt-2 h-8">
+                <Sparkline
+                  data={generateSparklineData()}
+                  height={32}
+                  color={chartColors.departments.brand}
+                  showTooltip={false}
+                />
+              </div>
+            </Card>
+          </motion.div>
+
+          {/* Budget Used */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <Card className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="p-2 rounded-lg bg-orange-500/10">
+                  <DollarSign className="w-5 h-5 text-orange-400" />
+                </div>
+                <MiniDonut
+                  value={stats.totalSpent}
+                  total={stats.totalBudget}
+                  color={chartColors.departments.demandgen}
+                  size={32}
+                  strokeWidth={3}
+                />
+              </div>
+              <p className="text-2xl font-bold text-white">
+                <SimpleCounter
+                  value={stats.totalSpent}
+                  formatter={(v) => formatCurrency(Math.round(v))}
+                />
+              </p>
+              <p className="text-sm text-zinc-500">
+                of {formatCurrency(stats.totalBudget)} budget
+              </p>
+              <div className="mt-2 h-2 bg-zinc-800 rounded-full overflow-hidden">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${Math.min((stats.totalSpent / stats.totalBudget) * 100, 100)}%` }}
+                  transition={{ duration: 1, ease: "easeOut" }}
+                  className="h-full bg-gradient-to-r from-orange-500 to-yellow-500"
+                />
+              </div>
+            </Card>
+          </motion.div>
+        </div>
+      )}
 
       {/* Filters */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
@@ -195,13 +390,13 @@ export default function CampaignsPage() {
       {/* Stats Summary */}
       <div className="flex flex-wrap gap-2">
         <Badge variant="success">
-          {campaigns.filter((c) => c.status === "active").length} Active
+          {campaigns.filter((c: { status: string }) => c.status === "active").length} Active
         </Badge>
         <Badge variant="default">
-          {campaigns.filter((c) => c.status === "planning").length} Planning
+          {campaigns.filter((c: { status: string }) => c.status === "planning").length} Planning
         </Badge>
         <Badge variant="info">
-          {campaigns.filter((c) => c.status === "completed").length} Completed
+          {campaigns.filter((c: { status: string }) => c.status === "completed").length} Completed
         </Badge>
       </div>
 
@@ -213,18 +408,26 @@ export default function CampaignsPage() {
           selectedCampaign ? "lg:w-2/3" : "w-full"
         )}>
           {filteredCampaigns.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-xl border border-zinc-800 bg-zinc-950/50 py-16">
-              <Rocket className="h-12 w-12 text-zinc-600 mb-4" />
-              <p className="text-zinc-400">No campaigns found</p>
-              <p className="text-sm text-zinc-500 mt-1">
-                {campaigns.length === 0
+            <EmptyState
+              icon={Rocket}
+              title="No campaigns found"
+              description={
+                campaigns.length === 0
                   ? "Create your first campaign to get started"
-                  : "Try adjusting your filters or search query"}
-              </p>
-            </div>
+                  : "Try adjusting your filters or search query"
+              }
+              action={
+                campaigns.length === 0
+                  ? {
+                      label: "Create Campaign",
+                      onClick: () => console.log("Create campaign"),
+                    }
+                  : undefined
+              }
+            />
           ) : (
             <div className="space-y-4">
-              {filteredCampaigns.map((campaign) => {
+              {filteredCampaigns.map((campaign, index) => {
                 const TypeIcon = typeIcons[campaign.type] || Rocket;
                 const isSelected = selectedCampaign === campaign.campaignId;
                 const budgetPercent = campaign.budget
@@ -232,138 +435,146 @@ export default function CampaignsPage() {
                   : 0;
 
                 return (
-                  <Card
+                  <motion.div
                     key={campaign._id}
-                    hover
-                    className={cn(
-                      "cursor-pointer transition-all",
-                      isSelected && "border-indigo-500 shadow-lg shadow-indigo-500/20"
-                    )}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
                   >
-                    <CardContent
-                      className="p-4"
-                      onClick={() =>
-                        setSelectedCampaign(isSelected ? null : campaign.campaignId)
-                      }
+                    <Card
+                      hover
+                      className={cn(
+                        "cursor-pointer transition-all",
+                        isSelected && "border-indigo-500 shadow-lg shadow-indigo-500/20"
+                      )}
                     >
-                      <div className="flex items-start gap-4">
-                        {/* Icon */}
-                        <div
-                          className={cn(
-                            "flex h-12 w-12 items-center justify-center rounded-lg shrink-0",
-                            campaign.status === "active"
-                              ? "bg-green-500/10 text-green-400"
-                              : campaign.status === "paused"
-                              ? "bg-yellow-500/10 text-yellow-400"
-                              : "bg-zinc-500/10 text-zinc-400"
-                          )}
-                        >
-                          <TypeIcon className="h-6 w-6" />
-                        </div>
-
-                        {/* Content */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-start justify-between gap-4">
-                            <div>
-                              <h3 className="font-semibold text-white">
-                                {campaign.name}
-                              </h3>
-                              <p className="text-sm text-zinc-400 line-clamp-1 mt-1">
-                                {campaign.description}
-                              </p>
-                            </div>
-                            <StatusBadge status={campaign.status} />
+                      <div
+                        className="p-4"
+                        onClick={() =>
+                          setSelectedCampaign(isSelected ? null : campaign.campaignId)
+                        }
+                      >
+                        <div className="flex items-start gap-4">
+                          {/* Icon */}
+                          <div
+                            className={cn(
+                              "flex h-12 w-12 items-center justify-center rounded-lg shrink-0",
+                              campaign.status === "active"
+                                ? "bg-green-500/10 text-green-400"
+                                : campaign.status === "paused"
+                                ? "bg-yellow-500/10 text-yellow-400"
+                                : "bg-zinc-500/10 text-zinc-400"
+                            )}
+                          >
+                            <TypeIcon className="h-6 w-6" />
                           </div>
 
-                          {/* Metrics Grid */}
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-                            {campaign.metrics && (
-                              <>
-                                <div className="flex items-center gap-2">
-                                  <Eye className="h-4 w-4 text-zinc-500" />
-                                  <div>
-                                    <p className="text-xs text-zinc-500">Impressions</p>
-                                    <p className="text-sm font-medium text-white">
-                                      {formatNumber(campaign.metrics.impressions)}
-                                    </p>
-                                  </div>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <MousePointer className="h-4 w-4 text-zinc-500" />
-                                  <div>
-                                    <p className="text-xs text-zinc-500">Clicks</p>
-                                    <p className="text-sm font-medium text-white">
-                                      {formatNumber(campaign.metrics.clicks)}
-                                    </p>
-                                  </div>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <Target className="h-4 w-4 text-zinc-500" />
-                                  <div>
-                                    <p className="text-xs text-zinc-500">Conversions</p>
-                                    <p className="text-sm font-medium text-white">
-                                      {formatNumber(campaign.metrics.conversions)}
-                                    </p>
-                                  </div>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <TrendingUp className="h-4 w-4 text-zinc-500" />
-                                  <div>
-                                    <p className="text-xs text-zinc-500">CTR</p>
-                                    <p className="text-sm font-medium text-white">
-                                      {campaign.metrics.ctr.toFixed(2)}%
-                                    </p>
-                                  </div>
-                                </div>
-                              </>
-                            )}
-                          </div>
-
-                          {/* Footer */}
-                          <div className="flex items-center justify-between mt-4 pt-4 border-t border-zinc-800">
-                            <div className="flex items-center gap-4">
-                              <Badge className={typeColors[campaign.type]}>
-                                {campaign.type}
-                              </Badge>
-                              <div className="flex items-center gap-1 text-xs text-zinc-500">
-                                <Calendar className="h-3 w-3" />
-                                <span>{formatDate(campaign.startDate)}</span>
-                                {campaign.endDate && (
-                                  <>
-                                    <span>-</span>
-                                    <span>{formatDate(campaign.endDate)}</span>
-                                  </>
-                                )}
+                          {/* Content */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between gap-4">
+                              <div>
+                                <h3 className="font-semibold text-white">
+                                  {campaign.name}
+                                </h3>
+                                <p className="text-sm text-zinc-400 line-clamp-1 mt-1">
+                                  {campaign.description}
+                                </p>
                               </div>
+                              <StatusBadge status={campaign.status} />
                             </div>
 
-                            {/* Budget Progress */}
-                            {campaign.budget && (
-                              <div className="flex items-center gap-3">
-                                <div className="w-24 h-2 bg-zinc-800 rounded-full overflow-hidden">
-                                  <div
-                                    className={cn(
-                                      "h-full transition-all",
-                                      budgetPercent > 90
-                                        ? "bg-red-500"
-                                        : budgetPercent > 70
-                                        ? "bg-yellow-500"
-                                        : "bg-green-500"
-                                    )}
-                                    style={{ width: `${Math.min(budgetPercent, 100)}%` }}
-                                  />
+                            {/* Metrics Grid */}
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                              {campaign.metrics && (
+                                <>
+                                  <div className="flex items-center gap-2">
+                                    <Eye className="h-4 w-4 text-zinc-500" />
+                                    <div>
+                                      <p className="text-xs text-zinc-500">Impressions</p>
+                                      <p className="text-sm font-medium text-white">
+                                        {formatNumber(campaign.metrics.impressions)}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <MousePointer className="h-4 w-4 text-zinc-500" />
+                                    <div>
+                                      <p className="text-xs text-zinc-500">Clicks</p>
+                                      <p className="text-sm font-medium text-white">
+                                        {formatNumber(campaign.metrics.clicks)}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Target className="h-4 w-4 text-zinc-500" />
+                                    <div>
+                                      <p className="text-xs text-zinc-500">Conversions</p>
+                                      <p className="text-sm font-medium text-white">
+                                        {formatNumber(campaign.metrics.conversions)}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <TrendingUp className="h-4 w-4 text-zinc-500" />
+                                    <div>
+                                      <p className="text-xs text-zinc-500">CTR</p>
+                                      <p className="text-sm font-medium text-white">
+                                        {campaign.metrics.ctr.toFixed(2)}%
+                                      </p>
+                                    </div>
+                                  </div>
+                                </>
+                              )}
+                            </div>
+
+                            {/* Footer */}
+                            <div className="flex items-center justify-between mt-4 pt-4 border-t border-zinc-800">
+                              <div className="flex items-center gap-4">
+                                <Badge className={typeColors[campaign.type]}>
+                                  {campaign.type}
+                                </Badge>
+                                <div className="flex items-center gap-1 text-xs text-zinc-500">
+                                  <Calendar className="h-3 w-3" />
+                                  <span>{formatDate(campaign.startDate)}</span>
+                                  {campaign.endDate && (
+                                    <>
+                                      <span>-</span>
+                                      <span>{formatDate(campaign.endDate)}</span>
+                                    </>
+                                  )}
                                 </div>
-                                <span className="text-xs text-zinc-400">
-                                  {formatCurrency(campaign.budget.spent, campaign.budget.currency)} /{" "}
-                                  {formatCurrency(campaign.budget.total, campaign.budget.currency)}
-                                </span>
                               </div>
-                            )}
+
+                              {/* Budget Progress */}
+                              {campaign.budget && (
+                                <div className="flex items-center gap-3">
+                                  <div className="w-24 h-2 bg-zinc-800 rounded-full overflow-hidden">
+                                    <motion.div
+                                      initial={{ width: 0 }}
+                                      animate={{ width: `${Math.min(budgetPercent, 100)}%` }}
+                                      transition={{ duration: 0.5, delay: index * 0.05 }}
+                                      className={cn(
+                                        "h-full transition-all",
+                                        budgetPercent > 90
+                                          ? "bg-red-500"
+                                          : budgetPercent > 70
+                                          ? "bg-yellow-500"
+                                          : "bg-green-500"
+                                      )}
+                                    />
+                                  </div>
+                                  <span className="text-xs text-zinc-400">
+                                    {formatCurrency(campaign.budget.spent, campaign.budget.currency)} /{" "}
+                                    {formatCurrency(campaign.budget.total, campaign.budget.currency)}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
+                    </Card>
+                  </motion.div>
                 );
               })}
             </div>
@@ -372,7 +583,11 @@ export default function CampaignsPage() {
 
         {/* Campaign Details Panel */}
         {selectedCampaignData && (
-          <div className="hidden lg:block w-1/3">
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="hidden lg:block w-1/3"
+          >
             <Card className="sticky top-6">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-6">
@@ -418,6 +633,21 @@ export default function CampaignsPage() {
                     </div>
                   </div>
 
+                  {/* Performance Sparkline */}
+                  {selectedCampaignData.metrics && (
+                    <div>
+                      <p className="text-xs text-zinc-500 mb-2">Performance (7 days)</p>
+                      <div className="rounded-lg bg-zinc-900/50 p-3">
+                        <Sparkline
+                          data={generateSparklineData()}
+                          height={60}
+                          color={chartColors.primary}
+                          showArea
+                        />
+                      </div>
+                    </div>
+                  )}
+
                   {/* Budget */}
                   {selectedCampaignData.budget && (
                     <div>
@@ -442,9 +672,9 @@ export default function CampaignsPage() {
                           </span>
                         </div>
                         <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-indigo-500"
-                            style={{
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{
                               width: `${Math.min(
                                 (selectedCampaignData.budget.spent /
                                   selectedCampaignData.budget.total) *
@@ -452,6 +682,8 @@ export default function CampaignsPage() {
                                 100
                               )}%`,
                             }}
+                            transition={{ duration: 0.5 }}
+                            className="h-full bg-indigo-500"
                           />
                         </div>
                       </div>
@@ -514,7 +746,7 @@ export default function CampaignsPage() {
                 </div>
               </CardContent>
             </Card>
-          </div>
+          </motion.div>
         )}
       </div>
     </div>

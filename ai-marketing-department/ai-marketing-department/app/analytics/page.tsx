@@ -15,6 +15,15 @@ import {
 import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
+import { BarChart, ProgressBarChart } from "@/components/charts/BarChart";
+import { AreaChart } from "@/components/charts/AreaChart";
+import { DonutChart } from "@/components/charts/DonutChart";
+import { Sparkline } from "@/components/charts/Sparkline";
+import { chartColors, seriesColors } from "@/components/charts/theme";
+import { SimpleCounter, CurrencyCounter, PercentageCounter } from "@/components/ui/AnimatedCounter";
+import { TrendIndicator } from "@/components/ui/TrendIndicator";
+import { SkeletonStat, SkeletonChart, SkeletonTable } from "@/components/ui/Skeleton";
+import { EmptyExecutions, EmptyAgents } from "@/components/ui/EmptyState";
 
 function formatNumber(num: number) {
   if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
@@ -61,33 +70,60 @@ export default function AnalyticsPage() {
         </div>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {[...Array(4)].map((_, i) => (
-            <div
-              key={i}
-              className="h-32 rounded-xl border border-zinc-800 bg-zinc-950/50 animate-pulse"
-            />
+            <SkeletonStat key={i} />
           ))}
         </div>
         <div className="grid gap-6 md:grid-cols-2">
-          {[...Array(2)].map((_, i) => (
-            <div
-              key={i}
-              className="h-64 rounded-xl border border-zinc-800 bg-zinc-950/50 animate-pulse"
-            />
-          ))}
+          <SkeletonChart height={300} />
+          <SkeletonChart height={300} />
         </div>
+        <SkeletonTable rows={5} />
       </div>
     );
   }
 
   const { overview, tasksByDay, topAgents, recentExecutions } = analytics;
 
-  // Sort tasksByDay by date
-  const sortedDays = Object.entries(tasksByDay).sort(
-    ([a], [b]) => new Date(a).getTime() - new Date(b).getTime()
-  );
+  // Prepare bar chart data from tasksByDay
+  const barChartData = Object.entries(tasksByDay)
+    .sort(([a], [b]) => new Date(a).getTime() - new Date(b).getTime())
+    .map(([date, data]) => ({
+      date: formatDate(date),
+      completed: data.completed,
+      failed: data.failed,
+      other: data.total - data.completed - data.failed,
+    }));
 
-  // Calculate max for chart scaling
-  const maxTasks = Math.max(...sortedDays.map(([, data]) => data.total), 1);
+  // Prepare area chart data (mock trends over time)
+  const trendData = barChartData.map((d, i) => ({
+    date: d.date,
+    executions: Math.floor(Math.random() * 50) + 20 + i * 5,
+    tokens: Math.floor(Math.random() * 5000) + 1000,
+    cost: Math.random() * 0.5 + 0.1,
+  }));
+
+  // Prepare horizontal bar chart data for top agents
+  const topAgentsData = topAgents.slice(0, 5).map((agent, i) => ({
+    name: agent.name.length > 20 ? agent.name.substring(0, 20) + '...' : agent.name,
+    executions: agent.count,
+    successRate: agent.successRate,
+    color: seriesColors[i % seriesColors.length],
+  }));
+
+  // Mock cost distribution by department
+  const costDistribution = [
+    { name: 'Content', value: 35, color: chartColors.departments.content },
+    { name: 'Social', value: 25, color: chartColors.departments.social },
+    { name: 'DemandGen', value: 20, color: chartColors.departments.demandgen },
+    { name: 'SEO', value: 12, color: chartColors.departments.seo },
+    { name: 'Ops', value: 8, color: chartColors.departments.ops },
+  ];
+
+  // Mock sparkline data for stats
+  const generateSparkline = (base: number) =>
+    Array.from({ length: 7 }, () => ({
+      value: Math.max(0, base * (0.7 + Math.random() * 0.6)),
+    }));
 
   return (
     <div className="space-y-6">
@@ -101,80 +137,58 @@ export default function AnalyticsPage() {
         </p>
       </div>
 
-      {/* Overview Stats */}
+      {/* Overview Stats with Sparklines */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card hover>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="rounded-lg bg-indigo-500/10 p-2 text-indigo-400">
-                <Zap className="h-5 w-5" />
-              </div>
-              <Badge variant="info">{overview.totalExecutions} total</Badge>
-            </div>
-            <div className="mt-4">
-              <h2 className="text-3xl font-bold text-white">
-                {formatNumber(overview.totalExecutions)}
-              </h2>
-              <p className="text-sm text-zinc-400 mt-1">Executions</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card hover>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="rounded-lg bg-green-500/10 p-2 text-green-400">
-                <CheckCircle2 className="h-5 w-5" />
-              </div>
-              <Badge variant="success">{overview.successRate.toFixed(1)}%</Badge>
-            </div>
-            <div className="mt-4">
-              <h2 className="text-3xl font-bold text-white">
-                {overview.successRate.toFixed(1)}%
-              </h2>
-              <p className="text-sm text-zinc-400 mt-1">Success Rate</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card hover>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="rounded-lg bg-purple-500/10 p-2 text-purple-400">
-                <Activity className="h-5 w-5" />
-              </div>
-              <Badge variant="default">{formatNumber(overview.totalTokens)}</Badge>
-            </div>
-            <div className="mt-4">
-              <h2 className="text-3xl font-bold text-white">
-                {formatNumber(overview.totalTokens)}
-              </h2>
-              <p className="text-sm text-zinc-400 mt-1">Tokens Used</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card hover>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="rounded-lg bg-orange-500/10 p-2 text-orange-400">
-                <DollarSign className="h-5 w-5" />
-              </div>
-              <Badge variant="warning">{formatCurrency(overview.totalCost)}</Badge>
-            </div>
-            <div className="mt-4">
-              <h2 className="text-3xl font-bold text-white">
-                {formatCurrency(overview.totalCost)}
-              </h2>
-              <p className="text-sm text-zinc-400 mt-1">Total Cost</p>
-            </div>
-          </CardContent>
-        </Card>
+        <MetricCard
+          icon={Zap}
+          iconBg="bg-indigo-500/10"
+          iconColor="text-indigo-400"
+          title="Executions"
+          value={overview.totalExecutions}
+          badge={`${overview.totalExecutions} total`}
+          sparklineData={generateSparkline(overview.totalExecutions / 7)}
+          trend={12}
+        />
+        <MetricCard
+          icon={CheckCircle2}
+          iconBg="bg-green-500/10"
+          iconColor="text-green-400"
+          title="Success Rate"
+          value={overview.successRate}
+          isPercentage
+          badge={`${overview.successRate.toFixed(1)}%`}
+          badgeVariant="success"
+          sparklineData={generateSparkline(overview.successRate)}
+          trend={3}
+        />
+        <MetricCard
+          icon={Activity}
+          iconBg="bg-purple-500/10"
+          iconColor="text-purple-400"
+          title="Tokens Used"
+          value={overview.totalTokens}
+          formatter={formatNumber}
+          badge={formatNumber(overview.totalTokens)}
+          sparklineData={generateSparkline(overview.totalTokens / 7)}
+          trend={-5}
+        />
+        <MetricCard
+          icon={DollarSign}
+          iconBg="bg-orange-500/10"
+          iconColor="text-orange-400"
+          title="Total Cost"
+          value={overview.totalCost}
+          isCurrency
+          badge={formatCurrency(overview.totalCost)}
+          badgeVariant="warning"
+          sparklineData={generateSparkline(overview.totalCost / 7)}
+          trend={8}
+        />
       </div>
 
       {/* Charts Row */}
       <div className="grid gap-6 md:grid-cols-2">
-        {/* Tasks by Day Chart */}
+        {/* Stacked Bar Chart - Tasks by Day */}
         <Card>
           <CardHeader>
             <h3 className="flex items-center gap-2 font-semibold text-lg text-white">
@@ -183,106 +197,134 @@ export default function AnalyticsPage() {
             </h3>
           </CardHeader>
           <CardContent className="p-6 pt-0">
-            <div className="flex items-end gap-2 h-48">
-              {sortedDays.map(([date, data]) => (
-                <div key={date} className="flex-1 flex flex-col items-center gap-2">
-                  <div className="w-full flex flex-col gap-1" style={{ height: "160px" }}>
-                    {/* Completed */}
-                    <div
-                      className="w-full bg-green-500/80 rounded-t transition-all"
-                      style={{
-                        height: `${(data.completed / maxTasks) * 100}%`,
-                        minHeight: data.completed > 0 ? "4px" : "0",
-                      }}
-                    />
-                    {/* Failed */}
-                    <div
-                      className="w-full bg-red-500/80 transition-all"
-                      style={{
-                        height: `${(data.failed / maxTasks) * 100}%`,
-                        minHeight: data.failed > 0 ? "4px" : "0",
-                      }}
-                    />
-                    {/* Other (pending, running, etc.) */}
-                    <div
-                      className="w-full bg-zinc-600/80 rounded-b transition-all"
-                      style={{
-                        height: `${((data.total - data.completed - data.failed) / maxTasks) * 100}%`,
-                        minHeight:
-                          data.total - data.completed - data.failed > 0 ? "4px" : "0",
-                      }}
-                    />
-                  </div>
-                  <span className="text-xs text-zinc-500">{formatDate(date)}</span>
-                </div>
-              ))}
-            </div>
-            <div className="flex items-center justify-center gap-6 mt-4 text-xs">
-              <div className="flex items-center gap-1">
-                <div className="w-3 h-3 bg-green-500/80 rounded" />
-                <span className="text-zinc-400">Completed</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <div className="w-3 h-3 bg-red-500/80 rounded" />
-                <span className="text-zinc-400">Failed</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <div className="w-3 h-3 bg-zinc-600/80 rounded" />
-                <span className="text-zinc-400">Other</span>
-              </div>
-            </div>
+            {barChartData.length > 0 ? (
+              <>
+                <BarChart
+                  data={barChartData}
+                  bars={[
+                    { dataKey: 'completed', name: 'Completed', color: chartColors.success },
+                    { dataKey: 'failed', name: 'Failed', color: chartColors.error },
+                    { dataKey: 'other', name: 'Other', color: '#52525b' },
+                  ]}
+                  xAxisKey="date"
+                  height={240}
+                  stacked
+                  showLegend
+                  showGrid
+                />
+              </>
+            ) : (
+              <EmptyExecutions />
+            )}
           </CardContent>
         </Card>
 
-        {/* Top Agents */}
+        {/* Area Chart - Trends */}
         <Card>
           <CardHeader>
             <h3 className="flex items-center gap-2 font-semibold text-lg text-white">
               <TrendingUp className="h-5 w-5 text-green-500" />
-              Top Agents by Executions
+              Performance Trends
             </h3>
           </CardHeader>
           <CardContent className="p-6 pt-0">
-            {topAgents.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12">
-                <Bot className="h-12 w-12 text-zinc-600 mb-4" />
-                <p className="text-zinc-400">No agent activity yet</p>
-              </div>
+            {trendData.length > 0 ? (
+              <AreaChart
+                data={trendData}
+                areas={[
+                  { dataKey: 'executions', name: 'Executions', color: chartColors.primary },
+                  { dataKey: 'tokens', name: 'Tokens (÷100)', color: chartColors.tertiary },
+                ]}
+                xAxisKey="date"
+                height={240}
+                showLegend
+                showGrid
+                valueFormatter={(v) => formatNumber(v)}
+              />
             ) : (
-              <div className="space-y-3">
-                {topAgents.slice(0, 5).map((agent, index) => (
-                  <div
-                    key={agent.agentId}
-                    className="flex items-center gap-3 p-2 rounded-lg bg-zinc-900/50"
-                  >
-                    <div className="flex items-center justify-center w-6 h-6 rounded-full bg-zinc-800 text-xs font-medium text-zinc-400">
-                      {index + 1}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-white truncate">
-                        {agent.name}
-                      </p>
-                      <p className="text-xs text-zinc-500">
-                        {formatNumber(agent.tokens)} tokens
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-medium text-white">
-                        {agent.count} runs
-                      </p>
-                      <p className="text-xs text-zinc-500">
-                        {agent.successRate.toFixed(0)}% success
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <EmptyExecutions />
             )}
           </CardContent>
         </Card>
       </div>
 
-      {/* Recent Executions */}
+      {/* Second Row - Top Agents & Cost Distribution */}
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* Top Agents - Horizontal Bar */}
+        <Card>
+          <CardHeader>
+            <h3 className="flex items-center gap-2 font-semibold text-lg text-white">
+              <Bot className="h-5 w-5 text-cyan-500" />
+              Top Agents by Executions
+            </h3>
+          </CardHeader>
+          <CardContent className="p-6 pt-0">
+            {topAgentsData.length > 0 ? (
+              <div className="space-y-4">
+                {topAgentsData.map((agent, index) => (
+                  <div key={agent.name} className="space-y-2">
+                    <div className="flex items-center justify-between text-sm">
+                      <div className="flex items-center gap-2">
+                        <span className="flex items-center justify-center w-5 h-5 rounded-full bg-zinc-800 text-xs font-medium text-zinc-400">
+                          {index + 1}
+                        </span>
+                        <span className="text-zinc-300 truncate max-w-[150px]">
+                          {agent.name}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-white font-medium">{agent.executions}</span>
+                        <Badge
+                          variant={agent.successRate >= 80 ? 'success' : agent.successRate >= 50 ? 'warning' : 'error'}
+                          className="min-w-[60px] justify-center"
+                        >
+                          {agent.successRate.toFixed(0)}%
+                        </Badge>
+                      </div>
+                    </div>
+                    <div className="h-2 w-full overflow-hidden rounded-full bg-zinc-800">
+                      <div
+                        className="h-full rounded-full transition-all duration-500"
+                        style={{
+                          width: `${(agent.executions / Math.max(...topAgentsData.map(a => a.executions))) * 100}%`,
+                          backgroundColor: agent.color,
+                        }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <EmptyAgents />
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Cost Distribution Donut */}
+        <Card>
+          <CardHeader>
+            <h3 className="flex items-center gap-2 font-semibold text-lg text-white">
+              <DollarSign className="h-5 w-5 text-amber-500" />
+              Cost Distribution
+            </h3>
+          </CardHeader>
+          <CardContent className="p-6 pt-0">
+            <DonutChart
+              data={costDistribution}
+              height={240}
+              innerRadius={50}
+              outerRadius={80}
+              showLegend
+              centerValue={`$${overview.totalCost.toFixed(2)}`}
+              centerLabel="Total"
+              valueFormatter={(v) => `${v}%`}
+              interactive
+            />
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Recent Executions Table */}
       <Card>
         <CardHeader>
           <h3 className="flex items-center gap-2 font-semibold text-lg text-white">
@@ -292,10 +334,7 @@ export default function AnalyticsPage() {
         </CardHeader>
         <CardContent className="p-6 pt-0">
           {recentExecutions.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12">
-              <Activity className="h-12 w-12 text-zinc-600 mb-4" />
-              <p className="text-zinc-400">No executions recorded yet</p>
-            </div>
+            <EmptyExecutions />
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -313,7 +352,7 @@ export default function AnalyticsPage() {
                   {recentExecutions.map((exec: any, i: number) => (
                     <tr
                       key={i}
-                      className="border-b border-zinc-800/50 last:border-0"
+                      className="border-b border-zinc-800/50 last:border-0 hover:bg-zinc-900/30 transition-colors"
                     >
                       <td className="py-3">
                         <Badge
@@ -351,9 +390,9 @@ export default function AnalyticsPage() {
         </CardContent>
       </Card>
 
-      {/* Additional Stats */}
+      {/* Additional Stats Row */}
       <div className="grid gap-4 md:grid-cols-3">
-        <Card>
+        <Card hover>
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
               <div className="rounded-lg bg-cyan-500/10 p-2 text-cyan-400">
@@ -369,7 +408,7 @@ export default function AnalyticsPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card hover>
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
               <div className="rounded-lg bg-pink-500/10 p-2 text-pink-400">
@@ -387,7 +426,7 @@ export default function AnalyticsPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card hover>
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
               <div className="rounded-lg bg-emerald-500/10 p-2 text-emerald-400">
@@ -406,5 +445,72 @@ export default function AnalyticsPage() {
         </Card>
       </div>
     </div>
+  );
+}
+
+function MetricCard({
+  icon: Icon,
+  iconBg,
+  iconColor,
+  title,
+  value,
+  badge,
+  badgeVariant = 'info',
+  isPercentage = false,
+  isCurrency = false,
+  formatter,
+  sparklineData,
+  trend,
+}: {
+  icon: any;
+  iconBg: string;
+  iconColor: string;
+  title: string;
+  value: number;
+  badge: string;
+  badgeVariant?: 'default' | 'success' | 'warning' | 'error' | 'info';
+  isPercentage?: boolean;
+  isCurrency?: boolean;
+  formatter?: (v: number) => string;
+  sparklineData?: { value: number }[];
+  trend?: number;
+}) {
+  return (
+    <Card hover>
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between">
+          <div className={cn("rounded-lg p-2", iconBg, iconColor)}>
+            <Icon className="h-5 w-5" />
+          </div>
+          {trend !== undefined && (
+            <TrendIndicator value={trend} size="sm" />
+          )}
+        </div>
+        <div className="mt-4">
+          <h2 className="text-3xl font-bold text-white">
+            {isCurrency ? (
+              <CurrencyCounter value={value} />
+            ) : isPercentage ? (
+              <PercentageCounter value={value} decimals={1} />
+            ) : formatter ? (
+              <SimpleCounter value={value} formatter={formatter} />
+            ) : (
+              <SimpleCounter value={value} />
+            )}
+          </h2>
+          <p className="text-sm text-zinc-400 mt-1">{title}</p>
+        </div>
+        {sparklineData && (
+          <div className="mt-3 pt-3 border-t border-zinc-800/50">
+            <Sparkline
+              data={sparklineData}
+              height={28}
+              trend={trend && trend > 0 ? 'up' : trend && trend < 0 ? 'down' : 'neutral'}
+              showTooltip
+            />
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }

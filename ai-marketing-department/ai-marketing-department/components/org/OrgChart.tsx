@@ -38,7 +38,7 @@ export function OrgChart({ agents, onAgentSelect, selectedAgentId }: OrgChartPro
   const [expandedDepts, setExpandedDepts] = useState<Set<string>>(new Set(departmentOrder));
 
   const { cmo, directors, specialists } = useMemo(() => {
-    if (!agents) return { cmo: null, directors: [], specialists: {} };
+    if (!agents) return { cmo: null, directors: [] as Agent[], specialists: {} as Record<string, Agent[]> };
 
     const cmo = agents.find((a) => a.role === "cmo");
     const directors = agents.filter((a) => a.role === "director");

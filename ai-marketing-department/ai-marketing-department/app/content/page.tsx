@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@convex/_generated/api";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   FileText,
   Search,
@@ -19,10 +20,19 @@ import {
   Calendar,
   Clock,
   Hash,
+  Copy,
+  ExternalLink,
+  X,
+  LayoutGrid,
+  List,
+  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/Card";
 import { StatusBadge, Badge } from "@/components/ui/Badge";
+import { SkeletonGrid } from "@/components/ui/Skeleton";
+import { EmptyContent } from "@/components/ui/EmptyState";
+import { useToast } from "@/components/ui/Toast";
 
 const CONTENT_TYPES = [
   { value: "", label: "All Types" },
@@ -127,28 +137,48 @@ export default function ContentPage() {
 
   const selectedContentData = useMemo(() => {
     if (!selectedContent || !content) return null;
-    return content.find((c) => c.contentId === selectedContent);
+    return content.find((c: { contentId: string }) => c.contentId === selectedContent);
   }, [selectedContent, content]);
+
+  const { success } = useToast();
+
+  // Copy to clipboard helper
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    success("Copied!", "Content copied to clipboard");
+  };
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: 0.05 },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 },
+  };
 
   if (!content) {
     return (
       <div className="space-y-8">
-        <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
-            Content
-          </h1>
-          <p className="text-zinc-400 mt-2">
-            Create, edit and publish content.
-          </p>
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-xl bg-blue-500/10">
+            <FileText className="h-6 w-6 text-blue-400" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+              Content
+            </h1>
+            <p className="text-zinc-400 mt-1">
+              Create, edit and publish content.
+            </p>
+          </div>
         </div>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {[...Array(6)].map((_, i) => (
-            <div
-              key={i}
-              className="h-48 rounded-xl border border-zinc-800 bg-zinc-950/50 animate-pulse"
-            />
-          ))}
-        </div>
+        <SkeletonGrid items={6} columns={3} />
       </div>
     );
   }
@@ -156,13 +186,18 @@ export default function ContentPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
-          Content
-        </h1>
-        <p className="text-zinc-400 mt-2">
-          Manage your {content.length} content pieces.
-        </p>
+      <div className="flex items-center gap-3">
+        <div className="p-2 rounded-xl bg-blue-500/10">
+          <FileText className="h-6 w-6 text-blue-400" />
+        </div>
+        <div>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+            Content
+          </h1>
+          <p className="text-zinc-400 mt-1">
+            Manage your {content.length} content pieces.
+          </p>
+        </div>
       </div>
 
       {/* Filters */}
@@ -217,24 +252,26 @@ export default function ContentPage() {
           <button
             onClick={() => setViewMode("grid")}
             className={cn(
-              "px-3 py-2 text-sm",
+              "p-2 transition-colors",
               viewMode === "grid"
                 ? "bg-indigo-500/10 text-indigo-400"
                 : "text-zinc-400 hover:bg-zinc-800"
             )}
+            title="Grid view"
           >
-            Grid
+            <LayoutGrid className="h-4 w-4" />
           </button>
           <button
             onClick={() => setViewMode("list")}
             className={cn(
-              "px-3 py-2 text-sm",
+              "p-2 transition-colors",
               viewMode === "list"
                 ? "bg-indigo-500/10 text-indigo-400"
                 : "text-zinc-400 hover:bg-zinc-800"
             )}
+            title="List view"
           >
-            List
+            <List className="h-4 w-4" />
           </button>
         </div>
       </div>
@@ -242,13 +279,13 @@ export default function ContentPage() {
       {/* Stats Summary */}
       <div className="flex flex-wrap gap-2">
         <Badge variant="default">
-          {content.filter((c) => c.status === "draft").length} Drafts
+          {content.filter((c: { status: string }) => c.status === "draft").length} Drafts
         </Badge>
         <Badge variant="warning">
-          {content.filter((c) => c.status === "review").length} In Review
+          {content.filter((c: { status: string }) => c.status === "review").length} In Review
         </Badge>
         <Badge variant="success">
-          {content.filter((c) => c.status === "published").length} Published
+          {content.filter((c: { status: string }) => c.status === "published").length} Published
         </Badge>
       </div>
 
@@ -259,181 +296,270 @@ export default function ContentPage() {
           "flex-1 transition-all",
           selectedContent ? "lg:w-2/3" : "w-full"
         )}>
-          {filteredContent.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-xl border border-zinc-800 bg-zinc-950/50 py-16">
-              <FileText className="h-12 w-12 text-zinc-600 mb-4" />
-              <p className="text-zinc-400">No content found</p>
-              <p className="text-sm text-zinc-500 mt-1">
-                {content.length === 0
-                  ? "Create your first content piece"
-                  : "Try adjusting your filters or search query"}
-              </p>
-            </div>
-          ) : viewMode === "grid" ? (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {filteredContent.map((item) => {
-                const TypeIcon = typeIcons[item.type] || FileText;
-                const isSelected = selectedContent === item.contentId;
+          <AnimatePresence mode="wait">
+            {filteredContent.length === 0 ? (
+              <motion.div
+                key="empty"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <EmptyContent />
+              </motion.div>
+            ) : viewMode === "grid" ? (
+              <motion.div
+                key="grid"
+                variants={containerVariants}
+                initial="hidden"
+                animate="show"
+                className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+              >
+                {filteredContent.map((item) => {
+                  const TypeIcon = typeIcons[item.type] || FileText;
+                  const isSelected = selectedContent === item.contentId;
 
-                return (
-                  <Card
-                    key={item._id}
-                    hover
-                    className={cn(
-                      "cursor-pointer transition-all",
-                      isSelected && "border-indigo-500 shadow-lg shadow-indigo-500/20"
-                    )}
-                  >
-                    <CardContent
-                      className="p-4"
-                      onClick={() =>
-                        setSelectedContent(isSelected ? null : item.contentId)
-                      }
+                  return (
+                    <motion.div
+                      key={item._id}
+                      variants={itemVariants}
+                      layout
+                      whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                      className="group"
                     >
-                      {/* Header */}
-                      <div className="flex items-start justify-between mb-3">
+                      <Card
+                        hover
+                        className={cn(
+                          "cursor-pointer transition-all h-full relative overflow-hidden",
+                          isSelected && "border-indigo-500 shadow-lg shadow-indigo-500/20"
+                        )}
+                      >
+                        {/* Quick Actions on Hover */}
+                        <div className="absolute top-3 right-3 z-10 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              copyToClipboard(item.body);
+                            }}
+                            className="p-1.5 rounded-lg bg-zinc-900/90 backdrop-blur-sm hover:bg-zinc-800 text-zinc-400 hover:text-white transition-colors"
+                            title="Copy content"
+                          >
+                            <Copy className="h-3.5 w-3.5" />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedContent(item.contentId);
+                            }}
+                            className="p-1.5 rounded-lg bg-zinc-900/90 backdrop-blur-sm hover:bg-zinc-800 text-zinc-400 hover:text-white transition-colors"
+                            title="Preview"
+                          >
+                            <Eye className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+
                         <div
-                          className={cn(
-                            "flex h-10 w-10 items-center justify-center rounded-lg",
-                            typeColors[item.type] || "bg-zinc-500/10 text-zinc-400"
-                          )}
+                          className="p-4"
+                          onClick={() =>
+                            setSelectedContent(isSelected ? null : item.contentId)
+                          }
                         >
-                          <TypeIcon className="h-5 w-5" />
-                        </div>
-                        <StatusBadge status={item.status} />
-                      </div>
-
-                      {/* Title */}
-                      <h3 className="font-semibold text-white text-sm line-clamp-2 mb-2">
-                        {item.title}
-                      </h3>
-
-                      {/* Preview */}
-                      <p className="text-xs text-zinc-400 line-clamp-3 mb-3">
-                        {item.summary || item.body.slice(0, 150)}
-                      </p>
-
-                      {/* Footer */}
-                      <div className="flex items-center justify-between pt-3 border-t border-zinc-800">
-                        <Badge className={typeColors[item.type]}>
-                          {formatTypeName(item.type)}
-                        </Badge>
-                        <div className="flex items-center gap-1 text-xs text-zinc-500">
-                          <Calendar className="h-3 w-3" />
-                          <span>{formatDate(item.createdAt)}</span>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {filteredContent.map((item) => {
-                const TypeIcon = typeIcons[item.type] || FileText;
-                const isSelected = selectedContent === item.contentId;
-
-                return (
-                  <Card
-                    key={item._id}
-                    hover
-                    className={cn(
-                      "cursor-pointer transition-all",
-                      isSelected && "border-indigo-500 shadow-lg shadow-indigo-500/20"
-                    )}
-                  >
-                    <CardContent
-                      className="p-3"
-                      onClick={() =>
-                        setSelectedContent(isSelected ? null : item.contentId)
-                      }
-                    >
-                      <div className="flex items-center gap-4">
-                        <div
-                          className={cn(
-                            "flex h-10 w-10 items-center justify-center rounded-lg shrink-0",
-                            typeColors[item.type] || "bg-zinc-500/10 text-zinc-400"
-                          )}
-                        >
-                          <TypeIcon className="h-5 w-5" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <h3 className="font-medium text-white text-sm truncate">
-                              {item.title}
-                            </h3>
+                          {/* Header */}
+                          <div className="flex items-start justify-between mb-3">
+                            <div
+                              className={cn(
+                                "flex h-10 w-10 items-center justify-center rounded-lg",
+                                typeColors[item.type] || "bg-zinc-500/10 text-zinc-400"
+                              )}
+                            >
+                              <TypeIcon className="h-5 w-5" />
+                            </div>
+                            <StatusBadge status={item.status} />
                           </div>
-                          <p className="text-xs text-zinc-500 truncate">
-                            {item.summary || item.body.slice(0, 100)}
+
+                          {/* Title */}
+                          <h3 className="font-semibold text-white text-sm line-clamp-2 mb-2">
+                            {item.title}
+                          </h3>
+
+                          {/* Preview */}
+                          <p className="text-xs text-zinc-400 line-clamp-3 mb-3">
+                            {item.summary || item.body.slice(0, 150)}
                           </p>
+
+                          {/* Footer */}
+                          <div className="flex items-center justify-between pt-3 border-t border-zinc-800">
+                            <Badge className={typeColors[item.type]}>
+                              {formatTypeName(item.type)}
+                            </Badge>
+                            <div className="flex items-center gap-1 text-xs text-zinc-500">
+                              <Calendar className="h-3 w-3" />
+                              <span>{formatDate(item.createdAt)}</span>
+                            </div>
+                          </div>
                         </div>
-                        <Badge className={typeColors[item.type]}>
-                          {formatTypeName(item.type)}
-                        </Badge>
-                        <StatusBadge status={item.status} />
-                        <span className="text-xs text-zinc-500 shrink-0">
-                          {formatDate(item.createdAt)}
-                        </span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-          )}
+                      </Card>
+                    </motion.div>
+                  );
+                })}
+              </motion.div>
+            ) : (
+              <motion.div
+                key="list"
+                variants={containerVariants}
+                initial="hidden"
+                animate="show"
+                className="space-y-2"
+              >
+                {filteredContent.map((item) => {
+                  const TypeIcon = typeIcons[item.type] || FileText;
+                  const isSelected = selectedContent === item.contentId;
+
+                  return (
+                    <motion.div
+                      key={item._id}
+                      variants={itemVariants}
+                      layout
+                      className="group"
+                    >
+                      <Card
+                        hover
+                        className={cn(
+                          "cursor-pointer transition-all",
+                          isSelected && "border-indigo-500 shadow-lg shadow-indigo-500/20"
+                        )}
+                      >
+                        <div
+                          className="p-3"
+                          onClick={() =>
+                            setSelectedContent(isSelected ? null : item.contentId)
+                          }
+                        >
+                          <div className="flex items-center gap-4">
+                            <div
+                              className={cn(
+                                "flex h-10 w-10 items-center justify-center rounded-lg shrink-0",
+                                typeColors[item.type] || "bg-zinc-500/10 text-zinc-400"
+                              )}
+                            >
+                              <TypeIcon className="h-5 w-5" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <h3 className="font-medium text-white text-sm truncate">
+                                  {item.title}
+                                </h3>
+                              </div>
+                              <p className="text-xs text-zinc-500 truncate">
+                                {item.summary || item.body.slice(0, 100)}
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  copyToClipboard(item.body);
+                                }}
+                                className="p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white transition-colors"
+                                title="Copy"
+                              >
+                                <Copy className="h-3.5 w-3.5" />
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedContent(item.contentId);
+                                }}
+                                className="p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white transition-colors"
+                                title="Preview"
+                              >
+                                <Eye className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                            <Badge className={typeColors[item.type]}>
+                              {formatTypeName(item.type)}
+                            </Badge>
+                            <StatusBadge status={item.status} />
+                            <span className="text-xs text-zinc-500 shrink-0">
+                              {formatDate(item.createdAt)}
+                            </span>
+                          </div>
+                        </div>
+                      </Card>
+                    </motion.div>
+                  );
+                })}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Content Details Panel */}
-        {selectedContentData && (
-          <div className="hidden lg:block w-1/3">
-            <Card className="sticky top-6">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-semibold text-white">
-                    Content Details
-                  </h3>
-                  <button
-                    onClick={() => setSelectedContent(null)}
-                    className="text-zinc-500 hover:text-white text-sm"
-                  >
-                    Close
-                  </button>
-                </div>
-
-                <div className="space-y-4">
-                  {/* Title */}
-                  <div>
-                    <p className="text-xs text-zinc-500 mb-1">Title</p>
-                    <p className="text-white font-medium">
-                      {selectedContentData.title}
-                    </p>
+        <AnimatePresence>
+          {selectedContentData && (
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              transition={{ duration: 0.2 }}
+              className="hidden lg:block w-1/3"
+            >
+              <Card className="sticky top-6">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                      <Sparkles className="h-4 w-4 text-blue-400" />
+                      Content Details
+                    </h3>
+                    <button
+                      onClick={() => setSelectedContent(null)}
+                      className="p-1.5 rounded-lg hover:bg-zinc-800 text-zinc-500 hover:text-white transition-colors"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
                   </div>
 
-                  {/* Type & Status */}
-                  <div className="flex gap-4">
+                  <div className="space-y-4">
+                    {/* Title */}
                     <div>
-                      <p className="text-xs text-zinc-500 mb-1">Type</p>
-                      <Badge className={typeColors[selectedContentData.type]}>
-                        {formatTypeName(selectedContentData.type)}
-                      </Badge>
-                    </div>
-                    <div>
-                      <p className="text-xs text-zinc-500 mb-1">Status</p>
-                      <StatusBadge status={selectedContentData.status} />
-                    </div>
-                  </div>
-
-                  {/* Preview */}
-                  <div>
-                    <p className="text-xs text-zinc-500 mb-1">Preview</p>
-                    <div className="rounded-lg bg-zinc-900/50 p-3 max-h-48 overflow-y-auto">
-                      <p className="text-zinc-300 text-sm whitespace-pre-wrap">
-                        {selectedContentData.body.slice(0, 500)}
-                        {selectedContentData.body.length > 500 && "..."}
+                      <p className="text-xs text-zinc-500 mb-1 uppercase tracking-wider">Title</p>
+                      <p className="text-white font-medium">
+                        {selectedContentData.title}
                       </p>
                     </div>
-                  </div>
+
+                    {/* Type & Status */}
+                    <div className="flex gap-4">
+                      <div>
+                        <p className="text-xs text-zinc-500 mb-1 uppercase tracking-wider">Type</p>
+                        <Badge className={typeColors[selectedContentData.type]}>
+                          {formatTypeName(selectedContentData.type)}
+                        </Badge>
+                      </div>
+                      <div>
+                        <p className="text-xs text-zinc-500 mb-1 uppercase tracking-wider">Status</p>
+                        <StatusBadge status={selectedContentData.status} />
+                      </div>
+                    </div>
+
+                    {/* Preview with copy button */}
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <p className="text-xs text-zinc-500 uppercase tracking-wider">Preview</p>
+                        <button
+                          onClick={() => copyToClipboard(selectedContentData.body)}
+                          className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-colors"
+                        >
+                          <Copy className="h-3 w-3" />
+                          Copy all
+                        </button>
+                      </div>
+                      <div className="rounded-lg bg-zinc-900/50 p-3 max-h-48 overflow-y-auto border border-zinc-800/50">
+                        <p className="text-zinc-300 text-sm whitespace-pre-wrap">
+                          {selectedContentData.body.slice(0, 500)}
+                          {selectedContentData.body.length > 500 && "..."}
+                        </p>
+                      </div>
+                    </div>
 
                   {/* Metadata */}
                   {selectedContentData.metadata && (
@@ -522,7 +648,7 @@ export default function ContentPage() {
 
                   {/* Dates */}
                   <div>
-                    <p className="text-xs text-zinc-500 mb-1">Created</p>
+                    <p className="text-xs text-zinc-500 mb-1 uppercase tracking-wider">Created</p>
                     <div className="flex items-center gap-2 text-sm">
                       <Calendar className="h-4 w-4 text-zinc-500" />
                       <span className="text-zinc-300">
@@ -533,8 +659,9 @@ export default function ContentPage() {
                 </div>
               </CardContent>
             </Card>
-          </div>
+          </motion.div>
         )}
+        </AnimatePresence>
       </div>
     </div>
   );
