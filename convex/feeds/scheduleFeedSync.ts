@@ -39,7 +39,7 @@ export const scheduleFeedSync = internalMutation({
     // Schedule the fetchFeed action to run after delay
     await ctx.scheduler.runAfter(
       delayMs,
-      api.feeds.fetchFeed.fetchFeed,
+      internal.feeds.fetchFeed.fetchFeed,
       { feedId: args.feedId }
     );
 
@@ -89,7 +89,7 @@ export const triggerManualSync = mutation({
     // Schedule immediate sync (0ms delay)
     await ctx.scheduler.runAfter(
       0,
-      api.feeds.fetchFeed.fetchFeed,
+      internal.feeds.fetchFeed.fetchFeed,
       { feedId: args.feedId }
     );
 
