@@ -202,6 +202,13 @@ Plans:
 
 **Goal:** Add AI-powered categorization, sentiment, and summarization.
 
+**Plans:** 3 plans
+
+Plans:
+- [ ] 04-01-PLAN.md — Schema updates + enrichment queries/mutations
+- [ ] 04-02-PLAN.md — Core enrichment action with Claude Haiku 4.5
+- [ ] 04-03-PLAN.md — Cron integration + batch processing
+
 **Rationale:** Improve content quality and reduce agent token consumption.
 
 ### Deliverables
@@ -241,7 +248,7 @@ Plans:
 
 ### Research Flag
 
-**Standard patterns** — Reuse AMD's existing Claude integration.
+**Research complete** — See 04-RESEARCH.md for implementation patterns.
 
 ---
 
