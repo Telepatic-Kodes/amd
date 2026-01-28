@@ -14,6 +14,9 @@
  * - addFeed, updateFeed, deleteFeed, pauseFeed, resumeFeed: Public mutations
  * - listAllFeeds, getFeedDetails, listFeedItems, getLatestSyncLog, listRecentItems: Public queries
  *
+ * Phase 3 (Agent Integration):
+ * - getRelevantFeedItems: Internal query for agent feed access with search
+ *
  * @module convex/feeds
  */
 
@@ -53,3 +56,6 @@ export {
 // Sync orchestration (Phase 2 - Plan 02)
 export { syncAllFeeds } from './syncAllFeeds';
 export { scheduleFeedSync, triggerManualSync } from './scheduleFeedSync';
+
+// Agent integration (Phase 3 - Plan 01)
+export { getRelevantFeedItems } from './agentQueries';
