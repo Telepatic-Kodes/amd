@@ -126,10 +126,12 @@ export const executeAgent = action({
 
       const duration = Date.now() - startTime;
 
-      // 6. Calcular costo (precios de Sonnet)
-      const cost =
-        claudeResponse.usage.inputTokens * 0.000003 +
-        claudeResponse.usage.outputTokens * 0.000015;
+      // 6. Calcular costo según modelo
+      const cost = calculateCost(
+        agent.config.model || "claude-sonnet-4-20250514",
+        claudeResponse.usage.inputTokens,
+        claudeResponse.usage.outputTokens
+      );
 
       // 7. Guardar ejecución
       await ctx.runMutation(api.functions.logExecution, {
@@ -183,6 +185,123 @@ export const executeAgent = action({
     }
   },
 });
+
+/**
+ * Calcular costo basado en modelo y tokens
+ * Precios por millón de tokens (input/output)
+ */
+function calculateCost(model: string, inputTokens: number, outputTokens: number): number {
+  const pricing: Record<string, { input: number; output: number }> = {
+    // Claude Opus 4.5 (Max Plan) - Most powerful
+    "claude-opus-4-5-20251101": { input: 15, output: 75 },
+    // Claude Opus 4
+    "claude-opus-4-20250514": { input: 15, output: 75 },
+    // Claude Sonnet 4 (Default)
+    "claude-sonnet-4-20250514": { input: 3, output: 15 },
+    // Claude Haiku 3 (Fast & cheap)
+    "claude-haiku-3-20250514": { input: 0.25, output: 1.25 },
+  };
+
+  const modelPricing = pricing[model] || pricing["claude-sonnet-4-20250514"];
+
+  return (
+    (inputTokens * modelPricing.input) / 1_000_000 +
+    (outputTokens * modelPricing.output) / 1_000_000
+  );
+}
+
+/**
+ * Extract search keywords from task input for feed querying.
+ * Combines topic, keyword, title, and industry fields.
+ *
+ * Limitations: Basic extraction from common input fields only.
+ * Does not include stop word filtering or stemming - these can be
+ * added in future iterations if search relevance needs improvement.
+ */
+function extractKeywords(taskType: string, input: any): string {
+  const parts: string[] = [];
+
+  // Common input fields that contain searchable content
+  if (input.topic) parts.push(input.topic);
+  if (input.keyword) parts.push(input.keyword);
+  if (input.title) parts.push(input.title);
+  if (input.industry) parts.push(input.industry);
+  if (input.subject) parts.push(input.subject);
+  if (input.query) parts.push(input.query);
+  if (input.searchTerms) parts.push(input.searchTerms);
+
+  // Task-type specific handling
+  if (taskType.includes("seo") || taskType.includes("keyword")) {
+    if (input.targetKeyword) parts.push(input.targetKeyword);
+    if (input.keywords && Array.isArray(input.keywords)) {
+      parts.push(...input.keywords.slice(0, 3)); // Limit array keywords
+    }
+  }
+
+  // Join and limit length to avoid overly long search queries
+  return parts.join(" ").slice(0, 100).trim();
+}
+
+/**
+ * Map agent department to relevant feed categories.
+ * Used to filter feeds by relevance to agent's role.
+ *
+ * Feed categories: "industry", "competitor", "technical", "trends"
+ * Agent departments: leadership, content, social, demandgen, seo, brand, ops
+ */
+function mapDepartmentToCategories(department: string): string[] {
+  const mapping: Record<string, string[]> = {
+    content: ["industry", "technical", "trends"],
+    social: ["industry", "competitor", "trends"],
+    seo: ["technical", "competitor", "industry"],
+    demandgen: ["competitor", "industry"],
+    brand: ["industry", "trends"],
+    ops: ["technical"],
+    leadership: ["industry", "competitor", "trends"],
+  };
+  return mapping[department] || ["industry"];
+}
+
+/**
+ * Enhance agent system prompt with relevant feed context.
+ * Appends formatted feed items as structured context.
+ */
+function buildEnhancedSystemPrompt(
+  basePrompt: string,
+  feedItems: Array<{
+    title: string;
+    link: string;
+    summary: string | null;
+    content: string | null;
+    publishedAt: number | null;
+    feedName: string;
+  }>
+): string {
+  if (feedItems.length === 0) {
+    return basePrompt;
+  }
+
+  const feedContext = feedItems
+    .map(
+      (item, i) =>
+        `[${i + 1}] ${item.title}\n` +
+        `Source: ${item.feedName} - ${item.link}\n` +
+        `Published: ${item.publishedAt ? new Date(item.publishedAt).toISOString().split("T")[0] : "Unknown"}\n` +
+        `Summary: ${item.summary || item.content || "No content available"}`
+    )
+    .join("\n\n---\n\n");
+
+  return `${basePrompt}
+
+## Relevant Industry Context
+
+The following recent feed items may be relevant to your task. Use this context when appropriate, but prioritize the user's specific request.
+
+${feedContext}
+
+---
+End of feed context.`;
+}
 
 /**
  * Construir mensaje de usuario basado en tipo de tarea
