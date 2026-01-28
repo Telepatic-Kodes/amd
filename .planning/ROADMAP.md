@@ -83,6 +83,15 @@ Plans:
 
 **Goal:** Expand to multiple feeds using fan-out architecture to prevent action timeouts.
 
+**Plans:** 5 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Feed CRUD mutations + public queries
+- [ ] 02-02-PLAN.md — Fan-out orchestration + cron jobs
+- [ ] 02-03-PLAN.md — Rate limiting with exponential backoff
+- [ ] 02-04-PLAN.md — Dashboard UI (/feeds page)
+- [ ] 02-05-PLAN.md — End-to-end verification checkpoint
+
 **Rationale:** Fan-out pattern (one action per feed) enables 10-100+ feeds without timeout issues.
 
 ### Deliverables
