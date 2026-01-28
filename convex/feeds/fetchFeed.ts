@@ -20,6 +20,10 @@ import {
   normalizeFeedItem,
   type RawFeedItem,
 } from './utils/validation';
+import {
+  handleRateLimit,
+  MAX_RETRY_ATTEMPTS,
+} from './utils/rateLimit';
 
 /**
  * HTTP fetch timeout in milliseconds
@@ -44,20 +48,24 @@ export interface FetchFeedResult {
   validationErrors: number;
   duration: number;
   error?: string;
+  retryAttempt?: number;
 }
 
 /**
- * Fetches URL content with timeout
+ * Fetches URL with timeout and returns Response object
+ *
+ * Returns Response instead of text to allow checking status/headers
+ * before reading body (needed for rate limit handling).
  *
  * @param url - URL to fetch
  * @param timeoutMs - Timeout in milliseconds
- * @returns Response text
+ * @returns Response object
  * @throws Error on timeout or fetch failure
  */
 async function fetchWithTimeout(
   url: string,
   timeoutMs: number
-): Promise<string> {
+): Promise<Response> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
@@ -71,11 +79,7 @@ async function fetchWithTimeout(
       },
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-
-    return await response.text();
+    return response;
   } finally {
     clearTimeout(timeout);
   }
@@ -101,6 +105,7 @@ async function fetchWithTimeout(
 export const fetchFeed = internalAction({
   args: {
     feedId: v.id('feeds'),
+    retryAttempt: v.optional(v.number()),
   },
   handler: async (ctx, args): Promise<FetchFeedResult> => {
     const startTime = Date.now();
@@ -140,13 +145,162 @@ export const fetchFeed = internalAction({
     let xml: string;
     let parsedFeed: Awaited<ReturnType<typeof parseFeed>>;
     let validationErrors = 0;
+    const currentAttempt = args.retryAttempt ?? 0;
 
-    // 2. Fetch XML with timeout
+    // 2. Fetch with timeout
+    let response: Response;
     try {
-      xml = await fetchWithTimeout(feed.url, FETCH_TIMEOUT_MS);
+      response = await fetchWithTimeout(feed.url, FETCH_TIMEOUT_MS);
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown fetch error';
+
+      // Update feed health with error
+      await ctx.runMutation(internal.feeds.storeFeedItems.updateFeedHealth, {
+        feedId,
+        success: false,
+        errorMessage,
+      });
+
+      // Log failed sync
+      await ctx.runMutation(internal.feeds.storeFeedItems.logSync, {
+        feedId,
+        status: 'failed',
+        itemsFound: 0,
+        itemsAdded: 0,
+        itemsSkipped: 0,
+        duration: Date.now() - startTime,
+        errorMessage,
+      });
+
+      return {
+        success: false,
+        feedId: feedId as string,
+        feedUrl: feed.url,
+        itemsFound: 0,
+        itemsAdded: 0,
+        itemsSkipped: 0,
+        validationErrors: 0,
+        duration: Date.now() - startTime,
+        error: `Fetch failed: ${errorMessage}`,
+      };
+    }
+
+    // 2.5. Check for rate limiting (SYNC-05)
+    const rateLimitResult = handleRateLimit(
+      response.status,
+      response.headers.get('Retry-After'),
+      currentAttempt
+    );
+
+    if (rateLimitResult.isRateLimited) {
+      // Check if we should retry
+      if (rateLimitResult.retryAttempt < MAX_RETRY_ATTEMPTS) {
+        // Schedule retry with backoff delay
+        await ctx.scheduler.runAfter(
+          rateLimitResult.retryAfterMs!,
+          internal.feeds.fetchFeed.fetchFeed,
+          {
+            feedId,
+            retryAttempt: rateLimitResult.retryAttempt,
+          }
+        );
+
+        console.log(
+          `[fetchFeed] Rate limited, scheduling retry ${rateLimitResult.retryAttempt} ` +
+            `in ${rateLimitResult.retryAfterMs}ms for feed ${feed.url}`
+        );
+
+        return {
+          success: false,
+          feedId: feedId as string,
+          feedUrl: feed.url,
+          itemsFound: 0,
+          itemsAdded: 0,
+          itemsSkipped: 0,
+          validationErrors: 0,
+          duration: Date.now() - startTime,
+          error: `Rate limited, retry ${rateLimitResult.retryAttempt} scheduled`,
+          retryAttempt: rateLimitResult.retryAttempt,
+        };
+      }
+
+      // Max retries exceeded
+      const errorMessage = `Rate limited after ${MAX_RETRY_ATTEMPTS} attempts`;
+
+      // Update feed health with error
+      await ctx.runMutation(internal.feeds.storeFeedItems.updateFeedHealth, {
+        feedId,
+        success: false,
+        errorMessage,
+      });
+
+      // Log failed sync
+      await ctx.runMutation(internal.feeds.storeFeedItems.logSync, {
+        feedId,
+        status: 'failed',
+        itemsFound: 0,
+        itemsAdded: 0,
+        itemsSkipped: 0,
+        duration: Date.now() - startTime,
+        errorMessage,
+      });
+
+      return {
+        success: false,
+        feedId: feedId as string,
+        feedUrl: feed.url,
+        itemsFound: 0,
+        itemsAdded: 0,
+        itemsSkipped: 0,
+        validationErrors: 0,
+        duration: Date.now() - startTime,
+        error: errorMessage,
+        retryAttempt: currentAttempt,
+      };
+    }
+
+    // 2.6. Not rate limited - check for other HTTP errors
+    if (!response.ok) {
+      const errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+
+      // Update feed health with error
+      await ctx.runMutation(internal.feeds.storeFeedItems.updateFeedHealth, {
+        feedId,
+        success: false,
+        errorMessage,
+      });
+
+      // Log failed sync
+      await ctx.runMutation(internal.feeds.storeFeedItems.logSync, {
+        feedId,
+        status: 'failed',
+        itemsFound: 0,
+        itemsAdded: 0,
+        itemsSkipped: 0,
+        duration: Date.now() - startTime,
+        errorMessage,
+      });
+
+      return {
+        success: false,
+        feedId: feedId as string,
+        feedUrl: feed.url,
+        itemsFound: 0,
+        itemsAdded: 0,
+        itemsSkipped: 0,
+        validationErrors: 0,
+        duration: Date.now() - startTime,
+        error: `Fetch failed: ${errorMessage}`,
+      };
+    }
+
+    // 2.7. Read response body
+    try {
+      xml = await response.text();
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to read response body';
 
       // Update feed health with error
       await ctx.runMutation(internal.feeds.storeFeedItems.updateFeedHealth, {
