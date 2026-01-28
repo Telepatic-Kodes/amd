@@ -39,7 +39,7 @@ See: .planning/PROJECT.md (updated 2026-01-27)
 - ENRICHMENT_SCHEMA for Claude structured outputs
 - ENRICHMENT_SYSTEM_PROMPT with marketing analyst guidelines
 - buildEnrichmentPrompt with 2000-char content truncation
-- enrichFeedItem internalAction calls Claude Haiku 4.5
+- enrichFeedItem internalAction calls Claude Haiku 3.5 (4x cheaper than 4.5)
 - Structured outputs beta header for guaranteed JSON
 - Temperature 0.3 for consistent classification
 - Token tracking for cost monitoring
@@ -104,7 +104,8 @@ Progress: [##################] 100% (Phase 4 complete, ready for Phase 5)
 | 2026-01-28 | Non-blocking feed queries | Feed failures should never block agent execution |
 | 2026-01-28 | Leadership agents get feeds | Strategic context valuable for coordination |
 | 2026-01-28 | Use aiSummary instead of summary | feedItems.summary already exists for RSS content; need distinct field for AI output |
-| 2026-01-28 | Claude Haiku 4.5 for enrichment | Cost-efficient ($1/$5 per MTok) for high-volume classification |
+| 2026-01-28 | Claude Haiku 3.5 for enrichment | Maximum cost efficiency ($0.25/$1.25 per MTok = ~$2/month for 100 items/day) |
+| 2026-01-28 | Local enrichment with Claude Code CLI | $0 cost using user's MAX plan instead of Anthropic API key |
 | 2026-01-28 | Structured outputs beta header | Guaranteed JSON eliminates parsing failures |
 | 2026-01-28 | Temperature 0.3 for classification | Lower temperature for consistent results |
 | 2026-01-28 | 2000-char content truncation | Control token usage while preserving classification context |
