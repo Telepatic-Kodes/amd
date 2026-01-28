@@ -44,4 +44,34 @@ crons.weekly(
 //   { daysToKeep: 90 }
 // );
 
+// ===========================================
+// FEED SYNC CRONS
+// ===========================================
+
+// Sync daily feeds at 6:00 AM UTC
+// Uses fan-out pattern: schedules individual action per feed
+crons.daily(
+  "sync-daily-feeds",
+  { hourUTC: 6, minuteUTC: 0 },
+  api.feeds.syncAllFeeds.syncAllFeeds,
+  { frequency: "daily" }
+);
+
+// Sync hourly feeds at the start of each hour
+// 5 minutes after hour to avoid overlap with agent crons
+crons.hourly(
+  "sync-hourly-feeds",
+  { minuteUTC: 5 },
+  api.feeds.syncAllFeeds.syncAllFeeds,
+  { frequency: "hourly" }
+);
+
+// Sync weekly feeds on Monday at 5:00 AM UTC
+crons.weekly(
+  "sync-weekly-feeds",
+  { dayOfWeek: "monday", hourUTC: 5, minuteUTC: 0 },
+  api.feeds.syncAllFeeds.syncAllFeeds,
+  { frequency: "weekly" }
+);
+
 export default crons;
