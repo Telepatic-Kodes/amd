@@ -448,6 +448,20 @@ export default defineSchema({
     categories: v.optional(v.array(v.string())), // Item categories/tags
     createdAt: v.number(), // When we stored it
     updatedAt: v.number(), // Last update
+    // Enrichment fields (Phase 4 - AI Enrichment)
+    topics: v.optional(v.array(v.string())), // Topic tags from AI
+    sentiment: v.optional(
+      v.union(
+        v.literal("positive"),
+        v.literal("neutral"),
+        v.literal("negative")
+      )
+    ),
+    aiSummary: v.optional(v.string()), // AI-generated summary (distinct from feed summary)
+    relevanceScore: v.optional(v.number()), // 0-100 marketing relevance
+    processed: v.optional(v.boolean()), // Enrichment status flag
+    processedAt: v.optional(v.number()), // Timestamp when enriched
+    processingError: v.optional(v.string()), // Error message if failed
   })
     .index("by_contentHash", ["contentHash"]) // For deduplication lookups (STOR-05)
     .index("by_feedId", ["feedId"])
@@ -456,7 +470,9 @@ export default defineSchema({
     .searchIndex("search_content", {
       searchField: "title",
       filterFields: ["feedId"],
-    }), // For agent feed queries (Phase 3)
+    }) // For agent feed queries (Phase 3)
+    .index("by_processed", ["processed"]) // For enrichment queue queries (Phase 4)
+    .index("by_relevanceScore", ["relevanceScore"]), // For high-relevance filtering (Phase 4)
 
   // ===========================================
   // FEED_SYNC_LOG - Historial de sincronizaciones
