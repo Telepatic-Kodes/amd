@@ -2,7 +2,7 @@
 
 **Started:** 2026-01-27
 **Current Phase:** Phase 2 - Multi-Feed Orchestration
-**Status:** In Progress (Plan 2/5 complete)
+**Status:** In Progress (Plan 3/5 complete)
 
 ## Project Reference
 
@@ -10,7 +10,7 @@ See: .planning/PROJECT.md (updated 2026-01-27)
 
 **Core value:** Los agentes de contenido tienen acceso a informacion fresca y relevante del mercado para crear contenido mas actual y competitivo.
 
-**Current focus:** Phase 2 - Multi-Feed Orchestration (Plan 02 complete)
+**Current focus:** Phase 2 - Multi-Feed Orchestration (Plan 03 complete)
 
 ## Progress
 
@@ -24,8 +24,9 @@ See: .planning/PROJECT.md (updated 2026-01-27)
 - [x] **Phase 1: Core Feed Sync Engine**
 - [x] **Phase 2 Plan 01: Feed CRUD & Dashboard Queries**
 - [x] **Phase 2 Plan 02: Sync Orchestration & Cron**
+- [x] **Phase 2 Plan 03: Rate Limit Handling**
 
-### Phase 2 Plan 02 Implementation Details
+### Phase 2 Plan 03 Implementation Details
 
 **Completed 2026-01-28**
 
@@ -33,22 +34,20 @@ See: .planning/PROJECT.md (updated 2026-01-27)
 
 | File | Purpose |
 |------|---------|
-| `convex/feeds/scheduleFeedSync.ts` | Scheduler mutations for fan-out pattern |
-| `convex/feeds/syncAllFeeds.ts` | Cron-triggered orchestrator action |
-| `convex/crons.ts` | Added 3 feed sync cron jobs |
-| `convex/feeds/index.ts` | Added orchestration exports |
+| `convex/feeds/utils/rateLimit.ts` | Rate limiting utilities (exponential backoff, Retry-After parsing) |
+| `convex/feeds/utils/index.ts` | Added rate limit exports |
+| `convex/feeds/fetchFeed.ts` | Added 429 handling with self-scheduling retry |
 
 #### Requirements Covered:
 
-- **SYNC-01**: System syncs all active feeds daily via cron
-- **SYNC-04**: Fan-out pattern - each feed in separate action
-- **DASH-04**: Manual sync trigger from dashboard (triggerManualSync)
+- **SYNC-05**: Rate limit handling - system detects 429, retries with backoff
 
 #### Key Implementation:
 
-- **Stagger Pattern**: 1 second between feed syncs to prevent thundering herd
-- **Cron Schedule**: Daily at 6:00 UTC, Hourly at :05, Weekly Monday 5:00 UTC
-- **Isolation**: Each feed runs in separate action, failures don't cascade
+- **Exponential Backoff**: 1s -> 2s -> 4s -> 8s with 5-minute cap
+- **Retry-After Support**: Parses both seconds and HTTP date formats
+- **Self-Scheduling**: fetchFeed schedules itself via ctx.scheduler.runAfter
+- **Max Retries**: 4 attempts before permanent failure
 
 ### Upcoming Work
 
@@ -56,8 +55,8 @@ See: .planning/PROJECT.md (updated 2026-01-27)
 |-------|------|------|--------|
 | 2 | 01 | Feed CRUD & Dashboard Queries | Complete |
 | 2 | 02 | Sync Orchestration & Cron | Complete |
-| 2 | 03 | Dashboard Feed Management UI | Ready |
-| 2 | 04 | Feed Sync Monitoring Dashboard | Blocked by 02-03 |
+| 2 | 03 | Rate Limit Handling | Complete |
+| 2 | 04 | Feed Sync Monitoring Dashboard | Ready |
 | 2 | 05 | Integration Tests | Blocked by 02-04 |
 
 ### Phase Overview
@@ -65,13 +64,13 @@ See: .planning/PROJECT.md (updated 2026-01-27)
 | Phase | Name | Status |
 |-------|------|--------|
 | 1 | Core Feed Sync Engine | Complete |
-| 2 | Multi-Feed Orchestration | In Progress (2/5) |
+| 2 | Multi-Feed Orchestration | In Progress (3/5) |
 | 3 | Agent Integration | Blocked by Phase 2 |
 | 4 | AI Enrichment | Blocked by Phase 3 |
 | 5 | Brand Monitoring | Blocked by Phase 4 |
 | 6 | Advanced Features | Blocked by Phase 5 |
 
-Progress: [####------] 40% (2/5 plans in current phase)
+Progress: [######----] 60% (3/5 plans in current phase)
 
 ## Key Decisions Log
 
@@ -88,6 +87,9 @@ Progress: [####------] 40% (2/5 plans in current phase)
 | 2026-01-28 | fetchFeed as internalAction | Only called by scheduler, not frontend |
 | 2026-01-28 | 1-second stagger between syncs | Prevent thundering herd on target servers |
 | 2026-01-28 | Hourly cron at :05 | Avoid overlap with agent crons at :00 |
+| 2026-01-28 | 4 max retry attempts for rate limiting | Balance persistence vs respecting server limits |
+| 2026-01-28 | 5-minute max delay cap | Prevent indefinite waits on large Retry-After |
+| 2026-01-28 | Treat 503 + Retry-After as rate limiting | Common server practice for overload handling |
 
 ## Blockers
 
@@ -95,16 +97,16 @@ None currently.
 
 ## Session Continuity
 
-Last session: 2026-01-28T11:17:00Z
-Stopped at: Completed 02-02-PLAN.md
+Last session: 2026-01-28T11:22:20Z
+Stopped at: Completed 02-03-PLAN.md
 Resume file: None
 
 ## Next Actions
 
-1. Execute 02-03-PLAN.md (Dashboard Feed Management UI)
-2. Create feed management UI components
-3. Implement sync status display
+1. Execute 02-04-PLAN.md (Feed Sync Monitoring Dashboard)
+2. Create sync status display components
+3. Add retry status visibility
 
 ---
 *State initialized: 2026-01-27*
-*Last updated: 2026-01-28 - Phase 2 Plan 02 complete*
+*Last updated: 2026-01-28 - Phase 2 Plan 03 complete*
