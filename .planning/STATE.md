@@ -1,8 +1,8 @@
 # Project State: AMD RSS Feed Integration
 
 **Started:** 2026-01-27
-**Current Phase:** Phase 4 - AI Enrichment
-**Status:** In Progress (2/3 plans)
+**Current Phase:** Phase 4 - AI Enrichment (COMPLETE)
+**Status:** Complete (3/3 plans)
 
 ## Project Reference
 
@@ -10,7 +10,7 @@ See: .planning/PROJECT.md (updated 2026-01-27)
 
 **Core value:** Los agentes de contenido tienen acceso a informacion fresca y relevante del mercado para crear contenido mas actual y competitivo.
 
-**Current focus:** Phase 4 Plan 02 complete - enrichFeedItem action with Claude structured outputs ready
+**Current focus:** Phase 4 complete - AI enrichment with batch processing and scheduled crons
 
 ## Progress
 
@@ -24,19 +24,18 @@ See: .planning/PROJECT.md (updated 2026-01-27)
 - [x] **Phase 1: Core Feed Sync Engine**
 - [x] **Phase 2: Multi-Feed Orchestration** (All 5 plans)
 - [x] **Phase 3: Agent Integration** (All 2 plans)
-- [x] **Phase 4 Plan 01:** Enrichment Schema & Foundation
-- [x] **Phase 4 Plan 02:** Enrichment Action
+- [x] **Phase 4: AI Enrichment** (All 3 plans)
 
-### Phase 4 In Progress
+### Phase 4 Summary (COMPLETE)
 
-**Plan 01: Enrichment Schema & Foundation** (COMPLETE)
+**Plan 01: Enrichment Schema & Foundation**
 - 7 enrichment fields added to feedItems (topics, sentiment, aiSummary, relevanceScore, processed, processedAt, processingError)
 - 2 new indexes (by_processed, by_relevanceScore)
 - enrichment module with internal queries (getUnprocessedItems, getItem)
 - enrichment module with internal mutations (storeEnrichment, markFailed)
 - Three-state processing pattern (undefined/true/false)
 
-**Plan 02: Enrichment Action** (COMPLETE)
+**Plan 02: Enrichment Action**
 - ENRICHMENT_SCHEMA for Claude structured outputs
 - ENRICHMENT_SYSTEM_PROMPT with marketing analyst guidelines
 - buildEnrichmentPrompt with 2000-char content truncation
@@ -45,13 +44,23 @@ See: .planning/PROJECT.md (updated 2026-01-27)
 - Temperature 0.3 for consistent classification
 - Token tracking for cost monitoring
 
-#### Files Created/Modified (Plan 02):
+**Plan 03: Cron & Integration**
+- processBatch action for sequential batch processing
+- Daily cron at 6:30 UTC (10 items per run)
+- Hourly cron at :35 (5 items per run)
+- triggerEnrichment for manual testing
+- 30-minute offset from feed sync for item population
+
+#### Files Created (Phase 4):
 
 | File | Purpose |
 |------|---------|
+| `convex/enrichment/queries.ts` | Internal queries for unprocessed items |
+| `convex/enrichment/mutations.ts` | Store enrichment/mark failed mutations |
 | `convex/enrichment/prompts.ts` | JSON schema and prompt templates |
 | `convex/enrichment/processItems.ts` | enrichFeedItem internalAction |
-| `convex/enrichment/index.ts` | Updated barrel export |
+| `convex/enrichment/orchestration.ts` | Batch processing for cron |
+| `convex/enrichment/index.ts` | Barrel export |
 
 ### Phase Overview
 
@@ -60,11 +69,11 @@ See: .planning/PROJECT.md (updated 2026-01-27)
 | 1 | Core Feed Sync Engine | Complete |
 | 2 | Multi-Feed Orchestration | Complete |
 | 3 | Agent Integration | Complete |
-| 4 | AI Enrichment | In Progress (2/3) |
-| 5 | Brand Monitoring | Blocked by Phase 4 |
+| 4 | AI Enrichment | Complete |
+| 5 | Brand Monitoring | Ready |
 | 6 | Advanced Features | Blocked by Phase 5 |
 
-Progress: [################--] 83% (Phase 4 plan 2 of 3 complete)
+Progress: [##################] 100% (Phase 4 complete, ready for Phase 5)
 
 ## Key Decisions Log
 
@@ -99,6 +108,9 @@ Progress: [################--] 83% (Phase 4 plan 2 of 3 complete)
 | 2026-01-28 | Structured outputs beta header | Guaranteed JSON eliminates parsing failures |
 | 2026-01-28 | Temperature 0.3 for classification | Lower temperature for consistent results |
 | 2026-01-28 | 2000-char content truncation | Control token usage while preserving classification context |
+| 2026-01-28 | Sequential batch processing | Avoid Claude API rate limits |
+| 2026-01-28 | 30-min offset from feed sync | Allow items to populate before enrichment |
+| 2026-01-28 | Daily batch 10, hourly batch 5 | Cost control while maintaining freshness |
 
 ## Blockers
 
@@ -106,17 +118,17 @@ None currently.
 
 ## Session Continuity
 
-Last session: 2026-01-28T14:44:52Z
-Stopped at: Completed 04-02-PLAN.md (Enrichment Action)
+Last session: 2026-01-28T14:52:00Z
+Stopped at: Completed 04-03-PLAN.md (Cron & Integration)
 Resume file: None
 
 ## Next Actions
 
-1. Execute 04-03-PLAN.md (Cron & Integration)
-   - Schedule enrichment cron
-   - Batch processing action
-   - Integration with existing feed sync
+1. Execute Phase 5: Brand Monitoring
+   - Brand mention detection
+   - Competitor tracking
+   - Alert system for high-relevance items
 
 ---
 *State initialized: 2026-01-27*
-*Last updated: 2026-01-28 - Phase 4 plan 02 complete*
+*Last updated: 2026-01-28 - Phase 4 complete*
