@@ -1,8 +1,8 @@
 # Project State: AMD RSS Feed Integration
 
 **Started:** 2026-01-27
-**Current Phase:** Phase 2 - Multi-Feed Orchestration
-**Status:** In Progress (Plan 4/5 complete)
+**Current Phase:** Phase 3 - Agent Integration
+**Status:** In Progress (Plan 1/2 complete)
 
 ## Project Reference
 
@@ -10,7 +10,7 @@ See: .planning/PROJECT.md (updated 2026-01-27)
 
 **Core value:** Los agentes de contenido tienen acceso a informacion fresca y relevante del mercado para crear contenido mas actual y competitivo.
 
-**Current focus:** Phase 2 - Multi-Feed Orchestration (Plan 04 complete)
+**Current focus:** Phase 3 - Agent Integration (Plan 01 complete)
 
 ## Progress
 
@@ -22,12 +22,10 @@ See: .planning/PROJECT.md (updated 2026-01-27)
 - [x] Requirements definition (37 requirements mapped)
 - [x] Roadmap creation (6 phases)
 - [x] **Phase 1: Core Feed Sync Engine**
-- [x] **Phase 2 Plan 01: Feed CRUD & Dashboard Queries**
-- [x] **Phase 2 Plan 02: Sync Orchestration & Cron**
-- [x] **Phase 2 Plan 03: Rate Limit Handling**
-- [x] **Phase 2 Plan 04: Feed Management Dashboard UI**
+- [x] **Phase 2: Multi-Feed Orchestration** (All 5 plans)
+- [x] **Phase 3 Plan 01: Search Infrastructure & Agent Feed Query**
 
-### Phase 2 Plan 04 Implementation Details
+### Phase 3 Plan 01 Implementation Details
 
 **Completed 2026-01-28**
 
@@ -35,53 +33,43 @@ See: .planning/PROJECT.md (updated 2026-01-27)
 
 | File | Purpose |
 |------|---------|
-| `components/feeds/FeedCard.tsx` | Individual feed card with status, stats, and actions |
-| `components/feeds/AddFeedForm.tsx` | Form to add new RSS/Atom feeds |
-| `components/feeds/FeedItemsList.tsx` | Displays feed items with pagination |
-| `components/feeds/index.ts` | Barrel export for feeds components |
-| `app/feeds/page.tsx` | Main feeds dashboard page |
-| `components/layout/Sidebar.tsx` | Added Feeds navigation entry |
+| `convex/schema.ts` | Added searchIndex on feedItems, feedItemsUsed on executions |
+| `convex/functions.ts` | Updated logExecution mutation with feedItemsUsed param |
+| `convex/feeds/agentQueries.ts` | New internal query getRelevantFeedItems |
+| `convex/feeds/index.ts` | Updated barrel export |
 
 #### Requirements Covered:
 
-- **DASH-01**: User can see all feeds with status on /feeds page
-- **DASH-02**: Feed detail panel shows feed items
-- **DASH-03**: Recent items section across all feeds
-- **DASH-04**: Manual sync trigger from dashboard
-- **FEED-01**: User can add a new feed via form
-- **FEED-03**: User can pause/resume feeds from the UI
-- **FEED-04**: User can delete a feed
-- **FEED-05**: Search and filter functionality
+- **AGT-01**: Search index on feedItems.title for keyword matching
+- **AGT-02**: Feed category filtering via feedId filterField
+- **AGT-03**: Execution tracking with feedItemsUsed field
+- **AGT-04**: Internal query for agent feed access
 
 #### Key Implementation:
 
-- **FeedCard**: Status indicators, stats grid, action buttons
-- **AddFeedForm**: Animated slide-down form with validation
-- **Detail Panel**: Animated slide-in showing feed items
-- **Filters**: Status (server-side) and category (client-side)
+- **searchIndex("search_content")**: Full-text search on title, filtered by feedId
+- **feedItemsUsed**: Optional array of feedItem IDs on executions table
+- **getRelevantFeedItems**: Internal query with keyword search, category filtering, date range
 
 ### Upcoming Work
 
 | Phase | Plan | Name | Status |
 |-------|------|------|--------|
-| 2 | 01 | Feed CRUD & Dashboard Queries | Complete |
-| 2 | 02 | Sync Orchestration & Cron | Complete |
-| 2 | 03 | Rate Limit Handling | Complete |
-| 2 | 04 | Feed Management Dashboard UI | Complete |
-| 2 | 05 | Integration Tests | Ready |
+| 3 | 01 | Search Infrastructure & Agent Feed Query | Complete |
+| 3 | 02 | Agent Context Injection | Ready |
 
 ### Phase Overview
 
 | Phase | Name | Status |
 |-------|------|--------|
 | 1 | Core Feed Sync Engine | Complete |
-| 2 | Multi-Feed Orchestration | In Progress (4/5) |
-| 3 | Agent Integration | Blocked by Phase 2 |
+| 2 | Multi-Feed Orchestration | Complete |
+| 3 | Agent Integration | In Progress (1/2) |
 | 4 | AI Enrichment | Blocked by Phase 3 |
 | 5 | Brand Monitoring | Blocked by Phase 4 |
 | 6 | Advanced Features | Blocked by Phase 5 |
 
-Progress: [########--] 80% (4/5 plans in current phase)
+Progress: [###########-------] 60% (Phase 3, Plan 1/2 complete)
 
 ## Key Decisions Log
 
@@ -104,6 +92,10 @@ Progress: [########--] 80% (4/5 plans in current phase)
 | 2026-01-28 | Direct mutation hooks in FeedCard | Immediate UI response without state management |
 | 2026-01-28 | Conditional useQuery in FeedItemsList | Different queries based on feedId presence |
 | 2026-01-28 | Client-side category filtering | Server handles status, client handles category for flexibility |
+| 2026-01-28 | searchIndex with title as searchField | Title provides best semantic match for keyword searches |
+| 2026-01-28 | feedId as filterField in searchIndex | Allows efficient scoping of search to specific feeds by category |
+| 2026-01-28 | Optional feedItemsUsed field | Gradual adoption - existing code continues to work without changes |
+| 2026-01-28 | 7-day default lookback for feed queries | Balance between recency and coverage for marketing content |
 
 ## Blockers
 
@@ -111,16 +103,16 @@ None currently.
 
 ## Session Continuity
 
-Last session: 2026-01-28T11:23:19Z
-Stopped at: Completed 02-04-PLAN.md
+Last session: 2026-01-28T12:26:20Z
+Stopped at: Completed 03-01-PLAN.md
 Resume file: None
 
 ## Next Actions
 
-1. Execute 02-05-PLAN.md (Integration Tests)
-2. Test feed CRUD operations end-to-end
-3. Verify sync orchestration and cron jobs
+1. Execute 03-02-PLAN.md (Agent Context Injection)
+2. Integrate getRelevantFeedItems into executeAgent action
+3. Test feed context injection with sample agent tasks
 
 ---
 *State initialized: 2026-01-27*
-*Last updated: 2026-01-28 - Phase 2 Plan 04 complete*
+*Last updated: 2026-01-28 - Phase 3 Plan 01 complete*
