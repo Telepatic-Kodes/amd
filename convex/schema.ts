@@ -428,6 +428,11 @@ export default defineSchema({
     lastETag: v.optional(v.string()),            // ETag header from last 200 response
     lastModified: v.optional(v.string()),        // Last-Modified header from last 200 response
     consecutiveNotModified: v.optional(v.number()), // Count of consecutive 304 responses
+    // Feature toggles (Phase 6 - Feature Toggle System)
+    features: v.optional(v.object({
+      fullTextExtraction: v.optional(v.boolean()),
+      semanticDeduplication: v.optional(v.boolean()),
+    })),
     createdAt: v.number(),
     updatedAt: v.number(),
   })
