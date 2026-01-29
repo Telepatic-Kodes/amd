@@ -31,6 +31,14 @@ import type * as feeds_utils_index from "../feeds/utils/index.js";
 import type * as feeds_utils_rateLimit from "../feeds/utils/rateLimit.js";
 import type * as feeds_utils_validation from "../feeds/utils/validation.js";
 import type * as functions from "../functions.js";
+import type * as kb_agentAction from "../kb/agentAction.js";
+import type * as kb_agentQueries from "../kb/agentQueries.js";
+import type * as kb_mutations from "../kb/mutations.js";
+import type * as kb_processFile from "../kb/processFile.js";
+import type * as kb_queries from "../kb/queries.js";
+import type * as kb_scrapeUrl from "../kb/scrapeUrl.js";
+import type * as kb_uploadFile from "../kb/uploadFile.js";
+import type * as onboarding from "../onboarding.js";
 import type * as seed from "../seed.js";
 
 import type {
@@ -63,6 +71,14 @@ declare const fullApi: ApiFromModules<{
   "feeds/utils/rateLimit": typeof feeds_utils_rateLimit;
   "feeds/utils/validation": typeof feeds_utils_validation;
   functions: typeof functions;
+  "kb/agentAction": typeof kb_agentAction;
+  "kb/agentQueries": typeof kb_agentQueries;
+  "kb/mutations": typeof kb_mutations;
+  "kb/processFile": typeof kb_processFile;
+  "kb/queries": typeof kb_queries;
+  "kb/scrapeUrl": typeof kb_scrapeUrl;
+  "kb/uploadFile": typeof kb_uploadFile;
+  onboarding: typeof onboarding;
   seed: typeof seed;
 }>;
 

@@ -494,4 +494,149 @@ export default defineSchema({
     .index("by_feedId", ["feedId"])
     .index("by_syncedAt", ["syncedAt"])
     .index("by_feedId_syncedAt", ["feedId", "syncedAt"]),
+
+  // ===========================================
+  // ONBOARDING - Configuración inicial
+  // ===========================================
+  onboarding: defineTable({
+    companyName: v.string(),
+    industry: v.string(),
+    description: v.string(),
+    goals: v.array(v.string()),
+    channels: v.array(v.string()),
+    feeds: v.array(v.string()),
+    departments: v.array(v.string()),
+    completedAt: v.number(),
+  }),
+
+  // ===========================================
+  // KNOWLEDGE BASES - Base de conocimiento de empresa
+  // ===========================================
+  knowledgeBases: defineTable({
+    kbId: v.string(), // "kb-brand-001"
+    name: v.string(), // "Acme Corp Brand Identity"
+    description: v.string(),
+    category: v.union(
+      v.literal("brand"), // Brand Identity
+      v.literal("products"), // Products/Services
+      v.literal("personas"), // Buyer Personas
+      v.literal("guidelines") // Content Guidelines
+    ),
+    status: v.union(
+      v.literal("draft"), // Being created in wizard
+      v.literal("processing"), // AI extracting
+      v.literal("active"), // Ready for agents
+      v.literal("archived")
+    ),
+    visibility: v.array(
+      // Which agent types can see this
+      v.union(
+        v.literal("all"),
+        v.literal("content"),
+        v.literal("social"),
+        v.literal("seo"),
+        v.literal("demandgen"),
+        v.literal("brand"),
+        v.literal("ops"),
+        v.literal("leadership")
+      )
+    ),
+    metadata: v.object({
+      documentCount: v.number(),
+      totalSizeBytes: v.number(),
+      lastProcessedAt: v.optional(v.number()),
+    }),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_kbId", ["kbId"])
+    .index("by_category", ["category"])
+    .index("by_status", ["status"]),
+
+  // ===========================================
+  // KB_DOCUMENTS - Archivos cargados o URLs scrapeadas
+  // ===========================================
+  kbDocuments: defineTable({
+    documentId: v.string(),
+    kbId: v.id("knowledgeBases"),
+    name: v.string(), // "Brand_Guidelines.pdf"
+    sourceType: v.union(
+      v.literal("url"), // Scraped from web
+      v.literal("upload") // File upload
+    ),
+    sourceUrl: v.optional(v.string()),
+    fileType: v.optional(
+      v.union(
+        v.literal("pdf"),
+        v.literal("docx"),
+        v.literal("pptx"),
+        v.literal("txt"),
+        v.literal("md")
+      )
+    ),
+    storageId: v.optional(v.id("_storage")), // Convex storage
+    status: v.union(
+      v.literal("pending"),
+      v.literal("processing"),
+      v.literal("processed"),
+      v.literal("failed")
+    ),
+    metadata: v.object({
+      sizeBytes: v.optional(v.number()),
+      pageCount: v.optional(v.number()),
+    }),
+    processingError: v.optional(v.string()),
+    createdAt: v.number(),
+    processedAt: v.optional(v.number()),
+  })
+    .index("by_documentId", ["documentId"])
+    .index("by_kbId", ["kbId"])
+    .index("by_status", ["status"]),
+
+  // ===========================================
+  // KB_SECTIONS - Contenido chunkeado para búsqueda eficiente
+  // ===========================================
+  kbSections: defineTable({
+    sectionId: v.string(),
+    kbId: v.id("knowledgeBases"),
+    documentId: v.id("kbDocuments"),
+    title: v.string(),
+    content: v.string(), // Max 2000 chars per chunk
+    contentHash: v.string(), // SHA-256 for deduplication
+    order: v.number(), // Position in document
+    metadata: v.object({
+      wordCount: v.number(),
+      pageNumbers: v.optional(v.array(v.number())),
+    }),
+    // AI enrichment
+    topics: v.optional(v.array(v.string())),
+    summary: v.optional(v.string()),
+    keywords: v.optional(v.array(v.string())),
+    relevanceScore: v.optional(v.number()), // 0-100
+    processed: v.optional(v.boolean()),
+    processedAt: v.optional(v.number()),
+    createdAt: v.number(),
+  })
+    .index("by_kbId", ["kbId"])
+    .index("by_documentId", ["documentId"])
+    .index("by_contentHash", ["contentHash"])
+    .index("by_processed", ["processed"])
+    .searchIndex("search_content", {
+      searchField: "content",
+      filterFields: ["kbId", "documentId"],
+    }),
+
+  // ===========================================
+  // KB_AGENT_ACCESS - Audit trail de acceso de agentes
+  // ===========================================
+  kbAgentAccess: defineTable({
+    agentId: v.id("agents"),
+    kbId: v.id("knowledgeBases"),
+    taskId: v.optional(v.id("tasks")),
+    sectionsUsed: v.array(v.id("kbSections")),
+    accessedAt: v.number(),
+  })
+    .index("by_agent", ["agentId"])
+    .index("by_kb", ["kbId"])
+    .index("by_task", ["taskId"]),
 });

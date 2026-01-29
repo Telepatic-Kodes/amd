@@ -138,6 +138,56 @@ export const executeAgent = action({
       console.warn("Failed to get feed context for agent:", error.message);
     }
 
+    // 2c. Get relevant KB context (non-blocking, opt-in via tools config)
+    let kbSections: Array<{
+      _id: Id<"kbSections">;
+      title: string;
+      content: string;
+      kbName: string;
+      kbCategory: string;
+    }> = [];
+    let kbSectionIds: Id<"kbSections">[] = [];
+    let usedKBId: Id<"knowledgeBases"> | null = null;
+
+    try {
+      // KB access gating: OPT-IN via agent.config.tools
+      const kbEnabled =
+        Array.isArray(agent.config.tools) && agent.config.tools.includes("kb");
+
+      if (kbEnabled) {
+        // Get KBs visible to this agent's department
+        const visibleKBs = await ctx.runQuery(
+          api.kb.agentQueries.getKBForAgent,
+          {
+            agentId: agent._id,
+          }
+        );
+
+        if (visibleKBs && visibleKBs.length > 0) {
+          usedKBId = visibleKBs[0]._id;
+
+          // Extract keywords from task input
+          const keywords = extractKeywords(args.taskType, args.input);
+
+          if (keywords) {
+            // Search KB sections (max 5 for token efficiency)
+            kbSections = await ctx.runQuery(
+              api.kb.agentQueries.searchKBSections,
+              {
+                kbIds: visibleKBs.map((kb) => kb._id),
+                keywords,
+                limit: 5,
+              }
+            );
+            kbSectionIds = kbSections.map((s) => s._id);
+          }
+        }
+      }
+    } catch (error: any) {
+      // Non-blocking: log warning but continue execution
+      console.warn("Failed to get KB context for agent:", error.message);
+    }
+
     // 3. Crear tarea
     const taskResult = await ctx.runMutation(api.functions.createTask, {
       title: `${args.taskType} - ${new Date().toISOString()}`,
@@ -159,10 +209,11 @@ export const executeAgent = action({
       // 5. Construir mensaje para Claude basado en el tipo de tarea
       const userMessage = buildUserMessage(args.taskType, args.input);
 
-      // 6. Build enhanced prompt with feed context
+      // 6. Build enhanced prompt with feed and KB context
       const enhancedSystemPrompt = buildEnhancedSystemPrompt(
         agent.config.systemPrompt,
-        feedItems
+        feedItems,
+        kbSections
       );
 
       // 7. Llamar a Claude (enhanced with feed context)
@@ -183,7 +234,7 @@ export const executeAgent = action({
         claudeResponse.usage.outputTokens
       );
 
-      // 9. Guardar ejecución (with feed tracking)
+      // 9. Guardar ejecución (with feed and KB tracking)
       await ctx.runMutation(api.functions.logExecution, {
         taskId: taskResult.id,
         agentId: agent._id,
@@ -199,6 +250,16 @@ export const executeAgent = action({
         cost,
         feedItemsUsed: feedItemIds.length > 0 ? feedItemIds : undefined,
       });
+
+      // 9b. Log KB access if sections were used
+      if (kbSectionIds.length > 0 && usedKBId) {
+        await ctx.runMutation(api.kb.mutations.logKBAccess, {
+          agentId: agent._id,
+          kbId: usedKBId,
+          taskId: taskResult.id,
+          sectionsUsed: kbSectionIds,
+        });
+      }
 
       // 10. Actualizar tarea como completada
       await ctx.runMutation(api.functions.updateTaskStatus, {
@@ -314,8 +375,8 @@ function mapDepartmentToCategories(department: string): string[] {
 }
 
 /**
- * Enhance agent system prompt with relevant feed context.
- * Appends formatted feed items as structured context.
+ * Enhance agent system prompt with relevant feed and KB context.
+ * Appends formatted feed items and KB sections as structured context.
  */
 function buildEnhancedSystemPrompt(
   basePrompt: string,
@@ -326,23 +387,29 @@ function buildEnhancedSystemPrompt(
     content: string | null;
     publishedAt: number | null;
     feedName: string;
+  }>,
+  kbSections?: Array<{
+    title: string;
+    content: string;
+    kbName: string;
+    kbCategory: string;
   }>
 ): string {
-  if (feedItems.length === 0) {
-    return basePrompt;
-  }
+  let enhancedPrompt = basePrompt;
 
-  const feedContext = feedItems
-    .map(
-      (item, i) =>
-        `[${i + 1}] ${item.title}\n` +
-        `Source: ${item.feedName} - ${item.link}\n` +
-        `Published: ${item.publishedAt ? new Date(item.publishedAt).toISOString().split("T")[0] : "Unknown"}\n` +
-        `Summary: ${item.summary || item.content || "No content available"}`
-    )
-    .join("\n\n---\n\n");
+  // Add feed context if available
+  if (feedItems && feedItems.length > 0) {
+    const feedContext = feedItems
+      .map(
+        (item, i) =>
+          `[${i + 1}] ${item.title}\n` +
+          `Source: ${item.feedName} - ${item.link}\n` +
+          `Published: ${item.publishedAt ? new Date(item.publishedAt).toISOString().split("T")[0] : "Unknown"}\n` +
+          `Summary: ${item.summary || item.content || "No content available"}`
+      )
+      .join("\n\n---\n\n");
 
-  return `${basePrompt}
+    enhancedPrompt += `
 
 ## Relevant Industry Context
 
@@ -352,6 +419,32 @@ ${feedContext}
 
 ---
 End of feed context.`;
+  }
+
+  // Add KB context if available
+  if (kbSections && kbSections.length > 0) {
+    const kbContext = kbSections
+      .map(
+        (section, i) =>
+          `[KB-${i + 1}] ${section.title}\n` +
+          `Category: ${section.kbCategory} | Source: ${section.kbName}\n` +
+          `Content:\n${section.content.substring(0, 1500)}${section.content.length > 1500 ? "..." : ""}`
+      )
+      .join("\n\n---\n\n");
+
+    enhancedPrompt += `
+
+## Company Knowledge Base
+
+The following information comes from your company's knowledge base. Use this as the source of truth for brand voice, product details, and guidelines. Prioritize this information over general knowledge when applicable.
+
+${kbContext}
+
+---
+End of knowledge base.`;
+  }
+
+  return enhancedPrompt;
 }
 
 /**
