@@ -94,3 +94,23 @@ export const getFeedsDueForSync = internalQuery({
     });
   },
 });
+
+/**
+ * List all feeds for OPML export.
+ * Returns all feeds regardless of status for complete backup.
+ * Visibility: internalQuery — called only by exportAsOPML action.
+ */
+export const listFeedsForExport = internalQuery({
+  args: {},
+  handler: async (ctx) => {
+    const feeds = await ctx.db.query('feeds').collect();
+    return feeds.map((f) => ({
+      name: f.name,
+      url: f.url,
+      category: f.category,
+      status: f.status,
+      syncFrequency: f.syncFrequency,
+      lastSyncAt: f.lastSyncAt,
+    }));
+  },
+});
