@@ -2,7 +2,7 @@
 
 **Started:** 2026-01-27
 **Current Phase:** Phase 6 - Advanced Features (IN PROGRESS)
-**Status:** Plan 06-04 complete
+**Status:** Phase 6 COMPLETE
 
 ## Project Reference
 
@@ -58,25 +58,23 @@ See: .planning/PROJECT.md
 | 3 | Agent Integration | Complete | 2/2 |
 | 4 | AI Enrichment | Complete | 3/3 |
 | 5 | Brand Monitoring | Complete | 4/4 |
-| 6 | Advanced Features | In Progress | 4/5 |
+| 6 | Advanced Features | Complete | 5/5 |
 
-Progress: [███████████████████░] 95% (Phase 6 plans 01-04 complete)
+Progress: [████████████████████] 100% (All 6 phases complete)
 
 ## Session Continuity
 
 Last session: 2026-01-29
-Completed: Phase 6 Plan 04 (Analysis Metrics)
-Current: Phase 6 in progress — Plan 05 remaining
+Completed: Phase 6 Plan 05 (Feature Toggle System)
+Current: All phases complete
 
-## Next Actions
+## Decisions
 
-1. Plan Phase 6: Advanced Features
-   - Full-text extraction for truncated feeds
-   - HTTP optimization (ETag, Last-Modified)
-   - Admin improvements (OPML import/export)
-   - Semantic deduplication with embeddings
-
-/gsd:plan-phase 6
+| Decision | Phase | Rationale |
+|----------|-------|-----------|
+| Settings key 'phase6_feature_flags' for global toggles | 6-05 | Single settings row, consistent with settings table pattern |
+| Priority chain: per-feed > global > default | 6-05 | Allows granular control per feed with global fallback |
+| Truncation threshold 20%, duplicate threshold 10% | 6-05 | Conservative thresholds for recommendation engine |
 
 ---
-*State updated: 2026-01-29 after Phase 5 completion*
+*State updated: 2026-01-29 after Phase 6 Plan 05 completion*
