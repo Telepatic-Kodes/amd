@@ -161,6 +161,38 @@ export const updateFeedHealth = internalMutation({
  * @param duration - Sync duration in ms
  * @param errorMessage - Error details if failed
  */
+/**
+ * Updates HTTP cache headers for conditional GET optimization
+ */
+export const updateHttpCacheHeaders = internalMutation({
+  args: {
+    feedId: v.id('feeds'),
+    etag: v.optional(v.string()),
+    lastModified: v.optional(v.string()),
+    incrementNotModified: v.optional(v.boolean()),
+    resetNotModified: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
+    const { feedId, etag, lastModified, incrementNotModified, resetNotModified } = args;
+    const feed = await ctx.db.get(feedId);
+    if (!feed) return;
+
+    const patch: Record<string, unknown> = { updatedAt: Date.now() };
+
+    if (etag !== undefined) patch.lastETag = etag;
+    if (lastModified !== undefined) patch.lastModified = lastModified;
+
+    if (incrementNotModified) {
+      patch.consecutiveNotModified = (feed.consecutiveNotModified ?? 0) + 1;
+    }
+    if (resetNotModified) {
+      patch.consecutiveNotModified = 0;
+    }
+
+    await ctx.db.patch(feedId, patch);
+  },
+});
+
 export const logSync = internalMutation({
   args: {
     feedId: v.id('feeds'),

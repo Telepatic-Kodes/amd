@@ -424,6 +424,10 @@ export default defineSchema({
     lastSyncAt: v.optional(v.number()), // Timestamp of last successful sync
     consecutiveErrors: v.number(), // Error count for health tracking (SYNC-06)
     lastErrorMessage: v.optional(v.string()), // Most recent error
+    // HTTP Conditional GET caching (Phase 6 - HTTP Optimization)
+    lastETag: v.optional(v.string()),            // ETag header from last 200 response
+    lastModified: v.optional(v.string()),        // Last-Modified header from last 200 response
+    consecutiveNotModified: v.optional(v.number()), // Count of consecutive 304 responses
     createdAt: v.number(),
     updatedAt: v.number(),
   })

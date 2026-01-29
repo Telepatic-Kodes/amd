@@ -64,21 +64,30 @@ export interface FetchFeedResult {
  */
 async function fetchWithTimeout(
   url: string,
-  timeoutMs: number
+  timeoutMs: number,
+  conditionalHeaders?: { etag?: string; lastModified?: string }
 ): Promise<Response> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
+  const headers: Record<string, string> = {
+    'User-Agent': USER_AGENT,
+    Accept: 'application/rss+xml, application/atom+xml, application/xml, text/xml, */*',
+  };
+
+  // Add conditional GET headers if available
+  if (conditionalHeaders?.etag) {
+    headers['If-None-Match'] = conditionalHeaders.etag;
+  }
+  if (conditionalHeaders?.lastModified) {
+    headers['If-Modified-Since'] = conditionalHeaders.lastModified;
+  }
+
   try {
     const response = await fetch(url, {
       signal: controller.signal,
-      headers: {
-        'User-Agent': USER_AGENT,
-        Accept:
-          'application/rss+xml, application/atom+xml, application/xml, text/xml, */*',
-      },
+      headers,
     });
-
     return response;
   } finally {
     clearTimeout(timeout);
@@ -150,7 +159,10 @@ export const fetchFeed = internalAction({
     // 2. Fetch with timeout
     let response: Response;
     try {
-      response = await fetchWithTimeout(feed.url, FETCH_TIMEOUT_MS);
+      response = await fetchWithTimeout(feed.url, FETCH_TIMEOUT_MS, {
+        etag: feed.lastETag ?? undefined,
+        lastModified: feed.lastModified ?? undefined,
+      });
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown fetch error';
@@ -257,6 +269,44 @@ export const fetchFeed = internalAction({
         duration: Date.now() - startTime,
         error: errorMessage,
         retryAttempt: currentAttempt,
+      };
+    }
+
+    // 2.55. Handle 304 Not Modified (HTTP Conditional GET)
+    if (response.status === 304) {
+      // Feed has not changed since last sync — skip parsing entirely
+      await ctx.runMutation(internal.feeds.storeFeedItems.updateFeedHealth, {
+        feedId,
+        success: true,
+      });
+
+      // Increment consecutiveNotModified counter
+      await ctx.runMutation(internal.feeds.storeFeedItems.updateHttpCacheHeaders, {
+        feedId,
+        incrementNotModified: true,
+      });
+
+      // Log as success with zero items
+      await ctx.runMutation(internal.feeds.storeFeedItems.logSync, {
+        feedId,
+        status: 'success',
+        itemsFound: 0,
+        itemsAdded: 0,
+        itemsSkipped: 0,
+        duration: Date.now() - startTime,
+      });
+
+      console.log(`[fetchFeed] 304 Not Modified for ${feed.url} — skipping parse`);
+
+      return {
+        success: true,
+        feedId: feedId as string,
+        feedUrl: feed.url,
+        itemsFound: 0,
+        itemsAdded: 0,
+        itemsSkipped: 0,
+        validationErrors: 0,
+        duration: Date.now() - startTime,
       };
     }
 
@@ -437,6 +487,19 @@ export const fetchFeed = internalAction({
       itemsSkipped: storeResult.itemsSkipped,
       duration: Date.now() - startTime,
     });
+
+    // 8. Store HTTP cache headers for conditional GET on next sync
+    const newETag = response.headers.get('ETag') ?? undefined;
+    const newLastModified = response.headers.get('Last-Modified') ?? undefined;
+
+    if (newETag || newLastModified) {
+      await ctx.runMutation(internal.feeds.storeFeedItems.updateHttpCacheHeaders, {
+        feedId,
+        etag: newETag,
+        lastModified: newLastModified,
+        resetNotModified: true,
+      });
+    }
 
     return {
       success: true,
