@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="2.0">
+  <head>
+    <title>AMD Test Feed Collection</title>
+    <dateCreated>Thu, 01 Jan 2026 00:00:00 GMT</dateCreated>
+  </head>
+  <body>
+    <outline text="Technology" title="Technology">
+      <outline type="rss" text="TechCrunch" title="TechCrunch"
+        xmlUrl="https://techcrunch.com/feed/"
+        htmlUrl="https://techcrunch.com/" />
+      <outline type="rss" text="Ars Technica" title="Ars Technica"
+        xmlUrl="https://feeds.arstechnica.com/arstechnica/index"
+        htmlUrl="https://arstechnica.com/" />
+    </outline>
+    <outline text="Marketing" title="Marketing">
+      <outline type="rss" text="HubSpot Blog" title="HubSpot Blog"
+        xmlUrl="https://blog.hubspot.com/rss.xml"
+        htmlUrl="https://blog.hubspot.com/" />
+      <outline type="rss" text="Content Marketing Institute" title="Content Marketing Institute"
+        xmlUrl="https://contentmarketinginstitute.com/feed/"
+        htmlUrl="https://contentmarketinginstitute.com/" />
+    </outline>
+    <outline type="rss" text="Uncategorized Feed" title="Uncategorized Feed"
+      xmlUrl="https://example.com/feed.xml"
+      htmlUrl="https://example.com/" />
+  </body>
+</opml>
