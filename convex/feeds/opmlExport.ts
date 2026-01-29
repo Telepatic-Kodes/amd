@@ -23,7 +23,11 @@ export const exportAsOPML = internalAction({
       v.union(v.literal('active'), v.literal('paused'), v.literal('error'))
     ),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<{
+    xml: string;
+    feedCount: number;
+    categories: string[];
+  }> => {
     // 1. Query all feeds
     let feeds = await ctx.runQuery(internal.feeds.queries.listFeedsForExport, {});
 
@@ -60,7 +64,11 @@ export const exportOPML = action({
       v.union(v.literal('active'), v.literal('paused'), v.literal('error'))
     ),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<{
+    xml: string;
+    feedCount: number;
+    categories: string[];
+  }> => {
     return await ctx.runAction(internal.feeds.opmlExport.exportAsOPML, args);
   },
 });
