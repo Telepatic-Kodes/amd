@@ -59,3 +59,16 @@ export { scheduleFeedSync, triggerManualSync } from './scheduleFeedSync';
 
 // Agent integration (Phase 3 - Plan 01)
 export { getRelevantFeedItems } from './agentQueries';
+
+// Feature flags (Phase 6 - Plan 05)
+export {
+  shouldExtractFullText,
+  shouldDeduplicateSemantically,
+  getGlobalFeatureFlags,
+  updateGlobalFeatureFlags,
+  updateFeedFeatures,
+  resetFeedFeatures,
+  getFeatureFlags,
+  setFeatureFlags,
+  recommendFeatureFlags,
+} from './featureFlags';
