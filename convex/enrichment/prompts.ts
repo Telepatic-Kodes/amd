@@ -34,8 +34,18 @@ export const ENRICHMENT_SCHEMA = {
       type: "integer",
       description: "0-100 score for marketing/business relevance",
     },
+    brandMentions: {
+      type: "array",
+      items: { type: "string" },
+      description: "Brand names or terms mentioned in this item (from MONITORED_BRAND_TERMS)",
+    },
+    competitorMentions: {
+      type: "array",
+      items: { type: "string" },
+      description: "Competitor names mentioned in this item (from MONITORED_COMPETITORS list)",
+    },
   },
-  required: ["topics", "sentiment", "summary", "relevanceScore"],
+  required: ["topics", "sentiment", "summary", "relevanceScore", "brandMentions", "competitorMentions"],
   additionalProperties: false,
 } as const;
 
@@ -58,6 +68,23 @@ Guidelines:
   - 20-39: Tangentially related content
   - 0-19: Off-topic or irrelevant
 
+## Brand & Competitor Detection
+
+As you analyze this content, identify any mentions of:
+
+**Our Brand Terms:** The following are our brand terms to detect:
+{BRAND_TERMS_PLACEHOLDER}
+
+**Competitors to Track:** The following competitors should be monitored:
+{COMPETITOR_NAMES_PLACEHOLDER}
+
+**Detection Instructions:**
+- Identify all mentions, including partial/acronym variations (e.g., "HubSpot", "HS", "Hubspot CRM")
+- Look for competitor names in context: comparisons, partnerships, migrations, feature announcements
+- Include brand terms even in passing mentions (quotes, case studies, etc.)
+- Return arrays of exact matches found in the text
+- Return empty arrays [] if no mentions detected
+
 Be consistent and accurate. This data feeds into automated content systems.`;
 
 /**
@@ -68,9 +95,14 @@ Be consistent and accurate. This data feeds into automated content systems.`;
  *
  * @param title - Feed item title
  * @param content - Feed item content (will be truncated to 2000 chars)
+ * @param competitors - Optional array of competitor names to inject into prompt
  * @returns Formatted user message for Claude API
  */
-export function buildEnrichmentPrompt(title: string, content: string): string {
+export function buildEnrichmentPrompt(
+  title: string,
+  content: string,
+  competitors?: string[]
+): string {
   // Truncate content to control tokens (max 2000 chars)
   const truncatedContent = content.slice(0, 2000);
 
@@ -82,4 +114,25 @@ Content:
 ${truncatedContent}
 
 Provide the structured analysis.`;
+}
+
+/**
+ * Builds the system prompt with injected brand/competitor terms
+ *
+ * @param competitors - Array of competitor names to monitor
+ * @returns System prompt with placeholders replaced
+ */
+export function buildSystemPrompt(competitors?: string[]): string {
+  const competitorNames =
+    competitors && competitors.length > 0
+      ? competitors.join(", ")
+      : "(none configured)";
+
+  const brandTerms =
+    "aiaiai consulting, aiaiai, ai marketing department, amd marketing, autonomous marketing";
+
+  return ENRICHMENT_SYSTEM_PROMPT.replace(
+    "{BRAND_TERMS_PLACEHOLDER}",
+    brandTerms
+  ).replace("{COMPETITOR_NAMES_PLACEHOLDER}", competitorNames);
 }

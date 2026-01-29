@@ -35,10 +35,12 @@ export const storeEnrichment = internalMutation({
     ),
     aiSummary: v.string(),
     relevanceScore: v.number(),
+    brandMentions: v.optional(v.array(v.string())),
+    competitorMentions: v.optional(v.array(v.string())),
     tokensUsed: v.number(),
   },
   handler: async (ctx, args) => {
-    const { itemId, topics, sentiment, aiSummary, relevanceScore } = args;
+    const { itemId, topics, sentiment, aiSummary, relevanceScore, brandMentions, competitorMentions } = args;
     const now = Date.now();
 
     // Verify item exists
@@ -53,6 +55,8 @@ export const storeEnrichment = internalMutation({
       sentiment,
       aiSummary,
       relevanceScore,
+      brandMentions: brandMentions || [],
+      competitorMentions: competitorMentions || [],
       processed: true,
       processedAt: now,
       processingError: undefined, // Clear any previous error

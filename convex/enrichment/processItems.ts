@@ -14,9 +14,10 @@ import { internal } from "../_generated/api";
 import { Id } from "../_generated/dataModel";
 import {
   ENRICHMENT_SCHEMA,
-  ENRICHMENT_SYSTEM_PROMPT,
   buildEnrichmentPrompt,
+  buildSystemPrompt,
 } from "./prompts";
+import { getCompetitorNames } from "../monitoring/config";
 
 /**
  * Enriches a single feed item using Claude Haiku 3.5
@@ -63,7 +64,9 @@ export const enrichFeedItem = internalAction({
     // 2. Build prompt from item content
     // Prefer content, fall back to summary, then title only
     const content = item.content || item.summary || item.title;
-    const userMessage = buildEnrichmentPrompt(item.title, content);
+    const competitors = getCompetitorNames();
+    const userMessage = buildEnrichmentPrompt(item.title, content, competitors);
+    const systemPrompt = buildSystemPrompt(competitors);
 
     // 3. Call Claude with structured outputs
     const response = await fetch("https://api.anthropic.com/v1/messages", {
@@ -78,7 +81,7 @@ export const enrichFeedItem = internalAction({
         model: "claude-3-5-haiku-20241022", // Haiku 3.5: 4x cheaper than 4.5
         max_tokens: 512,
         temperature: 0.3, // Lower temp for consistent classification
-        system: ENRICHMENT_SYSTEM_PROMPT,
+        system: systemPrompt,
         output_format: {
           type: "json_schema",
           schema: ENRICHMENT_SCHEMA,
@@ -115,6 +118,8 @@ export const enrichFeedItem = internalAction({
       sentiment: enrichment.sentiment,
       aiSummary: enrichment.summary,
       relevanceScore: enrichment.relevanceScore,
+      brandMentions: enrichment.brandMentions || [],
+      competitorMentions: enrichment.competitorMentions || [],
       tokensUsed,
     });
 
