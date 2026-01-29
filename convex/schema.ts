@@ -462,6 +462,8 @@ export default defineSchema({
     processed: v.optional(v.boolean()), // Enrichment status flag
     processedAt: v.optional(v.number()), // Timestamp when enriched
     processingError: v.optional(v.string()), // Error message if failed
+    brandMentions: v.optional(v.array(v.string())),
+    competitorMentions: v.optional(v.array(v.string())),
   })
     .index("by_contentHash", ["contentHash"]) // For deduplication lookups (STOR-05)
     .index("by_feedId", ["feedId"])
@@ -494,6 +496,35 @@ export default defineSchema({
     .index("by_feedId", ["feedId"])
     .index("by_syncedAt", ["syncedAt"])
     .index("by_feedId_syncedAt", ["feedId", "syncedAt"]),
+
+  // ===========================================
+  // ALERT_DIGESTS - Brand monitoring digests
+  // ===========================================
+  alertDigests: defineTable({
+    createdAt: v.number(),
+    sentAt: v.optional(v.number()),
+    status: v.union(v.literal("pending"), v.literal("generated"), v.literal("sent"), v.literal("failed")),
+    period: v.object({ start: v.number(), end: v.number() }),
+    items: v.array(
+      v.object({
+        feedItemId: v.id("feedItems"),
+        title: v.string(),
+        relevanceScore: v.number(),
+        brandMentions: v.array(v.string()),
+        competitorMentions: v.array(v.string()),
+        sentiment: v.union(v.literal("positive"), v.literal("neutral"), v.literal("negative")),
+      })
+    ),
+    summary: v.optional(v.string()),
+    stats: v.optional(v.object({
+      totalItems: v.number(),
+      highRelevance: v.number(),
+      brandMentionCount: v.number(),
+      competitorMentionCount: v.number(),
+    })),
+  })
+    .index("by_createdAt", ["createdAt"])
+    .index("by_status", ["status"]),
 
   // ===========================================
   // ONBOARDING - Configuración inicial
