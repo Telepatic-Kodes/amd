@@ -1,7 +1,7 @@
 /**
  * Brand Monitoring Module
  *
- * Barrel export for monitoring configuration and utilities.
+ * Barrel export for monitoring configuration, queries, mutations, and utilities.
  */
 
 export {
@@ -16,3 +16,18 @@ export {
   type Competitor,
   type AlertThresholds,
 } from "./config";
+
+export {
+  getAlertCandidates,
+  getLatestDigest,
+  listDigests,
+  getDigest,
+  getItemsWithBrandMentions,
+  getItemsWithCompetitorMentions,
+} from "./queries";
+
+export {
+  storeAlertDigest,
+  markDigestSent,
+  markDigestFailed,
+} from "./mutations";
