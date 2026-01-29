@@ -88,17 +88,28 @@ export function parseOPML(xmlString: string): OPMLParseResult {
  */
 function findParentCategory(xml: string, position: number): string | undefined {
   const before = xml.substring(0, position);
-  const folderRegex = /<outline\s[^>]*text\s*=\s*"([^"]*)"[^>]*(?!xmlUrl)[^>]*>/gi;
-  let lastFolder: string | undefined;
-  let folderMatch: RegExpExecArray | null;
 
-  while ((folderMatch = folderRegex.exec(before)) !== null) {
-    if (!folderMatch[0].includes('xmlUrl')) {
-      lastFolder = folderMatch[1];
+  // Track open/close folder depth to determine if feed is inside a folder
+  // Folders are <outline> tags WITHOUT xmlUrl that contain children
+  const folderStack: string[] = [];
+  const tagRegex = /<outline\s[^>]*text\s*=\s*"([^"]*)"[^>]*>|<\/outline>/gi;
+  let tagMatch: RegExpExecArray | null;
+
+  while ((tagMatch = tagRegex.exec(before)) !== null) {
+    const tag = tagMatch[0];
+    if (tag.startsWith('</')) {
+      // Closing tag - pop folder stack
+      folderStack.pop();
+    } else if (!tag.includes('xmlUrl') && !tag.endsWith('/>')) {
+      // Opening folder tag (not a feed, not self-closing)
+      folderStack.push(tagMatch[1]);
     }
+    // Self-closing feed outlines don't affect the stack
   }
 
-  return lastFolder ? decodeXMLEntities(lastFolder) : undefined;
+  return folderStack.length > 0
+    ? decodeXMLEntities(folderStack[folderStack.length - 1])
+    : undefined;
 }
 
 /**
