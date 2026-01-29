@@ -2,13 +2,13 @@
  * Brand Monitoring Mutations
  */
 
-import { mutation } from "../_generated/server";
+import { mutation, internalMutation } from "../_generated/server";
 import { v } from "convex/values";
 
 /**
- * Store a generated alert digest
+ * Store a generated alert digest (INTERNAL - called by actions)
  */
-export const storeAlertDigest = mutation({
+export const storeAlertDigest = internalMutation({
   args: {
     period: v.object({ start: v.number(), end: v.number() }),
     items: v.array(

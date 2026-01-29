@@ -38,6 +38,11 @@ import type * as kb_processFile from "../kb/processFile.js";
 import type * as kb_queries from "../kb/queries.js";
 import type * as kb_scrapeUrl from "../kb/scrapeUrl.js";
 import type * as kb_uploadFile from "../kb/uploadFile.js";
+import type * as monitoring_actions from "../monitoring/actions.js";
+import type * as monitoring_config from "../monitoring/config.js";
+import type * as monitoring_index from "../monitoring/index.js";
+import type * as monitoring_mutations from "../monitoring/mutations.js";
+import type * as monitoring_queries from "../monitoring/queries.js";
 import type * as onboarding from "../onboarding.js";
 import type * as seed from "../seed.js";
 
@@ -78,6 +83,11 @@ declare const fullApi: ApiFromModules<{
   "kb/queries": typeof kb_queries;
   "kb/scrapeUrl": typeof kb_scrapeUrl;
   "kb/uploadFile": typeof kb_uploadFile;
+  "monitoring/actions": typeof monitoring_actions;
+  "monitoring/config": typeof monitoring_config;
+  "monitoring/index": typeof monitoring_index;
+  "monitoring/mutations": typeof monitoring_mutations;
+  "monitoring/queries": typeof monitoring_queries;
   onboarding: typeof onboarding;
   seed: typeof seed;
 }>;

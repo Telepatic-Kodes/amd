@@ -31,3 +31,8 @@ export {
   markDigestSent,
   markDigestFailed,
 } from "./mutations";
+
+export {
+  generateAlertDigest,
+  triggerAlertDigest,
+} from "./actions";

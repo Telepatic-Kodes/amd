@@ -1,5 +1,5 @@
 import { cronJobs } from "convex/server";
-import { api } from "./_generated/api";
+import { api, internal } from "./_generated/api";
 
 const crons = cronJobs();
 
@@ -95,6 +95,19 @@ crons.hourly(
   { minuteUTC: 35 }, // 30 min after hourly sync at :05
   api.enrichment.orchestration.processBatch,
   { batchSize: 5 }
+);
+
+// ===========================================
+// BRAND MONITORING (Phase 5)
+// ===========================================
+
+// Generate daily alert digest at 8:00 AM UTC
+// (30 minutes after enrichment completes at 7:30 AM)
+crons.daily(
+  "alert-digest-daily",
+  { hourUTC: 8, minuteUTC: 0 },
+  internal.monitoring.actions.generateAlertDigest,
+  {}
 );
 
 export default crons;
