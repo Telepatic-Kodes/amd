@@ -3,6 +3,16 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* Spacing tokens */
+  --spacing-section: 3rem;
+  --spacing-card: 1.5rem;
+
+  /* Typography tokens */
+  --font-size-hero: 3rem;
+  --font-size-heading: 2.25rem;
+  --font-size-subheading: 1.875rem;
+  --font-size-body: 1rem;
 }
 
 @theme inline {
