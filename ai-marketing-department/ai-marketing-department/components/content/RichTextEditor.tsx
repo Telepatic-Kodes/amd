@@ -14,15 +14,59 @@ import { EditorStatusBar } from "./EditorStatusBar";
 import { copyHtmlToClipboard, downloadAsFile, cleanPastedContent } from "@/lib/editor-utils";
 import { useToast } from "@/components/ui/Toast";
 
+/**
+ * Props for RichTextEditor component
+ */
 interface RichTextEditorProps {
+  /** Initial HTML content to display in the editor */
   content: string;
+  /** Callback fired when content changes (debounced 150ms) */
   onChange: (html: string) => void;
+  /** Placeholder text shown when editor is empty */
   placeholder?: string;
+  /** Minimum height of the editor area (default: "300px") */
   minHeight?: string;
+  /** Additional CSS classes for the editor container */
   className?: string;
-  title?: string; // For filename when downloading
-  showExport?: boolean; // Show export buttons
+  /** Title used for filename when downloading (default: "content") */
+  title?: string;
+  /** Whether to show export buttons (Copy HTML, Download) */
+  showExport?: boolean;
 }
+
+/**
+ * RichTextEditor - WYSIWYG editor powered by TipTap
+ *
+ * Features:
+ * - Text formatting: Bold, Italic, Strikethrough, Code
+ * - Headings: H1, H2, H3
+ * - Lists: Bullet and Numbered
+ * - Links: Insert, Edit, Remove
+ * - Blocks: Blockquote, Code Block, Horizontal Rule
+ * - BubbleMenu: Inline formatting on text selection
+ * - Export: Copy HTML, Download as file
+ * - Accessibility: Full ARIA support, keyboard navigation
+ * - Performance: Memoized toolbar, debounced onChange
+ * - Mobile: Touch-optimized, responsive design
+ *
+ * Keyboard Shortcuts:
+ * - Ctrl+B: Bold
+ * - Ctrl+I: Italic
+ * - Ctrl+E: Inline Code
+ * - Ctrl+Z: Undo
+ * - Ctrl+Y: Redo
+ *
+ * @example
+ * ```tsx
+ * <RichTextEditor
+ *   content={htmlContent}
+ *   onChange={(html) => setHtmlContent(html)}
+ *   placeholder="Start writing..."
+ *   minHeight="400px"
+ *   showExport={true}
+ * />
+ * ```
+ */
 
 export function RichTextEditor({
   content,

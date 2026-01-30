@@ -11,24 +11,45 @@ import {
   validateContent,
 } from "@/lib/editor-utils";
 
+/**
+ * Props for EditorStatusBar component
+ */
 interface EditorStatusBarProps {
+  /** HTML content to analyze */
   content: string;
+  /** Minimum character count for validation (default: 50) */
   minChars?: number;
+  /** Maximum character count for validation (default: 100000) */
   maxChars?: number;
+  /** Additional CSS classes for the status bar */
   className?: string;
 }
 
 /**
  * EditorStatusBar - Display real-time metrics and validation status
  *
- * Shows:
+ * Features:
  * - Character count (visible text only, excluding HTML tags)
- * - Word count
- * - Reading time estimate (words / 200)
- * - Validation status ("Ready" or "Below minimum")
+ * - Word count (formatted with thousands separators)
+ * - Reading time estimate (words / 200 WPM)
+ * - Validation status with visual indicators
+ * - Warning when approaching character limit (90%+)
+ * - Error when exceeding maximum characters
+ * - Performance: Memoized to prevent unnecessary re-calculations
  *
- * Displays warning if content is below minimum character count.
- * Memoized for performance optimization with large documents.
+ * Validation States:
+ * - ✅ Ready: Content meets minimum, below 90% of maximum
+ * - ⚠️ Warning: Approaching limit (90%+ of maximum)
+ * - ❌ Error: Below minimum or exceeds maximum
+ *
+ * @example
+ * ```tsx
+ * <EditorStatusBar
+ *   content={htmlContent}
+ *   minChars={50}
+ *   maxChars={100000}
+ * />
+ * ```
  */
 const EditorStatusBarComponent = ({
   content,

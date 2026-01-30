@@ -21,11 +21,45 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/**
+ * Props for EditorToolbar component
+ */
 interface EditorToolbarProps {
+  /** TipTap editor instance */
   editor: Editor | null;
+  /** Callback fired when Link button is clicked */
   onLinkClick?: () => void;
+  /** Additional CSS classes for the toolbar */
   className?: string;
 }
+
+/**
+ * EditorToolbar - Formatting toolbar for rich text editor
+ *
+ * Features:
+ * - Text formatting: Bold, Italic, Strikethrough, Code
+ * - Headings: H1, H2, H3 (hidden on mobile)
+ * - Lists: Bullet and Numbered
+ * - Blocks: Blockquote, Code Block, Horizontal Rule (hidden on mobile)
+ * - Link: Insert/Edit links
+ * - Undo/Redo (hidden on mobile)
+ * - Responsive: Essential buttons visible on mobile (<640px)
+ * - Accessible: Full ARIA support, keyboard navigation
+ * - Performance: Memoized to prevent unnecessary re-renders
+ *
+ * Mobile Optimization:
+ * - Touch targets: 44x44px minimum
+ * - Essential buttons only: Bold, Italic, Lists, Link
+ * - Advanced features hidden on small screens
+ *
+ * @example
+ * ```tsx
+ * <EditorToolbar
+ *   editor={editor}
+ *   onLinkClick={() => setLinkDialogOpen(true)}
+ * />
+ * ```
+ */
 
 interface ToolbarButtonProps {
   onClick: () => void;
