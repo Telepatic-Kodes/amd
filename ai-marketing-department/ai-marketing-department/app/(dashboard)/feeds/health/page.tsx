@@ -122,7 +122,7 @@ export default function FeedsHealthPage() {
             <h1 className="text-5xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
               Salud de Fuentes
             </h1>
-            <p className="text-zinc-400 mt-2">
+            <p className="text-zinc-400 mt-2 text-lg">
               Reporte mensual detallado de todas tus fuentes RSS
             </p>
           </div>
@@ -211,7 +211,7 @@ export default function FeedsHealthPage() {
         transition={{ delay: 0.4 }}
       >
         <Card className="p-6">
-          <h3 className="text-3xl font-semibold text-white mb-4 flex items-center gap-2">
+          <h3 className="text-2xl font-semibold text-white mb-4 flex items-center gap-2">
             <Zap className="w-6 h-6 text-yellow-400" />
             Recomendaciones
           </h3>
@@ -258,7 +258,7 @@ export default function FeedsHealthPage() {
         transition={{ delay: 0.5 }}
       >
         <Card className="p-6">
-          <h3 className="text-3xl font-semibold text-white mb-4">Rendimiento de fuentes</h3>
+          <h3 className="text-2xl font-semibold text-white mb-4">Rendimiento de fuentes</h3>
 
           <div className="overflow-x-auto">
             <table className="w-full">

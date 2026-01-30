@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { useQuery } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "@convex/_generated/api";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -26,6 +26,8 @@ import {
   LayoutGrid,
   List,
   Sparkles,
+  Edit2,
+  Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/Card";
@@ -33,6 +35,8 @@ import { StatusBadge, Badge } from "@/components/ui/Badge";
 import { SkeletonGrid } from "@/components/ui/Skeleton";
 import { EmptyContent } from "@/components/ui/EmptyState";
 import { useToast } from "@/components/ui/Toast";
+import { UploadContentForm } from "@/components/content/UploadContentForm";
+import { EditContentModal } from "@/components/content/EditContentModal";
 
 const CONTENT_TYPES = [
   { value: "", label: "All Types" },
@@ -105,6 +109,95 @@ function formatTypeName(type: string) {
     .join(" ");
 }
 
+// Status workflow actions component
+function StatusActions({ content, onStatusChange }: { content: any; onStatusChange: (status: string) => Promise<void> }) {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleStatusChange = async (newStatus: string) => {
+    setIsLoading(true);
+    try {
+      await onStatusChange(newStatus);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Draft → Submit for Review
+  if (content.status === "draft") {
+    return (
+      <button
+        onClick={() => handleStatusChange("review")}
+        disabled={isLoading}
+        className="w-full px-3 py-1.5 rounded bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-white text-sm font-medium transition-colors flex items-center justify-center gap-2"
+      >
+        {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
+        Submit for Review
+      </button>
+    );
+  }
+
+  // In Review → Approve or Request Revision
+  if (content.status === "review") {
+    return (
+      <div className="flex gap-2">
+        <button
+          onClick={() => handleStatusChange("revision_needed")}
+          disabled={isLoading}
+          className="flex-1 px-3 py-1.5 rounded border border-zinc-700 hover:bg-zinc-800 disabled:opacity-50 text-zinc-300 text-sm font-medium transition-colors"
+        >
+          Request Revision
+        </button>
+        <button
+          onClick={() => handleStatusChange("approved")}
+          disabled={isLoading}
+          className="flex-1 px-3 py-1.5 rounded bg-green-500 hover:bg-green-600 disabled:opacity-50 text-white text-sm font-medium transition-colors flex items-center justify-center gap-2"
+        >
+          {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
+          Approve
+        </button>
+      </div>
+    );
+  }
+
+  // Approved → Schedule or Publish
+  if (content.status === "approved") {
+    return (
+      <div className="flex gap-2">
+        <button
+          onClick={() => handleStatusChange("scheduled")}
+          disabled={isLoading}
+          className="flex-1 px-3 py-1.5 rounded border border-zinc-700 hover:bg-zinc-800 disabled:opacity-50 text-zinc-300 text-sm font-medium transition-colors"
+        >
+          Schedule
+        </button>
+        <button
+          onClick={() => handleStatusChange("published")}
+          disabled={isLoading}
+          className="flex-1 px-3 py-1.5 rounded bg-indigo-500 hover:bg-indigo-600 disabled:opacity-50 text-white text-sm font-medium transition-colors flex items-center justify-center gap-2"
+        >
+          {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
+          Publish Now
+        </button>
+      </div>
+    );
+  }
+
+  // Published → Archive
+  if (content.status === "published") {
+    return (
+      <button
+        onClick={() => handleStatusChange("archived")}
+        disabled={isLoading}
+        className="w-full px-3 py-1.5 rounded border border-zinc-700 hover:bg-zinc-800 disabled:opacity-50 text-zinc-400 text-sm font-medium transition-colors"
+      >
+        Archive
+      </button>
+    );
+  }
+
+  return null;
+}
+
 export default function ContentPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
@@ -112,11 +205,15 @@ export default function ContentPage() {
   const [selectedContent, setSelectedContent] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [editingContent, setEditingContent] = useState<any | null>(null);
 
   const content = useQuery(api.functions.listContent, {
     type: typeFilter || undefined,
     status: statusFilter || undefined,
   });
+
+  const updateContentStatus = useMutation(api.functions.updateContentStatus);
+  const { success, error: showError } = useToast();
 
   const filteredContent = useMemo(() => {
     if (!content) return [];
@@ -141,7 +238,6 @@ export default function ContentPage() {
     return content.find((c: { contentId: string }) => c.contentId === selectedContent);
   }, [selectedContent, content]);
 
-  const { success } = useToast();
 
   // Copy to clipboard helper
   const copyToClipboard = (text: string) => {
@@ -171,10 +267,10 @@ export default function ContentPage() {
             <FileText className="h-6 w-6 text-blue-400" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
               Content
             </h1>
-            <p className="text-zinc-400 mt-1">
+            <p className="text-zinc-400 mt-1 text-lg">
               Create, edit and publish content.
             </p>
           </div>
@@ -195,7 +291,7 @@ export default function ContentPage() {
           <h1 className="text-5xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
             Content
           </h1>
-          <p className="text-zinc-400 mt-1">
+          <p className="text-zinc-400 mt-1 text-lg">
             Manage your {content.length} content pieces.
           </p>
         </div>
@@ -203,6 +299,9 @@ export default function ContentPage() {
 
       {/* Filters */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+        {/* Upload Form */}
+        <UploadContentForm onSuccess={() => {}} />
+
         {/* Search */}
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
@@ -381,6 +480,16 @@ export default function ContentPage() {
                           >
                             <Eye className="h-3.5 w-3.5" />
                           </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setEditingContent(item);
+                            }}
+                            className="p-1.5 rounded-lg bg-zinc-900/90 backdrop-blur-sm hover:bg-zinc-800 text-zinc-400 hover:text-white transition-colors"
+                            title="Edit content"
+                          >
+                            <Edit2 className="h-3.5 w-3.5" />
+                          </button>
                         </div>
 
                         <div
@@ -532,7 +641,7 @@ export default function ContentPage() {
               <Card className="sticky top-6">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-2xl font-semibold text-white flex items-center gap-2">
+                    <h3 className="text-xl font-semibold text-white flex items-center gap-2">
                       <Sparkles className="h-4 w-4 text-blue-400" />
                       Content Details
                     </h3>
@@ -565,7 +674,31 @@ export default function ContentPage() {
                         <p className="text-xs text-zinc-500 mb-1 uppercase tracking-wider">Status</p>
                         <StatusBadge status={selectedContentData.status} />
                       </div>
+                      
+                      {/* Status Actions */}
+                      <div className="mt-3 pt-3 border-t border-zinc-800">
+                        <StatusActions 
+                          content={selectedContentData} 
+                          onStatusChange={async (status) => {
+                            await updateContentStatus({ 
+                              id: selectedContentData._id, 
+                              status: status as any 
+                            });
+                          }} 
+                        />
+                      </div>
                     </div>
+
+                    {/* Edit Button in Details */}
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setEditingContent(selectedContentData)}
+                      className="w-full px-4 py-2 rounded-lg bg-indigo-500 hover:bg-indigo-600 text-white font-medium transition-colors flex items-center justify-center gap-2"
+                    >
+                      <Edit2 className="h-4 w-4" />
+                      Edit Content
+                    </motion.button>
 
                     {/* Preview with copy button */}
                     <div>
@@ -689,6 +822,16 @@ export default function ContentPage() {
         )}
         </AnimatePresence>
       </div>
+
+      {/* Edit Content Modal */}
+      {editingContent && (
+        <EditContentModal
+          content={editingContent}
+          isOpen={!!editingContent}
+          onClose={() => setEditingContent(null)}
+          onSuccess={() => setEditingContent(null)}
+        />
+      )}
     </div>
   );
 }

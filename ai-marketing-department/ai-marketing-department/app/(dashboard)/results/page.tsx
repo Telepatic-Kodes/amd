@@ -102,12 +102,12 @@ export default function ResultsPage() {
     return (
       <div className="space-y-8">
         <div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
             Resultados
           </h1>
-          <p className="text-zinc-400 mt-3">Cargando tus métricas...</p>
+          <p className="text-zinc-400 mt-3 text-lg">Cargando tus métricas...</p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {[...Array(3)].map((_, i) => (
             <div key={i} className="h-32 rounded-xl border border-zinc-800 bg-zinc-950/50 animate-pulse" />
           ))}
@@ -205,7 +205,7 @@ export default function ResultsPage() {
         >
           <Card className="p-6">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-3xl font-semibold text-white flex items-center gap-3">
+              <h3 className="text-2xl font-semibold text-white flex items-center gap-3">
                 <TrendingUp className="w-6 h-6 text-indigo-400" />
                 Tendencia (últimos 7 días)
               </h3>
@@ -230,18 +230,18 @@ export default function ResultsPage() {
           transition={{ delay: 0.4 }}
         >
           <Card className="p-6">
-            <h3 className="text-3xl font-semibold text-white mb-6">Resumen</h3>
+            <h3 className="text-2xl font-semibold text-white mb-6">Resumen</h3>
             <div className="space-y-4">
               <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
                 <span className="text-zinc-400">Campañas activas</span>
                 <span className="text-2xl font-bold text-green-400">
-                  {campaigns?.filter((c) => c.status === "active").length || 0}
+                  {campaigns?.filter((c: any) => c.status === "active").length || 0}
                 </span>
               </div>
               <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
                 <span className="text-zinc-400">Contenido publicado</span>
                 <span className="text-2xl font-bold text-blue-400">
-                  {content?.filter((c) => c.status === "published").length || 0}
+                  {content?.filter((c: any) => c.status === "published").length || 0}
                 </span>
               </div>
               <div className="flex items-center justify-between">
@@ -263,7 +263,7 @@ export default function ResultsPage() {
       >
         <Card className="p-6">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-3xl font-semibold text-white">Top 5 Contenido</h3>
+            <h3 className="text-2xl font-semibold text-white">Top 5 Contenido</h3>
             <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 transition-colors">
               <Download className="w-4 h-4" />
               Exportar

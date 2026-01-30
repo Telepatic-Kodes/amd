@@ -76,7 +76,7 @@ export default function DashboardPage() {
           </p>
         </div>
         {/* Skeleton Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
           {[...Array(4)].map((_, i) => (
             <div
               key={i}
@@ -89,28 +89,28 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-6 md:space-y-12">
       {/* Header with Greeting */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+          <h1 className="text-3xl md:text-5xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
             ¡Buenos días! 👋
           </h1>
-          <p className="text-zinc-400 mt-3 text-lg">
+          <p className="text-zinc-400 mt-2 md:mt-3 text-base md:text-lg">
             Aquí está lo más importante de tu marketing hoy.
           </p>
         </div>
       </div>
 
       {/* Key Metrics - Simplified to 3 larger cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
         {/* Campaigns Running */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0 }}
         >
-          <Card className="p-6 lg:p-8">
+          <Card className="p-4 md:p-6 lg:p-8">
             <div className="flex items-center justify-between mb-4">
               <div className="p-3 rounded-lg bg-green-500/10">
                 <Rocket className="w-6 h-6 text-green-400" />
@@ -138,7 +138,7 @@ export default function DashboardPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <Card className="p-6 lg:p-8">
+          <Card className="p-4 md:p-6 lg:p-8">
             <div className="flex items-center justify-between mb-4">
               <div className="p-3 rounded-lg bg-blue-500/10">
                 <CheckCircle className="w-6 h-6 text-blue-400" />
@@ -166,7 +166,7 @@ export default function DashboardPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <Card className="p-6 lg:p-8">
+          <Card className="p-4 md:p-6 lg:p-8">
             <div className="flex items-center justify-between mb-4">
               <div className="p-3 rounded-lg bg-yellow-500/10">
                 <Clock className="w-6 h-6 text-yellow-400" />
@@ -190,16 +190,16 @@ export default function DashboardPage() {
       </div>
 
       {/* Content Workflow Status */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
         {/* Content Pipeline */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
-          <Card className="p-6">
-            <h3 className="text-3xl font-semibold text-white mb-6 flex items-center gap-3">
-              <BarChart3 className="w-6 h-6 text-indigo-400" />
+          <Card className="p-4 md:p-6">
+            <h3 className="text-xl md:text-2xl font-semibold text-white mb-4 md:mb-6 flex items-center gap-3">
+              <BarChart3 className="w-5 h-5 md:w-6 md:h-6 text-indigo-400" />
               Estado del contenido
             </h3>
             <div className="space-y-4">
@@ -226,9 +226,9 @@ export default function DashboardPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
         >
-          <Card className="p-6">
-            <h3 className="text-3xl font-semibold text-white mb-6 flex items-center gap-3">
-              <Target className="w-6 h-6 text-green-400" />
+          <Card className="p-4 md:p-6">
+            <h3 className="text-xl md:text-2xl font-semibold text-white mb-4 md:mb-6 flex items-center gap-3">
+              <Target className="w-5 h-5 md:w-6 md:h-6 text-green-400" />
               {translate("whatNext")}
             </h3>
             <div className="space-y-3">

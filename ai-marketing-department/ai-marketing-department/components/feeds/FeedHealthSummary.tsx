@@ -78,7 +78,7 @@ export function FeedHealthSummary({ status, loading = false }: FeedHealthSummary
               <div className="flex items-center gap-3">
                 <div className="text-3xl">{healthStatus.icon}</div>
                 <div>
-                  <h3 className="text-2xl font-semibold text-white">
+                  <h3 className="text-xl font-semibold text-white">
                     {translate("feedHealthSummary")}
                   </h3>
                   <p className="text-sm text-zinc-400 mt-1">{healthStatus.message}</p>
