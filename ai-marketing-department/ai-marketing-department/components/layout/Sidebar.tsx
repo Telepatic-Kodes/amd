@@ -16,20 +16,26 @@ import {
     Sparkles,
     FolderOutput,
     Rss,
+    Target,
+    TrendingUp,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { NavGroup } from "./NavGroup";
 
-const navigation = [
-    { name: "Dashboard", href: "/", icon: LayoutDashboard },
-    { name: "Agents", href: "/agents", icon: Users },
-    { name: "Org Chart", href: "/org", icon: Network },
-    { name: "Campaigns", href: "/campaigns", icon: Rocket },
-    { name: "Content", href: "/content", icon: FileText },
-    { name: "Feeds", href: "/feeds", icon: Rss },
-    { name: "Generado", href: "/generated", icon: FolderOutput },
+const marketingNavigation = [
+    { name: "Campañas", href: "/campaigns", icon: Rocket },
+    { name: "Biblioteca", href: "/content", icon: FileText },
+    { name: "Contenido Generado", href: "/generated", icon: FolderOutput },
+    { name: "Métricas", href: "/metrics", icon: TrendingUp },
+];
+
+const systemNavigation = [
+    { name: "Agentes IA", href: "/agents", icon: Users },
+    { name: "Organigrama", href: "/org", icon: Network },
+    { name: "Fuentes RSS", href: "/feeds", icon: Rss },
     { name: "Analytics", href: "/analytics", icon: BarChart3 },
-    { name: "Settings", href: "/settings", icon: Settings },
+    { name: "Configuración", href: "/settings", icon: Settings },
 ];
 
 export function Sidebar() {
@@ -46,25 +52,36 @@ export function Sidebar() {
                 </Link>
             </div>
 
-            <div className="flex flex-1 flex-col gap-1 p-4">
-                {navigation.map((item) => {
-                    const isActive = pathname === item.href;
-                    return (
-                        <Link
-                            key={item.name}
-                            href={item.href}
-                            className={cn(
-                                "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-all duration-200",
-                                isActive
-                                    ? "bg-indigo-500/10 text-indigo-400 shadow-[0_0_20px_rgba(99,102,241,0.1)]"
-                                    : "text-zinc-400 hover:bg-white/5 hover:text-white"
-                            )}
-                        >
-                            <item.icon className="h-4 w-4" />
-                            {item.name}
-                        </Link>
-                    );
-                })}
+            <div className="flex flex-1 flex-col overflow-y-auto p-4">
+                {/* Dashboard - Top Level */}
+                <Link
+                    href="/"
+                    className={cn(
+                        "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-all duration-200 mb-6",
+                        pathname === "/"
+                            ? "bg-indigo-500/10 text-indigo-400 shadow-[0_0_20px_rgba(99,102,241,0.1)]"
+                            : "text-zinc-400 hover:bg-white/5 hover:text-white"
+                    )}
+                >
+                    <LayoutDashboard className="h-4 w-4" />
+                    Dashboard
+                </Link>
+
+                {/* Marketing Group */}
+                <NavGroup
+                    title="Marketing"
+                    icon={Target}
+                    items={marketingNavigation}
+                    defaultExpanded={true}
+                />
+
+                {/* Sistema Avanzado Group */}
+                <NavGroup
+                    title="Sistema Avanzado"
+                    icon={Settings}
+                    items={systemNavigation}
+                    defaultExpanded={false}
+                />
             </div>
 
             <div className="border-t border-zinc-800 p-4">
