@@ -29,11 +29,11 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
               variant === "ghost",
           },
 
-          // Sizes
+          // Sizes (with WCAG 44x44px touch target compliance)
           {
-            "px-3 py-1.5 text-sm": size === "sm",
-            "px-6 py-3 text-base": size === "md",
-            "px-8 py-4 text-lg": size === "lg",
+            "px-3 py-1.5 text-sm min-h-[44px]": size === "sm",
+            "px-6 py-3 text-base min-h-[44px]": size === "md",
+            "px-8 py-4 text-lg min-h-[44px]": size === "lg",
           },
 
           className

@@ -102,7 +102,7 @@ export function FeedCard({ feed, onSelect, isSelected }: FeedCardProps) {
         )}
         onClick={onSelect}
       >
-        <div className="p-4">
+        <div className="p-3 md:p-4">
           {/* Header */}
           <div className="flex items-start justify-between mb-3">
             <div className="flex items-center gap-3">
@@ -165,36 +165,36 @@ export function FeedCard({ feed, onSelect, isSelected }: FeedCardProps) {
               <button
                 onClick={(e) => { e.stopPropagation(); handleSync(); }}
                 disabled={isLoading || feed.status === "paused"}
-                className="p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white transition-colors disabled:opacity-50"
+                className="p-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white transition-colors disabled:opacity-50 min-h-[44px] min-w-[44px]"
                 title="Sync now"
               >
-                <RefreshCw className={cn("h-3.5 w-3.5", isLoading && "animate-spin")} />
+                <RefreshCw className={cn("h-4 w-4", isLoading && "animate-spin")} />
               </button>
               <button
                 onClick={(e) => { e.stopPropagation(); handlePauseResume(); }}
                 disabled={isLoading}
-                className="p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white transition-colors disabled:opacity-50"
+                className="p-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white transition-colors disabled:opacity-50 min-h-[44px] min-w-[44px]"
                 title={feed.status === "active" ? "Pause" : "Resume"}
               >
-                {feed.status === "active" ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
+                {feed.status === "active" ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
               </button>
               <a
                 href={feed.url}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white transition-colors"
+                className="p-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
                 title="Open feed URL"
               >
-                <ExternalLink className="h-3.5 w-3.5" />
+                <ExternalLink className="h-4 w-4" />
               </a>
               <button
                 onClick={(e) => { e.stopPropagation(); handleDelete(); }}
                 disabled={isLoading}
-                className="p-1.5 rounded-lg bg-zinc-800 hover:bg-red-900/50 text-zinc-400 hover:text-red-400 transition-colors disabled:opacity-50"
+                className="p-2 rounded-lg bg-zinc-800 hover:bg-red-900/50 text-zinc-400 hover:text-red-400 transition-colors disabled:opacity-50 min-h-[44px] min-w-[44px]"
                 title="Delete feed"
               >
-                <Trash2 className="h-3.5 w-3.5" />
+                <Trash2 className="h-4 w-4" />
               </button>
             </div>
           </div>
