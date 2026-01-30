@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 import { EditorToolbar } from "./EditorToolbar";
 import { LinkDialog } from "./LinkDialog";
 import { EditorStatusBar } from "./EditorStatusBar";
-import { copyHtmlToClipboard, downloadAsFile } from "@/lib/editor-utils";
+import { copyHtmlToClipboard, downloadAsFile, cleanPastedContent } from "@/lib/editor-utils";
 import { useToast } from "@/components/ui/Toast";
 
 interface RichTextEditorProps {
@@ -70,8 +70,24 @@ export function RichTextEditor({
       attributes: {
         class: cn(
           "prose prose-invert max-w-none focus:outline-none",
-          "text-white text-sm leading-relaxed"
+          "text-white text-sm leading-relaxed",
+          // Handle long words overflow with CSS
+          "break-words"
         ),
+        // Add placeholder attribute for empty state
+        'data-placeholder': placeholder,
+      },
+      // Handle paste events - clean invalid formatting and images
+      handlePaste: (view, event) => {
+        const html = event.clipboardData?.getData('text/html');
+        if (html && /<img/i.test(html)) {
+          // Show notification if images were in pasted content
+          setTimeout(() => {
+            showError("Images removed", "Images are not supported and were removed from pasted content");
+          }, 100);
+        }
+        // TipTap automatically sanitizes pasted content through its schema
+        return false;
       },
     },
     onUpdate: ({ editor }) => {

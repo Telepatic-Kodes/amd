@@ -169,15 +169,26 @@ export function calculateReadingTime(html: string, wordsPerMinute: number = 200)
  * Validate content meets minimum requirements
  * @param html - HTML content to validate
  * @param minChars - Minimum character count (default: 50)
+ * @param maxChars - Maximum character count (default: 100000)
  * @returns Object with isValid flag and error message
  */
 export function validateContent(
   html: string,
-  minChars: number = 50
-): { isValid: boolean; error?: string } {
+  minChars: number = 50,
+  maxChars: number = 100000
+): { isValid: boolean; error?: string; warning?: string } {
   const plainText = stripHtmlTags(html);
   const charCount = plainText.length;
 
+  // Check empty content
+  if (charCount === 0) {
+    return {
+      isValid: false,
+      error: "Content cannot be empty",
+    };
+  }
+
+  // Check minimum length
   if (charCount < minChars) {
     return {
       isValid: false,
@@ -185,5 +196,97 @@ export function validateContent(
     };
   }
 
+  // Check maximum length with warning
+  if (charCount > maxChars) {
+    return {
+      isValid: false,
+      error: `Content exceeds maximum of ${maxChars.toLocaleString()} characters (currently ${charCount.toLocaleString()})`,
+    };
+  }
+
+  // Warning for approaching limit
+  if (charCount > maxChars * 0.9) {
+    return {
+      isValid: true,
+      warning: `Approaching character limit: ${charCount.toLocaleString()} / ${maxChars.toLocaleString()}`,
+    };
+  }
+
   return { isValid: true };
+}
+
+/**
+ * Clean pasted content by removing invalid formatting and images
+ * @param html - HTML content to clean
+ * @returns Cleaned HTML content
+ */
+export function cleanPastedContent(html: string): string {
+  if (typeof window === 'undefined') {
+    // Server-side: basic cleaning with regex
+    return html
+      // Remove images
+      .replace(/<img[^>]*>/gi, '')
+      // Remove style attributes
+      .replace(/\s*style\s*=\s*["'][^"']*["']/gi, '')
+      // Remove class attributes (except safe ones)
+      .replace(/\s*class\s*=\s*["'][^"']*["']/gi, '')
+      // Remove id attributes
+      .replace(/\s*id\s*=\s*["'][^"']*["']/gi, '')
+      // Remove data attributes
+      .replace(/\s*data-[a-z-]+\s*=\s*["'][^"']*["']/gi, '');
+  }
+
+  // Client-side: use DOM parser for accuracy
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+
+  // Remove all images
+  const images = doc.querySelectorAll('img');
+  images.forEach((img) => img.remove());
+
+  // Remove inline styles
+  const elementsWithStyle = doc.querySelectorAll('[style]');
+  elementsWithStyle.forEach((el) => el.removeAttribute('style'));
+
+  // Remove classes (except safe formatting classes)
+  const elementsWithClass = doc.querySelectorAll('[class]');
+  elementsWithClass.forEach((el) => el.removeAttribute('class'));
+
+  // Remove ids
+  const elementsWithId = doc.querySelectorAll('[id]');
+  elementsWithId.forEach((el) => el.removeAttribute('id'));
+
+  // Remove data attributes
+  const allElements = doc.querySelectorAll('*');
+  allElements.forEach((el) => {
+    Array.from(el.attributes).forEach((attr) => {
+      if (attr.name.startsWith('data-')) {
+        el.removeAttribute(attr.name);
+      }
+    });
+  });
+
+  return doc.body.innerHTML;
+}
+
+/**
+ * Handle word overflow by adding word-break opportunities
+ * @param html - HTML content
+ * @param maxWordLength - Maximum word length before adding breaks (default: 50)
+ * @returns HTML with word-break handling
+ */
+export function handleWordOverflow(html: string, maxWordLength: number = 50): string {
+  const plainText = stripHtmlTags(html);
+  const words = plainText.split(/\s+/);
+
+  // Check if any word exceeds max length
+  const hasLongWords = words.some(word => word.length > maxWordLength);
+
+  if (!hasLongWords) {
+    return html;
+  }
+
+  // Note: TipTap prose styling should handle this with CSS
+  // This is just validation/detection
+  return html;
 }

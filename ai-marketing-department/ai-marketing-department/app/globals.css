@@ -171,3 +171,17 @@ body {
   min-width: 44px;
   min-height: 44px;
 }
+
+/* Word overflow handling - break very long words to prevent horizontal scroll */
+.ProseMirror {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/* Ensure special characters and unicode display correctly */
+.ProseMirror {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
