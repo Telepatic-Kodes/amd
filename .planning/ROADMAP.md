@@ -176,11 +176,11 @@ Plans:
 
 ---
 
-## Phase 8: File Upload & Content Import (PLANNED)
+## Phase 8: File Upload & Content Import (COMPLETE ✓)
 
 **Goal:** Enable drag-drop file upload (PDF, DOCX, TXT) with automatic content parsing and import into editor.
 
-**Status:** ⏳ PLANNED (2 plans ready for execution)
+**Status:** ✓ COMPLETE (all 2 plans executed)
 
 **Requirements Covered:**
 - FILE-01: Drag-drop file upload for PDF, DOCX, TXT
@@ -189,14 +189,14 @@ Plans:
 - FILE-04: Error handling for unsupported formats
 - FILE-05: File size validation
 
-**Success Criteria:**
-1. Drag-drop zone in UploadContentForm and EditContentModal
-2. File upload handling for PDF (pdf-parse) and DOCX (mammoth)
-3. Content extracted and displayed in preview modal
-4. User can edit extracted content before import
-5. File size limit enforced (max 10MB)
-6. Unsupported formats show clear error messages
-7. Upload progress indicator
+**Deliverables:**
+- File parsing utilities (parsePdf, parseDocx, parseTxt, validateFile)
+- FileDropZone component with drag-drop support
+- FileImportModal with two-step workflow (upload -> preview)
+- Integration in EditContentModal (import button)
+- Integration in UploadContentForm (import button)
+- Preview and edit before import
+- Validation and error handling
 8. Failed uploads recoverable with retry
 
 **Plans:** 2 plans
@@ -228,29 +228,30 @@ Plans:
 
 **Completed:** Phases 1-7 (7 phases, 16 plans, 100% execution rate)
 
-**Remaining:** Phase 8 (1 phase, TBD plans)
+**All Phases Complete!**
 
 **Total Coverage:**
 - v1 Requirements: 29 total
-- Phases 1-7 Covered: 24 requirements (design + tour + rich editor)
-- Phase 8 Will Cover: 5 requirements (file upload)
+- Phases 1-8 Complete: 29 requirements ✓
 - Full Coverage: 29/29 ✓
 
 ---
 
 ## What's Next
 
-1. **Plan Phase 8:** File Upload & Content Import
-   - `/gsd:plan-phase 8`
-   - Drag-drop file upload for PDF, DOCX, TXT
-   - Content parsing and import workflow
+1. **User Acceptance Testing:** Validate complete feature set (Phases 1-8)
+   - Navigation simplification
+   - Feed templates
+   - Onboarding express
+   - Spanish translation
+   - Design polish
+   - Product tour
+   - Rich text editor
+   - File upload & import
 
-2. **Execute Phase 8:** Run file upload implementation
-   - `/gsd:execute-phase 8`
+2. **Deploy to production:** Once all features verified and user tested
 
-3. **Validate with users:** Collect feedback on Phases 1-8 complete feature set
-
-4. **Deploy to production:** Once all features verified and user tested
+3. **Monitor and iterate:** Collect user feedback and plan v2 enhancements
 
 ---
 
