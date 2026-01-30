@@ -278,6 +278,8 @@ export function EditContentModal({
                           onChange={(html) => handleInputChange("body", html)}
                           placeholder="Start writing your content..."
                           minHeight="400px"
+                          title={formData.title}
+                          showExport={true}
                         />
                       </motion.div>
                     ) : (

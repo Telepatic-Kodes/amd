@@ -1,24 +1,17 @@
 "use client";
 
-import { useEditor, EditorContent } from "@tiptap/react";
+import { useState } from "react";
+import { useEditor, EditorContent, TiptapBubbleMenu } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import CharacterCount from "@tiptap/extension-character-count";
-import {
-  Bold,
-  Italic,
-  List,
-  ListOrdered,
-  Quote,
-  Code,
-  Heading1,
-  Heading2,
-  Heading3,
-  LinkIcon,
-  Undo,
-  Redo,
-} from "lucide-react";
+import { Bold, Italic, Strikethrough, Code, LinkIcon, Copy, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { EditorToolbar } from "./EditorToolbar";
+import { LinkDialog } from "./LinkDialog";
+import { EditorStatusBar } from "./EditorStatusBar";
+import { copyHtmlToClipboard, downloadAsFile } from "@/lib/editor-utils";
+import { useToast } from "@/components/ui/Toast";
 
 interface RichTextEditorProps {
   content: string;
@@ -26,6 +19,8 @@ interface RichTextEditorProps {
   placeholder?: string;
   minHeight?: string;
   className?: string;
+  title?: string; // For filename when downloading
+  showExport?: boolean; // Show export buttons
 }
 
 export function RichTextEditor({
@@ -34,7 +29,12 @@ export function RichTextEditor({
   placeholder = "Start writing...",
   minHeight = "300px",
   className,
+  title = "content",
+  showExport = false,
 }: RichTextEditorProps) {
+  const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
+  const { success, error: showError } = useToast();
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -70,14 +70,28 @@ export function RichTextEditor({
     return null;
   }
 
-  const addLink = () => {
-    const url = window.prompt("Enter URL:");
-    if (url) {
-      editor.chain().focus().setLink({ href: url }).run();
+  // Export handlers
+  const handleCopyHtml = async () => {
+    try {
+      await copyHtmlToClipboard(content);
+      success("Copied!", "HTML copied to clipboard");
+    } catch (err) {
+      showError("Copy failed", "Failed to copy HTML to clipboard");
     }
   };
 
-  const ToolbarButton = ({
+  const handleDownload = () => {
+    try {
+      const timestamp = new Date().toISOString().split('T')[0];
+      const filename = `${title.toLowerCase().replace(/\s+/g, '-')}-${timestamp}.html`;
+      downloadAsFile(content, filename);
+      success("Downloaded!", `Saved as ${filename}`);
+    } catch (err) {
+      showError("Download failed", "Failed to download file");
+    }
+  };
+
+  const BubbleMenuButton = ({
     onClick,
     isActive = false,
     children,
@@ -93,8 +107,9 @@ export function RichTextEditor({
       onClick={onClick}
       title={title}
       className={cn(
-        "p-2 rounded hover:bg-zinc-800 transition-colors",
-        isActive ? "bg-zinc-800 text-indigo-400" : "text-zinc-400"
+        "p-2 rounded transition-colors touch-target min-w-[44px] min-h-[44px] flex items-center justify-center",
+        "hover:bg-zinc-700",
+        isActive ? "bg-zinc-700 text-indigo-400" : "text-zinc-300"
       )}
     >
       {children}
@@ -103,110 +118,60 @@ export function RichTextEditor({
 
   return (
     <div className={cn("border border-zinc-800 rounded-lg overflow-hidden", className)}>
-      {/* Toolbar */}
-      <div className="flex flex-wrap gap-1 p-2 border-b border-zinc-800 bg-zinc-950/50">
-        {/* Text Formatting */}
-        <ToolbarButton
+      {/* Main Toolbar */}
+      <EditorToolbar
+        editor={editor}
+        onLinkClick={() => setIsLinkDialogOpen(true)}
+      />
+
+      {/* BubbleMenu - Appears on text selection */}
+      <TiptapBubbleMenu
+        editor={editor}
+        tippyOptions={{
+          duration: 100,
+          placement: "top",
+        }}
+        className="flex gap-1 p-1 bg-zinc-800 border border-zinc-700 rounded-lg shadow-lg"
+      >
+        <BubbleMenuButton
           onClick={() => editor.chain().focus().toggleBold().run()}
           isActive={editor.isActive("bold")}
-          title="Bold (Ctrl+B)"
+          title="Bold"
         >
           <Bold className="h-4 w-4" />
-        </ToolbarButton>
-        <ToolbarButton
+        </BubbleMenuButton>
+        <BubbleMenuButton
           onClick={() => editor.chain().focus().toggleItalic().run()}
           isActive={editor.isActive("italic")}
-          title="Italic (Ctrl+I)"
+          title="Italic"
         >
           <Italic className="h-4 w-4" />
-        </ToolbarButton>
-        <ToolbarButton
+        </BubbleMenuButton>
+        <BubbleMenuButton
+          onClick={() => editor.chain().focus().toggleStrike().run()}
+          isActive={editor.isActive("strike")}
+          title="Strikethrough"
+        >
+          <Strikethrough className="h-4 w-4" />
+        </BubbleMenuButton>
+        <BubbleMenuButton
           onClick={() => editor.chain().focus().toggleCode().run()}
           isActive={editor.isActive("code")}
-          title="Inline Code (Ctrl+E)"
+          title="Code"
         >
           <Code className="h-4 w-4" />
-        </ToolbarButton>
-
-        <div className="w-px h-6 bg-zinc-800 my-auto mx-1" />
-
-        {/* Headings */}
-        <ToolbarButton
-          onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-          isActive={editor.isActive("heading", { level: 1 })}
-          title="Heading 1"
-        >
-          <Heading1 className="h-4 w-4" />
-        </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-          isActive={editor.isActive("heading", { level: 2 })}
-          title="Heading 2"
-        >
-          <Heading2 className="h-4 w-4" />
-        </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-          isActive={editor.isActive("heading", { level: 3 })}
-          title="Heading 3"
-        >
-          <Heading3 className="h-4 w-4" />
-        </ToolbarButton>
-
-        <div className="w-px h-6 bg-zinc-800 my-auto mx-1" />
-
-        {/* Lists */}
-        <ToolbarButton
-          onClick={() => editor.chain().focus().toggleBulletList().run()}
-          isActive={editor.isActive("bulletList")}
-          title="Bullet List"
-        >
-          <List className="h-4 w-4" />
-        </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().toggleOrderedList().run()}
-          isActive={editor.isActive("orderedList")}
-          title="Numbered List"
-        >
-          <ListOrdered className="h-4 w-4" />
-        </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().toggleBlockquote().run()}
-          isActive={editor.isActive("blockquote")}
-          title="Quote"
-        >
-          <Quote className="h-4 w-4" />
-        </ToolbarButton>
-
-        <div className="w-px h-6 bg-zinc-800 my-auto mx-1" />
-
-        {/* Link */}
-        <ToolbarButton
-          onClick={addLink}
+        </BubbleMenuButton>
+        <div className="w-px h-6 bg-zinc-700 my-auto mx-1" />
+        <BubbleMenuButton
+          onClick={() => setIsLinkDialogOpen(true)}
           isActive={editor.isActive("link")}
-          title="Add Link"
+          title="Link"
         >
           <LinkIcon className="h-4 w-4" />
-        </ToolbarButton>
+        </BubbleMenuButton>
+      </TiptapBubbleMenu>
 
-        <div className="w-px h-6 bg-zinc-800 my-auto mx-1" />
-
-        {/* Undo/Redo */}
-        <ToolbarButton
-          onClick={() => editor.chain().focus().undo().run()}
-          title="Undo (Ctrl+Z)"
-        >
-          <Undo className="h-4 w-4" />
-        </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().redo().run()}
-          title="Redo (Ctrl+Y)"
-        >
-          <Redo className="h-4 w-4" />
-        </ToolbarButton>
-      </div>
-
-      {/* Editor */}
+      {/* Editor Content */}
       <div
         className="p-4 bg-zinc-950/50"
         style={{ minHeight }}
@@ -215,17 +180,40 @@ export function RichTextEditor({
         <EditorContent editor={editor} />
       </div>
 
-      {/* Footer with character count */}
-      <div className="flex items-center justify-between px-4 py-2 border-t border-zinc-800 bg-zinc-950/50 text-xs text-zinc-500">
-        <div className="flex gap-4">
-          <span>
-            {editor.storage.characterCount.characters()} characters
-          </span>
-          <span>
-            {editor.storage.characterCount.words()} words
-          </span>
-        </div>
+      {/* Footer - EditorStatusBar with optional export buttons */}
+      <div className="flex items-center justify-between border-t border-zinc-800 bg-zinc-950/50">
+        <EditorStatusBar content={content} className="flex-1 border-0" />
+
+        {showExport && (
+          <div className="flex gap-2 px-4 border-l border-zinc-800">
+            <button
+              type="button"
+              onClick={handleCopyHtml}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-zinc-400 hover:text-white hover:bg-zinc-800 rounded transition-colors"
+              title="Copy HTML to clipboard"
+            >
+              <Copy className="h-3.5 w-3.5" />
+              Copy HTML
+            </button>
+            <button
+              type="button"
+              onClick={handleDownload}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-zinc-400 hover:text-white hover:bg-zinc-800 rounded transition-colors"
+              title="Download as HTML file"
+            >
+              <Download className="h-3.5 w-3.5" />
+              Download
+            </button>
+          </div>
+        )}
       </div>
+
+      {/* Link Dialog */}
+      <LinkDialog
+        editor={editor}
+        isOpen={isLinkDialogOpen}
+        onClose={() => setIsLinkDialogOpen(false)}
+      />
     </div>
   );
 }
