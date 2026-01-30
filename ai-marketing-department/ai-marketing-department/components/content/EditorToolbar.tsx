@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { Editor } from "@tiptap/react";
 import {
   Bold,
@@ -65,11 +66,11 @@ const Divider = ({ className }: { className?: string }) => (
   <div className={cn("w-px h-6 bg-zinc-800 my-auto mx-1", className)} />
 );
 
-export function EditorToolbar({
+const EditorToolbarComponent = ({
   editor,
   onLinkClick,
   className,
-}: EditorToolbarProps) {
+}: EditorToolbarProps) => {
   if (!editor) {
     return null;
   }
@@ -222,4 +223,7 @@ export function EditorToolbar({
       </div>
     </div>
   );
-}
+};
+
+// Memoized export for performance optimization
+export const EditorToolbar = memo(EditorToolbarComponent);

@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { AlertCircle, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -26,12 +27,13 @@ interface EditorStatusBarProps {
  * - Validation status ("Ready" or "Below minimum")
  *
  * Displays warning if content is below minimum character count.
+ * Memoized for performance optimization with large documents.
  */
-export function EditorStatusBar({
+const EditorStatusBarComponent = ({
   content,
   minChars = 50,
   className,
-}: EditorStatusBarProps) {
+}: EditorStatusBarProps) => {
   // Calculate metrics
   const charCount = countCharacters(content, false); // Exclude HTML tags
   const wordCount = countWords(content);
@@ -76,4 +78,7 @@ export function EditorStatusBar({
       </div>
     </div>
   );
-}
+};
+
+// Memoized export for performance optimization
+export const EditorStatusBar = memo(EditorStatusBarComponent);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback, useRef } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import { BubbleMenu } from "@tiptap/react/menus";
 import StarterKit from "@tiptap/starter-kit";
@@ -35,6 +35,20 @@ export function RichTextEditor({
 }: RichTextEditorProps) {
   const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
   const { success, error: showError } = useToast();
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Debounced onChange callback (150ms) for performance with large documents
+  const debouncedOnChange = useCallback(
+    (html: string) => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+      debounceTimerRef.current = setTimeout(() => {
+        onChange(html);
+      }, 150);
+    },
+    [onChange]
+  );
 
   const editor = useEditor({
     extensions: [
@@ -61,7 +75,7 @@ export function RichTextEditor({
       },
     },
     onUpdate: ({ editor }) => {
-      onChange(editor.getHTML());
+      debouncedOnChange(editor.getHTML());
     },
     // Performance optimization: prevent unnecessary re-renders
     shouldRerenderOnTransaction: false,
