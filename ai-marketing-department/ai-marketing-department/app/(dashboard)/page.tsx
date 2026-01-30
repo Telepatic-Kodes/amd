@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import {
   Rocket,
   TrendingUp,
-  Users,
+  Activity,
   Target,
   BarChart3,
   Clock,
@@ -19,6 +19,8 @@ import { SimpleCounter } from "@/components/ui/AnimatedCounter";
 import { TrendIndicator } from "@/components/ui/TrendIndicator";
 import { Sparkline } from "@/components/charts/Sparkline";
 import { chartColors } from "@/components/charts/theme";
+import { translate } from "@/lib/language";
+import { FeedHealthSummary } from "@/components/feeds/FeedHealthSummary";
 
 function formatNumber(num: number) {
   if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
@@ -87,42 +89,42 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
+    <div className="space-y-8">
+      {/* Header with Greeting */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
-            Dashboard
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+            ¡Buenos días! 👋
           </h1>
-          <p className="text-zinc-500 mt-2">
-            Welcome back! Here's your marketing overview.
+          <p className="text-zinc-400 mt-3 text-lg">
+            Aquí está lo más importante de tu marketing hoy.
           </p>
         </div>
       </div>
 
-      {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Active Campaigns */}
+      {/* Key Metrics - Simplified to 3 larger cards */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Campaigns Running */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0 }}
         >
-          <Card className="p-4">
-            <div className="flex items-center justify-between mb-3">
-              <div className="p-2 rounded-lg bg-green-500/10">
-                <Rocket className="w-5 h-5 text-green-400" />
+          <Card className="p-6 lg:p-8">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 rounded-lg bg-green-500/10">
+                <Rocket className="w-6 h-6 text-green-400" />
               </div>
               <TrendIndicator value={12} size="sm" />
             </div>
-            <p className="text-2xl font-bold text-white">
+            <p className="text-4xl font-bold text-white mb-2">
               <SimpleCounter value={stats.activeCampaigns} />
             </p>
-            <p className="text-sm text-zinc-500">Active Campaigns</p>
-            <div className="mt-2 h-8">
+            <p className="text-base text-zinc-400">{translate("activeCampaigns")}</p>
+            <div className="mt-4 h-10">
               <Sparkline
                 data={generateSparklineData()}
-                height={32}
+                height={40}
                 color={chartColors.success}
                 showTooltip={false}
               />
@@ -130,27 +132,27 @@ export default function DashboardPage() {
           </Card>
         </motion.div>
 
-        {/* Content Ready */}
+        {/* Content Listo */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <Card className="p-4">
-            <div className="flex items-center justify-between mb-3">
-              <div className="p-2 rounded-lg bg-blue-500/10">
-                <CheckCircle className="w-5 h-5 text-blue-400" />
+          <Card className="p-6 lg:p-8">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 rounded-lg bg-blue-500/10">
+                <CheckCircle className="w-6 h-6 text-blue-400" />
               </div>
               <TrendIndicator value={8.5} size="sm" />
             </div>
-            <p className="text-2xl font-bold text-white">
+            <p className="text-4xl font-bold text-white mb-2">
               <SimpleCounter value={contentStats.approved + contentStats.published} />
             </p>
-            <p className="text-sm text-zinc-500">Ready to Publish</p>
-            <div className="mt-2 h-8">
+            <p className="text-base text-zinc-400">{translate("approved")}</p>
+            <div className="mt-4 h-10">
               <Sparkline
                 data={generateSparklineData()}
-                height={32}
+                height={40}
                 color={chartColors.primary}
                 showTooltip={false}
               />
@@ -158,58 +160,28 @@ export default function DashboardPage() {
           </Card>
         </motion.div>
 
-        {/* In Review */}
+        {/* En Revisión */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <Card className="p-4">
-            <div className="flex items-center justify-between mb-3">
-              <div className="p-2 rounded-lg bg-yellow-500/10">
-                <Clock className="w-5 h-5 text-yellow-400" />
+          <Card className="p-6 lg:p-8">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 rounded-lg bg-yellow-500/10">
+                <Clock className="w-6 h-6 text-yellow-400" />
               </div>
               <TrendIndicator value={-2.1} size="sm" />
             </div>
-            <p className="text-2xl font-bold text-white">
+            <p className="text-4xl font-bold text-white mb-2">
               <SimpleCounter value={contentStats.review} />
             </p>
-            <p className="text-sm text-zinc-500">Waiting Review</p>
-            <div className="mt-2 h-8">
+            <p className="text-base text-zinc-400">{translate("review")}</p>
+            <div className="mt-4 h-10">
               <Sparkline
                 data={generateSparklineData()}
-                height={32}
+                height={40}
                 color={chartColors.departments.demandgen}
-                showTooltip={false}
-              />
-            </div>
-          </Card>
-        </motion.div>
-
-        {/* AI Agents */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-        >
-          <Card className="p-4">
-            <div className="flex items-center justify-between mb-3">
-              <div className="p-2 rounded-lg bg-purple-500/10">
-                <Users className="w-5 h-5 text-purple-400" />
-              </div>
-              <Badge variant="success">Active</Badge>
-            </div>
-            <p className="text-2xl font-bold text-white">
-              <SimpleCounter value={stats.activeAgents} />
-            </p>
-            <p className="text-sm text-zinc-500">
-              of {stats.totalAgents} AI Agents
-            </p>
-            <div className="mt-2 h-8">
-              <Sparkline
-                data={generateSparklineData()}
-                height={32}
-                color={chartColors.departments.social}
                 showTooltip={false}
               />
             </div>
@@ -226,20 +198,20 @@ export default function DashboardPage() {
           transition={{ delay: 0.4 }}
         >
           <Card className="p-6">
-            <h3 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
-              <BarChart3 className="w-5 h-5 text-indigo-400" />
-              Content Pipeline
+            <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-3">
+              <BarChart3 className="w-6 h-6 text-indigo-400" />
+              Estado del contenido
             </h3>
             <div className="space-y-4">
               {[
-                { label: "Drafts", count: contentStats.draft, color: "text-gray-400" },
-                { label: "In Review", count: contentStats.review, color: "text-yellow-400" },
-                { label: "Approved", count: contentStats.approved, color: "text-blue-400" },
-                { label: "Published", count: contentStats.published, color: "text-green-400" },
+                { label: translate("draft"), count: contentStats.draft, color: "text-gray-400" },
+                { label: translate("review"), count: contentStats.review, color: "text-yellow-400" },
+                { label: translate("approved"), count: contentStats.approved, color: "text-blue-400" },
+                { label: translate("published"), count: contentStats.published, color: "text-green-400" },
               ].map((stage) => (
                 <div key={stage.label} className="flex items-center justify-between">
-                  <span className="text-sm text-zinc-400">{stage.label}</span>
-                  <span className={`font-semibold ${stage.color}`}>
+                  <span className="text-base text-zinc-400">{stage.label}</span>
+                  <span className={`text-lg font-semibold ${stage.color}`}>
                     {stage.count}
                   </span>
                 </div>
@@ -255,59 +227,59 @@ export default function DashboardPage() {
           transition={{ delay: 0.5 }}
         >
           <Card className="p-6">
-            <h3 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
-              <Target className="w-5 h-5 text-green-400" />
-              Next Steps
+            <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-3">
+              <Target className="w-6 h-6 text-green-400" />
+              {translate("whatNext")}
             </h3>
             <div className="space-y-3">
               {contentStats.review > 0 && (
-                <div className="flex items-center gap-3 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
-                  <AlertCircle className="w-4 h-4 text-yellow-400" />
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
+                  <AlertCircle className="w-5 h-5 text-yellow-400 flex-shrink-0" />
                   <div>
-                    <p className="text-sm font-medium text-white">
-                      Review pending content
+                    <p className="text-base font-medium text-white">
+                      📝 Revisar contenido
                     </p>
-                    <p className="text-xs text-zinc-400">
-                      {contentStats.review} items waiting for approval
+                    <p className="text-sm text-zinc-400 mt-1">
+                      {contentStats.review} pendiente{contentStats.review > 1 ? "s" : ""} de aprobación
                     </p>
                   </div>
                 </div>
               )}
               {contentStats.draft > 0 && (
-                <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
-                  <CheckCircle className="w-4 h-4 text-blue-400" />
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                  <CheckCircle className="w-5 h-5 text-blue-400 flex-shrink-0" />
                   <div>
-                    <p className="text-sm font-medium text-white">
-                      Generate more content
+                    <p className="text-base font-medium text-white">
+                      ✍️ Crear más contenido
                     </p>
-                    <p className="text-xs text-zinc-400">
-                      {contentStats.draft} drafts ready to refine
+                    <p className="text-sm text-zinc-400 mt-1">
+                      {contentStats.draft} borrador{contentStats.draft > 1 ? "s" : ""} listos para mejorar
                     </p>
                   </div>
                 </div>
               )}
               {stats.activeCampaigns === 0 && (
-                <div className="flex items-center gap-3 p-3 rounded-lg bg-green-500/10 border border-green-500/20">
-                  <Rocket className="w-4 h-4 text-green-400" />
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-green-500/10 border border-green-500/20">
+                  <Rocket className="w-5 h-5 text-green-400 flex-shrink-0" />
                   <div>
-                    <p className="text-sm font-medium text-white">
-                      Start a new campaign
+                    <p className="text-base font-medium text-white">
+                      🚀 Lanzar campaña
                     </p>
-                    <p className="text-xs text-zinc-400">
-                      No active campaigns running
+                    <p className="text-sm text-zinc-400 mt-1">
+                      Sin campañas activas en este momento
                     </p>
                   </div>
                 </div>
               )}
               {stats.activeCampaigns > 0 && contentStats.review === 0 && contentStats.draft === 0 && (
-                <div className="flex items-center gap-3 p-3 rounded-lg bg-green-500/10 border border-green-500/20">
-                  <CheckCircle className="w-4 h-4 text-green-400" />
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-green-500/10 border border-green-500/20">
+                  <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" />
                   <div>
-                    <p className="text-sm font-medium text-white">
-                      Everything on track
+                    <p className="text-base font-medium text-white">
+                      ✅ Todo en marcha
                     </p>
-                    <p className="text-xs text-zinc-400">
-                      All content published, campaigns running
+                    <p className="text-sm text-zinc-400 mt-1">
+                      Contenido publicado, campañas activas
                     </p>
                   </div>
                 </div>
@@ -316,6 +288,9 @@ export default function DashboardPage() {
           </Card>
         </motion.div>
       </div>
+
+      {/* Feed Health Summary Widget */}
+      <FeedHealthSummary />
     </div>
   );
 }
