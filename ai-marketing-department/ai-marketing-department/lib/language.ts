@@ -34,7 +34,7 @@ export const LABELS = {
   // Feed-related
   feedItems: "Artículos",
   feedItem: "Artículo",
-  feeds: "Fuentes",
+  feedsPage: "Fuentes",
   feed: "Fuente",
   sync: "Actualizar",
   syncFrequency: "Revisar cada",
@@ -43,7 +43,7 @@ export const LABELS = {
   feedUrl: "Enlace del sitio",
 
   // Agent-related
-  agents: "Automatización",
+  agentsPage: "Automatización",
   agent: "Automatización",
   agentExecution: "Ejecutar automatización",
   mutations: "Acciones",
@@ -53,7 +53,7 @@ export const LABELS = {
   role: "Rol",
 
   // Campaign-related
-  campaigns: "Campañas",
+  campaignsPage: "Campañas",
   campaign: "Campaña",
   activeCampaigns: "Activo ahora",
   campaignStatus: "Estado de campaña",
@@ -95,7 +95,7 @@ export const LABELS = {
 
   // Messages
   loading: "Cargando...",
-  error: "Error",
+  errorMessage: "Error",
   success: "¡Éxito!",
   warning: "Advertencia",
   info: "Información",

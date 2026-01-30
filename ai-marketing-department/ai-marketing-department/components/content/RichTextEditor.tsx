@@ -210,22 +210,6 @@ export function RichTextEditor({
         editor={editor}
         options={{
           placement: "top",
-          // On mobile, ensure menu doesn't cover selection
-          modifiers: [
-            {
-              name: 'flip',
-              options: {
-                fallbackPlacements: ['bottom', 'top'],
-              },
-            },
-            {
-              name: 'preventOverflow',
-              options: {
-                boundary: 'viewport',
-                padding: 8,
-              },
-            },
-          ],
         }}
         updateDelay={100}
         className="flex gap-1 p-1 bg-zinc-800 border border-zinc-700 rounded-lg shadow-lg z-50"
