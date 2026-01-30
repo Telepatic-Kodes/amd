@@ -46,20 +46,20 @@ export default function DashboardPage() {
 
   // Calculate summary stats
   const stats = {
-    activeCampaigns: campaigns?.filter((c) => c.status === "active").length || 0,
+    activeCampaigns: campaigns?.filter((c: any) => c.status === "active").length || 0,
     totalCampaigns: campaigns?.length || 0,
-    generatedContent: content?.filter((c) => c.status !== "draft").length || 0,
-    draftContent: content?.filter((c) => c.status === "draft").length || 0,
+    generatedContent: content?.filter((c: any) => c.status !== "draft").length || 0,
+    draftContent: content?.filter((c: any) => c.status === "draft").length || 0,
     totalAgents: agents?.length || 0,
-    activeAgents: agents?.filter((a) => a.status === "active").length || 0,
+    activeAgents: agents?.filter((a: any) => a.status === "active").length || 0,
   };
 
   // Calculate content by status
   const contentStats = {
-    draft: content?.filter((c) => c.status === "draft").length || 0,
-    review: content?.filter((c) => c.status === "review").length || 0,
-    approved: content?.filter((c) => c.status === "approved").length || 0,
-    published: content?.filter((c) => c.status === "published").length || 0,
+    draft: content?.filter((c: any) => c.status === "draft").length || 0,
+    review: content?.filter((c: any) => c.status === "review").length || 0,
+    approved: content?.filter((c: any) => c.status === "approved").length || 0,
+    published: content?.filter((c: any) => c.status === "published").length || 0,
   };
 
   const isLoading = !campaigns || !content || !agents;

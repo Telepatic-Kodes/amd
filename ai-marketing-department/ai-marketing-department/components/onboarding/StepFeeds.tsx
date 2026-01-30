@@ -36,7 +36,7 @@ export function StepFeeds({ feeds, industry, onChange }: Props) {
 
   // Calculate total feeds that will be added
   const totalFeeds = selectedTemplates.reduce((sum, templateId) => {
-    const template = FEED_TEMPLATES.find((t) => t.id === templateId);
+    const template: any = FEED_TEMPLATES.find((t: any) => t.id === templateId);
     return sum + (template?.feeds.length || 0);
   }, 0);
 
@@ -50,7 +50,7 @@ export function StepFeeds({ feeds, industry, onChange }: Props) {
       {/* Template Selection Cards */}
       <div className="space-y-3">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {relevantTemplates.map((template) => {
+          {relevantTemplates.map((template: any) => {
             const isSelected = selectedTemplates.includes(template.id);
             return (
               <button

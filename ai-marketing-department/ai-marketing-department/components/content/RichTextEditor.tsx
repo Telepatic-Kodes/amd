@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useEditor, EditorContent, TiptapBubbleMenu } from "@tiptap/react";
+import { useEditor, EditorContent } from "@tiptap/react";
+import { BubbleMenu } from "@tiptap/react/menus";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import CharacterCount from "@tiptap/extension-character-count";
@@ -125,12 +126,12 @@ export function RichTextEditor({
       />
 
       {/* BubbleMenu - Appears on text selection */}
-      <TiptapBubbleMenu
+      <BubbleMenu
         editor={editor}
-        tippyOptions={{
-          duration: 100,
+        options={{
           placement: "top",
         }}
+        updateDelay={100}
         className="flex gap-1 p-1 bg-zinc-800 border border-zinc-700 rounded-lg shadow-lg"
       >
         <BubbleMenuButton
@@ -169,7 +170,7 @@ export function RichTextEditor({
         >
           <LinkIcon className="h-4 w-4" />
         </BubbleMenuButton>
-      </TiptapBubbleMenu>
+      </BubbleMenu>
 
       {/* Editor Content */}
       <div

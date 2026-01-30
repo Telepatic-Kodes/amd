@@ -165,3 +165,9 @@ body {
 .ProseMirror:focus {
   outline: none;
 }
+
+/* Touch target utility - ensures mobile tap targets are at least 44x44px */
+.touch-target {
+  min-width: 44px;
+  min-height: 44px;
+}

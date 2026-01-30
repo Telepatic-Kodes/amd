@@ -226,7 +226,6 @@ export default function OnboardingPage() {
             </button>
             <button
               onClick={launch}
-              loading={loading}
               disabled={loading}
               className={cn(
                 "flex items-center gap-2 px-8 py-2.5 rounded-lg text-sm font-semibold transition",
