@@ -117,11 +117,11 @@ export default function ResultsPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-12">
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
             Tus Resultados
           </h1>
           <p className="text-zinc-400 mt-3 text-lg">
@@ -131,7 +131,7 @@ export default function ResultsPage() {
       </div>
 
       {/* Main KPIs - 3 Big Numbers */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Vistas */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -195,7 +195,7 @@ export default function ResultsPage() {
       </div>
 
       {/* Chart and Top Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Chart */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -205,7 +205,7 @@ export default function ResultsPage() {
         >
           <Card className="p-6">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-white flex items-center gap-3">
+              <h3 className="text-3xl font-semibold text-white flex items-center gap-3">
                 <TrendingUp className="w-6 h-6 text-indigo-400" />
                 Tendencia (últimos 7 días)
               </h3>
@@ -230,7 +230,7 @@ export default function ResultsPage() {
           transition={{ delay: 0.4 }}
         >
           <Card className="p-6">
-            <h3 className="text-xl font-semibold text-white mb-6">Resumen</h3>
+            <h3 className="text-3xl font-semibold text-white mb-6">Resumen</h3>
             <div className="space-y-4">
               <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
                 <span className="text-zinc-400">Campañas activas</span>
@@ -263,7 +263,7 @@ export default function ResultsPage() {
       >
         <Card className="p-6">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-semibold text-white">Top 5 Contenido</h3>
+            <h3 className="text-3xl font-semibold text-white">Top 5 Contenido</h3>
             <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 transition-colors">
               <Download className="w-4 h-4" />
               Exportar
@@ -321,7 +321,7 @@ export default function ResultsPage() {
         <Card className="p-6 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border-indigo-500/30">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-lg font-semibold text-white mb-2">Necesitas un reporte detallado?</h3>
+              <h3 className="text-2xl font-semibold text-white mb-2">Necesitas un reporte detallado?</h3>
               <p className="text-zinc-400">Descarga tu reporte completo de los últimos 30 días</p>
             </div>
             <button className="px-6 py-3 rounded-lg bg-indigo-500 text-white font-medium hover:bg-indigo-600 transition-colors">

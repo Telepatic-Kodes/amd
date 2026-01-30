@@ -89,11 +89,11 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-12">
       {/* Header with Greeting */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
             ¡Buenos días! 👋
           </h1>
           <p className="text-zinc-400 mt-3 text-lg">
@@ -103,7 +103,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Key Metrics - Simplified to 3 larger cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Campaigns Running */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -190,7 +190,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Content Workflow Status */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Content Pipeline */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -198,7 +198,7 @@ export default function DashboardPage() {
           transition={{ delay: 0.4 }}
         >
           <Card className="p-6">
-            <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-3">
+            <h3 className="text-3xl font-semibold text-white mb-6 flex items-center gap-3">
               <BarChart3 className="w-6 h-6 text-indigo-400" />
               Estado del contenido
             </h3>
@@ -227,7 +227,7 @@ export default function DashboardPage() {
           transition={{ delay: 0.5 }}
         >
           <Card className="p-6">
-            <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-3">
+            <h3 className="text-3xl font-semibold text-white mb-6 flex items-center gap-3">
               <Target className="w-6 h-6 text-green-400" />
               {translate("whatNext")}
             </h3>

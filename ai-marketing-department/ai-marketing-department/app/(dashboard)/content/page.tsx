@@ -111,6 +111,7 @@ export default function ContentPage() {
   const [statusFilter, setStatusFilter] = useState("");
   const [selectedContent, setSelectedContent] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
   const content = useQuery(api.functions.listContent, {
     type: typeFilter || undefined,
@@ -184,14 +185,14 @@ export default function ContentPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-12">
       {/* Header */}
       <div className="flex items-center gap-3">
         <div className="p-2 rounded-xl bg-blue-500/10">
           <FileText className="h-6 w-6 text-blue-400" />
         </div>
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
             Content
           </h1>
           <p className="text-zinc-400 mt-1">
@@ -214,38 +215,15 @@ export default function ContentPage() {
           />
         </div>
 
-        {/* Type Filter */}
-        <div className="relative">
-          <Filter className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
-          <select
-            value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value)}
-            className="appearance-none rounded-lg border border-zinc-800 bg-zinc-950/50 py-2 pl-10 pr-8 text-sm text-white focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-          >
-            {CONTENT_TYPES.map((type) => (
-              <option key={type.value} value={type.value}>
-                {type.label}
-              </option>
-            ))}
-          </select>
-          <ChevronDown className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500 pointer-events-none" />
-        </div>
-
-        {/* Status Filter */}
-        <div className="relative">
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="appearance-none rounded-lg border border-zinc-800 bg-zinc-950/50 py-2 pl-4 pr-8 text-sm text-white focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-          >
-            {CONTENT_STATUSES.map((status) => (
-              <option key={status.value} value={status.value}>
-                {status.label}
-              </option>
-            ))}
-          </select>
-          <ChevronDown className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500 pointer-events-none" />
-        </div>
+        {/* Advanced Filters Toggle Button */}
+        <button
+          onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+          className="px-6 py-3 rounded-lg border border-zinc-800 bg-zinc-950/50 text-white hover:bg-zinc-900 transition-colors flex items-center gap-2"
+        >
+          <Filter className="h-4 w-4" />
+          Filtros avanzados
+          <ChevronDown className={cn("h-4 w-4 transition-transform", showAdvancedFilters && "rotate-180")} />
+        </button>
 
         {/* View Mode Toggle */}
         <div className="flex rounded-lg border border-zinc-800 overflow-hidden">
@@ -275,6 +253,54 @@ export default function ContentPage() {
           </button>
         </div>
       </div>
+
+      {/* Advanced Filters - Progressive Disclosure */}
+      <AnimatePresence>
+        {showAdvancedFilters && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
+          >
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center p-4 rounded-lg border border-zinc-800 bg-zinc-950/30">
+              {/* Type Filter */}
+              <div className="relative flex-1">
+                <Filter className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+                <select
+                  value={typeFilter}
+                  onChange={(e) => setTypeFilter(e.target.value)}
+                  className="w-full appearance-none rounded-lg border border-zinc-800 bg-zinc-950/50 py-2 pl-10 pr-8 text-sm text-white focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                >
+                  {CONTENT_TYPES.map((type) => (
+                    <option key={type.value} value={type.value}>
+                      {type.label}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500 pointer-events-none" />
+              </div>
+
+              {/* Status Filter */}
+              <div className="relative flex-1">
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="w-full appearance-none rounded-lg border border-zinc-800 bg-zinc-950/50 py-2 pl-4 pr-8 text-sm text-white focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                >
+                  {CONTENT_STATUSES.map((status) => (
+                    <option key={status.value} value={status.value}>
+                      {status.label}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500 pointer-events-none" />
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Stats Summary */}
       <div className="flex flex-wrap gap-2">
@@ -312,7 +338,7 @@ export default function ContentPage() {
                 variants={containerVariants}
                 initial="hidden"
                 animate="show"
-                className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+                className="grid gap-8 md:grid-cols-2 lg:grid-cols-3"
               >
                 {filteredContent.map((item) => {
                   const TypeIcon = typeIcons[item.type] || FileText;
@@ -506,7 +532,7 @@ export default function ContentPage() {
               <Card className="sticky top-6">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                    <h3 className="text-2xl font-semibold text-white flex items-center gap-2">
                       <Sparkles className="h-4 w-4 text-blue-400" />
                       Content Details
                     </h3>

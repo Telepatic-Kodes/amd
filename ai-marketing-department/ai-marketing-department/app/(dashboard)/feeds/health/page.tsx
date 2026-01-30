@@ -108,7 +108,7 @@ export default function FeedsHealthPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-12">
       {/* Header with Back Button */}
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-4">
@@ -119,7 +119,7 @@ export default function FeedsHealthPage() {
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
               Salud de Fuentes
             </h1>
             <p className="text-zinc-400 mt-2">
@@ -134,7 +134,7 @@ export default function FeedsHealthPage() {
       </div>
 
       {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         {/* Total Feeds */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -211,7 +211,7 @@ export default function FeedsHealthPage() {
         transition={{ delay: 0.4 }}
       >
         <Card className="p-6">
-          <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+          <h3 className="text-3xl font-semibold text-white mb-4 flex items-center gap-2">
             <Zap className="w-6 h-6 text-yellow-400" />
             Recomendaciones
           </h3>
@@ -258,7 +258,7 @@ export default function FeedsHealthPage() {
         transition={{ delay: 0.5 }}
       >
         <Card className="p-6">
-          <h3 className="text-xl font-semibold text-white mb-4">Rendimiento de fuentes</h3>
+          <h3 className="text-3xl font-semibold text-white mb-4">Rendimiento de fuentes</h3>
 
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -360,7 +360,7 @@ export default function FeedsHealthPage() {
         transition={{ delay: 0.6 }}
       >
         <Card className="p-6 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border-indigo-500/30">
-          <h3 className="text-lg font-semibold text-white mb-2">¿Cómo mejoro la salud?</h3>
+          <h3 className="text-2xl font-semibold text-white mb-2">¿Cómo mejoro la salud?</h3>
           <ul className="space-y-2 text-zinc-300">
             <li>✓ Revisa regularmente fuentes con bajo rendimiento</li>
             <li>✓ Elimina fuentes pausadas que ya no uses</li>
