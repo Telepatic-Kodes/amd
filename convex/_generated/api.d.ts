@@ -10,6 +10,7 @@
 
 import type * as actions from "../actions.js";
 import type * as agentSdk from "../agentSdk.js";
+import type * as analysis_metrics from "../analysis/metrics.js";
 import type * as crons from "../crons.js";
 import type * as enrichment_index from "../enrichment/index.js";
 import type * as enrichment_mutations from "../enrichment/mutations.js";
@@ -18,9 +19,12 @@ import type * as enrichment_processItems from "../enrichment/processItems.js";
 import type * as enrichment_prompts from "../enrichment/prompts.js";
 import type * as enrichment_queries from "../enrichment/queries.js";
 import type * as feeds_agentQueries from "../feeds/agentQueries.js";
+import type * as feeds_featureFlags from "../feeds/featureFlags.js";
 import type * as feeds_fetchFeed from "../feeds/fetchFeed.js";
 import type * as feeds_index from "../feeds/index.js";
 import type * as feeds_mutations from "../feeds/mutations.js";
+import type * as feeds_opmlExport from "../feeds/opmlExport.js";
+import type * as feeds_opmlImport from "../feeds/opmlImport.js";
 import type * as feeds_publicQueries from "../feeds/publicQueries.js";
 import type * as feeds_queries from "../feeds/queries.js";
 import type * as feeds_scheduleFeedSync from "../feeds/scheduleFeedSync.js";
@@ -28,6 +32,8 @@ import type * as feeds_storeFeedItems from "../feeds/storeFeedItems.js";
 import type * as feeds_syncAllFeeds from "../feeds/syncAllFeeds.js";
 import type * as feeds_utils_hash from "../feeds/utils/hash.js";
 import type * as feeds_utils_index from "../feeds/utils/index.js";
+import type * as feeds_utils_opmlGenerator from "../feeds/utils/opmlGenerator.js";
+import type * as feeds_utils_opmlParser from "../feeds/utils/opmlParser.js";
 import type * as feeds_utils_rateLimit from "../feeds/utils/rateLimit.js";
 import type * as feeds_utils_validation from "../feeds/utils/validation.js";
 import type * as functions from "../functions.js";
@@ -55,6 +61,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   actions: typeof actions;
   agentSdk: typeof agentSdk;
+  "analysis/metrics": typeof analysis_metrics;
   crons: typeof crons;
   "enrichment/index": typeof enrichment_index;
   "enrichment/mutations": typeof enrichment_mutations;
@@ -63,9 +70,12 @@ declare const fullApi: ApiFromModules<{
   "enrichment/prompts": typeof enrichment_prompts;
   "enrichment/queries": typeof enrichment_queries;
   "feeds/agentQueries": typeof feeds_agentQueries;
+  "feeds/featureFlags": typeof feeds_featureFlags;
   "feeds/fetchFeed": typeof feeds_fetchFeed;
   "feeds/index": typeof feeds_index;
   "feeds/mutations": typeof feeds_mutations;
+  "feeds/opmlExport": typeof feeds_opmlExport;
+  "feeds/opmlImport": typeof feeds_opmlImport;
   "feeds/publicQueries": typeof feeds_publicQueries;
   "feeds/queries": typeof feeds_queries;
   "feeds/scheduleFeedSync": typeof feeds_scheduleFeedSync;
@@ -73,6 +83,8 @@ declare const fullApi: ApiFromModules<{
   "feeds/syncAllFeeds": typeof feeds_syncAllFeeds;
   "feeds/utils/hash": typeof feeds_utils_hash;
   "feeds/utils/index": typeof feeds_utils_index;
+  "feeds/utils/opmlGenerator": typeof feeds_utils_opmlGenerator;
+  "feeds/utils/opmlParser": typeof feeds_utils_opmlParser;
   "feeds/utils/rateLimit": typeof feeds_utils_rateLimit;
   "feeds/utils/validation": typeof feeds_utils_validation;
   functions: typeof functions;
