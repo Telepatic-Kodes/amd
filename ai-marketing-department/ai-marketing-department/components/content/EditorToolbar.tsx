@@ -48,6 +48,8 @@ const ToolbarButton = ({
     onClick={onClick}
     disabled={disabled}
     title={title}
+    aria-label={title}
+    aria-pressed={isActive}
     className={cn(
       "p-2 rounded transition-colors touch-target",
       "hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed",
@@ -74,6 +76,8 @@ export function EditorToolbar({
 
   return (
     <div
+      role="toolbar"
+      aria-label="Text formatting toolbar"
       className={cn(
         "flex flex-wrap gap-1 p-2 border-b border-zinc-800 bg-zinc-950/50",
         className

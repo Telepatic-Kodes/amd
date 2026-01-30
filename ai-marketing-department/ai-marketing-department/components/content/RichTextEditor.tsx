@@ -107,6 +107,8 @@ export function RichTextEditor({
       type="button"
       onClick={onClick}
       title={title}
+      aria-label={title}
+      aria-pressed={isActive}
       className={cn(
         "p-2 rounded transition-colors touch-target min-w-[44px] min-h-[44px] flex items-center justify-center",
         "hover:bg-zinc-700",
@@ -190,6 +192,7 @@ export function RichTextEditor({
             <button
               type="button"
               onClick={handleCopyHtml}
+              aria-label="Copy HTML to clipboard"
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-zinc-400 hover:text-white hover:bg-zinc-800 rounded transition-colors"
               title="Copy HTML to clipboard"
             >
@@ -199,6 +202,7 @@ export function RichTextEditor({
             <button
               type="button"
               onClick={handleDownload}
+              aria-label="Download as HTML file"
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-zinc-400 hover:text-white hover:bg-zinc-800 rounded transition-colors"
               title="Download as HTML file"
             >

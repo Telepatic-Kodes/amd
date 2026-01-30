@@ -216,9 +216,12 @@ export function EditContentModal({
                   <h3 className="text-sm font-semibold text-white">Content</h3>
 
                   {/* Write/Preview Tabs */}
-                  <div className="flex gap-2 bg-zinc-950/50 rounded-lg p-1 border border-zinc-800">
+                  <div role="tablist" aria-label="Editor mode" className="flex gap-2 bg-zinc-950/50 rounded-lg p-1 border border-zinc-800">
                     <button
                       type="button"
+                      role="tab"
+                      aria-selected={activeTab === "write"}
+                      aria-label="Write mode"
                       onClick={() => setActiveTab("write")}
                       className={cn(
                         "flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-colors",
@@ -232,6 +235,9 @@ export function EditContentModal({
                     </button>
                     <button
                       type="button"
+                      role="tab"
+                      aria-selected={activeTab === "preview"}
+                      aria-label="Preview mode"
                       onClick={() => setActiveTab("preview")}
                       className={cn(
                         "flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-colors",
