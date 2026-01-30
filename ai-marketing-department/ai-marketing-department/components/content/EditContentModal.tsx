@@ -3,11 +3,12 @@
 import { useState, useEffect } from "react";
 import { useMutation } from "convex/react";
 import { api } from "@convex/_generated/api";
-import { X, Loader2, ChevronDown } from "lucide-react";
+import { X, Loader2, ChevronDown, Eye, Edit3 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "@/components/ui/Toast";
 import { cn } from "@/lib/utils";
 import { RichTextEditor } from "./RichTextEditor";
+import { EditorPreview } from "./EditorPreview";
 import { stripHtmlTags, countWords, validateContent } from "@/lib/editor-utils";
 
 const TONES = [
@@ -32,6 +33,7 @@ export function EditContentModal({
 }: EditContentModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<"write" | "preview">("write");
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     seo: false,
     metadata: false,
@@ -67,6 +69,7 @@ export function EditContentModal({
         targetAudience: content.metadata?.targetAudience || "",
       });
       setError(null);
+      setActiveTab("write"); // Reset to write tab when opening
     }
   }, [isOpen, content]);
 
@@ -209,7 +212,39 @@ export function EditContentModal({
 
               {/* Basic Section */}
               <div className="space-y-4">
-                <h3 className="text-sm font-semibold text-white">Content</h3>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-semibold text-white">Content</h3>
+
+                  {/* Write/Preview Tabs */}
+                  <div className="flex gap-2 bg-zinc-950/50 rounded-lg p-1 border border-zinc-800">
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab("write")}
+                      className={cn(
+                        "flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-colors",
+                        activeTab === "write"
+                          ? "bg-indigo-500 text-white"
+                          : "text-zinc-400 hover:text-white"
+                      )}
+                    >
+                      <Edit3 className="h-3 w-3" />
+                      Write
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab("preview")}
+                      className={cn(
+                        "flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-colors",
+                        activeTab === "preview"
+                          ? "bg-indigo-500 text-white"
+                          : "text-zinc-400 hover:text-white"
+                      )}
+                    >
+                      <Eye className="h-3 w-3" />
+                      Preview
+                    </button>
+                  </div>
+                </div>
 
                 {/* Title */}
                 <div>
@@ -225,15 +260,39 @@ export function EditContentModal({
                   </p>
                 </div>
 
-                {/* Body - Rich Text Editor */}
+                {/* Body - Tab Content */}
                 <div>
                   <label className="block text-xs text-zinc-500 mb-2">Content</label>
-                  <RichTextEditor
-                    content={formData.body}
-                    onChange={(html) => handleInputChange("body", html)}
-                    placeholder="Start writing your content..."
-                    minHeight="400px"
-                  />
+
+                  <AnimatePresence mode="wait">
+                    {activeTab === "write" ? (
+                      <motion.div
+                        key="write"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.15 }}
+                      >
+                        <RichTextEditor
+                          content={formData.body}
+                          onChange={(html) => handleInputChange("body", html)}
+                          placeholder="Start writing your content..."
+                          minHeight="400px"
+                        />
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="preview"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.15 }}
+                      >
+                        <EditorPreview content={formData.body} />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
                   <div className="flex items-center justify-between mt-2">
                     <p className="text-xs text-zinc-500">
                       {stripHtmlTags(formData.body).length} characters • {wordCount} words •{" "}
