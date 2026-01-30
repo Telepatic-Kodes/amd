@@ -109,11 +109,13 @@ Phase 4 (Translation)  │                            ├── Phase 5 (Polish)
 7. Single-column layout on mobile screens
 8. All text readable on small screens (min 16px body)
 
-**Plans:**
-- 05-01: Visual design improvements (spacing, typography, buttons, progressive disclosure)
-- 05-02: Mobile responsiveness (responsive grid, touch targets, mobile navigation)
+**Plans:** 2 plans
 
-**Estimated Scope:** 2 plans, 1 wave
+Plans:
+- [ ] 05-01-PLAN.md — Visual design improvements (spacing, typography, buttons, progressive disclosure)
+- [ ] 05-02-PLAN.md — Mobile responsiveness (responsive grid, touch targets, mobile navigation)
+
+**Estimated Scope:** 2 plans, 1 wave (both plans independent, can run in parallel)
 
 ---
 
