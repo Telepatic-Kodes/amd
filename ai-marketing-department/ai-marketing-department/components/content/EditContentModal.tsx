@@ -3,12 +3,13 @@
 import { useState, useEffect } from "react";
 import { useMutation } from "convex/react";
 import { api } from "@convex/_generated/api";
-import { X, Loader2, ChevronDown, Eye, Edit3 } from "lucide-react";
+import { X, Loader2, ChevronDown, Eye, Edit3, Upload } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "@/components/ui/Toast";
 import { cn } from "@/lib/utils";
 import { RichTextEditor } from "./RichTextEditor";
 import { EditorPreview } from "./EditorPreview";
+import { FileImportModal } from "./FileImportModal";
 import { stripHtmlTags, countWords, validateContent } from "@/lib/editor-utils";
 
 const TONES = [
@@ -38,6 +39,7 @@ export function EditContentModal({
     seo: false,
     metadata: false,
   });
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -171,6 +173,26 @@ export function EditContentModal({
   // Validate content
   const validation = validateContent(formData.body, 50);
 
+  /**
+   * Handle file import - update formData with imported content
+   */
+  const handleFileImport = (imported: { title: string; body: string; metadata: any }) => {
+    setFormData((prev) => ({
+      ...prev,
+      title: imported.title,
+      body: imported.body,
+    }));
+
+    // Close import modal
+    setIsImportModalOpen(false);
+
+    // Switch to write tab to show imported content
+    setActiveTab("write");
+
+    // Show success toast
+    success("Contenido importado", "Edita el contenido y guarda cuando estés listo");
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -194,12 +216,22 @@ export function EditContentModal({
                 <h2 className="text-xl font-bold text-white">Edit Content</h2>
                 <p className="text-sm text-zinc-400 mt-1">{content?.title}</p>
               </div>
-              <button
-                onClick={onClose}
-                className="p-1 rounded hover:bg-zinc-800 text-zinc-400"
-              >
-                <X className="h-5 w-5" />
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsImportModalOpen(true)}
+                  className="flex items-center gap-2 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors text-sm font-medium text-white min-h-[44px]"
+                >
+                  <Upload className="w-4 h-4" />
+                  <span className="hidden sm:inline">Importar archivo</span>
+                </button>
+                <button
+                  onClick={onClose}
+                  className="p-2 rounded hover:bg-zinc-800 text-zinc-400 min-h-[44px] min-w-[44px] flex items-center justify-center"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
             </div>
 
             {/* Form */}
@@ -502,6 +534,14 @@ export function EditContentModal({
               </button>
             </div>
           </motion.div>
+
+          {/* File Import Modal */}
+          <FileImportModal
+            isOpen={isImportModalOpen}
+            onClose={() => setIsImportModalOpen(false)}
+            onImport={handleFileImport}
+            defaultTitle={formData.title}
+          />
         </motion.div>
       )}
     </AnimatePresence>
