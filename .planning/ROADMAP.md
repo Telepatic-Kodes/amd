@@ -135,8 +135,10 @@ Plans:
 4. Tour displays only to first-time users
 5. Smooth animations and clear next/prev navigation
 
-**Plans:**
-- 06-01: Product tour implementation (tour component, step definitions, first-time detection)
+**Plans:** 1 plan
+
+Plans:
+- [ ] 06-01-PLAN.md — Product tour component with 7-step walkthrough, skip/finish controls, and first-time detection
 
 **Estimated Scope:** 1 plan, 1 wave
 
