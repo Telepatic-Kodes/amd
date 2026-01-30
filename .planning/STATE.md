@@ -1,80 +1,88 @@
-# Project State: AMD RSS Feed Integration
+# Project State: AMD UX Simplification
 
-**Started:** 2026-01-27
-**Current Phase:** Phase 6 - Advanced Features (IN PROGRESS)
-**Status:** Phase 6 COMPLETE
+**Started:** 2026-01-30
+**Current Phase:** Phase 5 - Design Polish (PENDING)
+**Status:** Phases 1-4 Complete (85%), Ready for Phase 5-6 Planning
 
 ## Project Reference
 
 See: .planning/PROJECT.md
 
-**Core value:** Los agentes de contenido tienen acceso a información fresca y relevante del mercado para crear contenido más actual y competitivo.
+**Core Value:** Non-technical users can manage complete marketing department in minutes, not hours.
 
 ## Progress
 
 ### Completed
 
-- [x] Codebase mapping (7 documents in `.planning/codebase/`)
-- [x] Project initialization (PROJECT.md)
-- [x] Research phase (4 researchers + synthesis)
-- [x] Requirements definition (37 requirements mapped)
-- [x] Roadmap creation (6 phases)
-- [x] **Phase 1: Core Feed Sync Engine** (3 plans)
-- [x] **Phase 2: Multi-Feed Orchestration** (5 plans)
-- [x] **Phase 3: Agent Integration** (2 plans)
-- [x] **Phase 4: AI Enrichment** (3 plans)
-- [x] **Phase 5: Brand Monitoring** (4 plans)
+- [x] Phase 1: Navigation Simplification (3 plans)
+  - Sidebar reduced 10 → 4 items
+  - Home page enhanced with greeting + 3 metrics
+  - Results page with KPIs and charts
+  - Feed health monitoring widgets
+  
+- [x] Phase 2: Feed Templates System (2 plans)
+  - 10 industry bundles (Marketing, SaaS, Tech, E-commerce, Healthcare, Finance, Education, Real Estate, Travel, Fashion)
+  - 1-click feed setup from templates
+  
+- [x] Phase 3: Onboarding Express (2 plans)
+  - 3-step onboarding (<2 minutes)
+  - Auto-configured departments
+  - Template selection UI
+  
+- [x] Phase 4: Spanish Translation (3 plans)
+  - 100+ term translation dictionary
+  - All UI in Spanish
+  - Consistent Spanish terminology
 
-### Phase 5 Summary (COMPLETE)
+### Pending
 
-**Goal:** Implement priority alerting for brand mentions and competitor tracking.
-
-**What Was Built:**
-1. **Schema & Configuration** — `alertDigests` table, 7 competitors, 5 brand terms
-2. **Enrichment Extension** — Brand/competitor detection during Claude processing
-3. **Alert Digest Queries** — 6 queries (2 internal for cron, 4 public for agents)
-4. **Cron Integration** — Daily digest generation at 8:00 AM UTC + test suite
-
-**Features Delivered:**
-- Automatic brand mention detection in all feed items
-- Competitor tracking (HubSpot, Marketo, Salesforce, ActiveCampaign, Mailchimp, Brevo, Klaviyo)
-- Daily alert digest generation with statistics
-- Public queries for agents and dashboard
-- Comprehensive test script for verification
-
-**Commits:** 5 total (implementation + planning docs)
-- feat(monitoring): add alertDigests schema and brand monitoring config
-- feat(05-02): extend enrichment to detect brand and competitor mentions
-- feat(05-03): add alert digest queries and mutations
-- feat(05-04): add cron integration and test script for brand monitoring
-- docs(phase-05): complete phase 5 brand monitoring execution
-
-### Phase Overview
-
-| Phase | Name | Status | Plans |
-|-------|------|--------|-------|
-| 1 | Core Feed Sync Engine | Complete | 3/3 |
-| 2 | Multi-Feed Orchestration | Complete | 5/5 |
-| 3 | Agent Integration | Complete | 2/2 |
-| 4 | AI Enrichment | Complete | 3/3 |
-| 5 | Brand Monitoring | Complete | 4/4 |
-| 6 | Advanced Features | Complete | 5/5 |
-
-Progress: [████████████████████] 100% (All 6 phases complete)
+- [ ] Phase 5: Design Polish (2 plans) — Spacing, typography, mobile responsiveness
+- [ ] Phase 6: Product Tour (1 plan) — Interactive 7-step tutorial
 
 ## Session Continuity
 
-Last session: 2026-01-29
-Completed: Phase 6 Plan 05 (Feature Toggle System)
-Current: All phases complete
+**Last session:** 2026-01-30 (this session)
+**Completed:** PROJECT.md, config.json, REQUIREMENTS.md, ROADMAP.md, initial commit
+**Current:** Ready to plan Phase 5
 
 ## Decisions
 
-| Decision | Phase | Rationale |
-|----------|-------|-----------|
-| Settings key 'phase6_feature_flags' for global toggles | 6-05 | Single settings row, consistent with settings table pattern |
-| Priority chain: per-feed > global > default | 6-05 | Allows granular control per feed with global fallback |
-| Truncation threshold 20%, duplicate threshold 10% | 6-05 | Conservative thresholds for recommendation engine |
+| Decision | Phase | Rationale | Outcome |
+|----------|-------|-----------|---------|
+| Spanish-first UI | 1-4 | User base is Spanish-speaking, non-technical | ✓ Good — UX improved significantly |
+| 4-item navigation | 1 | 10 items too overwhelming for non-technical users | ✓ Good — users understand layout quickly |
+| 1-click feed templates | 2 | Manual feed selection is expert-mode friction | ✓ Good — setup reduced 15 min → <2 min |
+| 3-step onboarding | 3 | 6 steps was abandonment cliff | ✓ Good — expected >50% completion improvement |
+| Pre-translated (not i18n) | 4 | Spanish-only for v1 reduces complexity | ✓ Good — shipping faster |
+| Design polish in Phase 5 | 5 | Visual refinement needed before user testing | — Pending (not yet executed) |
+| Optional Phase 6 tour | 6 | Interactive tutorial helps non-technical users | — Pending (scope decision) |
+
+## Architecture Notes
+
+**Frontend Stack:**
+- Framework: Next.js 16 + React 19
+- Styling: Tailwind 4
+- State: React hooks (useState, useQuery, useMutation)
+- Database: Convex backend (real-time, existing)
+- Language: Spanish-first, translation dictionary in lib/language.ts
+
+**Related Projects:**
+- AMD RSS Feed Integration (.planning-feeds/) — COMPLETE, handles backend feed syncing
+- This project focuses on UX layer for the existing backend
+
+## Artifacts
+
+### Core Documents
+- `.planning/PROJECT.md` — Project charter
+- `.planning/REQUIREMENTS.md` — 29 requirements mapped to phases
+- `.planning/ROADMAP.md` — 6-phase roadmap with success criteria
+- `.planning/STATE.md` — This file (living project memory)
+- `.planning/config.json` — Workflow configuration
+
+### Committed Code
+- Phase 1-4 implementation (committed in previous session)
+- See git history for implementation details
 
 ---
-*State updated: 2026-01-29 after Phase 6 Plan 05 completion*
+
+*State updated: 2026-01-30 after project initialization*

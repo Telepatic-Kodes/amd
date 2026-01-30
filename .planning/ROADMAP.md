@@ -1,388 +1,186 @@
-# Roadmap: AMD RSS Feed Integration
+# Roadmap: AMD UX Simplification
 
 **Version:** v1.0
-**Created:** 2026-01-27
-**Phases:** 6
+**Created:** 2026-01-30
+**Status:** Phases 1-4 Complete (85%), Phases 5-6 Remaining
 
 ## Milestone Overview
 
 ```
 Phase 1 (Foundation) ──┐
-                       ├── Phase 2 (Scale) ──┐
-                       │                      ├── Phase 3 (Integration) ──┐
-                       │                      │                            ├── Phase 4 (Intelligence)
-                       │                      │                            │          │
-                       │                      │                            │          ├── Phase 5 (Monitoring)
-                       │                      │                            │          │          │
-                       │                      │                            │          │          └── Phase 6 (Polish)
+Phase 2 (Templates)    ├── Phase 3 (Onboarding) ──┐
+Phase 4 (Translation)  │                            ├── Phase 5 (Polish) ──── Phase 6 (Tour)
 ```
 
 ---
 
-## Phase 1: Core Feed Sync Engine (Foundation)
+## Phase 1: Navigation Simplification (COMPLETE ✓)
 
-**Goal:** Establish reliable single-feed syncing with robust parsing and deduplication.
+**Goal:** Reduce navigation from 10 complex items to 4 simple sections in Spanish.
 
-**Plans:** 3 plans
+**Status:** ✓ COMPLETE (all 3 plans executed)
 
-Plans:
-- [ ] 01-01-PLAN.md — Foundation setup (Feedsmith + database schema)
-- [ ] 01-02-PLAN.md — Core utilities (hash + validation)
-- [ ] 01-03-PLAN.md — Sync engine (fetchFeed + storeFeedItems)
+**Requirements Covered:**
+- NAV-01: Sidebar reduced to 4 items
+- NAV-02: Spanish labels + tooltips
+- HOME-01, HOME-02, HOME-03: Home page refresh
+- RESULT-01, RESULT-02, RESULT-03: Results page
+- HEALTH-01: Feed health report
 
-**Rationale:** Solve critical pitfalls (GUID unreliability, malformed XML) before scaling. Composite key deduplication must be correct from day one.
-
-### Deliverables
-
-1. Database schema in `convex/schema.ts`:
-   - `feeds` table (feedId, url, name, category, status, syncFrequency, lastSyncAt)
-   - `feedItems` table (feedId, contentHash, title, link, content, publishedAt)
-   - `feedSyncLog` table (feedId, syncedAt, itemsAdded, errorMessage)
-
-2. Core sync action in `convex/feeds/`:
-   - `fetchFeed.ts` — Single-feed fetch with Feedsmith parsing
-   - `storeFeedItems.ts` — Mutation for atomic item storage
-   - Composite key generation: `SHA-256(feedUrl + (guid || link) + pubDate + title)`
-
-3. Lenient XML parsing:
-   - Feedsmith with error recovery
-   - Validation layer (must have title/description + link/guid)
-   - UTF-8 normalization
-
-4. Basic health tracking:
-   - `lastSyncAt`, `consecutiveErrors`, `status` fields
-   - Sync log per execution
-
-### Requirements Covered
-
-- FEED-02, FEED-06
-- SYNC-02, SYNC-03, SYNC-06, SYNC-07
-- STOR-01, STOR-02, STOR-03, STOR-04, STOR-05
-
-### Tech Decisions
-
-- Install `feedsmith@^2.8.0` (one dependency)
-- Use native `fetch` in Convex actions
-- Use Web Crypto API for SHA-256 hashing
-
-### Success Criteria
-
-- [ ] Schema deployed with 3 new tables
-- [ ] Single feed syncs successfully end-to-end
-- [ ] Duplicates prevented via contentHash
-- [ ] Malformed XML handled gracefully (logged, not crashed)
-- [ ] Sync log records each execution
-
-### Research Flag
-
-**Standard patterns** — Feedsmith docs sufficient, no additional research needed.
+**Deliverables:**
+- Sidebar component with 4 main navigation items
+- Home page with greeting + 3 metric cards + feed health widget
+- Results page with 3 KPIs and trend chart
+- Feed health report page (/feeds/health)
+- Translation dictionary (lib/language.ts)
 
 ---
 
-## Phase 2: Multi-Feed Orchestration (Scale)
+## Phase 2: Feed Templates System (COMPLETE ✓)
 
-**Goal:** Expand to multiple feeds using fan-out architecture to prevent action timeouts.
+**Goal:** Enable 1-click feed setup with pre-configured industry bundles.
 
-**Plans:** 5 plans
+**Status:** ✓ COMPLETE (all 2 plans executed)
 
-Plans:
-- [ ] 02-01-PLAN.md — Feed CRUD mutations + public queries
-- [ ] 02-02-PLAN.md — Fan-out orchestration + cron jobs
-- [ ] 02-03-PLAN.md — Rate limiting with exponential backoff
-- [ ] 02-04-PLAN.md — Dashboard UI (/feeds page)
-- [ ] 02-05-PLAN.md — End-to-end verification checkpoint
+**Requirements Covered:**
+- FEEDS-01: 10 industry templates available
+- FEEDS-02: 1-click feed setup from templates
 
-**Rationale:** Fan-out pattern (one action per feed) enables 10-100+ feeds without timeout issues.
-
-### Deliverables
-
-1. Orchestrator system:
-   - `scheduleFeedSync.ts` — Mutation that schedules individual feed actions
-   - `syncAllFeeds.ts` — Cron-triggered orchestrator
-   - Fan-out: separate action per feed
-
-2. Rate limiting:
-   - HTTP 429 detection with `Retry-After` header
-   - Exponential backoff (1s, 2s, 4s, 8s)
-   - Staggered fetches (spread over time window)
-
-3. Dashboard UI components:
-   - Feed list view (`/feeds` page)
-   - Add feed form with validation
-   - Feed status indicators (active, paused, error)
-   - Manual sync trigger button
-
-4. Feed management mutations:
-   - `addFeed`, `updateFeed`, `deleteFeed`, `pauseFeed`
-
-### Requirements Covered
-
-- FEED-01, FEED-03, FEED-04, FEED-05
-- SYNC-01, SYNC-04, SYNC-05
-- DASH-01, DASH-02, DASH-03, DASH-04
-
-### Tech Decisions
-
-- Use Convex scheduler for fan-out (`ctx.scheduler.runAfter`)
-- Daily cron at 6:00 UTC
-- 30-second timeout per individual feed fetch
-
-### Success Criteria
-
-- [ ] 10+ feeds sync without timeout
-- [ ] Individual feed failures don't block others
-- [ ] Dashboard shows all feeds with status
-- [ ] Manual sync works from UI
-- [ ] Rate limiting prevents 429 bans
-
-### Research Flag
-
-**Standard patterns** — Convex scheduler patterns established.
+**Deliverables:**
+- Feed templates bundle system (10 templates × 5 feeds each)
+- Template selection UI in onboarding
+- Feed mutations for template-based setup
+- Auto-population of feeds based on industry
 
 ---
 
-## Phase 3: Agent Integration (Connection)
+## Phase 3: Onboarding Express (COMPLETE ✓)
 
-**Goal:** Connect feed content to existing AMD agent system.
+**Goal:** Reduce onboarding from 6 complex steps to 3 simple steps (<2 min).
 
-**Plans:** 2 plans
+**Status:** ✓ COMPLETE (all 2 plans executed)
 
-Plans:
-- [ ] 03-01-PLAN.md — Schema update (search index) + agent feed query
-- [ ] 03-02-PLAN.md — executeAgent modification with feed context injection
+**Requirements Covered:**
+- ONBOARD-01: 3-step flow
+- ONBOARD-02: <2 min setup with auto-configured departments
 
-**Rationale:** Make feed data useful by injecting into agent contexts at execution time.
-
-### Deliverables
-
-1. Agent context injection:
-   - Modify `executeAgent` action in `convex/actions.ts`
-   - Query relevant feed items by topic/keyword
-   - Inject as structured context in systemPrompt
-
-2. Relevance querying:
-   - Filter by keywords (include/exclude lists)
-   - Filter by date range (last 7 days default)
-   - Filter by category (industry, competitor, technical)
-
-3. Feed tool registration:
-   - Add `"feeds"` option to agent config.tools
-   - Enable per-agent feed access control
-
-4. Usage tracking:
-   - `feedItemsUsed` field on executions table
-   - Link consumed items to agent execution logs
-
-### Requirements Covered
-
-- AGNT-01, AGNT-02, AGNT-03, AGNT-04, AGNT-05, AGNT-06, AGNT-07
-
-### Tech Decisions
-
-- Context injection format: Structured text with title, summary, link, date
-- Token budget: ~2000 tokens for feed context (5 items max)
-- Relevance: Convex text search with BM25 ranking
-- Search index on feedItems.title with feedId filter
-
-### Success Criteria
-
-- [ ] Content agents receive relevant feed items
-- [ ] Social agents can curate from feeds
-- [ ] SEO agents monitor competitor content
-- [ ] Usage tracking links items to executions
-- [ ] Keyword filtering works accurately
-
-### Research Flag
-
-**Research complete** — See 03-RESEARCH.md for implementation patterns.
+**Deliverables:**
+- Refactored onboarding flow (3 steps: Company → Goals → Feeds)
+- Auto-configured departments
+- Visual progress bar
+- Template selection UI
 
 ---
 
-## Phase 4: AI Enrichment (Intelligence)
+## Phase 4: Spanish Translation (COMPLETE ✓)
 
-**Goal:** Add AI-powered categorization, sentiment, and summarization.
+**Goal:** 100% Spanish translation of all UI components.
 
-**Plans:** 3 plans
+**Status:** ✓ COMPLETE (all 3 plans executed)
 
-Plans:
-- [ ] 04-01-PLAN.md — Schema updates + enrichment queries/mutations
-- [ ] 04-02-PLAN.md — Core enrichment action with Claude Haiku 4.5
-- [ ] 04-03-PLAN.md — Cron integration + batch processing
+**Requirements Covered:**
+- LANG-01: 100% Spanish UI translation
 
-**Rationale:** Improve content quality and reduce agent token consumption.
-
-### Deliverables
-
-1. Background enrichment processor:
-   - Separate cron for AI processing (post-sync)
-   - Process unprocessed items in batches
-   - Mark items as `processed: true`
-
-2. AI features:
-   - Topic extraction (auto-categorization)
-   - Sentiment analysis (positive/neutral/negative)
-   - Summary generation (100-200 word summaries)
-   - Relevance scoring (0-100 for domain fit)
-
-3. Schema updates:
-   - Add `topics`, `sentiment`, `summary`, `relevanceScore` to feedItems
-   - Add `processed` flag for enrichment status
-
-### Requirements Covered
-
-- ENRCH-01, ENRCH-02, ENRCH-03, ENRCH-04
-
-### Tech Decisions
-
-- Reuse existing Claude API integration
-- Batch size: 10 items per API call
-- Cost control: process only high-relevance items first
-
-### Success Criteria
-
-- [ ] Items have auto-generated topics
-- [ ] Sentiment tagged accurately
-- [ ] Summaries reduce context size
-- [ ] Enrichment doesn't block sync
-- [ ] Token costs stay within budget
-
-### Research Flag
-
-**Research complete** — See 04-RESEARCH.md for implementation patterns.
+**Deliverables:**
+- Translation dictionary (100+ terms)
+- All components updated with Spanish labels
+- Consistent terminology across UI
+- Spanish placeholder text and validation messages
 
 ---
 
-## Phase 5: Brand Monitoring & Alerts (Operations)
+## Phase 5: Design Polish (PENDING)
 
-**Goal:** Implement priority alerting for brand mentions and trends.
+**Goal:** Improve visual hierarchy, spacing, typography, and mobile responsiveness.
 
-**Rationale:** Support AMD's brand monitoring use case specifically.
+**Status:** ⏳ PENDING (2 plans)
 
-### Deliverables
+**Requirements Covered:**
+- DESIGN-01 through DESIGN-05: Spacing, typography, buttons, progressive disclosure
+- MOBILE-01 through MOBILE-05: Mobile responsiveness, touch targets, responsive layouts
 
-1. Keyword monitoring:
-   - Priority keyword configuration (brand names, competitors)
-   - Real-time detection during sync
-   - Alert generation for matches
+**Success Criteria:**
+1. Global spacing increased (32px → 48px), padding on cards (16px → 24px)
+2. All headers and body text larger (text-3xl → text-4xl)
+3. Buttons more prominent with gradient backgrounds
+4. Filters and advanced options collapsed by default
+5. Fully responsive on mobile (375px width)
+6. Touch targets meet WCAG standard (44x44px minimum)
+7. Single-column layout on mobile screens
+8. All text readable on small screens (min 16px body)
 
-2. Notification system:
-   - Alert storage in new `alerts` table
-   - Dashboard alert view
-   - (Optional) Slack/email integration
+**Plans:**
+- 05-01: Visual design improvements (spacing, typography, buttons, progressive disclosure)
+- 05-02: Mobile responsiveness (responsive grid, touch targets, mobile navigation)
 
-3. Trend detection:
-   - Topic frequency analysis across feeds
-   - Rising topic identification
-   - Weekly trend summary
-
-4. Feed trust scoring:
-   - Track accuracy over time
-   - Quality metrics (content completeness, update frequency)
-   - Surface low-quality feeds for review
-
-### Requirements Covered
-
-- MNTR-01, MNTR-02, MNTR-03
-
-### Tech Decisions
-
-- Alert fatigue prevention: group similar alerts
-- Trend window: 7-day rolling
-- Trust score: 0-100 based on sync success rate + content quality
-
-### Success Criteria
-
-- [ ] Brand mentions trigger alerts
-- [ ] Trends visible in dashboard
-- [ ] Feed trust scores calculated
-- [ ] No alert fatigue (grouped/prioritized)
-
-### Research Flag
-
-**Needs research** — Notification architecture, alert fatigue prevention.
+**Estimated Scope:** 2 plans, 1 wave
 
 ---
 
-## Phase 6: Advanced Features (Polish)
+## Phase 6: Product Tour (PENDING)
 
-**Goal:** Add nice-to-have features based on usage feedback.
+**Goal:** Create interactive 7-step tutorial for new users.
 
-**Rationale:** Defer until core system proves valuable.
+**Status:** ⏳ PENDING (1 plan)
 
-### Deliverables
+**Requirements Covered:**
+- TOUR-01 through TOUR-05: Interactive tour, step tooltips, skip functionality, first-time detection
 
-1. Full-text extraction:
-   - Detect truncated content
-   - Web scraping for full article (with legal compliance)
-   - Readability parsing (extract main content)
+**Success Criteria:**
+1. Interactive 7-step tour for key features (Sidebar → Home → Content → Results → Health → Templates → Settings)
+2. Contextual tooltips explaining each step
+3. Users can skip tour and return later from help
+4. Tour displays only to first-time users
+5. Smooth animations and clear next/prev navigation
 
-2. HTTP optimization:
-   - Conditional GET (ETag, Last-Modified)
-   - Skip unchanged feeds
+**Plans:**
+- 06-01: Product tour implementation (tour component, step definitions, first-time detection)
 
-3. Admin improvements:
-   - OPML import for bulk feed onboarding
-   - OPML export for backup
-   - Advanced feed management UI
-
-4. Semantic deduplication:
-   - Embedding-based similarity detection
-   - Near-duplicate identification (85% threshold)
-
-### Requirements Covered
-
-- ADV-01, ADV-02, ADV-03, ADV-04, ADV-05, ADV-06 (v2)
-
-### Tech Decisions
-
-- Full-text: evaluate Readability.js vs custom
-- Embeddings: evaluate cost/benefit of vector DB
-
-### Success Criteria
-
-- [ ] Truncated feeds have full content
-- [ ] Conditional GET reduces bandwidth
-- [ ] OPML import/export functional
-- [ ] Near-duplicates detected
-
-### Research Flag
-
-**Needs research** — Web scraping legal compliance, embedding strategies.
+**Estimated Scope:** 1 plan, 1 wave
 
 ---
 
-## Phase Dependencies
+## Phase Summary
 
-```
-Phase 1 ──────────────────────────────────────────────────────────────►
-         └──► Phase 2 ────────────────────────────────────────────────►
-                       └──► Phase 3 ──────────────────────────────────►
-                                     └──► Phase 4 ────────────────────►
-                                                   └──► Phase 5 ──────►
-                                                                └──► Phase 6
-```
-
-| Phase | Depends On | Reason |
-|-------|------------|--------|
-| Phase 2 | Phase 1 | Fan-out requires working single-feed sync |
-| Phase 3 | Phase 2 | Agent integration needs multiple feeds available |
-| Phase 4 | Phase 3 | AI enrichment prioritizes based on agent usage |
-| Phase 5 | Phase 4 | Brand monitoring uses categorization data |
-| Phase 6 | Phase 5 | Polish based on operational feedback |
+| Phase | Name | Status | Plans | Requirements | Deliverables |
+|-------|------|--------|-------|--------------|--------------|
+| 1 | Navigation Simplification | ✓ Complete | 3/3 | 8 | Sidebar, Home, Results, Health pages |
+| 2 | Feed Templates System | ✓ Complete | 2/2 | 2 | Feed templates, UI integration |
+| 3 | Onboarding Express | ✓ Complete | 2/2 | 2 | 3-step flow, auto-config |
+| 4 | Spanish Translation | ✓ Complete | 3/3 | 1 | Translation dictionary |
+| 5 | Design Polish | ⏳ Pending | 2 | 10 | Spacing, typography, mobile UI |
+| 6 | Product Tour | ⏳ Pending | 1 | 5 | Interactive tutorial |
 
 ---
 
-## Risk Register
+## Execution Path
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| GUID unreliability causes duplicates | HIGH | Composite key from Phase 1 |
-| Action timeout with many feeds | HIGH | Fan-out pattern from Phase 2 |
-| Malformed XML crashes parser | MEDIUM | Lenient parsing + validation |
-| Rate limiting blocks IP | MEDIUM | 429 handling + exponential backoff |
-| Token costs exceed budget | MEDIUM | Batch processing + cost alerts |
-| Full-text extraction legal issues | LOW | Legal review before Phase 6 |
+**Completed:** Phases 1-4 (4 phases, 10 plans, 100% execution rate)
+
+**Remaining:** Phases 5-6 (2 phases, 3 plans)
+
+**Total Coverage:**
+- v1 Requirements: 29 total
+- Phases 1-4 Covered: 14 requirements (100% of Phases 1-4)
+- Phases 5-6 Will Cover: 15 requirements (design + tour)
+- Full Coverage: 29/29 ✓
 
 ---
-*Roadmap created: 2026-01-27*
-*Last updated: 2026-01-28 after phase 3 planning*
+
+## What's Next
+
+1. **Execute Phase 5:** Design Polish
+   - Plan 05-01: Visual improvements (spacing, typography, buttons)
+   - Plan 05-02: Mobile responsiveness
+
+2. **Execute Phase 6:** Product Tour
+   - Plan 06-01: Interactive tutorial implementation
+
+3. **Validate with users:** Collect feedback on Phases 1-6 combined
+
+4. **Deploy to production:** Once user feedback confirms readiness
+
+---
+
+*Roadmap created: 2026-01-30*
+*Phases 1-4 completion: 2026-01-30*

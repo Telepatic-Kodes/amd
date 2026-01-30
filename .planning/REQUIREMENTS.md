@@ -1,141 +1,118 @@
-# Requirements: AMD RSS Feed Integration
+# Requirements: AMD UX Simplification
 
-**Defined:** 2026-01-27
-**Core Value:** Los agentes de contenido tienen acceso a información fresca y relevante del mercado para crear contenido más actual y competitivo.
+**Defined:** 2026-01-30
+**Core Value:** Non-technical users can manage complete marketing department in minutes
 
 ## v1 Requirements
 
-Requirements for initial release. Each maps to roadmap phases.
+### Phase 1-4: Foundation (Completed ✓)
 
-### Feed Management (FEED)
+- ✓ **NAV-01**: Sidebar navigation reduced to 4 main items (Inicio, Contenido, Resultados, Configuración)
+- ✓ **NAV-02**: All navigation labels in Spanish, with descriptive tooltips
+- ✓ **ONBOARD-01**: Onboarding flow reduced from 6 to 3 steps
+- ✓ **ONBOARD-02**: Setup time reduced to <2 minutes with auto-configured departments
+- ✓ **FEEDS-01**: Feed templates system with 10 industry bundles available
+- ✓ **FEEDS-02**: 1-click feed setup from pre-configured templates
+- ✓ **LANG-01**: 100% Spanish translation of all UI labels
+- ✓ **HOME-01**: Home page displays personalized greeting
+- ✓ **HOME-02**: Home page shows 3 metric cards (more spacious than before)
+- ✓ **HOME-03**: Feed Health Summary widget visible on home page
+- ✓ **RESULT-01**: Results page shows 3 KPIs (Views, Clicks, Engagement)
+- ✓ **RESULT-02**: Results page includes 7-day trend chart
+- ✓ **RESULT-03**: Top 5 performing content visible on results page
+- ✓ **HEALTH-01**: Feed health report page (/feeds/health) shows detailed metrics
 
-- [ ] **FEED-01**: Usuario puede agregar feed RSS manualmente desde dashboard
-- [ ] **FEED-02**: Sistema valida feed antes de agregarlo (parsea correctamente)
-- [ ] **FEED-03**: Usuario puede pausar/activar feeds individuales
-- [ ] **FEED-04**: Usuario puede eliminar feeds
-- [ ] **FEED-05**: Usuario puede ver lista de feeds con estado de sync
-- [ ] **FEED-06**: Sistema soporta RSS 2.0, Atom, y RSS 1.0 (RDF)
+### Phase 5: Design Polish (Pending)
 
-### Sync Engine (SYNC)
+- [ ] **DESIGN-01**: Increase global spacing (gaps 32px → 48px)
+- [ ] **DESIGN-02**: Larger typography throughout (headers, body text)
+- [ ] **DESIGN-03**: Padding increased on cards (16px → 24px)
+- [ ] **DESIGN-04**: Buttons more prominent with gradients
+- [ ] **DESIGN-05**: Progressive disclosure (filters, advanced options collapsed by default)
+- [ ] **MOBILE-01**: Responsive design for mobile screens (375px width)
+- [ ] **MOBILE-02**: Touch targets minimum 44x44px (WCAG standard)
+- [ ] **MOBILE-03**: Bottom navigation bar visible on mobile (tab-style)
+- [ ] **MOBILE-04**: Single-column card layout on mobile
+- [ ] **MOBILE-05**: Readable fonts on small screens (min 16px for body)
 
-- [ ] **SYNC-01**: Sistema sincroniza feeds diariamente via cron job
-- [ ] **SYNC-02**: Sistema usa composite key para deduplicación (no confía en GUID solo)
-- [ ] **SYNC-03**: Sistema maneja XML malformado sin crashear (lenient parsing)
-- [ ] **SYNC-04**: Sistema implementa fan-out (un action por feed) para evitar timeouts
-- [ ] **SYNC-05**: Sistema respeta HTTP 429 con exponential backoff
-- [ ] **SYNC-06**: Sistema trackea health de cada feed (last sync, error count)
-- [ ] **SYNC-07**: Sistema normaliza contenido a schema consistente
+### Phase 6: Product Tour (Pending)
 
-### Storage (STOR)
+- [ ] **TOUR-01**: Interactive 7-step product tour for new users
+- [ ] **TOUR-02**: Tour shows key features with contextual tooltips
+- [ ] **TOUR-03**: Users can skip tour and return later
+- [ ] **TOUR-04**: Tour only displays for first-time users
+- [ ] **TOUR-05**: Tour accessible from help/onboarding section
 
-- [ ] **STOR-01**: Feed items se almacenan en tabla `feedItems` en Convex
-- [ ] **STOR-02**: Feeds se almacenan en tabla `feeds` en Convex
-- [ ] **STOR-03**: Sync logs se almacenan en tabla `feedSyncLog`
-- [ ] **STOR-04**: Items incluyen: title, link, content, publishedAt, contentHash
-- [ ] **STOR-05**: Sistema previene duplicados via contentHash index
+## v2 Requirements (Future)
 
-### Agent Integration (AGNT)
+### Internationalization & Localization
 
-- [ ] **AGNT-01**: Agentes pueden consultar feed items relevantes durante ejecución
-- [ ] **AGNT-02**: Feed items se inyectan en contexto del agente (systemPrompt)
-- [ ] **AGNT-03**: Agentes pueden filtrar por keywords/temas
-- [ ] **AGNT-04**: Sistema trackea qué items usó cada agente
-- [ ] **AGNT-05**: Agentes de Content usan feeds como inspiración
-- [ ] **AGNT-06**: Agentes de Social usan feeds para curación
-- [ ] **AGNT-07**: Agentes de SEO usan feeds para monitoreo de mercado
-
-### Dashboard UI (DASH)
-
-- [ ] **DASH-01**: Dashboard muestra feeds configurados
-- [ ] **DASH-02**: Dashboard muestra estado de sincronización por feed
-- [ ] **DASH-03**: Dashboard muestra últimos items sincronizados
-- [ ] **DASH-04**: Dashboard permite trigger manual de sync
-
-### AI Enrichment (ENRCH)
-
-- [ ] **ENRCH-01**: Sistema categoriza items automáticamente (topic extraction)
-- [ ] **ENRCH-02**: Sistema genera resumen de items (reduce tokens)
-- [ ] **ENRCH-03**: Sistema detecta sentimiento (positive/neutral/negative)
-- [ ] **ENRCH-04**: Enrichment corre en background (no bloquea sync)
-
-### Monitoring (MNTR)
-
-- [ ] **MNTR-01**: Sistema alerta sobre menciones de marca (keywords prioritarios)
-- [ ] **MNTR-02**: Sistema detecta tendencias across feeds
-- [ ] **MNTR-03**: Sistema asigna trust score a feeds según calidad
-
-## v2 Requirements
-
-Deferred to future release. Tracked but not in current roadmap.
+- **I18N-01**: Multi-language support (English, Portuguese, French)
+- **I18N-02**: Dynamic language switching in settings
+- **I18N-03**: Date/time formatting per locale
 
 ### Advanced Features
 
-- **ADV-01**: Full-text extraction para feeds truncados (web scraping)
-- **ADV-02**: Deduplicación semántica (embeddings para near-duplicates)
-- **ADV-03**: HTTP conditional GET (ETag/Last-Modified caching)
-- **ADV-04**: OPML import para bulk onboarding de feeds
-- **ADV-05**: OPML export para backup/portabilidad
-- **ADV-06**: Sugerencia automática de feeds por keywords
+- **ADV-01**: Dark mode toggle
+- **ADV-02**: Keyboard shortcuts reference
+- **ADV-03**: Accessibility audit (WCAG AA compliance)
+- **ADV-04**: Performance optimization (Lighthouse score >90)
+
+### Analytics & Monitoring
+
+- **ANALYT-01**: User behavior tracking (non-invasive)
+- **ANALYT-02**: Crash reporting and error logging
+- **ANALYT-03**: Feature usage analytics
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| Bypass de paywalls | Ilegal, viola ToS |
-| Scraping de sitios sin RSS | Complejidad legal y técnica |
-| Análisis de sentimiento real-time | Batch diario es suficiente |
-| Integración con APIs de pago (NewsAPI) | Puede agregarse después |
-| Reader UI para humanos | Los agentes son los consumidores |
-| Podcast/video handling | Pipeline separado, diferente media type |
+| Real-time collaboration | High complexity, not core to simplicity value |
+| Advanced data export | Feature creep; basic export sufficient |
+| Custom theme builder | Violates simplicity principle |
+| Plugin/extension system | Out of scope for v1 |
+| A/B testing framework | Not needed for MVP |
 
 ## Traceability
 
-Which phases cover which requirements. Updated during roadmap creation.
-
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FEED-01 | Phase 2 | Pending |
-| FEED-02 | Phase 1 | Pending |
-| FEED-03 | Phase 2 | Pending |
-| FEED-04 | Phase 2 | Pending |
-| FEED-05 | Phase 2 | Pending |
-| FEED-06 | Phase 1 | Pending |
-| SYNC-01 | Phase 2 | Pending |
-| SYNC-02 | Phase 1 | Pending |
-| SYNC-03 | Phase 1 | Pending |
-| SYNC-04 | Phase 2 | Pending |
-| SYNC-05 | Phase 2 | Pending |
-| SYNC-06 | Phase 1 | Pending |
-| SYNC-07 | Phase 1 | Pending |
-| STOR-01 | Phase 1 | Pending |
-| STOR-02 | Phase 1 | Pending |
-| STOR-03 | Phase 1 | Pending |
-| STOR-04 | Phase 1 | Pending |
-| STOR-05 | Phase 1 | Pending |
-| AGNT-01 | Phase 3 | Pending |
-| AGNT-02 | Phase 3 | Pending |
-| AGNT-03 | Phase 3 | Pending |
-| AGNT-04 | Phase 3 | Pending |
-| AGNT-05 | Phase 3 | Pending |
-| AGNT-06 | Phase 3 | Pending |
-| AGNT-07 | Phase 3 | Pending |
-| DASH-01 | Phase 2 | Pending |
-| DASH-02 | Phase 2 | Pending |
-| DASH-03 | Phase 2 | Pending |
-| DASH-04 | Phase 2 | Pending |
-| ENRCH-01 | Phase 4 | Pending |
-| ENRCH-02 | Phase 4 | Pending |
-| ENRCH-03 | Phase 4 | Pending |
-| ENRCH-04 | Phase 4 | Pending |
-| MNTR-01 | Phase 5 | Pending |
-| MNTR-02 | Phase 5 | Pending |
-| MNTR-03 | Phase 5 | Pending |
+| NAV-01 | 1 | Complete |
+| NAV-02 | 1 | Complete |
+| ONBOARD-01 | 3 | Complete |
+| ONBOARD-02 | 3 | Complete |
+| FEEDS-01 | 2 | Complete |
+| FEEDS-02 | 2 | Complete |
+| LANG-01 | 4 | Complete |
+| HOME-01 | 1 | Complete |
+| HOME-02 | 1 | Complete |
+| HOME-03 | 1 | Complete |
+| RESULT-01 | 1 | Complete |
+| RESULT-02 | 1 | Complete |
+| RESULT-03 | 1 | Complete |
+| HEALTH-01 | 1 | Complete |
+| DESIGN-01 | 5 | Pending |
+| DESIGN-02 | 5 | Pending |
+| DESIGN-03 | 5 | Pending |
+| DESIGN-04 | 5 | Pending |
+| DESIGN-05 | 5 | Pending |
+| MOBILE-01 | 5 | Pending |
+| MOBILE-02 | 5 | Pending |
+| MOBILE-03 | 5 | Pending |
+| MOBILE-04 | 5 | Pending |
+| MOBILE-05 | 5 | Pending |
+| TOUR-01 | 6 | Pending |
+| TOUR-02 | 6 | Pending |
+| TOUR-03 | 6 | Pending |
+| TOUR-04 | 6 | Pending |
+| TOUR-05 | 6 | Pending |
 
 **Coverage:**
-- v1 requirements: 37 total
-- Mapped to phases: 37
+- v1 requirements: 29 total
+- Mapped to phases: 29 ✓
 - Unmapped: 0 ✓
 
 ---
-*Requirements defined: 2026-01-27*
-*Last updated: 2026-01-27 after research synthesis*
+
+*Requirements defined: 2026-01-30*
