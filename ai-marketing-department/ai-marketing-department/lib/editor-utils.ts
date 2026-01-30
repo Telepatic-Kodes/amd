@@ -81,6 +81,7 @@ export function sanitizeHtml(html: string): string {
 
 /**
  * Copy HTML content to clipboard
+ * Cross-browser compatible (Chrome, Firefox, Safari, Edge)
  * @param html - HTML string to copy
  * @returns Promise that resolves when content is copied
  */
@@ -90,7 +91,7 @@ export async function copyHtmlToClipboard(html: string): Promise<void> {
   }
 
   try {
-    // Modern Clipboard API
+    // Modern Clipboard API (Chrome, Edge, Firefox 87+, Safari 13.1+)
     if (navigator.clipboard && navigator.clipboard.write) {
       const blob = new Blob([html], { type: 'text/html' });
       const plainText = stripHtmlTags(html);
@@ -102,18 +103,19 @@ export async function copyHtmlToClipboard(html: string): Promise<void> {
       return;
     }
 
-    // Fallback: copy plain text only
+    // Fallback: copy plain text only (older browsers)
     if (navigator.clipboard && navigator.clipboard.writeText) {
       const plainText = stripHtmlTags(html);
       await navigator.clipboard.writeText(plainText);
       return;
     }
 
-    // Legacy fallback using execCommand
+    // Legacy fallback using execCommand (deprecated but works in old browsers)
     const textarea = document.createElement('textarea');
     textarea.value = stripHtmlTags(html);
     textarea.style.position = 'fixed';
     textarea.style.opacity = '0';
+    textarea.style.left = '-9999px';
     document.body.appendChild(textarea);
     textarea.select();
     document.execCommand('copy');
@@ -126,6 +128,7 @@ export async function copyHtmlToClipboard(html: string): Promise<void> {
 
 /**
  * Download HTML content as a file
+ * Cross-browser compatible (Chrome, Firefox, Safari, Edge)
  * @param html - HTML string to download
  * @param filename - Name of the file to download (default: content.html)
  */
@@ -134,24 +137,42 @@ export function downloadAsFile(html: string, filename: string = 'content.html'):
     throw new Error('Download only available in browser');
   }
 
-  // Create a Blob with the HTML content
-  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  try {
+    // Create a Blob with the HTML content (works in all modern browsers)
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
 
-  // Create a temporary link element
-  const link = document.createElement('a');
-  const url = URL.createObjectURL(blob);
+    // Modern browsers: use URL.createObjectURL
+    if (URL && URL.createObjectURL) {
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
 
-  link.href = url;
-  link.download = filename;
-  link.style.display = 'none';
+      link.href = url;
+      link.download = filename;
+      link.style.display = 'none';
 
-  // Trigger download
-  document.body.appendChild(link);
-  link.click();
+      // Trigger download
+      document.body.appendChild(link);
+      link.click();
 
-  // Cleanup
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
+      // Cleanup (timeout for Safari compatibility)
+      setTimeout(() => {
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 100);
+      return;
+    }
+
+    // Fallback for very old browsers (IE10+)
+    if ((navigator as any).msSaveBlob) {
+      (navigator as any).msSaveBlob(blob, filename);
+      return;
+    }
+
+    throw new Error('Browser does not support file download');
+  } catch (error) {
+    console.error('Failed to download file:', error);
+    throw error;
+  }
 }
 
 /**
