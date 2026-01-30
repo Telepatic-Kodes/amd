@@ -70,7 +70,7 @@ export function FeedHealthSummary({ status, loading = false }: FeedHealthSummary
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 }}
     >
-      <Link href="/feeds/health" className="block">
+      <Link href="/feeds/health" className="block" data-tour="feed-health">
         <Card className="p-6 hover:bg-zinc-900/70 transition-colors cursor-pointer">
           <div className="space-y-4">
             {/* Health Status */}

@@ -281,7 +281,7 @@ export default function ContentPage() {
   }
 
   return (
-    <div className="space-y-12">
+    <div data-tour="content-section" className="space-y-12">
       {/* Header */}
       <div className="flex items-center gap-3">
         <div className="p-2 rounded-xl bg-blue-500/10">

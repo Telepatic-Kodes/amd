@@ -131,7 +131,7 @@ export default function ResultsPage() {
       </div>
 
       {/* Main KPIs - 3 Big Numbers */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+      <div data-tour="results-page" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
         {/* Vistas */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

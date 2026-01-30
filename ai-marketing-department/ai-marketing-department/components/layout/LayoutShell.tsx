@@ -1,12 +1,24 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { MobileNav } from "@/components/layout/MobileNav";
+import { ProductTour } from "@/components/ui/ProductTour";
+import { shouldShowTour } from "@/lib/tour-utils";
 
 export function LayoutShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isOnboarding = pathname.startsWith("/onboarding");
+  const [showTour, setShowTour] = useState(false);
+
+  // Check if tour should be shown for first-time users (client-side only)
+  useEffect(() => {
+    if (!isOnboarding) {
+      const shouldShow = shouldShowTour();
+      setShowTour(shouldShow);
+    }
+  }, [isOnboarding]);
 
   if (isOnboarding) {
     return <>{children}</>;
@@ -19,6 +31,14 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
         <div className="container mx-auto p-4 md:p-8 pb-20 md:pb-8 max-w-7xl">{children}</div>
       </main>
       <MobileNav />
+
+      {/* Product Tour - shows only for first-time users */}
+      {showTour && (
+        <ProductTour
+          onComplete={() => setShowTour(false)}
+          onSkip={() => setShowTour(false)}
+        />
+      )}
     </div>
   );
 }

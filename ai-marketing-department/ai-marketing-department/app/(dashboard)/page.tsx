@@ -103,7 +103,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Key Metrics - Simplified to 3 larger cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+      <div data-tour="home-metrics" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
         {/* Campaigns Running */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
