@@ -142,6 +142,70 @@ Plans:
 
 ---
 
+## Phase 7: Rich Text Editor Integration (PENDING)
+
+**Goal:** Replace textarea with WYSIWYG editor (TipTap) in EditContentModal with formatting support, preview, and validation.
+
+**Status:** ⏳ PENDING (not planned)
+
+**Requirements Covered:**
+- EDITOR-01: WYSIWYG editor with formatting (bold, italic, headers, lists, links, code)
+- EDITOR-02: Real-time preview alongside editor
+- EDITOR-03: Keyboard shortcuts (Ctrl+B, Ctrl+I, etc.)
+- EDITOR-04: Content validation and character count
+- EDITOR-05: Export to plain text and HTML
+
+**Success Criteria:**
+1. TipTap editor integrated in EditContentModal
+2. Full formatting toolbar (text styles, lists, alignment, links, code blocks)
+3. Live preview pane showing formatted content
+4. Keyboard shortcuts working for common formats
+5. Character/word count indicator
+6. Validation rules enforced (min 50 chars)
+7. Content serializable to HTML and plain text
+8. Responsive on mobile with adjusted toolbar
+
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 7 to break down)
+
+**Estimated Scope:** To be determined during planning
+
+---
+
+## Phase 8: File Upload & Content Import (PENDING)
+
+**Goal:** Enable drag-drop file upload (PDF, DOCX) with automatic content parsing and import into editor.
+
+**Status:** ⏳ PENDING (not planned)
+
+**Requirements Covered:**
+- FILE-01: Drag-drop file upload for PDF, DOCX, TXT
+- FILE-02: Content extraction and parsing
+- FILE-03: Preview before import
+- FILE-04: Error handling for unsupported formats
+- FILE-05: File size validation
+
+**Success Criteria:**
+1. Drag-drop zone in UploadContentForm and EditContentModal
+2. File upload handling for PDF (pdf-parse) and DOCX (mammoth)
+3. Content extracted and displayed in preview modal
+4. User can edit extracted content before import
+5. File size limit enforced (max 10MB)
+6. Unsupported formats show clear error messages
+7. Upload progress indicator
+8. Failed uploads recoverable with retry
+
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 8 to break down)
+
+**Estimated Scope:** To be determined during planning
+
+---
+
 ## Phase Summary
 
 | Phase | Name | Status | Plans | Requirements | Deliverables |

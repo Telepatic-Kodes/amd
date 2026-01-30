@@ -1,8 +1,8 @@
 # Project State: AMD UX Simplification
 
 **Started:** 2026-01-30
-**Current Phase:** Phase 5 - Design Polish (EXECUTING)
-**Status:** Phases 1-4 Complete (85%), Phase 5 Plans Created, Ready for Execution
+**Current Phase:** Phase 7 - Rich Text Editor Integration (PLANNING)
+**Status:** Phases 1-4 Complete (85%), Phase 5-6 Pending, Phase 7-8 Added (NEW)
 
 ## Project Reference
 
@@ -50,8 +50,19 @@ See: .planning/PROJECT.md
 
 ### Pending
 
+- [ ] Phase 5: Design Polish (2 plans created, ready for execution)
+  - Visual improvements & mobile responsiveness
+
 - [ ] Phase 6: Product Tour (1 plan to create)
   - Interactive 7-step tutorial for new users
+
+- [ ] Phase 7: Rich Text Editor Integration (NEW - 2026-01-30)
+  - WYSIWYG editor (TipTap) in EditContentModal
+  - Formatting, preview, validation support
+
+- [ ] Phase 8: File Upload & Content Import (NEW - 2026-01-30)
+  - Drag-drop file upload for PDF, DOCX, TXT
+  - Content parsing and import workflow
 
 ## Session Continuity
 
@@ -75,7 +86,7 @@ See: .planning/PROJECT.md
 **Planning:**
 - `.planning/PROJECT.md` — Project charter
 - `.planning/REQUIREMENTS.md` — 29 requirements (14 complete, 15 pending)
-- `.planning/ROADMAP.md` — 6-phase roadmap
+- `.planning/ROADMAP.md` — 8-phase roadmap (Phases 7-8 added 2026-01-30)
 - `.planning/config.json` — GSD workflow config
 
 **Phase 5 Plans:**
@@ -87,15 +98,20 @@ See: .planning/PROJECT.md
 
 ## Next Steps
 
-1. **Execute Phase 5:** `/gsd:execute-phase 5`
-   - Plan 05-01: Visual design improvements (3 tasks)
-   - Plan 05-02: Mobile responsiveness (3 tasks)
-   - Both plans parallel (Wave 1, autonomous)
+1. **Plan Phase 7:** `/gsd:plan-phase 7`
+   - Rich Text Editor Integration with TipTap
+   - Start fresh planning (research + planning + verification)
 
-2. **Plan Phase 6:** `/gsd:plan-phase 6` (after Phase 5 complete)
-   - Interactive product tour
+2. **Plan Phase 8:** `/gsd:plan-phase 8`
+   - File Upload & Content Import workflow
+   - Start fresh planning (research + planning + verification)
 
-3. **Deploy:** After both phases verified
+3. **Execute Phase 7-8:** After both planned
+   - Implement Rich Text Editor
+   - Implement File Upload
+   - Test integration
+
+4. **Deploy:** After both phases verified and committed
 
 ---
 
