@@ -176,11 +176,11 @@ Plans:
 
 ---
 
-## Phase 8: File Upload & Content Import (PENDING)
+## Phase 8: File Upload & Content Import (PLANNED)
 
-**Goal:** Enable drag-drop file upload (PDF, DOCX) with automatic content parsing and import into editor.
+**Goal:** Enable drag-drop file upload (PDF, DOCX, TXT) with automatic content parsing and import into editor.
 
-**Status:** ⏳ PENDING (not planned)
+**Status:** ⏳ PLANNED (2 plans ready for execution)
 
 **Requirements Covered:**
 - FILE-01: Drag-drop file upload for PDF, DOCX, TXT
@@ -199,12 +199,13 @@ Plans:
 7. Upload progress indicator
 8. Failed uploads recoverable with retry
 
-**Plans:** 0 plans
+**Plans:** 2 plans
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 8 to break down)
+- [ ] 08-01-PLAN.md — File upload infrastructure (packages, parsers, FileDropZone component)
+- [ ] 08-02-PLAN.md — Content import integration (FileImportModal, EditContentModal, UploadContentForm)
 
-**Estimated Scope:** To be determined during planning
+**Estimated Scope:** 2 plans, 2 waves (Wave 1: infrastructure, Wave 2: integration with checkpoint)
 
 ---
 
