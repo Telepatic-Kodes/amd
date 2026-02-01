@@ -1,14 +1,15 @@
-# Project State: AMD UX Simplification
+# Project State: AMD
 
 **Started:** 2026-01-30
-**Current Phase:** Phase 8 - File Upload & Content Import (COMPLETE)
-**Status:** ✅ MILESTONE v1.0 COMPLETE - All 8 Phases Done
+**Current Milestone:** Between milestones (v1.0 shipped, v2.0 not started)
+**Status:** ✅ v1.0 SHIPPED — Ready for user testing and v2.0 planning
 
 ## Project Reference
 
-See: .planning/PROJECT.md
+See: .planning/PROJECT.md (updated 2026-02-01)
 
 **Core Value:** Non-technical users can manage complete marketing department in minutes, not hours.
+**Current Focus:** User acceptance testing and v2.0 planning
 
 ## Progress
 
@@ -73,10 +74,17 @@ See: .planning/PROJECT.md
 
 ## Session Continuity
 
-**Last completed:** Phase 8 Plan 2 execution (08-02-PLAN.md executed and verified)
-**Current:** Phase 8 COMPLETE - Milestone v1.0 Ready
-**Status:** All 8 phases complete, 29/29 requirements met
-**Next:** User acceptance testing or production deployment
+**Last completed:** v1.0 milestone completion (2026-02-01)
+**Current:** Between milestones
+**Status:** v1.0 shipped (8 phases, 19 plans, 29 requirements, 100% coverage)
+**Next:** `/gsd:new-milestone` to start v2.0 or user acceptance testing
+
+## v1.0 Milestone Archive
+
+**Shipped:** 2026-01-30
+**Archive:** `.planning/milestones/v1.0-ROADMAP.md` and `v1.0-REQUIREMENTS.md`
+**Summary:** `.planning/MILESTONES.md`
+**Git tag:** v1.0
 
 ## Key Decisions Made
 
@@ -152,8 +160,7 @@ See: .planning/PROJECT.md
 
 ---
 
-*State updated: 2026-01-30*
-*Milestone v1.0: COMPLETE ✅*
-*All 8 phases executed successfully*
-*All 29 requirements implemented*
-*Production ready*
+*State updated: 2026-02-01*
+*Milestone v1.0: SHIPPED ✅*
+*Between milestones — awaiting v2.0 planning*
+*ROADMAP.md and REQUIREMENTS.md deleted (fresh for next milestone)*
