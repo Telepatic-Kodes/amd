@@ -1,8 +1,8 @@
-# AMD UX Simplification — Complete System Redesign
+# AMD — AI Marketing Department
 
 ## What This Is
 
-AMD (AI Marketing Department) is a system of 37 AI agents organized in 6 departments that automate marketing workflows. This project transforms the technical dashboard interface into a simple, user-friendly system designed for non-technical users — as easy to use as Instagram or Twitter. The goal is to make anyone capable of operating an automated marketing department, regardless of technical skill level.
+AMD is a system of 37 AI agents organized in 6 departments that automate marketing workflows. The dashboard lets non-technical users manage a complete marketing department — from configuring agents to creating content to publishing across channels. v1.0 simplified the interface; v2.0 makes the system truly operational: users can see what's running, follow guided workflows, and publish content end-to-end.
 
 ## Core Value
 
@@ -29,17 +29,20 @@ When tradeoffs arise, prioritize reducing friction and cognitive load over advan
 
 ### Active
 
-- [ ] User acceptance testing (validate v1.0 with real users)
-- [ ] Production deployment (staging → live)
-- [ ] v2.0 feature planning (dark mode, i18n, advanced analytics)
+- [ ] Control Center operativo — Dashboard mission control con estado real-time de 37 agentes, métricas, alertas
+- [ ] Pipeline de contenido — Flujo visual crear → revisar → aprobar → programar → publicar
+- [ ] Integración LinkedIn — Publicación real desde la app como prueba de concepto
+- [ ] Sistema de guía inteligente — Wizard para nuevos + "siguiente acción recomendada" para recurrentes
+- [ ] Claridad de ejecución — Cada agente muestra qué hace, qué produjo, progreso visible
 
 ### Out of Scope
 
 - Advanced customization options — Too much choice defeats simplicity
-- Multilingual support beyond Spanish — Scope for v2
-- Desktop-only optimization — Must work on mobile first
+- Multilingual support beyond Spanish — Scope for v3
 - Agent customization UI — Stays in backend, not frontend
-- Real-time chat or messaging — Out of scope for v1
+- Real-time chat or messaging — Complexity vs value too high
+- Full social media integrations (Twitter, Instagram, TikTok) — Only LinkedIn as PoC in v2.0
+- Dark mode / theming — Deferred, not core to UX clarity problem
 
 ## Context
 
@@ -91,19 +94,19 @@ The AMD dashboard was technically powerful but too complex for non-technical use
 
 ---
 
-## Current State (v1.0)
+## Current Milestone: v2.0 UX/UI Excellence
 
-**Shipped:** 2026-01-30
-**Milestone:** v1.0 UX Simplification
-**Requirements:** 29/29 complete (100% coverage)
-**Code:** 18,108 LOC TypeScript/React, 53 atomic commits
-**Status:** Production-ready, awaiting user acceptance testing
+**Goal:** Make AMD 100% user-friendly with full operational visibility, guided workflows, and end-to-end content publishing.
 
-**What's Next:**
-- User acceptance testing with real non-technical users
-- Production deployment and monitoring
-- v2.0 planning: dark mode, multilingual i18n, advanced analytics
+**Target features:**
+- Control Center operativo (agent monitoring, metrics, alerts)
+- Pipeline de contenido completo (crear → publicar)
+- LinkedIn integration (publicación real como PoC)
+- Sistema de guía inteligente (wizard + next-action recommendations)
+- Claridad de ejecución (progreso visible, resultados de agentes)
+
+**Previous milestone:** v1.0 UX Simplification (shipped 2026-01-30, 29/29 requirements, 53 commits)
 
 ---
 
-*Last updated: 2026-02-01 after v1.0 milestone completion*
+*Last updated: 2026-02-05 after v2.0 milestone initialization*
