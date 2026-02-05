@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { mutation, query, action } from "./_generated/server";
 import { Id } from "./_generated/dataModel";
+import { requireAuth, getUserId } from "./lib/auth";
 
 // ===========================================
 // AGENT QUERIES
@@ -250,6 +251,8 @@ export const listTasks = query({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    const userId = await getUserId(ctx);
+
     let q: any = ctx.db.query("tasks");
 
     if (args.agentId) {
@@ -260,24 +263,28 @@ export const listTasks = query({
 
     q = q.order("desc");
 
-    if (args.limit) {
-      return await q.take(args.limit);
-    }
+    const results = args.limit ? await q.take(args.limit) : await q.collect();
 
-    return await q.collect();
+    // Filter by userId - show user's tasks + legacy unassigned tasks
+    return results.filter((item: any) => item.userId === userId || item.userId === undefined);
   },
 });
 
 export const getPendingTasks = query({
   args: { agentId: v.id("agents") },
   handler: async (ctx, args) => {
-    return await ctx.db
+    const userId = await getUserId(ctx);
+
+    const results = await ctx.db
       .query("tasks")
       .withIndex("by_agent", (q) => q.eq("agentId", args.agentId))
       .filter((q) =>
         q.or(q.eq(q.field("status"), "pending"), q.eq(q.field("status"), "queued"))
       )
       .collect();
+
+    // Filter by userId - show user's tasks + legacy unassigned tasks
+    return results.filter(item => item.userId === userId || item.userId === undefined);
   },
 });
 
@@ -297,6 +304,7 @@ export const createTask = mutation({
     scheduledFor: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    const userId = await getUserId(ctx);
     const now = Date.now();
     const taskId = `task_${now}_${Math.random().toString(36).substr(2, 9)}`;
 
@@ -313,6 +321,7 @@ export const createTask = mutation({
       retryCount: 0,
       maxRetries: 3,
       scheduledFor: args.scheduledFor,
+      userId,
       createdAt: now,
       updatedAt: now,
     });
@@ -494,6 +503,7 @@ export const updateHandoffStatus = mutation({
 export const getContent = query({
   args: { contentId: v.string() },
   handler: async (ctx, args) => {
+    await requireAuth(ctx);
     return await ctx.db
       .query("content")
       .withIndex("by_contentId", (q) => q.eq("contentId", args.contentId))
@@ -509,6 +519,8 @@ export const listContent = query({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    const userId = await getUserId(ctx);
+
     let q: any = ctx.db.query("content");
 
     if (args.type && args.status) {
@@ -525,11 +537,10 @@ export const listContent = query({
 
     q = q.order("desc");
 
-    if (args.limit) {
-      return await q.take(args.limit);
-    }
+    const results = args.limit ? await q.take(args.limit) : await q.collect();
 
-    return await q.collect();
+    // Filter by userId - show user's content + legacy unassigned content
+    return results.filter((item: any) => item.userId === userId || item.userId === undefined);
   },
 });
 
@@ -574,12 +585,14 @@ export const createContent = mutation({
     parentContentId: v.optional(v.id("content")),
   },
   handler: async (ctx, args) => {
+    const userId = await getUserId(ctx);
     const now = Date.now();
     const contentId = `content_${now}_${Math.random().toString(36).substr(2, 9)}`;
 
     return await ctx.db.insert("content", {
       contentId,
       ...args,
+      userId,
       status: "draft",
       createdAt: now,
       updatedAt: now,
@@ -605,6 +618,14 @@ export const updateContentStatus = mutation({
     publishedUrl: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    const content = await ctx.db.get(args.id);
+    if (!content) throw new Error("Contenido no encontrado");
+
+    const userId = await getUserId(ctx);
+    if (content.userId && content.userId !== userId) {
+      throw new Error("No tienes permiso para modificar este contenido.");
+    }
+
     const now = Date.now();
     const updates: any = {
       status: args.status,
@@ -649,7 +670,12 @@ export const updateContent = mutation({
   handler: async (ctx, args) => {
     const { id, ...updates } = args;
     const content = await ctx.db.get(id);
-    if (!content) throw new Error("Content not found");
+    if (!content) throw new Error("Contenido no encontrado");
+
+    const userId = await getUserId(ctx);
+    if (content.userId && content.userId !== userId) {
+      throw new Error("No tienes permiso para modificar este contenido.");
+    }
 
     const finalUpdates: any = { updatedAt: Date.now() };
 
@@ -737,9 +763,15 @@ export const getAgentMetrics = query({
 
 export const getDashboardStats = query({
   handler: async (ctx) => {
+    const userId = await getUserId(ctx);
+
     const agents = await ctx.db.query("agents").collect();
-    const tasks = await ctx.db.query("tasks").collect();
-    const content = await ctx.db.query("content").collect();
+    const allTasks = await ctx.db.query("tasks").collect();
+    const allContent = await ctx.db.query("content").collect();
+
+    // Filter by userId - show user's data + legacy unassigned data
+    const tasks = allTasks.filter(t => t.userId === userId || t.userId === undefined);
+    const content = allContent.filter(c => c.userId === userId || c.userId === undefined);
 
     const now = Date.now();
     const oneDayAgo = now - 24 * 60 * 60 * 1000;
@@ -789,6 +821,8 @@ export const listCampaigns = query({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    const userId = await getUserId(ctx);
+
     let q: any = ctx.db.query("campaigns");
 
     if (args.type) {
@@ -799,17 +833,17 @@ export const listCampaigns = query({
 
     q = q.order("desc");
 
-    if (args.limit) {
-      return await q.take(args.limit);
-    }
+    const results = args.limit ? await q.take(args.limit) : await q.collect();
 
-    return await q.collect();
+    // Filter by userId - show user's campaigns + legacy unassigned campaigns
+    return results.filter((item: any) => item.userId === userId || item.userId === undefined);
   },
 });
 
 export const getCampaign = query({
   args: { campaignId: v.string() },
   handler: async (ctx, args) => {
+    await requireAuth(ctx);
     return await ctx.db
       .query("campaigns")
       .withIndex("by_campaignId", (q) => q.eq("campaignId", args.campaignId))
@@ -873,9 +907,14 @@ export const updateSetting = mutation({
 
 export const getAnalyticsOverview = query({
   handler: async (ctx) => {
+    const userId = await getUserId(ctx);
+
     const executions = await ctx.db.query("executions").order("desc").take(100);
-    const tasks = await ctx.db.query("tasks").order("desc").take(100);
+    const allTasks = await ctx.db.query("tasks").order("desc").take(100);
     const agents = await ctx.db.query("agents").collect();
+
+    // Filter tasks by userId
+    const tasks = allTasks.filter(t => t.userId === userId || t.userId === undefined);
 
     // Calculate totals
     const totalTokens = executions.reduce((sum, e) => sum + e.tokensUsed.total, 0);
