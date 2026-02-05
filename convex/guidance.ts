@@ -152,8 +152,9 @@ export const completeSetupStep = mutation({
         createdAt: now,
         updatedAt: now,
       });
-      guidance = await ctx.db.get(id);
-      if (!guidance) return;
+      const newGuidance = await ctx.db.get(id);
+      if (!newGuidance) return;
+      guidance = newGuidance;
     }
 
     const updatedSteps = { ...guidance.setupSteps, [args.step]: true };
