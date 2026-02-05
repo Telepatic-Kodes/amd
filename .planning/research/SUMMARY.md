@@ -1,350 +1,345 @@
 # Project Research Summary
 
-**Project:** AMD (AI Marketing Department) v2.0 UX/UI Excellence
-**Domain:** Marketing Automation Dashboard with Multi-Agent Operations
+**Project:** AMD v3.0 - Multi-User Analytics & Multi-Platform Expansion
+**Domain:** Marketing SaaS - Analytics Dashboards, Social Media Publishing, Team Collaboration
 **Researched:** 2026-02-05
 **Confidence:** HIGH
 
 ## Executive Summary
 
-AMD v2.0 adds operational capabilities to an existing 37-agent marketing automation system. The research examined four feature categories: Control Center (real-time monitoring), Content Pipeline (workflow management), LinkedIn Integration (social publishing), and Guided UX (onboarding/wizards). The key finding is that **90% of requirements can be met with the existing stack** (Next.js 16, React 19, Convex, Tailwind 4) by adding only two lightweight libraries: Sonner (toast notifications, 8KB) and Onborda (guided tours, 15KB).
+AMD v3.0 is a transformative milestone that converts a single-user LinkedIn-only marketing tool into a multi-user marketing intelligence platform with cross-platform publishing (LinkedIn, Twitter/X, Instagram) and analytics capabilities. The research reveals three critical insights:
 
-The recommended approach leverages Convex's reactive query system for real-time features, implements OAuth via Convex actions for security, extends the existing content schema with workflow states, and uses a headless state machine for guided onboarding. The core risk is **complexity creep** — v1.0 solved "too complex" by simplifying to 4 navigation items and 3-step onboarding; v2.0 must avoid recreating that problem by adding operational features without careful UX design.
+**First, authentication retrofit is the highest-risk component.** Adding multi-user auth to an existing system with 37 pre-configured agents and extensive content requires careful data migration to avoid the "orphaned data black hole" where existing records become invisible or leak across users. The solution is a system user pattern plus defense-in-depth authorization in every Convex query.
 
-Critical mitigation strategies: implement subscription budgeting to prevent Convex cost explosion (Pitfall #1), design smart alert filtering to avoid alert fatigue (Pitfall #2), use progressive disclosure to hide advanced pipeline features behind "Quick mode" (Pitfall #3), implement centralized rate limiting before any LinkedIn API calls (Pitfall #4), and follow OAuth security best practices with PKCE flow and httpOnly cookies (Pitfall #5). All pitfalls are addressable if caught during architecture design before implementation.
+**Second, the recommended stack minimizes new dependencies.** Use Clerk (not beta Convex Auth) for production-ready authentication with free tier (10K MAU, 100 orgs). Access social APIs directly via Convex actions using native SDKs (twitter-api-v2, facebook-nodejs-business-sdk) rather than wrapper services. Leverage existing Recharts for visualization and add Convex Aggregate component for efficient analytics rollups.
+
+**Third, multi-platform publishing introduces compounding complexity.** Each platform has different OAuth refresh patterns (LinkedIn 365d, Instagram 60d, Twitter variable), API rate limits (Instagram 200/hr, Twitter tiered pricing $200-$5K/month), and content constraints. Instagram requires Facebook Business account + 60-90 day App Review. Twitter Free tier is write-only (no analytics), forcing Basic tier ($200/mo) minimum. These constraints make phased rollout critical: start with LinkedIn analytics (already authenticated), add Twitter (manageable with caching), defer Instagram until App Review completes.
 
 ## Key Findings
 
 ### Recommended Stack
 
-The existing stack (Next.js 16, React 19, Tailwind 4, Convex, Recharts) covers 90% of v2.0 needs. Research found NO major refactoring required. Only three targeted additions needed:
+**Authentication:** Clerk provides production-ready multi-user auth with official Convex integration. Convex Auth is still beta as of Feb 2026 and unsuitable for production multi-user systems. Clerk's free tier (10,000 MAU, 100 organizations) is sufficient for MVP, and ConvexProviderWithClerk handles automatic user sync to Convex database.
 
-**Core technologies (existing):**
-- **Next.js 16 + React 19**: App Router with Server/Client components — already working in v1.0
-- **Convex**: Real-time subscriptions via WebSocket — already provides reactive queries out-of-the-box, no Socket.io needed
-- **Recharts**: Chart library — custom components already built (LineChart, AreaChart, DonutChart) with theme system
-- **Tailwind 4 + Framer Motion**: Styling and animations — already integrated
-- **TipTap**: Rich text editor — already installed for content creation
+**Social Platform APIs:** Access APIs directly via Convex actions (server-side) to keep credentials secure:
+- **Twitter/X:** twitter-api-v2 library (official community SDK, OAuth 2.0, actively maintained)
+- **Instagram:** facebook-nodejs-business-sdk (official Meta SDK v24.0.1)
+- **LinkedIn:** Direct REST API calls (official library is beta, use fetch for stability)
 
-**Required additions (new):**
-- **Sonner** (8KB): Toast notifications for alerts, status updates, LinkedIn publish confirmations — React 19 compatible, TypeScript-first
-- **Onborda** (15KB): Guided UX wizard system — built for Next.js, uses Framer Motion (already installed), Tailwind-based
-- **LinkedIn Posts API**: Native `fetch` (no library) — OAuth 2.0 authentication, ~20 requests/day rate limit
+**Analytics Infrastructure:** Expand existing Recharts usage (already at 3.7.0) for charts. Add @convex-dev/aggregate for efficient COUNT/SUM/MAX operations on high-frequency data (37 agents generating tasks/executions constantly). Use stale-while-revalidate caching pattern to balance data freshness with API quota limits.
 
-**Explicitly rejected:**
-- Socket.io (Convex already provides real-time via WebSocket)
-- Tremor UI library (custom Recharts components sufficient)
-- React Flow (content pipeline is linear, not DAG-based)
-- State management library (Convex handles server state, React Context for UI state)
-- Scheduling library (Convex has built-in cron jobs)
+**Core technologies:**
+- Clerk (@clerk/nextjs ^6.37.1) — Multi-user auth with Convex sync, production-ready alternative to beta Convex Auth
+- twitter-api-v2 (^1.18.x) — Official TypeScript SDK for Twitter API v2 with OAuth 2.0 support
+- facebook-nodejs-business-sdk (^24.0.1) — Official Meta SDK for Instagram Graph API publishing
+- @convex-dev/aggregate (latest) — Reactive aggregations for analytics (tokens, costs, engagement metrics)
+- Recharts (3.7.0) — Already in use, extend for multi-platform analytics dashboards
+
+**What NOT to add:** Redis (Convex handles state), Prisma/TypeORM (Convex is database), Axios (native fetch), Socket.io (Convex has real-time), Lodash (modern JS sufficient).
 
 ### Expected Features
 
-Research identified table stakes features (users expect them) versus differentiators (competitive advantage).
-
 **Must have (table stakes):**
-- **Control Center:** Real-time agent status, activity feed, task queue, responsive mobile layout
-- **Content Pipeline:** Draft/Review/Approved/Published states, content preview, version history, edit locks
-- **LinkedIn Integration:** OAuth 2.0 auth, text post publishing, rate limit handling, error feedback
-- **Guided UX:** Progress indicator, Back/Next navigation, step validation, 3-5 steps max, clear labels
+- **Unified analytics dashboard** — Single view combining internal metrics (tokens, costs, agents) with social engagement (LinkedIn, Twitter, Instagram). Date range filtering, CSV export, responsive layout are baseline expectations. Without this, AMD feels like disconnected tools.
+- **Multi-platform publishing** — Single compose interface with platform selection checkboxes, character count validation per platform (LinkedIn 3000, Twitter 280, Instagram 2200), platform-specific image validation (JPEG only for Instagram, size requirements), and error handling per platform (if LinkedIn succeeds but Twitter fails, show clear feedback).
+- **Role-based access control** — 4 pre-defined roles (Admin, Editor, Reviewer, Publisher) with clear permission boundaries. Activity audit log tracking "who changed what when" is table stakes for team accountability. Custom role builders are anti-features for non-technical users.
+- **Version history** — Timestamped versions with rollback capability. Users expect content edit tracking, especially in collaborative environments. Keep last 30 versions or 90 days to avoid storage bloat.
+- **Automated reports** — Weekly/monthly reports emailed automatically with PDF export. Stakeholder-friendly formats for sharing outside tool. Summary insights auto-generated (e.g., "Top performing post: X with Y engagement").
 
 **Should have (competitive):**
-- **Control Center:** Agent performance metrics (success rate, avg duration), smart notifications (context-aware, not every event)
-- **Content Pipeline:** Bulk actions (approve/reject multiple items), conditional approval rules (CFO approval for budget posts)
-- **LinkedIn Integration:** Image optimization (auto-resize to LinkedIn specs), optimal timing suggestions
-- **Guided UX:** Contextual help tooltips, smart field pre-fill, progress persistence (resume after abandonment)
+- **AI-powered analytics insights** — AMD's 37-agent system enables unique competitive advantage: use CMO Agent + Engagement Analyst to generate narrative insights like "Your engagement dropped 20% because you stopped posting on Tuesdays, which historically perform 40% better." Generic tools show charts; AMD provides actionable recommendations.
+- **Smart content adaptation** — Auto-adjust tone/length/hashtags per platform with AI. LinkedIn Creator + Twitter Creator agents already understand platform best practices; leverage this for recommendations that go beyond generic rules (e.g., "Shorten for Twitter 280 char limit" → actual AI rewrite).
+- **Approval workflows** — Simple (optional review) and Strict (required approval before publish) pre-built workflows. Avoid complex workflow builders; non-technical users need sensible defaults, not configurability.
+- **AI-generated report narratives** — Existing agents (SEO Manager, Budget Pacing, Engagement Analyst) can synthesize cross-functional insights into comprehensive written summaries without additional AI infrastructure.
 
 **Defer (v2+):**
-- Agent interrupt/escalation controls (high complexity)
-- Parallel approval tracks (complex state machine)
-- LinkedIn post performance tracking (requires Analytics API)
-- Multi-account LinkedIn management (multiple OAuth tokens)
-- Conditional wizard branching (dynamic state machine)
+- **TikTok/YouTube publishing** — Video requires transcoding, storage, complex APIs; scope creep for v3.0. Focus on text+image platforms first.
+- **Real-time collaborative editing** — Google Docs-style simultaneous editing requires CRDT complexity, rarely needed; use edit locks + change notifications instead.
+- **Custom analytics formulas** — Non-technical users don't build complex KPIs; provide pre-calculated standard metrics.
+- **Advanced statistical analysis** — p-values and regression analysis are too technical; provide simple trends (up/down arrows, percentages).
+- **Unlimited team members** — Small teams (5-20) are target; cap at 20 users for v3.0, enterprise tiers later.
 
 ### Architecture Approach
 
-Use Convex's reactive query system for all real-time features, implement OAuth via Convex actions (server-side security), extend existing content schema with workflow states, and use headless state machine for guided UX.
+**Reactive queries with server-side security.** Convex's real-time query system already powers AMD's dashboard (37 agents, task monitoring). Extend this pattern for multi-user auth by implementing defense-in-depth: middleware checks session (first line), page components verify auth (second line), Convex functions enforce ownership (third line). Never rely on middleware alone due to CVE-2025-29927 (Next.js <15.2.3 bypass vulnerability).
+
+**OAuth via Convex actions with secure token storage.** All social API calls must happen server-side in Convex actions to keep client secrets secure. Store OAuth tokens encrypted in Convex database with refresh metadata (expiresAt, refreshableUntil, lastRefreshed). Implement proactive refresh cron (every 6 hours) to prevent silent publishing failures when tokens expire.
+
+**Stale-while-revalidate caching for analytics.** Social APIs have rate limits (Instagram 200/hr, LinkedIn ~500-1000/day, Twitter 15K reads/month on Basic tier). Implement dynamic TTL based on post age: hot content (<24hrs) = 5min cache, warm (1-7 days) = 1hr cache, cold (>7 days) = 24hr cache. Background cron refreshes hot metrics every 15 minutes to keep dashboard current without exhausting quotas.
 
 **Major components:**
-
-1. **Control Center (Real-time Dashboard)**
-   - Pattern: Reactive queries with aggregation
-   - Use `useQuery(api.controlCenter.getLiveAgentStatus)` — auto-updates on agent execution
-   - Single aggregated subscription instead of 37 separate subscriptions (cost optimization)
-   - Limit result sets with `.take(limit)` instead of `.collect()` (performance)
-
-2. **Content Pipeline (Workflow Extension)**
-   - Pattern: Schema extension + optimistic updates
-   - Extend existing `content` table with `workflowStage`, `assignedTo`, `stateTransitions`
-   - State machine validates transitions (draft → review → approved → published)
-   - React 19's `useOptimistic` for drag-and-drop state updates
-
-3. **LinkedIn Integration (OAuth + API)**
-   - Pattern: OAuth via Convex actions + secure token storage
-   - NEVER expose client secret in frontend — use Convex actions (server-side)
-   - Store tokens in Convex database with encryption (ENCRYPTION_KEY env var)
-   - Validate state parameter for CSRF protection
-   - Centralized rate limiter (80% of limit, reserve 20% for manual)
-
-4. **Guided UX Onboarding (State Machine)**
-   - Pattern: Headless state machine + backend persistence
-   - Add `onboardingProgress` table (userId, currentStep, completedSteps, skippedSteps)
-   - OnboardingStateMachine class handles step logic, conditions, dependencies
-   - Wizards are OPTIONAL, not mandatory — offer "Quick mode" after 3 completions
+1. **Authentication Layer (Clerk)** — Wraps app with ClerkProvider + ConvexProviderWithClerk, handles OAuth flow, syncs users to Convex via webhook, provides ctx.auth.getUserIdentity() in backend
+2. **Social Publishing Engine (Convex actions)** — OAuth token management, platform-specific adapters (LinkedIn/Twitter/Instagram), rate limit coordination, scheduled publishing cron
+3. **Analytics Aggregation (Convex Aggregate)** — Reactive COUNT/SUM/MAX for internal metrics (tokens, costs), multi-platform engagement rollups, efficient O(1) reads without table scans
+4. **Content Pipeline Extension** — Extend existing Draft/Review/Approved states with multi-platform targeting, platform-specific validation, cross-platform scheduling
+5. **Guided UX State Machine** — Headless onboarding flow with Convex persistence, conditional step visibility, resume capability, analytics tracking
 
 ### Critical Pitfalls
 
-Research identified 15 domain-specific pitfalls with verified prevention strategies.
+1. **Data Ownership Black Hole (CRITICAL)** — Adding auth to existing system with 37 agents and content creates "orphaned data" where existing records have no userId. Prevention: Create system user during first auth setup, backfill all existing data to system user, implement requireAuth() + requireOwnership() helpers in every Convex query/mutation. Use migration-safe filters that handle undefined userId gracefully.
 
-**Top 5 critical (require architecture changes):**
+2. **OAuth Token Refresh Hell (CRITICAL)** — Each platform has different expiry (LinkedIn 365d, Instagram 60d, Twitter variable). Silent publishing failures occur when tokens expire without refresh. Prevention: Design token schema with refresh metadata (expiresAt, refreshableUntil, lastRefreshed, refreshFailures), implement proactive cron (every 6 hours) to refresh expiring tokens, notify users after 3 failed refresh attempts, encrypt tokens at rest with AES-256-GCM.
 
-1. **Real-Time Subscription Cost Explosion**
-   - **Problem:** Unoptimized subscriptions create 37+ active connections per user, Convex costs spike 400%+
-   - **Prevention:** Aggregate agent status into single subscription, use polling (5-30s) for non-critical data, implement subscription budgeting in Phase 1
-   - **Detection:** Monitor Convex dashboard "Active Subscriptions" metric (alert if >100)
+3. **Instagram Business API Gatekeeping (HIGH)** — Requires Facebook Business account, Instagram Business/Creator account linked to Facebook Page, App Review with 60-90 day approval process. Starting development without understanding requirements leads to 2-3 month delays. Prevention: Start App Review process Week 1 of v3.0, implement Instagram-specific validations (account type check, Facebook Page linkage, permission verification), build fallback manual workflow for users during approval wait.
 
-2. **Alert Fatigue from Real-Time Monitoring**
-   - **Problem:** 50+ alerts/day, users ignore all notifications including critical ones (51% of teams overwhelmed)
-   - **Prevention:** Evaluation windows (alert only if condition persists 5+ minutes), group related alerts, severity levels (critical/warning/info)
-   - **Detection:** Track alert-to-action ratio (target: >60% of alerts result in action)
+4. **Twitter API Pricing Cliff (HIGH)** — Free tier is write-only (no analytics). Basic tier ($200/mo) provides read access but 15K reads/month is insufficient for polling analytics dashboards. Pro tier ($5,000/mo) is cost-prohibitive. Prevention: Clarify feature scope early (Free = demo only), implement aggressive caching (5min TTL for hot content), track API usage with quota dashboard, provide Twitter-free option for budget-constrained users.
 
-3. **Content Pipeline Complexity Creep**
-   - **Problem:** v1.0 solved "too complex," v2.0 recreates it by adding 12-step workflows
-   - **Prevention:** Default to simplest path (draft → publish directly), hide advanced workflow behind "Advanced mode" toggle, measure >70% using simple 2-step flow
-   - **Detection:** Track steps-per-publish (target: median ≤3), time-from-draft-to-published (target: <5min)
-
-4. **LinkedIn API Rate Limit Cascading Failures**
-   - **Problem:** 100 connection requests/week limit, exceeding causes account restrictions (days to weeks resolution)
-   - **Prevention:** Centralized rate limiter BEFORE any API calls, use 80% of limit (reserve 20%), queue system with automatic pacing
-   - **Detection:** Monitor daily/weekly usage, alert at 80% limit, block at 100%
-
-5. **OAuth Flow Security Vulnerabilities**
-   - **Problem:** Redirect URI not validated, tokens in localStorage (XSS vulnerable), refresh tokens mishandled
-   - **Prevention:** Use PKCE flow, validate redirect URI server-side, store tokens in httpOnly cookies, implement token rotation
-   - **Detection:** Security audit against RFC 9700, penetration test redirect URI manipulation
-
-**Top 5 moderate (require design changes):**
-
-6. **Next.js Server/Client Component Confusion** — Default to Server Components, add "use client" only when needed
-7. **React 19 Third-Party Library Incompatibility** — Audit dependencies before phases, test in isolation
-8. **Multi-Platform Content Formatting Breakdown** — Platform-specific formatters, preview for each platform
-9. **Approval Workflow Bottlenecks** — Multiple approvers, escalation rules, auto-approve after 48h
-10. **Version Control Chaos in Content Editing** — Store versions as separate records, not in-place updates
+5. **Analytics Data Freshness vs Cost (HIGH)** — Real-time polling exhausts API quotas (Instagram 200/hr, LinkedIn ~500/day, Twitter 15K/month). Excessive caching makes dashboard stale. Prevention: Implement tiered caching (hot/warm/cold), stale-while-revalidate pattern (return cached + background refresh), batch refresh cron for recent posts, API quota monitoring dashboard.
 
 ## Implications for Roadmap
 
-Based on research, recommended 4-phase structure aligned with dependencies and complexity:
+Based on research, suggested phase structure:
 
-### Phase 1: Control Center Foundation (2 weeks)
-**Rationale:** Visibility is #1 user pain point ("what are agents doing?"). Real-time features require subscription architecture design upfront to prevent cost explosion.
+### Phase 1: Multi-User Authentication Foundation (2 weeks)
+**Rationale:** Blocking dependency for all team features. Must establish user isolation, permission boundaries, and data ownership before building on top. Authentication retrofit is highest-risk component (data migration complexity) so tackle early when codebase changes are easiest to manage.
 
-**Delivers:**
-- Real-time agent status dashboard (what's running now)
-- Agent activity feed (chronological log)
-- Task queue visualization (pending/running/completed)
-- Mobile-responsive monitoring
+**Delivers:** Clerk integration, user/organization schemas, invitation system, 4 pre-defined roles (Admin/Editor/Reviewer/Publisher), permission middleware, system user for pre-existing data, migration script to backfill userId on all existing agents/content/tasks.
 
 **Addresses (from FEATURES.md):**
-- Table stakes: Real-time status, activity feed, task queue, responsive layout
-- Defer: Agent performance metrics (analytics), interrupt controls (complex)
+- Role-based access control (table stakes)
+- User invitation system (table stakes)
+- User profiles (table stakes)
 
 **Avoids (from PITFALLS.md):**
-- Pitfall #1 (Subscription cost explosion) — implement aggregated queries from start
-- Pitfall #2 (Alert fatigue) — smart alert filtering with evaluation windows
-- Pitfall #15 (Performance degradation) — test with long-running sessions
+- Data ownership black hole (orphaned data)
+- Next.js middleware bypass (CVE-2025-29927) via defense-in-depth
+- Convex authorization without RLS (requireAuth in every handler)
+
+**Research flags:** YES — Clerk vs Auth.js decision requires architecture deep-dive in phase planning. Convex user sync patterns need validation.
+
+---
+
+### Phase 2: LinkedIn Analytics Integration (2 weeks)
+**Rationale:** LinkedIn OAuth already working in v2.0, so extending to Analytics API is lower risk than new platform integrations. Delivers immediate user value (data visibility) and establishes analytics patterns for Twitter/Instagram later. Can work in parallel with Phase 3 multi-platform publishing.
+
+**Delivers:** LinkedIn Analytics API integration, unified dashboard showing internal metrics (tokens, costs, agents) + LinkedIn engagement (impressions, reactions, comments), date range filtering, CSV export, basic Recharts expansion (line charts for trends, bar charts for comparisons).
 
 **Uses (from STACK.md):**
-- Convex reactive queries (existing)
-- Recharts custom components (existing)
-- Sonner for toast alerts (NEW — install in Phase 1)
-
-**Research flag:** YES — Needs deeper research on Convex subscription patterns and cost optimization strategies.
-
-### Phase 2: Content Pipeline Enhancement (2 weeks)
-**Rationale:** Builds on existing content management (evolutionary, not revolutionary). Must design with progressive disclosure from start to avoid complexity creep.
-
-**Delivers:**
-- Review/Approved/Published workflow states
-- Content preview (reuse existing rendering)
-- Version history (timestamp + user)
-- Bulk approval actions
+- Recharts 3.7.0 (already installed, expand usage)
+- Convex Aggregate component (COUNT/SUM for analytics)
+- Stale-while-revalidate caching pattern
 
 **Addresses (from FEATURES.md):**
-- Table stakes: Status states, preview, version history, edit locks
-- Should have: Bulk actions (low complexity win)
-- Defer: AI-powered routing (complex), parallel approvals (state machine complexity)
+- Unified analytics dashboard (table stakes)
+- Date range filtering (table stakes)
+- Engagement metrics (table stakes)
+- Export to CSV (table stakes)
 
 **Avoids (from PITFALLS.md):**
-- Pitfall #3 (Complexity creep) — default to simple 2-step flow (draft → publish)
-- Pitfall #9 (Multi-platform formatting) — platform-specific formatters with preview
-- Pitfall #10 (Approval bottlenecks) — multiple approvers, escalation rules
-- Pitfall #11 (Version control chaos) — versioned records from start
+- Analytics data freshness vs cost trap (5min cache TTL for hot content)
+- LinkedIn rate limit headers ignored (parse X-RateLimit-Remaining)
+
+**Research flags:** NO — Standard analytics patterns, well-documented LinkedIn API.
+
+---
+
+### Phase 3: Multi-Platform Publishing (Twitter + Instagram) (3 weeks)
+**Rationale:** Headline feature for v3.0. Expands AMD from LinkedIn-only to 3 platforms. Twitter integration is straightforward (twitter-api-v2 SDK, OAuth 2.0). Instagram is complex (Facebook Business requirement, App Review 60-90 days) but can be developed in parallel. Can work in parallel with Phase 2 analytics.
+
+**Delivers:** Twitter OAuth + publishing, Instagram OAuth + publishing (pending App Review), single compose interface with platform selection, character count validation per platform, image requirements validation (JPEG-only for Instagram), platform-specific previews, cross-platform scheduling, error handling per platform.
+
+**Uses (from STACK.md):**
+- twitter-api-v2 (^1.18.x) for Twitter publishing
+- facebook-nodejs-business-sdk (^24.0.1) for Instagram publishing
+- Convex actions for server-side OAuth + API calls
+- Convex cron for scheduled publishing (every 5 min check)
 
 **Implements (from ARCHITECTURE.md):**
-- Schema extension: `workflowStage`, `assignedTo`, `stateTransitions` fields
-- Optimistic updates: React 19's `useOptimistic` for drag-and-drop
-
-**Research flag:** NO — Standard CMS patterns, well-documented state machines.
-
-### Phase 3: LinkedIn Publishing Integration (2 weeks)
-**Rationale:** Requires content pipeline states (approved content → publish). High complexity due to OAuth + API integration. CRITICAL security review required before production.
-
-**Delivers:**
-- OAuth 2.0 authentication flow
-- Text post publishing (LinkedIn Posts API)
-- Basic rate limit handling
-- Image optimization (auto-resize to LinkedIn specs)
+- OAuth via Convex actions with secure token storage
+- Platform-specific content adapters
+- Rate limit coordination (Instagram 200/hr, Twitter tiered)
 
 **Addresses (from FEATURES.md):**
-- Table stakes: OAuth flow, text publishing, rate limit handling, error feedback
-- Should have: Image optimization (low complexity win)
-- Defer: Multi-account (complex OAuth), performance tracking (Analytics API), hashtag suggestions (NLP)
+- Single compose interface (table stakes)
+- Platform-specific previews (table stakes)
+- Character count per platform (table stakes)
+- Image requirements validation (table stakes)
+- Cross-platform scheduling (table stakes)
 
 **Avoids (from PITFALLS.md):**
-- Pitfall #4 (Rate limit failures) — centralized rate limiter BEFORE first API call
-- Pitfall #5 (OAuth vulnerabilities) — PKCE flow, httpOnly cookies, CSRF protection
+- OAuth token refresh hell (proactive cron every 6 hours)
+- Instagram Business API gatekeeping (start App Review Week 1)
+- Twitter API pricing cliff (clarify $200/mo minimum for analytics)
+- Multi-platform content format mismatch (validate before publish)
+
+**Research flags:** YES — Twitter API v2 specifics, Instagram Meta Business setup, image optimization library. Platform-specific quirks need validation during phase planning.
+
+---
+
+### Phase 4: Team Collaboration Essentials (2 weeks)
+**Rationale:** Requires Phase 1 (auth) to be complete. With users and roles established, now add collaboration workflows. Builds on existing content schema with ownership tracking and approval states.
+
+**Delivers:** Content ownership (createdBy field), activity audit log (who changed what when), team member list with roles, role change capability (Admin promote/demote), approval workflows (Simple: optional review, Strict: required approval before publish).
+
+**Uses (from STACK.md):**
+- Convex mutations with permission checks
+- Clerk user management
 
 **Implements (from ARCHITECTURE.md):**
-- Convex actions for OAuth token exchange (server-side security)
-- Encrypted token storage in Convex database
-- Scheduled publishing via Convex cron jobs (every 5 minutes)
-
-**Research flag:** YES — OAuth flow specifics, rate limit handling strategy, token refresh implementation.
-
-### Phase 4: Guided UX Layer (2 weeks)
-**Rationale:** Applies to all previous phases; easier to add after core features exist. Wizard patterns are well-established, implementation is straightforward.
-
-**Delivers:**
-- Wizard component library (reusable)
-- Progress indicator (step X of Y)
-- LinkedIn OAuth setup wizard
-- Content creation wizard (optional alternative to full editor)
+- Content Pipeline Extension (Draft → Review → Approved → Published states)
+- Permission middleware (role-based access)
 
 **Addresses (from FEATURES.md):**
-- Table stakes: Progress indicator, Back/Next navigation, step validation, linear flow
-- Should have: Contextual help tooltips (low complexity, high value)
-- Defer: Conditional branching (state machine complexity), progress persistence (draft storage)
+- Content ownership (table stakes)
+- Activity audit log (table stakes)
+- Team member list (table stakes)
+- Role change capability (table stakes)
+- Approval workflows (differentiator)
 
 **Avoids (from PITFALLS.md):**
-- Pitfall #6 (Wizard annoyance) — adaptive behavior, offer "Quick mode" after 3 completions
-- Pitfall #14 (Hiding essential features) — progressive disclosure for OPTIONAL features only
+- Role creep in RBAC (start with 4 minimal roles, use permission flags not new roles)
+
+**Research flags:** NO — Standard approval workflow patterns.
+
+---
+
+### Phase 5: Version History (1 week)
+**Rationale:** Quick win on top of existing content schema. Provides immediate team collaboration value. Can happen after Phase 1 (needs user attribution) but independent of other features.
+
+**Delivers:** Timestamped versions on content edits, version browsing (list of versions), rollback capability (restore from version), keep last 30 versions or 90 days retention.
+
+**Addresses (from FEATURES.md):**
+- Timestamped versions (table stakes)
+- Rollback capability (table stakes)
+- Version browsing (table stakes)
+
+**Avoids (from PITFALLS.md):**
+- Onboarding state edge cases (resume from last step, allow re-visiting skipped steps)
+
+**Research flags:** NO — Version history is well-understood CMS feature.
+
+---
+
+### Phase 6: Automated Reports (2 weeks)
+**Rationale:** Caps off v3.0 with automation. Synthesizes data from Phase 2 (analytics) and Phase 3 (multi-platform). Requires analytics data collection to be functional first.
+
+**Delivers:** Weekly report generation (cron job), email delivery to Admin users, PDF export with charts, summary metrics (total posts, total engagement, top post), AI-generated narratives (use existing CMO Agent to write summary).
+
+**Uses (from STACK.md):**
+- Convex cron jobs (scheduled report generation)
+- Email service integration (SendGrid, Mailgun, or similar)
+- Recharts for chart-to-image conversion in PDFs
 
 **Implements (from ARCHITECTURE.md):**
-- `onboardingProgress` table (userId, currentStep, completedSteps)
-- OnboardingStateMachine class with conditional step logic
-- Smart recommendations engine based on user state
+- Scheduled analytics fetching (cron pattern)
+- Report generation engine
 
-**Research flag:** NO — Wizard patterns well-established (Nielsen Norman Group guidelines).
+**Addresses (from FEATURES.md):**
+- Scheduled report generation (table stakes)
+- Email delivery (table stakes)
+- PDF export (table stakes)
+- Summary insights (table stakes)
+- AI-generated narratives (differentiator)
+
+**Avoids (from PITFALLS.md):**
+- Social media webhook reliability (implement queue + idempotency)
+
+**Research flags:** YES — Email service selection, report generation library (PDF with charts), cron job setup in Convex need deeper research during phase planning.
+
+---
 
 ### Phase Ordering Rationale
 
-**Dependencies:**
-1. Content Pipeline MUST precede LinkedIn Integration (approved state required before publishing)
-2. Control Center can be parallel to Content Pipeline (independent features)
-3. Guided UX can be applied incrementally (doesn't block other features)
+**Sequential dependencies:**
+- Phase 1 (Auth) MUST complete before Phase 4 (Collaboration) — can't attribute content to users without user accounts
+- Phase 6 (Reports) depends on Phase 2 (Analytics) — can't generate reports without data collection
 
-**Groupings:**
-- Phase 1 + 2 address core operational visibility (monitoring + workflows)
-- Phase 3 is isolated (external integration)
-- Phase 4 is a layer across all features
+**Parallelizable work:**
+- Phase 2 (Analytics) + Phase 3 (Multi-Platform) can run in parallel — independent features, different platform APIs
+- Phase 5 (Version History) can overlap with Phase 4 end — only needs user attribution from Phase 1
 
-**Risk mitigation:**
-- Phases 1 + 3 have critical pitfalls requiring architecture design BEFORE implementation
-- Phases 2 + 4 have standard patterns, lower risk
+**Risk mitigation through ordering:**
+- Auth first (highest risk, hardest to retrofit later)
+- LinkedIn analytics second (builds on working OAuth, establishes patterns)
+- Multi-platform third (complex but can leverage analytics patterns)
+- Collaboration fourth (depends on users existing)
+- Version history fifth (quick win, low complexity)
+- Reports last (synthesizes all previous work)
 
-**Complexity gradient:**
-- Phase 1: Medium (real-time patterns, existing in v1.0)
-- Phase 2: Low (CMS patterns, well-documented)
-- Phase 3: High (OAuth + API, security critical)
-- Phase 4: Medium (state machine, UX patterns)
+**Optimized timeline:** 10 weeks (2.5 months) if Phase 2 and Phase 3 run in parallel (weeks 3-5). Sequential would be 12 weeks.
 
 ### Research Flags
 
 **Phases likely needing deeper research during planning:**
-- **Phase 1 (Control Center):** Convex subscription optimization patterns, cost modeling for 50+ users, alert aggregation strategies
-- **Phase 3 (LinkedIn Integration):** OAuth 2.0 PKCE flow implementation, token refresh logic, rate limiter architecture, scheduled publishing with timezone support
+- **Phase 1 (Auth):** Clerk vs Auth.js decision needs architecture evaluation, Convex user sync webhook patterns, permission architecture design, data migration script validation
+- **Phase 3 (Multi-Platform):** Twitter API v2 specifics (rate limits per tier, OAuth refresh flow), Instagram Meta Business setup friction points, image optimization library selection (sharp vs jimp), platform-specific error handling edge cases
+- **Phase 6 (Reports):** Email service selection (SendGrid vs Mailgun vs AWS SES), PDF generation library with charts (puppeteer vs pdfkit), Convex cron job scheduling patterns
 
 **Phases with standard patterns (skip research-phase):**
-- **Phase 2 (Content Pipeline):** CMS workflow states are well-documented, multiple references (Sanity, Contentstack, Planable)
-- **Phase 4 (Guided UX):** Wizard patterns established by Nielsen Norman Group, onboarding libraries well-reviewed
+- **Phase 2 (Analytics):** Standard analytics dashboard patterns, well-documented LinkedIn Analytics API
+- **Phase 4 (Collaboration):** Standard approval workflow state machines, established RBAC patterns
+- **Phase 5 (Version History):** Well-understood CMS version tracking patterns
 
 ## Confidence Assessment
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Stack | HIGH | Existing stack verified working in v1.0, new libraries (Sonner, Onborda) verified with official docs and React 19 compatibility |
-| Features | HIGH | Feature expectations cross-referenced with multiple 2026 sources (InfoQ, NN/g, Microsoft Learn), table stakes vs differentiators validated |
-| Architecture | HIGH | Convex real-time patterns already working in v1.0, OAuth patterns verified with RFC 9700 and Microsoft Learn official docs |
-| Pitfalls | HIGH | 15 pitfalls researched with 2026 sources, prevention strategies validated (Convex pricing, LinkedIn API limits, OAuth security, wizard UX) |
+| Stack | HIGH | Clerk verified with official Convex docs, social SDKs cross-referenced with platform official guides, analytics libraries evaluated from community consensus |
+| Features | HIGH | Table stakes validated across 10+ marketing SaaS tools (Hootsuite, Sprout Social, Buffer, Planable), differentiators aligned with AMD's unique 37-agent advantage |
+| Architecture | HIGH | Convex real-time patterns verified in existing AMD codebase, OAuth security best practices from official LinkedIn/Meta/Twitter docs, caching strategies from 2025-2026 guides |
+| Pitfalls | HIGH | CVE-2025-29927 verified in security database, Instagram App Review timeline confirmed with 2026 developer guides, Twitter pricing validated with official X API docs, data migration risks cross-referenced with multi-tenant isolation guides |
 
 **Overall confidence:** HIGH
 
 ### Gaps to Address
 
-**Cost modeling (Phase 1):**
-- What's realistic monthly Convex cost for 50 users with Control Center?
-- At what point does Convex become prohibitively expensive?
-- **How to handle:** Run cost simulation in Phase 1 development, monitor Convex dashboard metrics weekly
+**Instagram App Review timeline uncertainty:** 60-90 day estimate is community consensus, not official SLA. Actual approval time may vary. Mitigation: Start App Review Week 1, build manual workflow fallback, set user expectations that Instagram publishing requires approval wait.
 
-**LinkedIn API restrictions (Phase 3):**
-- Does LinkedIn differentiate between app posts and bot posts?
-- Can rate limiter prevent account bans, or are bans inevitable with automation?
-- **How to handle:** Test with burner LinkedIn account in Phase 3, implement safety margin (80% of limit)
+**Twitter API quota variations:** Basic tier read limits documented as "15,000 tweets/month" but real-world usage patterns unclear (does fetching tweet metrics count as 1 call per tweet or multiple?). Mitigation: Implement aggressive caching (5min TTL), monitor quota usage in production, adjust TTL based on actual burn rate.
 
-**Spanish UI expansion (all phases):**
-- Are there AMD-specific translations that exceed 30% expansion (verified average)?
-- Do button labels fit on mobile at 150% zoom?
-- **How to handle:** UI audit with longest Spanish translations before each phase, use relative widths (not fixed pixels)
+**Convex Aggregate component production readiness:** Official Convex component but limited production case studies found. Mitigation: Prototype aggregation queries early in Phase 2, validate performance with realistic data volumes (10K+ executions), have fallback plan to use standard Convex queries with indexing if performance issues arise.
 
-**Multi-platform formatting (Phase 2):**
-- Can we achieve 80% automation (20% manual tweaking acceptable)?
-- Which platform causes most formatting issues (LinkedIn 3000 char limit, Twitter threads)?
-- **How to handle:** Prototype formatters in Phase 2 before full implementation, provide platform-specific previews
-
-**Wizard adaptation (Phase 4):**
-- At what point do users prefer quick mode? (3 completions? 5? 10?)
-- Does wizard preference vary by user role (creator vs manager)?
-- **How to handle:** A/B test wizard frequency in Phase 4, track completion time by experience level
+**Email service deliverability:** PDF reports with charts may hit spam filters if attachments are large. Mitigation: Research email service selection during Phase 6 planning, validate PDF size optimization (compress images, limit chart resolution), consider hosted report links instead of attachments.
 
 ## Sources
 
 ### Primary (HIGH confidence)
 
-**Stack & Technology:**
-- [Sonner GitHub](https://github.com/emilkowalski/sonner) — Toast notification library, React 19 compatibility verified
-- [Onborda GitHub](https://github.com/uixmat/onborda) — Guided onboarding for Next.js, Framer Motion integration
-- [LinkedIn Posts API Official Docs](https://learn.microsoft.com/en-us/linkedin/marketing/community-management/shares/posts-api?view=li-lms-2026-01) — 2026-01 version, rate limits, API versioning
-- [LinkedIn OAuth 2.0 Authentication](https://learn.microsoft.com/en-us/linkedin/shared/authentication/authentication) — 3-legged flow, PKCE requirements
-- [Convex Documentation](https://docs.convex.dev/home) — Real-time subscriptions, reactive queries
+**Authentication & Authorization:**
+- [Convex Auth Documentation](https://docs.convex.dev/auth) — Convex Auth beta status
+- [Convex & Clerk Integration](https://docs.convex.dev/auth/clerk) — Official integration guide
+- [Clerk Pricing](https://clerk.com/pricing) — Free tier limits (10K MAU, 100 orgs)
+- [Convex Authorization Best Practices](https://stack.convex.dev/authorization) — requireAuth patterns
+- [Next.js Authentication Guide](https://nextjs.org/docs/app/guides/authentication) — Defense-in-depth
 
-**Features & UX:**
-- [Multi-Agent Design Patterns (InfoQ, January 2026)](https://www.infoq.com/news/2026/01/multi-agent-design-patterns/) — Hub-and-spoke architecture, human-in-the-loop patterns
-- [Wizards: Design Guidelines (Nielsen Norman Group)](https://www.nngroup.com/articles/wizards/) — Step validation, progress indicators, wizard vs forms
-- [Content Approval Workflow (Smartsheet)](https://www.smartsheet.com/content-approval-workflow) — Standard state transitions, bottleneck prevention
-- [Drafts & Publishing Workflow (Sanity CMS)](https://www.sanity.io/glossary/drafts--publishing-workflow) — Version control, collaborative editing
+**Stack Research:**
+- [twitter-api-v2 Library](https://www.npmjs.com/package/twitter-api-v2) — Official community SDK
+- [facebook-nodejs-business-sdk](https://www.npmjs.com/package/facebook-nodejs-business-sdk) — Official Meta SDK
+- [Convex Aggregate Component](https://www.convex.dev/components/aggregate) — Official docs
+- [Recharts vs alternatives](https://npm-compare.com/chart.js,react-vis,recharts,victory-chart) — Feature comparison
 
-**Pitfalls & Security:**
-- [OAuth 2.0 Security BCP (RFC 9700)](https://treblle.com/blog/oauth-2.0-for-apis) — PKCE flow, state validation, token storage
-- [LinkedIn API Rate Limits (Microsoft Learn)](https://learn.microsoft.com/en-us/linkedin/shared/api-guide/concepts/rate-limits) — 100 connection requests/week, 500 API calls/day standard tier
-- [Alert Fatigue: What It Is and How to Prevent It (Datadog)](https://www.datadoghq.com/blog/best-practices-to-prevent-alert-fatigue/) — Evaluation windows, severity levels
-- [ConvexDB Pricing Guide (Airbyte)](https://airbyte.com/data-engineering-resources/convexdb-pricing) — Usage-based pricing, database operations
-- [Next.js App Router: common mistakes (Upsun)](https://upsun.com/blog/avoid-common-mistakes-with-next-js-app-router/) — Server/Client component patterns
+**Platform APIs:**
+- [Instagram Graph API Guide 2026](https://elfsight.com/blog/instagram-graph-api-complete-developer-guide-for-2026/) — App Review requirements
+- [LinkedIn Analytics API](https://learn.microsoft.com/en-us/linkedin/marketing/community-management/members/post-statistics) — Official Microsoft docs
+- [X API Pricing 2026](https://getlate.dev/blog/twitter-api-pricing) — Tier comparison
+- [Twitter API v2 Guide 2026](https://getlate.dev/blog/x-api) — OAuth 2.0 patterns
+
+**Analytics & Caching:**
+- [Vercel External API Caching](https://www.infoq.com/news/2025/07/vercel-api-caching-analytics/) — Stale-while-revalidate
+- [Caching Strategies 2026](https://www.dragonflydb.io/guides/caching-strategies-to-know) — Dynamic TTL patterns
+- [Marketing Dashboard Best Practices](https://www.dataslayer.ai/blog/marketing-dashboard-best-practices-2025) — Expected features
+
+**Team Collaboration:**
+- [Content Approval Workflow](https://planable.io/blog/content-approval-workflow/) — Role definitions
+- [Social Media Approval Process](https://blog.hootsuite.com/social-media-approval-workflow/) — Standard patterns
 
 ### Secondary (MEDIUM confidence)
 
-**Best Practices:**
-- [Top 9 React notification libraries in 2026 (Knock)](https://knock.app/blog/the-top-notification-libraries-for-react) — Sonner vs alternatives comparison
-- [5 Best React Onboarding Libraries in 2026 (OnboardJS)](https://onboardjs.com/blog/5-best-react-onboarding-libraries-in-2025-compared) — Onborda vs React Joyride vs Intro.js
-- [Server-Sent Events Beat WebSockets for 95% of Real-Time Apps (Dev.to)](https://dev.to/polliog/server-sent-events-beat-websockets-for-95-of-real-time-apps-heres-why-a4l) — When to use SSE vs WebSocket
-- [React 19 Upgrade Guide (React.dev)](https://react.dev/blog/2024/04/25/react-19-upgrade-guide) — Deprecated patterns, breaking changes
-- [Feature Creep Is Killing Your Software (DesignRush)](https://www.designrush.com/agency/software-development/trends/feature-creep) — 80% of features rarely used (Pendo study)
+**UX for Non-Technical Users:**
+- [Simplify Analytics for Non-Technical Users](https://medium.com/@toritsejumoju/ui-ux-for-complex-data-how-to-simplify-analytics-for-non-technical-users-b427181423bc) — Natural language patterns
+- [React Onboarding Libraries 2025](https://onboardjs.com/blog/5-best-react-onboarding-libraries-in-2025-compared) — State machine patterns
 
-### Tertiary (community insights)
+**Multi-Platform Publishing:**
+- [Best Unified Social Media APIs 2026](https://www.outstand.so/blog/best-unified-social-media-apis-for-devs) — Platform comparison
+- [Cross-Platform Content Strategy](https://socialrails.com/blog/cross-posting-social-media) — Format constraints
 
-- [Convex Plans and Pricing (Convex)](https://www.convex.dev/pricing) — Plan details, need real-world usage data
-- [Spanish requires 30% more characters than English (LatinoB ridge)](https://latinobridge.com/blog/a-guide-to-ui-localization/) — Text expansion in Romance languages
-- [Progressive Disclosure Examples (UserPilot)](https://userpilot.com/blog/progressive-disclosure-examples/) — SaaS examples, needs AMD-specific validation
+### Tertiary (LOW confidence, flagged for validation)
+
+- Single blog posts about Instagram API changes (validate with official Meta docs during Phase 3)
+- Community discussions on Twitter API quota burn rates (need production testing to validate)
+- Generic "best tools" lists without specific feature details (verified against official platform docs)
 
 ---
 *Research completed: 2026-02-05*
+*Confidence: HIGH (auth, Twitter, charting), MEDIUM (Instagram, LinkedIn)*
 *Ready for roadmap: yes*

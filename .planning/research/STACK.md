@@ -1,1197 +1,1032 @@
-# Technology Stack — v2.0 UX/UI Excellence
+# Technology Stack: v3.0 Additions
 
 **Project:** AMD (AI Marketing Department)
 **Researched:** 2026-02-05
-**Milestone:** v2.0 — Operational Dashboard, Content Pipeline, LinkedIn Integration, Guided UX
+**Focus:** Stack additions for Analytics, Multi-Platform Publishing, and Multi-User Authentication
+
+---
 
 ## Executive Summary
 
-v2.0 adds **operational capabilities** to the existing AMD system. Research focused on what stack additions/changes are needed for 4 new feature categories: Control Center operativo, content publishing pipeline, LinkedIn API integration, and guided UX.
+v3.0 adds three major capability areas to AMD. The recommended stack leverages:
 
-**Key finding:** The existing stack (Next.js 16, React 19, Tailwind 4, Convex, Recharts) covers 90% of needs. Only 3 targeted additions required: **Sonner** (toast notifications), **Onborda** (guided UX), and **LinkedIn OAuth** (publishing integration). No major refactoring needed.
+1. **Clerk** for production-ready authentication with Convex (not Convex Auth which is still beta)
+2. **Native social platform APIs** accessed via Convex actions (no wrapper SDKs needed for most)
+3. **Recharts** for analytics visualization (already in use, needs expansion)
+4. **Convex Aggregate component** for efficient analytics data aggregation
 
-**Overall confidence:** HIGH (verified with official docs and 2026 sources)
-
----
-
-## Validated Existing Stack (DO NOT Change)
-
-These technologies are already validated and working in v1.0:
-
-| Technology | Version | Purpose | Status |
-|------------|---------|---------|--------|
-| **Next.js** | 16.1.4 | App Router, RSC, streaming | ✅ Working |
-| **React** | 19.2.3 | UI framework | ✅ Working |
-| **Tailwind CSS** | 4.x | Utility-first styling | ✅ Working |
-| **Convex** | 1.31.6 | Real-time backend, serverless DB | ✅ Working |
-| **TipTap** | 3.18.0 | WYSIWYG rich text editor | ✅ Working |
-| **Framer Motion** | 12.29.2 | Animations, transitions | ✅ Working |
-| **Lucide Icons** | 0.563.0 | Icon system | ✅ Working |
-| **Recharts** | 3.7.0 | Chart library (LineChart, AreaChart, etc.) | ✅ Working |
-| **date-fns** | 4.1.0 | Date formatting/manipulation | ✅ Working |
-| **Mammoth.js** | 1.11.0 | DOCX parsing | ✅ Working |
-| **pdf-parse** | 2.4.5 | PDF text extraction | ✅ Working |
-
-**Integration note:** Custom chart components already built on Recharts (LineChart, AreaChart, BarChart, DonutChart, Sparkline) with theme system and tooltip support. No additional chart library needed.
+**Key principle:** Minimize new dependencies. Use Convex actions for external API calls rather than adding client-side SDKs where possible.
 
 ---
 
-## Required Stack Additions
+## Recommended Stack Additions
 
-### 1. Toast Notifications (Sonner)
+### 1. Authentication: Clerk
 
-**Need:** Control Center requires real-time alerts, status updates, error notifications
-**Solution:** Sonner — opinionated toast component by Emil Kowalski
+| Technology | Version | Purpose | Why This Choice |
+|------------|---------|---------|----------------|
+| `@clerk/nextjs` | `^6.37.1` | Multi-user authentication, user management, organizations | **Production-ready** with official Convex integration. Convex Auth is still beta. Free tier: 10,000 MAU + 100 organizations. |
+| `@clerk/backend` | `^1.x` | Server-side auth verification in Convex actions | Required for validating JWT tokens in Convex backend |
 
-| Attribute | Value |
-|-----------|-------|
-| **Library** | `sonner` |
-| **Version** | Latest (1.x) |
-| **Bundle Size** | ~8KB |
-| **Why Sonner** | TypeScript-first, React 19 compatible, minimal setup, excellent DX, standard for shadcn/ui projects |
-| **Alternatives Rejected** | React Hot Toast (good but Sonner is more modern), React Toastify (too heavy) |
-| **Confidence** | HIGH — [verified with official sources](https://github.com/emilkowalski/sonner) |
+**Why Clerk over alternatives:**
 
-**Use cases in v2.0:**
-- Agent execution success/error notifications
-- Content approval status updates
-- LinkedIn publish confirmations
-- Budget alert warnings
-- Real-time sync status
+- **Convex Auth (NOT recommended):** Still in beta as of Feb 2026. Documentation states "isn't complete and may change in backward-incompatible ways." Not suitable for production multi-user app.
+- **Auth.js/NextAuth (NOT recommended):** Requires Next.js server; adds state sync complexity between Next.js and Convex. Convex Auth solves this by running on Convex backend directly, but Convex Auth is beta.
+- **Clerk (RECOMMENDED):** Production-ready since 2023. Official Convex integration via `ConvexProviderWithClerk`. Handles user sync to Convex database automatically. Free tier sufficient for MVP (10K MAU, 100 orgs).
 
-**Installation:**
-```bash
-npm install sonner
-```
+**Integration approach:**
+- Frontend: Wrap app with `<ClerkProvider>` and `<ConvexProviderWithClerk>`
+- Backend: Use `ctx.auth.getUserIdentity()` in Convex queries/mutations
+- User data stored in Convex `users` table (auto-synced by Clerk webhook)
 
-**Integration pattern:**
-```tsx
-// app/layout.tsx
-import { Toaster } from 'sonner';
+**Pricing considerations:**
+- **Free tier:** 10,000 MAU, 100 organizations (5 members each)
+- **Pro tier:** $25/month + $0.02/MAU after 10K + $1/org after 100
+- **Organizations add-on:** $1/MAO (monthly active org), unlimited members per org
+- **Enhanced B2B add-on:** $100/month (custom roles, domain restrictions)
 
-export default function RootLayout({ children }) {
-  return (
-    <html>
-      <body>
-        {children}
-        <Toaster position="bottom-right" richColors />
-      </body>
-    </html>
-  );
-}
+For MVP with <10K users and <100 orgs, Clerk is free.
 
-// Usage in components
-import { toast } from 'sonner';
+---
 
-toast.success('Agente ejecutado exitosamente');
-toast.error('Error al publicar en LinkedIn');
-toast.loading('Procesando contenido...');
-toast.promise(publishToLinkedIn(), {
-  loading: 'Publicando...',
-  success: 'Publicado en LinkedIn',
-  error: 'Error al publicar'
+### 2. Social Platform APIs
+
+#### 2.1 Twitter/X API
+
+| Technology | Version | Purpose | Why |
+|------------|---------|---------|-----|
+| `twitter-api-v2` | `^1.18.x` | Post tweets, threads, get analytics | Official community library, strongly typed TypeScript, OAuth 2.0 support |
+
+**API Requirements:**
+- **Free tier:** 1,500 tweets/month write limit (sufficient for MVP testing)
+- **Basic tier:** $200/month → 50,000 tweets/month write, 15,000 read
+- **Pro tier:** $5,000/month → 300,000 tweets/month write, 1M read
+- **Authentication:** OAuth 2.0 (user-context) for publishing, OAuth 2.0 App-Only for analytics
+
+**Implementation pattern:**
+```typescript
+// In Convex action (server-side)
+import { TwitterApi } from 'twitter-api-v2';
+
+export const publishTweet = action({
+  args: { text: v.string(), userId: v.id('users') },
+  handler: async (ctx, args) => {
+    const credentials = await getTwitterCredentials(ctx, args.userId);
+    const client = new TwitterApi(credentials);
+    const tweet = await client.v2.tweet(args.text);
+    // Store tweet ID in Convex for analytics tracking
+    await ctx.runMutation(internal.content.storeTweetId, {
+      contentId: args.contentId,
+      tweetId: tweet.data.id,
+    });
+  }
 });
 ```
 
-**Sources:**
-- [Sonner GitHub](https://github.com/emilkowalski/sonner)
-- [Top 9 React notification libraries in 2026](https://knock.app/blog/the-top-notification-libraries-for-react)
-- [Best toast notification libraries for Next.js](https://tutorend.com/tutorials/best-toast-notification-libraries-for-next-js)
+**Why twitter-api-v2:**
+- Recommended by X Developer Platform official docs
+- Full TypeScript support (type-safe API calls)
+- Supports OAuth 2.0 (modern standard)
+- Active maintenance (latest update Jan 2026)
 
 ---
 
-### 2. Guided Onboarding System (Onborda)
+#### 2.2 Instagram Business API
 
-**Need:** Wizard for new users + smart next-action recommendations
-**Solution:** Onborda — lightweight onboarding wizard for Next.js with Framer Motion animations
+| Technology | Version | Purpose | Why |
+|------------|---------|---------|-----|
+| `facebook-nodejs-business-sdk` | `^24.0.1` | Publish to Instagram, get analytics | Official Meta SDK, supports Instagram Graph API |
 
-| Attribute | Value |
-|-----------|-------|
-| **Library** | `onborda` |
-| **Version** | Latest (2.x or 3.x) |
-| **Bundle Size** | ~15KB (lightweight) |
-| **Why Onborda** | Built specifically for Next.js, uses Framer Motion (already installed), Tailwind-based, shadcn/ui compatible, route-aware animations |
-| **Alternatives Rejected** | React Joyride (DOM-based tooltips, not Next.js optimized), Intro.js (framework-agnostic but heavier) |
-| **Confidence** | HIGH — [verified with official sources](https://github.com/uixmat/onborda) |
+**API Requirements:**
+- **Account type:** Instagram Business or Creator account only (linked to Facebook Page)
+- **Publishing limits:** 25 posts per 24-hour rolling window
+- **Supported formats:** JPEG images only (PNG not supported)
+- **Supported content types:** Feed posts, Reels (since 2022), Stories (since 2023)
 
-**Use cases in v2.0:**
-- First-time user wizard (3-step flow)
-- Feature announcements (new Control Center, content pipeline)
-- Interactive walkthrough for agent configuration
-- Contextual hints for content approval workflow
-- Smart next-action recommendations based on user state
+**Publishing workflow:**
+1. Create media container: `POST /{ig-user-id}/media`
+2. Wait for `FINISHED` status
+3. Publish: `POST /{ig-user-id}/media_publish`
 
-**Installation:**
-```bash
-npm install onborda
-```
-
-**Integration pattern:**
-```tsx
-// components/GuidedTour.tsx
-'use client';
-import { Onborda, OnbordaProvider, useOnborda } from 'onborda';
-
-const steps = [
-  {
-    icon: '🎯',
-    title: 'Bienvenido al Control Center',
-    content: 'Aquí puedes monitorear todos tus agentes en tiempo real',
-    selector: '#control-center',
-    side: 'top',
-  },
-  {
-    icon: '📝',
-    title: 'Pipeline de Contenido',
-    content: 'Crea, revisa y publica contenido en un solo flujo',
-    selector: '#content-pipeline',
-    side: 'bottom',
-  },
-  // ...more steps
-];
-
-export function GuidedTourProvider({ children }) {
-  return (
-    <OnbordaProvider>
-      <Onborda steps={steps} />
-      {children}
-    </OnbordaProvider>
-  );
-}
-
-// Trigger tour on first visit
-const { startTour } = useOnborda();
-useEffect(() => {
-  const hasSeenTour = localStorage.getItem('amd-tour-completed');
-  if (!hasSeenTour) {
-    startTour();
-  }
-}, []);
-```
-
-**Smart next-action recommendations pattern:**
-```tsx
-// lib/next-action-engine.ts
-export function getRecommendedActions(userState) {
-  const recommendations = [];
-
-  if (userState.hasNoContent) {
-    recommendations.push({
-      action: 'create-content',
-      title: 'Crea tu primer contenido',
-      priority: 'high',
-      tourStep: 'content-pipeline'
-    });
-  }
-
-  if (userState.hasUnreviewedContent) {
-    recommendations.push({
-      action: 'review-content',
-      title: 'Tienes 3 contenidos esperando revisión',
-      priority: 'medium',
-      tourStep: 'content-review'
-    });
-  }
-
-  return recommendations;
-}
-```
-
-**Sources:**
-- [Onborda GitHub](https://github.com/uixmat/onborda)
-- [Onborda - Next.js onboarding flow](https://www.onborda.dev/)
-- [5 Best React Onboarding Libraries in 2026](https://onboardjs.com/blog/5-best-react-onboarding-libraries-in-2025-compared)
-
----
-
-### 3. LinkedIn API Integration
-
-**Need:** Publish content to LinkedIn directly from AMD dashboard (PoC)
-**Solution:** LinkedIn Posts API with OAuth 2.0 authentication
-
-| Attribute | Value |
-|-----------|-------|
-| **API** | LinkedIn Posts API (LMS API 2026-01 version) |
-| **Authentication** | OAuth 2.0 (3-legged flow) |
-| **Permissions Required** | `w_member_social` (write posts), `r_liteprofile` (user info) |
-| **Rate Limits** | Standard tier: 500 requests/day |
-| **API Versioning** | Monthly versions (YYYYMM format), supported for 1 year minimum |
-| **Access Token Validity** | 60 days |
-| **Confidence** | HIGH — [verified with Microsoft Learn official docs](https://learn.microsoft.com/en-us/linkedin/marketing/community-management/shares/posts-api?view=li-lms-2026-01) |
-
-**No additional library needed** — use native `fetch` with LinkedIn REST API
-
-**Implementation approach:**
-
-**Backend (Convex Actions):**
+**Implementation pattern:**
 ```typescript
-// convex/actions/linkedin.ts
-import { action } from "./_generated/server";
-import { v } from "convex/values";
+// In Convex action
+import { FacebookAdsApi, IGUser } from 'facebook-nodejs-business-sdk';
 
-export const publishToLinkedIn = action({
+export const publishInstagramPost = action({
   args: {
-    contentId: v.id("content"),
-    accessToken: v.string(),
-    authorUrn: v.string(), // LinkedIn person URN
+    imageUrl: v.string(),
+    caption: v.string(),
+    userId: v.id('users')
   },
   handler: async (ctx, args) => {
-    const content = await ctx.runQuery(internal.functions.getContent, {
-      id: args.contentId
+    const credentials = await getInstagramCredentials(ctx, args.userId);
+    const api = FacebookAdsApi.init(credentials.access_token);
+
+    // Create container
+    const container = await new IGUser(credentials.ig_user_id).createMedia({
+      image_url: args.imageUrl,
+      caption: args.caption,
     });
 
-    // LinkedIn Posts API call
-    const response = await fetch('https://api.linkedin.com/rest/posts', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${args.accessToken}`,
-        'LinkedIn-Version': '202601', // YYYYMM format
-        'X-Restli-Protocol-Version': '2.0.0',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        author: args.authorUrn,
-        commentary: content.body,
-        visibility: 'PUBLIC',
-        distribution: {
-          feedDistribution: 'MAIN_FEED',
-          targetEntities: [],
-          thirdPartyDistributionChannels: []
-        },
-        lifecycleState: 'PUBLISHED',
-        isReshareDisabledByAuthor: false
-      })
+    // Wait for processing (poll status or use webhook)
+    // Then publish
+    const published = await new IGUser(credentials.ig_user_id).createMediaPublish({
+      creation_id: container.id,
     });
 
-    if (!response.ok) {
-      throw new Error(`LinkedIn API error: ${response.statusText}`);
-    }
-
-    const result = await response.json();
-
-    // Update content with LinkedIn URL
-    await ctx.runMutation(internal.functions.updateContent, {
-      id: args.contentId,
-      publishedUrl: `https://www.linkedin.com/feed/update/${result.id}`,
-      status: 'published'
+    await ctx.runMutation(internal.content.storeInstagramPostId, {
+      contentId: args.contentId,
+      igPostId: published.id,
     });
-
-    return result;
   }
 });
 ```
 
-**Frontend (OAuth flow):**
-```tsx
-// app/(dashboard)/integrations/linkedin/page.tsx
-'use client';
+**Why facebook-nodejs-business-sdk:**
+- Official Meta library (maintained by Facebook)
+- Supports Instagram Graph API v24.0+
+- Handles pagination, cursors, batch operations
+- Latest version (24.0.1) published Dec 2025
 
-const LINKEDIN_CLIENT_ID = process.env.NEXT_PUBLIC_LINKEDIN_CLIENT_ID;
-const REDIRECT_URI = `${process.env.NEXT_PUBLIC_APP_URL}/auth/linkedin/callback`;
-
-export default function LinkedInIntegration() {
-  const handleConnect = () => {
-    const authUrl = new URL('https://www.linkedin.com/oauth/v2/authorization');
-    authUrl.searchParams.set('response_type', 'code');
-    authUrl.searchParams.set('client_id', LINKEDIN_CLIENT_ID);
-    authUrl.searchParams.set('redirect_uri', REDIRECT_URI);
-    authUrl.searchParams.set('scope', 'w_member_social r_liteprofile');
-
-    window.location.href = authUrl.toString();
-  };
-
-  return (
-    <button onClick={handleConnect}>
-      Conectar LinkedIn
-    </button>
-  );
-}
-
-// app/auth/linkedin/callback/page.tsx
-export default async function LinkedInCallback({ searchParams }) {
-  const code = searchParams.code;
-
-  // Exchange code for access token (server-side)
-  const tokenResponse = await fetch('https://www.linkedin.com/oauth/v2/accessToken', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      grant_type: 'authorization_code',
-      code,
-      client_id: process.env.LINKEDIN_CLIENT_ID!,
-      client_secret: process.env.LINKEDIN_CLIENT_SECRET!,
-      redirect_uri: REDIRECT_URI
-    })
-  });
-
-  const { access_token } = await tokenResponse.json();
-
-  // Store in Convex with user association
-  await storeLinkedInToken({ accessToken: access_token });
-
-  redirect('/integrations/linkedin?success=true');
-}
-```
-
-**Environment variables needed:**
-```env
-# .env.local
-NEXT_PUBLIC_LINKEDIN_CLIENT_ID=your_client_id
-LINKEDIN_CLIENT_SECRET=your_client_secret
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-```
-
-**LinkedIn Developer Portal setup:**
-1. Create app at https://www.linkedin.com/developers/apps
-2. Request access to "Share on LinkedIn" product
-3. Configure OAuth redirect URIs
-4. Obtain Client ID and Client Secret
-5. Submit for `w_member_social` permission review (may take 5-7 days)
-
-**Important considerations:**
-- **Token refresh:** LinkedIn access tokens expire in 60 days — implement refresh flow
-- **Rate limits:** 500 requests/day standard tier — monitor usage
-- **API versioning:** Use `202601` or latest YYYYMM version in headers
-- **Error handling:** LinkedIn API returns detailed error codes — map to Spanish UI messages
-- **PoC scope:** Start with text-only posts, defer images/videos to future iterations
-
-**Sources:**
-- [LinkedIn Posts API Official Docs](https://learn.microsoft.com/en-us/linkedin/marketing/community-management/shares/posts-api?view=li-lms-2026-01)
-- [LinkedIn OAuth 2.0 Authentication](https://learn.microsoft.com/en-us/linkedin/shared/authentication/authentication)
-- [LinkedIn API Integration Guide](https://www.unipile.com/linkedin-api-a-comprehensive-guide-to-integration/)
+**Limitations to communicate to users:**
+- JPEG only (no PNG, no GIF)
+- 25 posts/day hard limit
+- Business/Creator accounts only (not personal)
+- Requires Facebook Page connection
 
 ---
 
-## Stack Architecture for v2.0 Features
+#### 2.3 LinkedIn Analytics API
 
-### Feature 1: Control Center Operativo
+| Technology | Version | Purpose | Why |
+|------------|---------|---------|-----|
+| `linkedin-api-js-client` | `^0.3.0` (beta) | Get post analytics, engagement metrics | Official LinkedIn library |
+| **Alternative:** Direct REST API calls | N/A | More stable than beta library | Avoid beta dependency |
 
-**Requirements:**
-- Real-time agent status monitoring
-- Live metrics dashboard
-- Alert system
-- Execution history visualization
+**API Capabilities (2026 updates):**
+- **Member Post Analytics API:** Free access to post-level engagement (impressions, reach, reactions, comments, reposts)
+- **Video Insights:** Watch time, total views, unique viewers
+- **Follower Growth:** Track follower count over time
+- **Aggregated Analytics:** Multi-post performance rollups
 
-**Stack approach:**
-- ✅ **Convex** for real-time subscriptions (already installed, `useQuery` auto-updates)
-- ✅ **Recharts** for metrics visualizations (already installed, custom components exist)
-- ➕ **Sonner** for toast alerts (NEW)
-- ✅ **Framer Motion** for status transitions (already installed)
+**RECOMMENDATION: Use direct REST API calls instead of library**
 
-**Why Convex is sufficient for real-time:**
-Convex provides reactive queries out-of-the-box. When agent status changes in the database, all subscribed clients receive updates instantly via WebSocket connections. No need for additional real-time libraries (Socket.io, SSE, etc.).
+The official `linkedin-api-js-client` is still in beta (v0.3.0, last updated 3 years ago). For production stability, call LinkedIn REST API directly from Convex actions using `fetch`.
 
-**Pattern:**
-```tsx
-'use client';
-import { useQuery } from 'convex/react';
-import { api } from '@/convex/_generated/api';
-
-export function AgentMonitor() {
-  // Auto-subscribes to updates, re-renders on changes
-  const agents = useQuery(api.functions.listAgents, {
-    status: 'active'
-  });
-
-  const runningAgents = agents?.filter(a => a.currentTask);
-
-  return (
-    <div>
-      <h2>{runningAgents.length} agentes ejecutando</h2>
-      {runningAgents.map(agent => (
-        <AgentCard key={agent._id} agent={agent} />
-      ))}
-    </div>
-  );
-}
-```
-
-**No WebSocket library needed** — Convex handles this internally.
-
-**Sources:**
-- [Convex Real-Time Updates Documentation](https://docs.convex.dev/home)
-- [Real-Time Updates with Convex DB in Next.js](https://dev.to/said96dev/real-time-updates-with-convex-db-and-authentication-using-clerk-in-nextjs-3akb)
-
----
-
-### Feature 2: Content Publishing Pipeline
-
-**Requirements:**
-- Visual status workflow (draft → review → approved → scheduled → published)
-- Multi-step approval process
-- Status transitions with notifications
-- Scheduling capability
-
-**Stack approach:**
-- ✅ **Convex mutations** for status updates (already working)
-- ✅ **TipTap** for content editing (already installed)
-- ✅ **date-fns** for date formatting/scheduling (already installed)
-- ➕ **Sonner** for status change notifications (NEW)
-- ✅ **Framer Motion** for visual transitions between states (already installed)
-
-**No workflow library needed** — state machine can be implemented in Convex schema with TypeScript enums.
-
-**Pattern:**
+**Implementation pattern:**
 ```typescript
-// convex/schema.ts
-export const contentSchema = defineTable({
-  status: v.union(
-    v.literal('draft'),
-    v.literal('review'),
-    v.literal('revision_needed'),
-    v.literal('approved'),
-    v.literal('scheduled'),
-    v.literal('published'),
-    v.literal('archived')
-  ),
-  scheduledFor: v.optional(v.number()), // timestamp
-  // ... other fields
-});
-
-// convex/functions.ts
-export const updateContentStatus = mutation({
-  args: {
-    id: v.id('content'),
-    newStatus: v.string(),
-  },
+// In Convex action (NO additional library needed)
+export const getLinkedInPostAnalytics = action({
+  args: { postId: v.string(), userId: v.id('users') },
   handler: async (ctx, args) => {
-    const content = await ctx.db.get(args.id);
-    if (!content) throw new Error('Content not found');
+    const credentials = await getLinkedInCredentials(ctx, args.userId);
 
-    // Validation: ensure valid transitions
-    const validTransitions = {
-      draft: ['review'],
-      review: ['revision_needed', 'approved'],
-      revision_needed: ['review'],
-      approved: ['scheduled', 'published'],
-      scheduled: ['published'],
-      published: ['archived'],
-    };
+    // Direct REST API call
+    const response = await fetch(
+      `https://api.linkedin.com/rest/memberCreatorPostAnalytics?posts=${args.postId}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${credentials.access_token}`,
+          'LinkedIn-Version': '202501', // Use current version
+          'X-Restli-Protocol-Version': '2.0.0',
+        }
+      }
+    );
 
-    if (!validTransitions[content.status]?.includes(args.newStatus)) {
-      throw new Error('Invalid status transition');
-    }
+    const analytics = await response.json();
 
-    await ctx.db.patch(args.id, { status: args.newStatus });
+    // Store in Convex for dashboard aggregation
+    await ctx.runMutation(internal.analytics.storeLinkedInMetrics, {
+      postId: args.postId,
+      impressions: analytics.impressions,
+      engagement: analytics.engagement,
+      reactions: analytics.reactions,
+    });
   }
 });
 ```
 
-**UI Component pattern:**
-```tsx
-'use client';
-import { useMutation } from 'convex/react';
-import { api } from '@/convex/_generated/api';
-import { toast } from 'sonner';
+**Why direct API over library:**
+- Official library is beta (unstable, 3 years since last update)
+- REST API is stable and well-documented
+- No additional dependency to maintain
+- Full control over API versioning
 
-export function ContentStatusActions({ content }) {
-  const updateStatus = useMutation(api.functions.updateContentStatus);
-
-  const handleApprove = async () => {
-    try {
-      await updateStatus({ id: content._id, newStatus: 'approved' });
-      toast.success('Contenido aprobado');
-    } catch (error) {
-      toast.error('Error al aprobar contenido');
-    }
-  };
-
-  return (
-    <div>
-      {content.status === 'review' && (
-        <button onClick={handleApprove}>Aprobar</button>
-      )}
-    </div>
-  );
-}
-```
-
-**Visual workflow component:**
-```tsx
-// components/content/ContentPipelineVisualization.tsx
-'use client';
-import { motion } from 'framer-motion';
-
-const PIPELINE_STAGES = [
-  { id: 'draft', label: 'Borrador', icon: '📝' },
-  { id: 'review', label: 'En Revisión', icon: '👀' },
-  { id: 'approved', label: 'Aprobado', icon: '✅' },
-  { id: 'scheduled', label: 'Programado', icon: '📅' },
-  { id: 'published', label: 'Publicado', icon: '🚀' },
-];
-
-export function ContentPipelineVisualization({ currentStatus }) {
-  return (
-    <div className="flex gap-4">
-      {PIPELINE_STAGES.map((stage, idx) => {
-        const isActive = stage.id === currentStatus;
-        const isPast = idx < PIPELINE_STAGES.findIndex(s => s.id === currentStatus);
-
-        return (
-          <motion.div
-            key={stage.id}
-            className={`
-              flex flex-col items-center gap-2 p-4 rounded-lg
-              ${isActive ? 'bg-blue-100 border-2 border-blue-500' : ''}
-              ${isPast ? 'opacity-50' : ''}
-            `}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: idx * 0.1 }}
-          >
-            <span className="text-4xl">{stage.icon}</span>
-            <span className="text-sm font-medium">{stage.label}</span>
-          </motion.div>
-        );
-      })}
-    </div>
-  );
-}
-```
+**LinkedIn API integration points:**
+- Already have OAuth 2.0 working (v2.0 implementation)
+- Extend to request `r_organization_social_analytics` scope for analytics
+- Use existing token refresh logic
 
 ---
 
-### Feature 3: LinkedIn Integration
+### 3. Analytics & Visualization
 
-**See section "3. LinkedIn API Integration" above** — no additional libraries beyond native `fetch`.
+#### 3.1 Charting Library
+
+| Technology | Version | Purpose | Why |
+|------------|---------|---------|-----|
+| `recharts` | `^3.7.0` | Dashboard charts (line, bar, pie, area) | **Already in use.** React-native, composable, SVG-based. No change needed. |
+
+**Current usage:**
+- Already installed: `recharts@3.7.0`
+- Already used in `/analytics` page for trend charts
+- Component-based API matches React 19 patterns
+
+**Expand usage for v3.0:**
+- Line charts: Engagement trends over time (LinkedIn, Twitter, Instagram)
+- Bar charts: Post performance comparison (impressions, clicks)
+- Area charts: Token usage, cost trends
+- Pie charts: Content distribution by platform
+
+**Why NOT switch to alternatives:**
+- Chart.js: Requires wrapper for React, not React-native
+- Victory: Heavier bundle size, overkill for needs
+- ApexCharts: Commercial license considerations
+
+**Recharts strengths for AMD:**
+- Composable components (`<LineChart>`, `<Line>`, `<XAxis>`)
+- Built-in animations and interactions
+- TypeScript support
+- 200KB bundle size (reasonable)
+
+**No new dependency needed.** Expand existing Recharts usage.
 
 ---
 
-### Feature 4: Guided UX System
+#### 3.2 Data Aggregation
 
-**Requirements:**
-- Wizard for new users (3-step onboarding)
-- Smart next-action recommendations
-- Contextual hints
-- Route-aware tour system
+| Technology | Version | Purpose | Why |
+|------------|---------|---------|-----|
+| `@convex-dev/aggregate` | Latest | Efficient COUNT, SUM, MAX for analytics | Handles high-frequency updates without full table scans |
 
-**Stack approach:**
-- ➕ **Onborda** for wizard/tour system (NEW)
-- ✅ **localStorage** for user state persistence (native browser API)
-- ✅ **Framer Motion** for transitions (already installed, used by Onborda)
-- ✅ **Convex queries** for determining user state and recommendations
+**Why aggregation component:**
+- AMD has 37 agents generating tasks/executions constantly
+- Analytics queries like "total tokens used today" would scan entire table
+- Aggregate component maintains reactive counters/sums
 
-**Smart recommendations engine pattern:**
+**Implementation pattern:**
 ```typescript
-// lib/recommendations-engine.ts
-import { useQuery } from 'convex/react';
-import { api } from '@/convex/_generated/api';
+// In Convex schema
+import { Aggregate } from '@convex-dev/aggregate';
 
-export function useSmartRecommendations() {
-  const agents = useQuery(api.functions.listAgents);
-  const content = useQuery(api.functions.listContent);
-  const executions = useQuery(api.functions.listExecutions, { limit: 10 });
+export const tokenUsageAggregate = new Aggregate(schema.executions, {
+  count: true, // Total executions
+  sum: ['tokensUsed', 'costUSD'], // Sum tokens and cost
+  groupBy: ['agentId', 'date'], // Daily per-agent rollups
+});
 
-  const recommendations = [];
-
-  // Heuristic 1: No content created
-  if (content?.length === 0) {
-    recommendations.push({
-      id: 'create-first-content',
-      title: 'Crea tu primer contenido',
-      description: 'Comienza generando contenido con tus agentes',
-      action: '/content?create=true',
-      priority: 'high',
-      icon: '📝'
+// In query
+export const getDailyTokenUsage = query({
+  handler: async (ctx) => {
+    const today = new Date().toISOString().split('T')[0];
+    return await tokenUsageAggregate.getSum(ctx, {
+      groupBy: { date: today },
+      field: 'tokensUsed',
     });
   }
-
-  // Heuristic 2: Content awaiting review
-  const pendingReview = content?.filter(c => c.status === 'review').length || 0;
-  if (pendingReview > 0) {
-    recommendations.push({
-      id: 'review-content',
-      title: `Tienes ${pendingReview} contenidos esperando revisión`,
-      description: 'Revisa y aprueba contenido pendiente',
-      action: '/content?filter=review',
-      priority: 'medium',
-      icon: '👀'
-    });
-  }
-
-  // Heuristic 3: No LinkedIn connection
-  const hasLinkedIn = false; // Check user integrations
-  if (!hasLinkedIn && content?.some(c => c.status === 'approved')) {
-    recommendations.push({
-      id: 'connect-linkedin',
-      title: 'Conecta tu cuenta de LinkedIn',
-      description: 'Publica contenido aprobado directamente en LinkedIn',
-      action: '/integrations/linkedin',
-      priority: 'medium',
-      icon: '🔗'
-    });
-  }
-
-  // Heuristic 4: No agent executions today
-  const today = new Date().toDateString();
-  const executionsToday = executions?.filter(
-    e => new Date(e._creationTime).toDateString() === today
-  ).length || 0;
-
-  if (executionsToday === 0) {
-    recommendations.push({
-      id: 'run-agents',
-      title: 'Aún no has ejecutado agentes hoy',
-      description: 'Ejecuta agentes para generar contenido nuevo',
-      action: '/agents?action=execute',
-      priority: 'low',
-      icon: '🤖'
-    });
-  }
-
-  return recommendations.sort((a, b) => {
-    const priorityOrder = { high: 0, medium: 1, low: 2 };
-    return priorityOrder[a.priority] - priorityOrder[b.priority];
-  });
-}
+});
 ```
 
-**Dashboard integration:**
-```tsx
-// app/(dashboard)/page.tsx
-import { useSmartRecommendations } from '@/lib/recommendations-engine';
+**Benefits:**
+- Reactive: UI auto-updates when new execution completes
+- Transactional: Aggregates update atomically with data
+- Performant: No full table scans, O(1) reads
 
-export default function DashboardPage() {
-  const recommendations = useSmartRecommendations();
+**Use cases for v3.0:**
+1. **Internal metrics:** Token usage, costs, execution counts per agent/day
+2. **Social metrics:** Aggregate engagement across platforms (total impressions, reactions)
+3. **Content performance:** Top posts by engagement, conversion rates
 
-  return (
-    <div>
-      {recommendations.length > 0 && (
-        <section className="mb-8">
-          <h2 className="text-xl font-bold mb-4">Siguiente Acción Recomendada</h2>
-          <div className="grid gap-4">
-            {recommendations.slice(0, 3).map(rec => (
-              <RecommendationCard key={rec.id} recommendation={rec} />
-            ))}
-          </div>
-        </section>
-      )}
-    </div>
-  );
-}
+---
+
+### 4. Supporting Libraries
+
+#### 4.1 Date Handling
+
+| Technology | Version | Purpose | Why |
+|------------|---------|---------|-----|
+| `date-fns` | `^4.1.0` | Date manipulation, formatting, timezones | **Already in use.** Lightweight (20KB), tree-shakeable. No change needed. |
+
+**Current usage:**
+- Already installed: `date-fns@4.1.0`
+- Used for formatting dates in UI
+
+**Expand for v3.0:**
+- Parse social platform timestamps (ISO 8601)
+- Calculate time ranges for analytics ("last 7 days", "last 30 days")
+- Format dates for chart axes (localized to Spanish)
+
+**No new dependency needed.**
+
+---
+
+#### 4.2 Environment Variables & Secrets
+
+**Pattern: Convex environment variables (NO new library needed)**
+
+Social platform credentials must be stored securely. Convex provides environment variables for this.
+
+**Setup:**
+```bash
+npx convex env set TWITTER_API_KEY "..."
+npx convex env set TWITTER_API_SECRET "..."
+npx convex env set INSTAGRAM_ACCESS_TOKEN "..."
+npx convex env set LINKEDIN_ACCESS_TOKEN "..."
+```
+
+**Access in actions:**
+```typescript
+export const publishTweet = action({
+  handler: async (ctx, args) => {
+    const apiKey = process.env.TWITTER_API_KEY;
+    const apiSecret = process.env.TWITTER_API_SECRET;
+    // Use credentials
+  }
+});
+```
+
+**Per-user tokens:**
+Store user-specific OAuth tokens in Convex database (encrypted at rest by Convex):
+
+```typescript
+// Schema addition
+export default defineSchema({
+  socialConnections: defineTable({
+    userId: v.id('users'),
+    platform: v.union(v.literal('twitter'), v.literal('instagram'), v.literal('linkedin')),
+    accessToken: v.string(), // Encrypted by Convex
+    refreshToken: v.optional(v.string()),
+    expiresAt: v.number(),
+  }).index('by_user_platform', ['userId', 'platform']),
+});
 ```
 
 ---
 
-## Don't Add (Anti-Patterns)
+## What NOT to Add
 
-### ❌ Tremor or additional UI component libraries
+### ❌ Supabase / Firebase Auth
+**Why not:** Convex has native auth support via Clerk integration. Adding another auth provider creates state sync complexity.
 
-**Why not:**
-- Already have custom Recharts components built and themed
-- Tremor would add 35+ components we won't use (bloat)
-- Existing components are sufficient for v2.0 needs
-- Custom components provide full control over Spanish UI
+### ❌ Prisma / TypeORM
+**Why not:** Convex is the database. No ORM needed. Convex schema is TypeScript-native.
 
-**When to reconsider:** If v3.0+ requires advanced dashboard features like KPI cards with sparklines, data grids, or complex filter controls.
+### ❌ Redis / Upstash for rate limiting
+**Why not:** Social platform APIs have their own rate limits. Use Convex database to track rate limit state. For Next.js API routes (webhooks), rate limiting can be implemented with Convex queries if needed. Don't add Redis unless rate limiting becomes bottleneck.
 
-**Sources:**
-- [Tremor — Tailwind CSS UI Components](https://www.tremor.so/)
-- [Building a React Dashboard with Tremor](https://blog.logrocket.com/build-react-dashboard-tremor/)
+### ❌ Bull / BullMQ for job queues
+**Why not:** Convex has scheduled functions (cron) and actions. No separate job queue needed.
 
----
+### ❌ Axios for HTTP requests
+**Why not:** Native `fetch` is sufficient for API calls in Convex actions. Modern Node.js (18+) has built-in `fetch`.
 
-### ❌ Socket.io or custom WebSocket library
+### ❌ Socket.io for real-time
+**Why not:** Convex provides real-time subscriptions out of the box. No separate WebSocket layer needed.
 
-**Why not:**
-- Convex already provides real-time subscriptions via WebSocket
-- Adding Socket.io would create redundant connections
-- Convex's reactive queries handle 95% of real-time dashboard needs
-- For remaining 5%, Server-Sent Events (SSE) via Route Handlers is simpler
-
-**When to reconsider:** If we need bidirectional communication not covered by Convex mutations (unlikely).
-
-**Sources:**
-- [Server-Sent Events Beat WebSockets for 95% of Real-Time Apps](https://dev.to/polliog/server-sent-events-beat-websockets-for-95-of-real-time-apps-heres-why-a4l)
-- [WebSockets vs SSE for Real-Time Dashboards](https://www.nimbleway.com/blog/server-sent-events-vs-websockets-what-is-the-difference-2026-guide)
+### ❌ Lodash / Underscore
+**Why not:** Modern JavaScript/TypeScript has most utilities built-in (Array.map, Object.entries, etc.). Keep bundle small.
 
 ---
 
-### ❌ React Flow or workflow visualization library
+## Integration Architecture
 
-**Why not:**
-- Content pipeline is linear (draft → review → approved → published)
-- Framer Motion + Tailwind sufficient for visualizing state transitions
-- React Flow is overkill for simple status workflows
-- Custom components provide better UX for this specific use case
+### Data Flow: Social Publishing
 
-**When to reconsider:** If v3.0+ requires complex agent orchestration visualizations or DAG-based workflows.
+```
+User clicks "Publish to Twitter"
+    ↓
+Next.js frontend calls Convex mutation
+    ↓
+Convex mutation validates content, checks permissions (Clerk auth)
+    ↓
+Convex mutation schedules action
+    ↓
+Convex action calls Twitter API (twitter-api-v2)
+    ↓
+Twitter API returns tweet ID
+    ↓
+Convex action stores tweet ID, updates content status
+    ↓
+Convex mutation triggers (reactive)
+    ↓
+Frontend UI updates automatically (Convex subscription)
+```
 
-**Sources:**
-- [React Flow — Node-Based UIs](https://reactflow.dev)
-
----
-
-### ❌ React Joyride or Intro.js
-
-**Why not:**
-- Onborda is better optimized for Next.js App Router
-- Onborda uses Framer Motion (already installed) vs. proprietary animations
-- Onborda supports route transitions (critical for multi-page tours)
-- React Joyride/Intro.js are DOM-based (not RSC-friendly)
-
-**When to reconsider:** Never — Onborda is the modern standard for Next.js.
-
-**Sources:**
-- [5 Best React Product Tour Libraries for Onboarding UX](https://whatfix.com/blog/react-onboarding-tour/)
+**Key insight:** All external API calls happen in Convex actions (server-side). Frontend never directly calls Twitter/Instagram/LinkedIn APIs. This keeps API keys secure and enables retry logic.
 
 ---
 
-### ❌ State management library (Redux, Zustand, Jotai)
+### Data Flow: Analytics Aggregation
 
-**Why not:**
-- Convex queries handle global state reactively
-- React 19 Context API sufficient for UI-only state (modals, forms)
-- Adding Redux/Zustand would duplicate Convex state
-- 18,108 LOC codebase already scales without state library
+```
+Convex action publishes post to LinkedIn
+    ↓
+Store post ID in Convex content table
+    ↓
+Scheduled cron (daily): Fetch analytics for all published posts
+    ↓
+Convex action calls LinkedIn Analytics API
+    ↓
+Parse engagement metrics (impressions, reactions, etc.)
+    ↓
+Store in analytics table with timestamp
+    ↓
+Aggregate component updates sums/counts
+    ↓
+Frontend query reads aggregated data (O(1) lookup)
+    ↓
+Recharts renders charts
+```
 
-**When to reconsider:** If client-side state becomes complex (50+ components sharing non-Convex state).
+**Key insight:** Use Convex scheduled functions (cron) to poll analytics APIs daily. Store raw metrics in `analytics` table, use Aggregate component for efficient rollups.
 
 ---
 
-### ❌ Scheduling library (node-cron, agenda, bull)
+### Data Flow: Authentication
 
-**Why not:**
-- Convex has built-in cron jobs (`crons.ts`)
-- Convex cron system already powers daily/weekly agent executions
-- Adding separate scheduler creates inconsistency
+```
+User clicks "Sign up with Google"
+    ↓
+Clerk handles OAuth flow
+    ↓
+Clerk creates user in Clerk database
+    ↓
+Clerk webhook fires to Convex
+    ↓
+Convex mutation creates user in users table
+    ↓
+User data synced between Clerk ↔ Convex
+    ↓
+Frontend queries Convex with ctx.auth.getUserIdentity()
+    ↓
+Convex enforces permissions (user can only see their own data)
+```
 
-**When to reconsider:** Never — use Convex cron system.
+**Key insight:** Clerk handles auth UI/UX. Convex stores user data for queries. Webhook keeps them in sync.
+
+---
+
+## Database Schema Additions
+
+### New Tables for v3.0
+
+```typescript
+// convex/schema.ts additions
+
+export default defineSchema({
+  // Existing tables: agents, tasks, executions, content, handoffs...
+
+  // NEW: User management (synced from Clerk)
+  users: defineTable({
+    clerkId: v.string(), // Clerk user ID
+    email: v.string(),
+    name: v.string(),
+    role: v.union(v.literal('admin'), v.literal('editor'), v.literal('viewer')),
+    organizationId: v.optional(v.id('organizations')),
+    createdAt: v.number(),
+  })
+    .index('by_clerk_id', ['clerkId'])
+    .index('by_organization', ['organizationId']),
+
+  // NEW: Organizations (Clerk orgs)
+  organizations: defineTable({
+    clerkOrgId: v.string(),
+    name: v.string(),
+    plan: v.union(v.literal('free'), v.literal('pro'), v.literal('enterprise')),
+    createdAt: v.number(),
+  }).index('by_clerk_org_id', ['clerkOrgId']),
+
+  // NEW: Social platform connections (per-user OAuth tokens)
+  socialConnections: defineTable({
+    userId: v.id('users'),
+    platform: v.union(v.literal('twitter'), v.literal('instagram'), v.literal('linkedin')),
+    platformUserId: v.string(), // Twitter user ID, IG user ID, etc.
+    platformUsername: v.string(),
+    accessToken: v.string(), // Encrypted by Convex
+    refreshToken: v.optional(v.string()),
+    expiresAt: v.number(),
+    scopes: v.array(v.string()),
+    connectedAt: v.number(),
+  })
+    .index('by_user_platform', ['userId', 'platform'])
+    .index('by_expiration', ['expiresAt']),
+
+  // NEW: Social analytics (raw metrics from APIs)
+  socialAnalytics: defineTable({
+    contentId: v.id('content'),
+    platform: v.union(v.literal('twitter'), v.literal('instagram'), v.literal('linkedin')),
+    platformPostId: v.string(), // Tweet ID, IG post ID, LinkedIn URN
+    impressions: v.number(),
+    reach: v.optional(v.number()),
+    engagement: v.number(), // Total engagement (likes + comments + shares)
+    likes: v.number(),
+    comments: v.number(),
+    shares: v.number(),
+    clicks: v.optional(v.number()),
+    fetchedAt: v.number(), // When we fetched this data
+  })
+    .index('by_content', ['contentId'])
+    .index('by_platform_post', ['platform', 'platformPostId'])
+    .index('by_fetched_at', ['fetchedAt']),
+
+  // NEW: Internal analytics (agent activity, token usage)
+  internalAnalytics: defineTable({
+    date: v.string(), // YYYY-MM-DD
+    agentId: v.string(),
+    executionCount: v.number(),
+    tokensUsed: v.number(),
+    costUSD: v.number(),
+    successRate: v.number(), // 0.0 to 1.0
+    avgExecutionTime: v.number(), // milliseconds
+  })
+    .index('by_date', ['date'])
+    .index('by_agent_date', ['agentId', 'date']),
+
+  // EXISTING: Extend content table with new fields
+  content: defineTable({
+    // ... existing fields (type, title, body, status, metadata, seo, createdBy, createdAt) ...
+
+    // NEW FIELDS:
+    publishedPlatforms: v.optional(v.array(v.union(
+      v.literal('twitter'),
+      v.literal('instagram'),
+      v.literal('linkedin')
+    ))),
+    platformPostIds: v.optional(v.object({
+      twitter: v.optional(v.string()),
+      instagram: v.optional(v.string()),
+      linkedin: v.optional(v.string()),
+    })),
+    scheduledPublishAt: v.optional(v.number()), // Unix timestamp
+    lastAnalyticsFetch: v.optional(v.number()), // When we last fetched analytics
+  })
+    .index('by_scheduled_publish', ['scheduledPublishAt'])
+    .index('by_status', ['status']),
+});
+```
 
 ---
 
 ## Installation Commands
 
-### Required Additions (v2.0)
+### New Dependencies to Install
 
 ```bash
-# Navigate to frontend directory
-cd /home/tomas/Escritorio/AIAIAI_Consulting/projects/amd/ai-marketing-department/ai-marketing-department
+# Navigate to project root
+cd /home/tomas/Escritorio/AIAIAI_Consulting/projects/amd
 
-# Install Sonner (toast notifications)
-npm install sonner
+# Install backend dependencies (Convex)
+npm install @convex-dev/aggregate
 
-# Install Onborda (guided UX)
-npm install onborda
+# Navigate to frontend
+cd ai-marketing-department/ai-marketing-department
+
+# Install Clerk for authentication
+npm install @clerk/nextjs@^6.37.1
+
+# Install social platform SDKs
+npm install twitter-api-v2@^1.18.0
+npm install facebook-nodejs-business-sdk@^24.0.1
+
+# NO need to install:
+# - recharts (already installed: 3.7.0)
+# - date-fns (already installed: 4.1.0)
+# - convex (already installed: 1.31.6)
 ```
 
-**Total bundle impact:** ~23KB (8KB Sonner + 15KB Onborda)
+### Environment Variables Setup
 
-### No Backend Dependencies
+```bash
+# In Convex dashboard or via CLI:
+npx convex env set CLERK_WEBHOOK_SECRET "whsec_..."
 
-LinkedIn API integration uses native `fetch` — no npm packages required.
+# Social platform API keys (app-level)
+npx convex env set TWITTER_API_KEY "..."
+npx convex env set TWITTER_API_SECRET "..."
+npx convex env set META_APP_ID "..."
+npx convex env set META_APP_SECRET "..."
+
+# In Next.js frontend (.env.local)
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
+CLERK_SECRET_KEY=sk_test_...
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+```
 
 ---
 
-## Environment Variables
+## Migration Path from Single-User to Multi-User
 
-Add to `.env.local`:
+### Phase 1: Add Authentication (Week 1)
 
-```env
-# LinkedIn Integration (v2.0)
-NEXT_PUBLIC_LINKEDIN_CLIENT_ID=your_linkedin_client_id
-LINKEDIN_CLIENT_SECRET=your_linkedin_client_secret_DO_NOT_EXPOSE
-NEXT_PUBLIC_APP_URL=http://localhost:3000
+1. Install Clerk: `npm install @clerk/nextjs`
+2. Set up Clerk app in dashboard (clerk.com)
+3. Wrap Next.js app with `<ClerkProvider>`
+4. Add Clerk webhook to Convex for user sync
+5. Migrate existing content to have `createdBy: userId`
 
-# Feature Flags (optional, for phased rollout)
-NEXT_PUBLIC_ENABLE_LINKEDIN_INTEGRATION=true
-NEXT_PUBLIC_ENABLE_GUIDED_TOUR=true
-```
+**Backward compatibility:**
+- Existing content without `createdBy`: Assign to first admin user
+- Existing agents: Remain system-level (not user-specific)
 
-**Security notes:**
-- ✅ `NEXT_PUBLIC_*` vars are safe for client-side (Client ID, App URL)
-- ❌ `LINKEDIN_CLIENT_SECRET` must NEVER be exposed to client (use in Convex Actions only)
-- ✅ Store LinkedIn access tokens in Convex database with encryption
+### Phase 2: Add Social Connections (Week 2)
+
+1. Create OAuth apps on Twitter, Meta, LinkedIn developer portals
+2. Install SDKs: `npm install twitter-api-v2 facebook-nodejs-business-sdk`
+3. Build OAuth flow UI (connect/disconnect buttons)
+4. Store tokens in `socialConnections` table
+5. Build publishing actions (one per platform)
+
+**Test with personal accounts first**, then invite beta users.
+
+### Phase 3: Add Analytics (Week 3-4)
+
+1. Install aggregation: `npm install @convex-dev/aggregate`
+2. Create `socialAnalytics` and `internalAnalytics` tables
+3. Build scheduled cron to fetch analytics daily
+4. Build aggregation queries (total impressions, top posts)
+5. Expand Recharts usage for multi-platform charts
+
+**Start with LinkedIn analytics** (already have OAuth), then Twitter, then Instagram.
 
 ---
 
-## Integration Points with Existing Stack
+## Convex-Specific Patterns
 
-### 1. Sonner + Convex Mutations
+### Pattern 1: External API Calls in Actions
 
-```tsx
-// Pattern: Show toast on mutation success/error
-import { useMutation } from 'convex/react';
-import { toast } from 'sonner';
+**Rule:** All calls to Twitter, Instagram, LinkedIn APIs must happen in Convex actions, not mutations.
 
-const updateStatus = useMutation(api.functions.updateContentStatus);
+**Why:** Actions can call external APIs (non-deterministic). Mutations cannot.
 
-const handleApprove = async () => {
-  try {
-    await updateStatus({ id: content._id, newStatus: 'approved' });
-    toast.success('Contenido aprobado exitosamente', {
-      description: 'El contenido está listo para publicación',
-      duration: 5000,
-    });
-  } catch (error) {
-    toast.error('Error al aprobar contenido', {
-      description: error.message,
-      action: {
-        label: 'Reintentar',
-        onClick: () => handleApprove(),
-      },
-    });
+```typescript
+// ❌ WRONG: Calling external API in mutation
+export const publishTweet = mutation({
+  handler: async (ctx, args) => {
+    const tweet = await twitterClient.post(...); // ERROR: mutation can't call external API
   }
-};
-```
+});
 
----
-
-### 2. Onborda + Framer Motion + Tailwind
-
-```tsx
-// Pattern: Onborda uses Framer Motion internally, inherits Tailwind theme
-import { Onborda, useOnborda } from 'onborda';
-
-const steps = [
-  {
-    icon: '🎯',
-    title: 'Control Center',
-    content: 'Monitorea tus agentes en tiempo real',
-    selector: '#control-center',
-    side: 'top',
-    // Framer Motion animation variants (optional override)
-    animation: {
-      initial: { opacity: 0, scale: 0.8 },
-      animate: { opacity: 1, scale: 1 },
-      exit: { opacity: 0, scale: 0.8 },
-    },
-  },
-];
-
-<Onborda
-  steps={steps}
-  // Tailwind classes for styling
-  cardClassName="bg-white border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
-  // Uses Framer Motion for transitions
-/>
-```
-
----
-
-### 3. LinkedIn API + Convex Actions + Sonner
-
-```tsx
-// Pattern: LinkedIn publish with toast notifications
-import { useAction } from 'convex/react';
-import { toast } from 'sonner';
-
-const publishToLinkedIn = useAction(api.actions.linkedin.publishToLinkedIn);
-
-const handlePublish = async () => {
-  const toastId = toast.loading('Publicando en LinkedIn...');
-
-  try {
-    const result = await publishToLinkedIn({
-      contentId: content._id,
-      accessToken: linkedInToken,
-      authorUrn: userLinkedInUrn,
-    });
-
-    toast.success('Publicado en LinkedIn', {
-      id: toastId,
-      description: 'Tu contenido ya está visible en tu perfil',
-      action: {
-        label: 'Ver en LinkedIn',
-        onClick: () => window.open(result.url, '_blank'),
-      },
-    });
-  } catch (error) {
-    toast.error('Error al publicar en LinkedIn', {
-      id: toastId,
-      description: error.message,
-    });
+// ✅ CORRECT: Call external API in action
+export const publishTweet = action({
+  handler: async (ctx, args) => {
+    const tweet = await twitterClient.post(...); // OK
+    await ctx.runMutation(internal.content.storeTweetId, { id: tweet.id });
   }
-};
+});
 ```
 
----
+### Pattern 2: Token Refresh in Actions
 
-### 4. Recommendations Engine + Onborda Tours
+OAuth tokens expire. Refresh them in actions before API calls.
 
-```tsx
-// Pattern: Trigger contextual tour based on recommendations
-import { useOnborda } from 'onborda';
-import { useSmartRecommendations } from '@/lib/recommendations-engine';
+```typescript
+export const publishTweet = action({
+  handler: async (ctx, args) => {
+    let connection = await getTwitterConnection(ctx, args.userId);
 
-const { startTour } = useOnborda();
-const recommendations = useSmartRecommendations();
+    // Check if token expired
+    if (connection.expiresAt < Date.now()) {
+      // Refresh token
+      const refreshed = await twitterClient.refreshToken(connection.refreshToken);
 
-// If user has high-priority recommendation, offer contextual tour
-useEffect(() => {
-  const highPriorityRec = recommendations.find(r => r.priority === 'high');
+      // Update in database
+      await ctx.runMutation(internal.social.updateToken, {
+        connectionId: connection._id,
+        accessToken: refreshed.access_token,
+        expiresAt: Date.now() + refreshed.expires_in * 1000,
+      });
 
-  if (highPriorityRec && highPriorityRec.id === 'create-first-content') {
-    const hasSeenContentTour = localStorage.getItem('amd-content-tour-seen');
-    if (!hasSeenContentTour) {
-      startTour('content-creation'); // Named tour variant
+      connection = refreshed;
     }
+
+    // Now use fresh token
+    const tweet = await twitterClient.post(connection.accessToken, args.text);
   }
-}, [recommendations]);
+});
 ```
+
+### Pattern 3: Rate Limit Tracking in Database
+
+Social platforms have rate limits. Track usage in Convex to avoid hitting limits.
+
+```typescript
+// Schema
+rateLimits: defineTable({
+  userId: v.id('users'),
+  platform: v.string(),
+  endpoint: v.string(), // e.g., "POST /tweets"
+  requestCount: v.number(),
+  windowStart: v.number(), // Unix timestamp
+  windowEnd: v.number(),
+}).index('by_user_platform_window', ['userId', 'platform', 'windowEnd']),
+
+// Before API call, check rate limit
+export const publishTweet = action({
+  handler: async (ctx, args) => {
+    const canPublish = await ctx.runQuery(internal.rateLimits.checkLimit, {
+      userId: args.userId,
+      platform: 'twitter',
+      endpoint: 'POST /tweets',
+      limit: 50, // Free tier: 50 tweets/day
+    });
+
+    if (!canPublish) {
+      throw new Error('Rate limit exceeded. Try again tomorrow.');
+    }
+
+    // Proceed with API call...
+  }
+});
+```
+
+### Pattern 4: Scheduled Analytics Fetching
+
+Use Convex cron to fetch analytics daily, not on-demand.
+
+```typescript
+// convex/crons.ts
+import { cronJobs } from 'convex/server';
+import { internal } from './_generated/api';
+
+const crons = cronJobs();
+
+crons.daily(
+  'fetch-linkedin-analytics',
+  { hourUTC: 6 }, // 6 AM UTC
+  internal.analytics.fetchAllLinkedInAnalytics
+);
+
+crons.daily(
+  'fetch-twitter-analytics',
+  { hourUTC: 7 },
+  internal.analytics.fetchAllTwitterAnalytics
+);
+
+export default crons;
+```
+
+**Why cron instead of real-time:**
+- Social APIs have rate limits (e.g., LinkedIn: 100 calls/day)
+- Analytics data doesn't need real-time updates
+- Reduces API costs
 
 ---
 
 ## Performance Considerations
 
-### Bundle Size Impact
+### 1. Recharts Rendering with Large Datasets
 
-| Addition | Size | Justification |
-|----------|------|---------------|
-| Sonner | ~8KB | Essential for alerts, minimal footprint |
-| Onborda | ~15KB | Best-in-class onboarding, uses existing Framer Motion |
-| **Total** | **~23KB** | <1% increase (acceptable) |
+**Problem:** Rendering 10,000 data points causes lag.
 
-**Next.js 16 optimizations:**
-- Code splitting automatically handles on-demand loading
-- Sonner only loads when first toast is triggered
-- Onborda only loads on pages with guided tours
+**Solution:** Aggregate data before passing to chart.
 
----
-
-### Real-Time Performance
-
-**Convex vs. alternatives:**
-- ✅ **Convex:** WebSocket-based, reactive queries, zero config
-- ❌ **Socket.io:** Requires separate server, manual event handling
-- ❌ **SSE:** Good for server→client, but Convex already provides this
-
-**Benchmark (from community reports):**
-- Convex: <50ms latency for real-time updates
-- Socket.io: ~100-200ms (depends on server setup)
-- SSE: ~100ms (one-way only)
-
-**Sources:**
-- [A guide to using Convex for state management](https://blog.logrocket.com/using-convex-for-state-management/)
-- [Real-Time APIs Done Right With RSCs](https://jherr2020.medium.com/real-time-apis-done-right-with-rscs-4b474e253aad)
-
----
-
-### LinkedIn API Rate Limits
-
-| Tier | Requests/Day | Requests/Minute | Cost |
-|------|--------------|-----------------|------|
-| Standard | 500 | ~20 | Free |
-| Partner | 10,000 | ~100 | Requires LinkedIn partnership |
-
-**Mitigation strategies:**
-- Queue publish requests in Convex (avoid burst)
-- Show rate limit status in UI (remaining quota)
-- Implement retry with exponential backoff
-- Cache user profile info (don't fetch on every publish)
-
-**Pattern:**
 ```typescript
-// convex/functions.ts
-export const getRateLimitStatus = query({
-  handler: async (ctx) => {
-    const today = new Date().setHours(0, 0, 0, 0);
-    const publishes = await ctx.db
-      .query('linkedinPublishes')
-      .filter(q => q.gte(q.field('timestamp'), today))
-      .collect();
+// ❌ BAD: Pass all executions to chart
+const executions = useQuery(api.executions.list); // 10,000 rows
+<LineChart data={executions} />
 
-    return {
-      used: publishes.length,
-      limit: 500,
-      remaining: 500 - publishes.length,
-      resetsAt: new Date(today + 86400000), // Next midnight
-    };
+// ✅ GOOD: Aggregate by day first
+const dailyStats = useQuery(api.analytics.getDailyStats); // 30 rows
+<LineChart data={dailyStats} />
+```
+
+Use Convex Aggregate component for pre-aggregation.
+
+### 2. Social API Rate Limits
+
+| Platform | Free Tier Limit | Recommended Strategy |
+|----------|----------------|----------------------|
+| Twitter | 1,500 tweets/month | Batch analytics fetching (daily cron) |
+| Instagram | 25 posts/day | Show warning at 20 posts, block at 25 |
+| LinkedIn | 100 API calls/day | Fetch analytics for top 100 posts only |
+
+**Implementation:** Track usage in `rateLimits` table, show warnings in UI.
+
+### 3. Convex Action Timeouts
+
+Actions timeout after 10 minutes. For bulk operations (fetch analytics for 1000 posts), use pagination.
+
+```typescript
+export const fetchAllLinkedInAnalytics = action({
+  handler: async (ctx) => {
+    const posts = await ctx.runQuery(internal.content.getPublishedLinkedInPosts, {
+      limit: 100, // Process 100 at a time
+    });
+
+    for (const post of posts) {
+      await fetchLinkedInAnalyticsForPost(ctx, post);
+      // Store analytics incrementally
+    }
+
+    // If more posts exist, schedule another action
+    if (posts.length === 100) {
+      await ctx.scheduler.runAfter(0, internal.analytics.fetchAllLinkedInAnalytics);
+    }
   }
 });
 ```
 
 ---
 
-## Migration Path (v1.0 → v2.0)
+## Security Considerations
 
-### Step 1: Install Dependencies
+### 1. OAuth Token Storage
 
-```bash
-npm install sonner onborda
-```
-
-### Step 2: Add Sonner to Root Layout
-
-```tsx
-// app/layout.tsx
-import { Toaster } from 'sonner';
-
-export default function RootLayout({ children }) {
-  return (
-    <html lang="es">
-      <body>
-        <ConvexClientProvider>
-          {children}
-        </ConvexClientProvider>
-        <Toaster position="bottom-right" richColors />
-      </body>
-    </html>
-  );
-}
-```
-
-### Step 3: Wrap App with Onborda Provider
-
-```tsx
-// app/layout.tsx (or dedicated provider)
-import { OnbordaProvider } from 'onborda';
-import { tourSteps } from '@/lib/tour-steps';
-
-export default function RootLayout({ children }) {
-  return (
-    <html lang="es">
-      <body>
-        <ConvexClientProvider>
-          <OnbordaProvider>
-            {children}
-          </OnbordaProvider>
-        </ConvexClientProvider>
-        <Toaster position="bottom-right" richColors />
-      </body>
-    </html>
-  );
-}
-```
-
-### Step 4: Add Environment Variables
-
-```bash
-# .env.local
-NEXT_PUBLIC_LINKEDIN_CLIENT_ID=...
-LINKEDIN_CLIENT_SECRET=...
-```
-
-### Step 5: Update Convex Schema (if needed)
+**Never store tokens in localStorage or client-side state.** Always store in Convex database (encrypted at rest).
 
 ```typescript
-// convex/schema.ts
-export const linkedinIntegrations = defineTable({
-  userId: v.id('users'),
-  accessToken: v.string(), // Encrypted in production
-  refreshToken: v.optional(v.string()),
-  expiresAt: v.number(),
-  authorUrn: v.string(),
-  connectedAt: v.number(),
+// ✅ CORRECT: Store in Convex
+await ctx.runMutation(internal.social.storeToken, {
+  userId: ctx.auth.getUserIdentity()!.subject,
+  platform: 'twitter',
+  accessToken: tokens.access_token, // Convex encrypts at rest
 });
 
-export const linkedinPublishes = defineTable({
-  contentId: v.id('content'),
-  linkedInPostId: v.string(),
-  publishedAt: v.number(),
-  status: v.union(v.literal('success'), v.literal('failed')),
+// ❌ WRONG: Store in localStorage
+localStorage.setItem('twitter_token', tokens.access_token); // NEVER do this
+```
+
+### 2. User Isolation
+
+**Enforce userId checks in all queries/mutations.**
+
+```typescript
+export const getMyContent = query({
+  handler: async (ctx) => {
+    const userId = ctx.auth.getUserIdentity()?.subject;
+    if (!userId) throw new Error('Unauthorized');
+
+    return await ctx.db
+      .query('content')
+      .withIndex('by_user', (q) => q.eq('createdBy', userId))
+      .collect();
+  }
 });
 ```
 
-### Step 6: Test in Development
-
-```bash
-npm run dev
+**Never allow:**
+```typescript
+// ❌ WRONG: Returns all users' content
+export const getAllContent = query({
+  handler: async (ctx) => {
+    return await ctx.db.query('content').collect();
+  }
+});
 ```
 
-**Verification checklist:**
-- [ ] Toasts appear on mutation success/error
-- [ ] Guided tour triggers on first visit
-- [ ] LinkedIn OAuth flow redirects correctly
-- [ ] Real-time agent updates work as expected
+### 3. Webhook Verification
+
+**Verify all webhook signatures** (Clerk, Twitter, Instagram).
+
+```typescript
+// Example: Clerk webhook
+import { Webhook } from 'svix';
+
+export const clerkWebhook = httpAction(async (ctx, request) => {
+  const svix_id = request.headers.get('svix-id');
+  const svix_timestamp = request.headers.get('svix-timestamp');
+  const svix_signature = request.headers.get('svix-signature');
+
+  const webhook = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
+  const payload = await webhook.verify(await request.text(), {
+    'svix-id': svix_id,
+    'svix-timestamp': svix_timestamp,
+    'svix-signature': svix_signature,
+  });
+
+  // Process verified webhook
+});
+```
 
 ---
 
-## Open Questions & Future Research
+## Testing Strategy
 
-### Question 1: LinkedIn API Access Timeline
+### 1. Social API Mocking
 
-**What we know:**
-- `w_member_social` permission requires LinkedIn approval
-- Review process typically takes 5-7 business days
-- May require demo video or use case documentation
+Use Twitter/Instagram/LinkedIn sandbox accounts for testing. **Do not use production accounts.**
 
-**What's unclear:**
-- Will AMD use case be approved? (marketing automation is common)
-- Does "PoC" qualify or do we need production app?
+**Setup:**
+1. Twitter: Create developer account, use "Elevated" access for testing
+2. Instagram: Create test Instagram Business account via Meta Business Suite
+3. LinkedIn: Use personal account in "development mode" (not visible to public)
 
-**Recommendation:**
-- Start LinkedIn Developer Portal application immediately
-- Prepare demo video showing AMD content workflow
-- Have backup plan: manually copy-paste to LinkedIn if approval delayed
+### 2. Clerk Testing
 
----
+Clerk provides test mode with unlimited users. Use `pk_test_...` and `sk_test_...` keys.
 
-### Question 2: Multi-User LinkedIn Publishing
+**Test scenarios:**
+- User signs up → User created in Convex
+- User connects Twitter → Token stored in `socialConnections`
+- User publishes tweet → Tweet posted, ID stored
 
-**What we know:**
-- Each user needs their own LinkedIn OAuth token
-- Tokens expire in 60 days (refresh flow needed)
-- Standard tier: 500 requests/day per app (shared across users)
+### 3. Analytics Accuracy
 
-**What's unclear:**
-- How to handle token storage per user in Convex?
-- Should we implement token refresh now or defer to v2.1?
+**Validation:** Compare AMD analytics with platform-native analytics.
 
-**Recommendation:**
-- v2.0: Single-user LinkedIn connection (PoC)
-- v2.1: Multi-user support with token refresh
+- Fetch LinkedIn analytics via API
+- Manually check LinkedIn.com analytics page
+- Verify numbers match (allow 5% variance due to timing)
 
 ---
 
-### Question 3: Scheduling System Architecture
+## Rollback Plan
 
-**What we know:**
-- Convex has built-in cron jobs
-- Cron jobs run on Convex servers (not client-side)
+If v3.0 stack additions fail, rollback is clean:
 
-**What's unclear:**
-- Should scheduled LinkedIn publishes use Convex cron or a queue?
-- How to handle timezone-aware scheduling for Spanish users?
+### Clerk Rollback
+1. Remove `<ClerkProvider>` wrapper from `app/layout.tsx`
+2. Uninstall: `npm uninstall @clerk/nextjs`
+3. Remove `users` and `organizations` tables from schema
+4. Revert auth checks (`ctx.auth.getUserIdentity()`) to single-user mode
 
-**Recommendation:**
-- v2.0: Simple "schedule for later" with Convex timestamp
-- Convex Action checks scheduled content every 15 minutes
-- v2.1: Upgrade to per-user timezone support with `date-fns-tz`
+**Impact:** App returns to single-user mode. No data loss (Convex tables persist).
+
+### Social API Rollback
+1. Remove social publishing actions from Convex
+2. Uninstall: `npm uninstall twitter-api-v2 facebook-nodejs-business-sdk`
+3. Remove `socialConnections` and `socialAnalytics` tables
+4. LinkedIn OAuth remains (already working in v2.0)
+
+**Impact:** Only LinkedIn publishing works. Twitter/Instagram removed.
+
+### Analytics Rollback
+1. Remove aggregation: `npm uninstall @convex-dev/aggregate`
+2. Remove analytics queries
+3. Revert to existing analytics page (basic metrics only)
+
+**Impact:** Dashboard shows basic metrics (executions, tokens). No social engagement data.
 
 ---
 
 ## Confidence Assessment
 
-| Area | Level | Reason |
-|------|-------|--------|
-| **Sonner** | HIGH | Official docs, widely adopted, React 19 compatible |
-| **Onborda** | HIGH | Official docs, Next.js 16 verified, active maintenance |
-| **LinkedIn API** | HIGH | Microsoft Learn official docs, 2026-01 version verified |
-| **Convex Real-Time** | HIGH | Existing implementation working, official docs |
-| **No Additional Libraries** | HIGH | Research confirms existing stack covers needs |
+| Area | Confidence | Justification |
+|------|------------|---------------|
+| **Clerk for Auth** | HIGH | Production-ready since 2023. Official Convex integration. Free tier sufficient for MVP. Alternative (Convex Auth) is beta. |
+| **twitter-api-v2** | HIGH | Official community library. Active maintenance (Jan 2026 update). Strongly typed. OAuth 2.0 support. |
+| **Instagram API** | MEDIUM | Official Meta SDK (v24.0.1). **BUT** complex publishing workflow (2-step process). JPEG-only limitation. 25 posts/day hard limit. |
+| **LinkedIn Analytics API** | MEDIUM | New API (2026 launch). Free access. **BUT** official library is beta. Recommend direct REST API calls instead. |
+| **Recharts** | HIGH | Already in use. Proven for AMD use case. No issues found. |
+| **Convex Aggregate** | HIGH | Official Convex component. Handles high-frequency updates efficiently. Reactive and transactional. |
+
+**Overall confidence:** HIGH for auth and Twitter. MEDIUM for Instagram/LinkedIn due to API complexity and beta libraries.
 
 ---
 
-## Sources Summary
+## Open Questions for Phase-Specific Research
 
-### Primary (HIGH confidence)
-- [Sonner GitHub](https://github.com/emilkowalski/sonner)
-- [Onborda GitHub](https://github.com/uixmat/onborda)
-- [LinkedIn Posts API Official Docs](https://learn.microsoft.com/en-us/linkedin/marketing/community-management/shares/posts-api?view=li-lms-2026-01)
-- [LinkedIn OAuth 2.0 Authentication](https://learn.microsoft.com/en-us/linkedin/shared/authentication/authentication)
-- [Convex Documentation](https://docs.convex.dev/home)
+1. **Instagram Reels vs Feed Posts:** Which should MVP support first? Reels have higher engagement but more complex API.
+2. **LinkedIn organization pages vs personal profiles:** Should MVP support company page publishing? Requires different OAuth scopes.
+3. **Twitter threads vs single tweets:** Should v3.0 support thread publishing (multi-tweet sequences)? Adds complexity.
+4. **Analytics retention:** How long to keep raw analytics data in `socialAnalytics` table? 90 days? 1 year? Impacts database size.
+5. **Rate limit handling UX:** When user hits rate limit, should we queue posts for tomorrow or show error? Queue adds complexity.
 
-### Secondary (MEDIUM confidence)
-- [Top 9 React notification libraries in 2026](https://knock.app/blog/the-top-notification-libraries-for-react)
-- [5 Best React Onboarding Libraries in 2026](https://onboardjs.com/blog/5-best-react-onboarding-libraries-in-2025-compared)
-- [Server-Sent Events Beat WebSockets for 95% of Real-Time Apps](https://dev.to/polliog/server-sent-events-beat-websockets-for-95-of-real-time-apps-heres-why-a4l)
-- [React Server Components + TanStack Query: The 2026 Data-Fetching Power Duo](https://dev.to/krish_kakadiya_5f0eaf6342/react-server-components-tanstack-query-the-2026-data-fetching-power-duo-you-cant-ignore-21fj)
-
-### Tertiary (community insights)
-- [Tremor — Tailwind CSS UI Components](https://www.tremor.so/)
-- [Best toast notification libraries for Next.js](https://tutorend.com/tutorials/best-toast-notification-libraries-for-next-js)
-- [Real-Time Updates with Convex DB in Next.js](https://dev.to/said96dev/real-time-updates-with-convex-db-and-authentication-using-clerk-in-nextjs-3akb)
+**Recommendation:** Start with simplest case (single tweet, LinkedIn personal profile, Instagram feed post). Add complexity in v3.1+.
 
 ---
 
-## Metadata
+## Sources
 
-**Research date:** 2026-02-05
-**Valid until:** 2026-04-05 (60 days — technology landscape is stable)
-**Researcher:** Claude Opus 4.6 (GSD Phase Researcher)
-**Verification level:** HIGH (all critical libraries verified with official sources)
+**Authentication Research:**
+- [Convex & Clerk Integration](https://docs.convex.dev/auth/clerk)
+- [Clerk Pricing](https://clerk.com/pricing)
+- [Convex Auth Status (Beta)](https://docs.convex.dev/auth/convex-auth)
+- [Clerk vs Auth.js Comparison](https://stack.convex.dev/authentication-best-practices-convex-clerk-and-nextjs)
+
+**Twitter/X API Research:**
+- [X API Guide 2026](https://getlate.dev/blog/x-api)
+- [X API Pricing 2026](https://getlate.dev/blog/twitter-api-pricing)
+- [twitter-api-v2 Library](https://www.npmjs.com/package/twitter-api-v2)
+- [twitter-api-v2 GitHub](https://github.com/PLhery/node-twitter-api-v2)
+
+**Instagram API Research:**
+- [Instagram Graph API Guide 2026](https://elfsight.com/blog/instagram-graph-api-complete-developer-guide-for-2026/)
+- [Instagram API Business Requirements](https://tagembed.com/blog/instagram-api/)
+- [facebook-nodejs-business-sdk](https://www.npmjs.com/package/facebook-nodejs-business-sdk)
+- [Instagram Content Publishing API](https://mattercall.com/instagram-graph-api)
+
+**LinkedIn API Research:**
+- [LinkedIn Member Post Analytics API](https://www.contentgrip.com/linkedin-new-post-analytics-api/)
+- [LinkedIn Analytics API Official Docs](https://learn.microsoft.com/en-us/linkedin/marketing/community-management/members/post-statistics)
+- [linkedin-api-js-client (Beta)](https://github.com/linkedin-developers/linkedin-api-js-client)
+- [LinkedIn API Clients Overview](https://learn.microsoft.com/en-us/linkedin/shared/development-resources/api-clients)
+
+**Analytics & Charting Research:**
+- [Best React Chart Libraries 2025](https://blog.logrocket.com/best-react-chart-libraries-2025/)
+- [Recharts vs Chart.js vs Victory](https://npm-compare.com/chart.js,react-vis,recharts,victory-chart)
+- [Convex Aggregate Component](https://stack.convex.dev/efficient-count-sum-max-with-the-aggregate-component)
+- [Convex Aggregation Patterns](https://www.convex.dev/components/aggregate)
+
+**Next.js & Integration Patterns:**
+- [Next.js 16 Route Handlers](https://strapi.io/blog/nextjs-16-route-handlers-explained-3-advanced-usecases)
+- [Rate Limiting Next.js API Routes](https://upstash.com/blog/nextjs-ratelimiting)
+- [@clerk/nextjs Latest Version](https://www.npmjs.com/package/@clerk/nextjs)
 
 ---
 
-**Ready for roadmap creation.** This stack analysis feeds directly into phase planning for v2.0 UX/UI Excellence milestone.
+*Research completed: 2026-02-05*
+*Confidence: HIGH (auth, Twitter, charting), MEDIUM (Instagram, LinkedIn)*
+*Ready for roadmap creation.*

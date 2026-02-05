@@ -1,1411 +1,2093 @@
-# Domain Pitfalls: v2.0 Operational Excellence
+# Domain Pitfalls: v3.0 Authentication & Multi-Platform Expansion
 
-**Domain:** Adding operational features to existing marketing automation system
+**Project:** AMD (AI Marketing Department)
+**Context:** Retrofitting auth + multi-platform + analytics to existing single-user Convex app
 **Researched:** 2026-02-05
-**Confidence:** HIGH (verified with multiple 2026 sources)
+**Confidence:** HIGH (verified with official sources + current 2026 standards)
+
+---
 
 ## Executive Summary
 
-Adding operational dashboards, content pipelines, LinkedIn integration, and guided UX to an existing 37-agent marketing automation system introduces specific pitfalls that teams commonly encounter. These are NOT generic software development mistakes—these are integration-specific, evolution-specific problems that occur when ADDING sophisticated features to WORKING systems.
+Adding authentication, multi-platform publishing, and analytics to an existing no-auth system introduces **critical data ownership challenges** that can corrupt existing content, **OAuth token management complexities** across multiple social platforms with different refresh patterns, and **API rate limit coordination** issues that require careful architectural planning. The combination of these three feature sets creates compounding risk — each alone is manageable, but together they create failure modes that require specific mitigation strategies.
 
-The core risk: **v1.0 solved "too complex." v2.0 can easily recreate the problem by adding operational features without managing complexity growth.**
-
-This research documents 15 critical pitfalls with warning signs, prevention strategies, and phase-specific guidance. Findings are based on 2026 industry research, verified against AMD's specific context (Next.js 16, React 19, Convex, Spanish-speaking non-technical users).
+**Highest Risk Areas:**
+1. Data migration (assigning ownership to 37 pre-existing agents + all content)
+2. Instagram Business API (Facebook Business requirement + 60-day approval)
+3. OAuth token refresh across platforms (Instagram 60d, LinkedIn 365d, Twitter variable)
+4. Next.js middleware bypass vulnerability (CVE-2025-29927, CVSS 9.1)
+5. Social API rate limit coordination (Instagram 200/hr/account, Twitter tiered)
 
 ---
 
 ## Critical Pitfalls
 
-Mistakes that cause rewrites, major performance issues, or user abandonment.
+### 1. Data Ownership Black Hole
 
-### Pitfall 1: Real-Time Subscription Cost Explosion
+**Severity:** CRITICAL
+**Phase:** Authentication Foundation (Phase 1)
 
-**What goes wrong:**
-Convex real-time subscriptions are powerful but can become expensive when monitoring 37 agents simultaneously. Unoptimized subscriptions create:
-- Thousands of unnecessary database reads per minute
-- WebSocket connections that never close
-- Subscription churn (constant subscribe/unsubscribe cycles)
-- Monthly costs scaling faster than expected
+#### What Goes Wrong
 
-**Why it happens:**
-Developers add real-time monitoring without understanding Convex's pricing model. Every active subscription polls the database. Monitoring dashboards that show all 37 agents in real-time create 37+ active subscriptions per user. Multiply by 10 concurrent users = 370+ active subscriptions.
+When retrofitting authentication into a no-auth system with existing data, you face the "orphaned data" problem: 37 agents, hundreds of content pieces, tasks, executions, and handoffs exist with NO userId field. Simply adding auth creates a black hole — existing data becomes invisible or accessible to all users, breaking multi-tenancy.
 
-**Consequences:**
-- Development works fine (free tier)
-- Production costs spike 400%+ after launch
-- Emergency optimization required mid-milestone
-- Forced feature removal or degraded UX
-
-**Prevention strategy:**
-
-**Phase-specific approach:**
-1. **Control Center phase:** Implement subscription budgeting FIRST
-   - Use polling (5-30s intervals) for non-critical data
-   - Aggregate agent status into single subscription
-   - Use `useQuery` with stale-while-revalidate pattern
-   - Implement connection pooling for multiple dashboards
-
-2. **Example pattern (GOOD):**
+**The Trap in Convex:**
 ```typescript
-// Bad: 37 separate subscriptions
-agents.map(agent => useQuery(api.agents.getAgent, { id: agent.id }))
+// Naive approach — breaks existing data
+export const listAgents = query({
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Not authenticated");
 
-// Good: Single aggregated subscription
-const agentsStatus = useQuery(api.agents.getDashboardSummary)
+    // THIS FILTERS OUT ALL EXISTING AGENTS
+    return await ctx.db
+      .query("agents")
+      .filter(q => q.eq(q.field("userId"), identity.subject))
+      .collect();
+  }
+});
 ```
 
-3. **Cost monitoring:**
-   - Add Convex usage tracking in dev environment
-   - Set alert at 80% of monthly budget
-   - Review subscription count in production weekly
+All 37 pre-configured agents disappear because they have `userId: undefined`.
 
-**Warning signs:**
-- Convex dashboard shows >100 active subscriptions
-- Real-time updates lag during peak usage
-- Database read operations >10k/hour
-- Users report "sluggish" dashboard
+#### Why It Happens
 
-**Detection method:**
-```bash
-# Check active subscriptions in Convex dashboard
-npx convex dashboard
-# Navigate to Metrics → Active Subscriptions
-# Alert if count > (expected_users * 10)
+Convex doesn't have database migrations like traditional ORMs. Schema changes are additive, but data backfill requires manual scripting. When you add `userId: v.optional(v.id("users"))` to the schema, existing rows remain `undefined`.
+
+**Compounding factor:** AMD has 11 interconnected tables (agents, tasks, executions, content, handoffs, campaigns, analytics, settings, feeds, tokens, schedules). A forgotten WHERE clause in any query creates a data leak or loss.
+
+#### Consequences
+
+- **Data Loss:** Existing content/agents invisible to all users
+- **Data Leak:** Shared data visible across tenants if filter forgotten
+- **Referential Integrity:** Orphaned foreign keys (task.agentId → agent with different userId)
+- **Audit Trail Break:** Can't determine who created pre-migration data
+
+#### Prevention Strategy
+
+**Phase 1 (Auth Foundation):**
+
+1. **Add Migration Mode to Schema**
+```typescript
+// convex/schema.ts
+export default defineSchema({
+  users: defineTable({
+    clerkId: v.string(),
+    email: v.string(),
+    role: v.union(v.literal("admin"), v.literal("user")),
+    isSystemUser: v.boolean(), // TRUE for migration owner
+  }).index("by_clerk_id", ["clerkId"]),
+
+  agents: defineTable({
+    agentId: v.string(),
+    name: v.string(),
+    department: v.string(),
+    systemPrompt: v.string(),
+    userId: v.optional(v.id("users")), // OPTIONAL during migration
+    _migrationStatus: v.optional(v.union(
+      v.literal("pending"),
+      v.literal("assigned"),
+      v.literal("verified")
+    )),
+    // ... rest of fields
+  })
+    .index("by_user", ["userId"])
+    .index("by_migration", ["_migrationStatus"]),
+});
 ```
 
-**Which phase:** Control Center (Phase 1) - Address in architecture design before implementation
-
-**Source confidence:** HIGH
-- [Convex Pricing Guide](https://airbyte.com/data-engineering-resources/convexdb-pricing)
-- [Making Convex plans more friendly](https://news.convex.dev/making-convex-plans-more-friendly/)
-- Verified: Convex usage-based pricing scales with database operations
-
----
-
-### Pitfall 2: Alert Fatigue from Real-Time Monitoring
-
-**What goes wrong:**
-Control Center monitors 37 agents, budget pacing, content queues, LinkedIn rate limits. Without smart filtering, users receive:
-- 50+ alerts per day (most false positives)
-- Alerts for temporary fluctuations
-- Overlapping notifications (agent paused → task failed → pipeline stalled)
-- Critical alerts buried in noise
-
-**Why it happens:**
-Teams implement monitoring with threshold-based alerts without evaluation windows or contextual logic. "Agent execution time >5s" triggers 40 times during normal peak hours. Users start ignoring all alerts—including critical ones.
-
-**Consequences:**
-- 51% of users report feeling overwhelmed by alert volume (2026 Trend Micro survey)
-- Teams spend 25%+ time investigating false positives
-- Real issues (LinkedIn rate limit hit, budget exceeded) go unnoticed
-- Users disable notifications completely
-
-**Prevention strategy:**
-
-**Phase-specific approach:**
-1. **Control Center phase:**
-   - Implement evaluation windows (alert only if condition persists 5+ minutes)
-   - Group related alerts (agent error + task failure = single alert)
-   - Add severity levels (critical, warning, info)
-   - Smart defaults: Only critical alerts enabled initially
-
-2. **Alert logic patterns:**
+2. **Create System User During First Auth Setup**
 ```typescript
-// Bad: Instant threshold alert
-if (executionTime > 5000) sendAlert("Agent slow")
+// convex/migrations.ts
+export const createSystemUser = mutation({
+  handler: async (ctx) => {
+    // Check if system user exists
+    const existing = await ctx.db
+      .query("users")
+      .filter(q => q.eq(q.field("isSystemUser"), true))
+      .first();
 
-// Good: Contextual evaluation window
-if (
-  executionTime > 5000 &&
-  last5MinutesAvg > 5000 &&
-  !isKnownPeakHour()
+    if (existing) return existing._id;
+
+    // Create system user to own pre-migration data
+    return await ctx.db.insert("users", {
+      clerkId: "system",
+      email: "system@amd.internal",
+      role: "admin",
+      isSystemUser: true,
+    });
+  },
+});
+
+export const assignOrphanedDataToSystem = mutation({
+  handler: async (ctx) => {
+    const systemUser = await ctx.db
+      .query("users")
+      .filter(q => q.eq(q.field("isSystemUser"), true))
+      .first();
+
+    if (!systemUser) throw new Error("System user not found");
+
+    // Backfill agents
+    const orphanedAgents = await ctx.db
+      .query("agents")
+      .filter(q => q.eq(q.field("userId"), undefined))
+      .collect();
+
+    for (const agent of orphanedAgents) {
+      await ctx.db.patch(agent._id, {
+        userId: systemUser._id,
+        _migrationStatus: "assigned",
+      });
+    }
+
+    // Repeat for content, tasks, campaigns, etc.
+    // ...
+  },
+});
+```
+
+3. **Implement Defense-in-Depth Authorization**
+```typescript
+// convex/lib/auth.ts
+export async function requireAuth(ctx: QueryCtx | MutationCtx) {
+  const identity = await ctx.auth.getUserIdentity();
+  if (!identity) throw new Error("Unauthorized");
+
+  const user = await ctx.db
+    .query("users")
+    .withIndex("by_clerk_id", q => q.eq("clerkId", identity.subject))
+    .first();
+
+  if (!user) throw new Error("User not found");
+  return user;
+}
+
+export async function requireOwnership(
+  ctx: QueryCtx | MutationCtx,
+  resourceId: Id<"agents"> | Id<"content">,
+  tableName: "agents" | "content"
 ) {
-  sendAlert("Agent consistently slow", { severity: "warning" })
+  const user = await requireAuth(ctx);
+  const resource = await ctx.db.get(resourceId);
+
+  if (!resource) throw new Error("Resource not found");
+
+  // System user can access everything
+  if (user.isSystemUser) return resource;
+
+  // Admin can access everything
+  if (user.role === "admin") return resource;
+
+  // Regular users need ownership match
+  if (resource.userId !== user._id) {
+    throw new Error("Forbidden: Not resource owner");
+  }
+
+  return resource;
 }
 ```
 
-3. **Alert hierarchy for AMD:**
-   - **Critical** (immediate action): Budget exceeded, LinkedIn API blocked, system error
-   - **Warning** (review within hour): Agent paused >30min, queue backed up >50 items
-   - **Info** (daily digest): Execution stats, content published, routine completions
-
-**Warning signs:**
-- Alert open rate <30%
-- Users disable notification channels
-- Support tickets: "Too many notifications"
-- Real issues discovered hours after occurrence
-
-**Detection method:**
-- Track alert-to-action ratio (target: >60% of alerts result in action)
-- Survey users: "How many alerts do you act on?" (target: >50%)
-- Monitor notification settings (warning if >30% of users disable alerts)
-
-**Which phase:** Control Center (Phase 1) - Design alert logic from start, not retrofit
-
-**Source confidence:** HIGH
-- [Alert Fatigue: What It Is and How to Prevent It](https://www.datadoghq.com/blog/best-practices-to-prevent-alert-fatigue/)
-- [Trend Micro 2026 Survey: 51% of SOC teams overwhelmed by alert volume](https://www.fraud.net/resources/drowning-in-alerts-how-false-positives-are-sinking-your-fraud-team)
-- Verified: False positive reduction strategies from IBM and Splunk
-
----
-
-### Pitfall 3: Content Pipeline Complexity Creep
-
-**What goes wrong:**
-v1.0 solved "too complex" by simplifying to 4 navigation items and 3-step onboarding. v2.0 adds:
-- Content pipeline (draft → review → approve → schedule → publish)
-- Multi-platform formatting (LinkedIn, blog, email, ads)
-- Approval workflows with conditional routing
-- Version control and revision tracking
-
-Result: Complexity returns through the back door. Users face:
-- 12-step workflows for simple posts
-- Confusion about "which state am I in?"
-- Paralysis choosing between 8 content types
-- Friction that v1.0 eliminated
-
-**Why it happens:**
-Teams add features one-by-one without holistic UX review. Each feature makes sense in isolation ("we need approvals," "we need scheduling," "we need LinkedIn formatting"). Combined, they recreate the complexity v1.0 solved.
-
-80% of features in average software go rarely or never used (Pendo study). Pipeline complexity often adds features users don't need.
-
-**Consequences:**
-- Users abandon advanced pipeline, revert to manual copy-paste
-- Setup time increases from 2min back to 15min
-- Support tickets spike: "How do I just publish a post?"
-- v2.0 perceived as "step backward" from v1.0 simplicity
-
-**Prevention strategy:**
-
-**Phase-specific approach:**
-1. **Content Pipeline phase:**
-   - Default to simplest path (draft → publish directly)
-   - Hide advanced workflow behind "Advanced mode" toggle
-   - Provide templates for common flows ("Quick post," "Reviewed article," "Scheduled campaign")
-   - Measure: >70% of content should use simple 2-step flow
-
-2. **Complexity budget:**
-   - v1.0 baseline: 4 nav items, 3 onboarding steps
-   - v2.0 constraint: ≤6 nav items, ≤5 onboarding steps
-   - Each new feature must identify what it replaces/simplifies
-
-3. **Pipeline progression:**
-```
-MVP workflow:
-  Draft → Publish (2 steps, 90% of use cases)
-
-Advanced (opt-in):
-  Draft → Review → Publish (3 steps, 8% of use cases)
-
-Enterprise (future):
-  Draft → Legal → Brand → Schedule → Publish (5 steps, 2% of use cases)
-```
-
-**Warning signs:**
-- Users ask "How do I just post this quickly?"
-- Time-to-publish increases from v1.0
-- Feature adoption <40% after 30 days
-- Workflow abandonment (starts in pipeline, finishes outside system)
-
-**Detection method:**
-- Track steps-per-publish (target: median ≤3)
-- Measure time-from-draft-to-published (target: <5min for 70% of content)
-- Survey: "Is publishing easier or harder than v1.0?" (target: 80% "easier" or "same")
-
-**Which phase:** Content Pipeline (Phase 2) - Design with progressive disclosure from start
-
-**Source confidence:** HIGH
-- [Feature Creep Is Killing Your Software](https://www.designrush.com/agency/software-development/trends/feature-creep)
-- [Pendo Study: 80% of features rarely or never used](https://www.designrush.com/agency/software-development/trends/feature-creep)
-- [Technical debt costs US companies $2.4T/year](https://monday.com/blog/rnd/technical-debt/)
-
----
-
-### Pitfall 4: LinkedIn API Rate Limit Cascading Failures
-
-**What goes wrong:**
-LinkedIn API has strict rate limits (100 connection requests/week, ~20/day). Exceeding limits causes:
-- Account restrictions (temporary or permanent)
-- API access revoked entirely
-- All 37 agents blocked from LinkedIn integration
-- Manual intervention required to restore access
-
-**Why it happens:**
-Teams implement LinkedIn posting without rate limit tracking. Multiple agents (Social Media Manager, LinkedIn Creator, Content Publisher) independently call LinkedIn API. During high-activity periods (campaign launch, content batch publishing), requests stack:
-- 5 agents × 10 posts/day = 50 API calls
-- LinkedIn sees "bot-like behavior"
-- Account flagged and restricted
-
-**Consequences:**
-- LinkedIn API access blocked mid-campaign
-- Manual contact with LinkedIn required (days to weeks resolution)
-- All social features broken until resolved
-- Loss of user trust ("system doesn't work")
-
-**Prevention strategy:**
-
-**Phase-specific approach:**
-1. **LinkedIn Integration phase:**
-   - Implement centralized rate limiter BEFORE any LinkedIn API calls
-   - Track API usage per endpoint (posts, connections, messages)
-   - Add safety margin (use 80% of limit, reserve 20% for manual operations)
-   - Queue system with automatic pacing
-
-2. **Rate limiter architecture:**
+4. **Update All Queries with Migration-Safe Filters**
 ```typescript
-// Centralized LinkedIn API wrapper
-class LinkedInAPIManager {
-  private requestCount = { daily: 0, weekly: 0 }
-  private limits = { daily: 16, weekly: 80 } // 80% of LinkedIn limits
+// WRONG: Excludes undefined userId
+export const listAgents = query({
+  handler: async (ctx) => {
+    const user = await requireAuth(ctx);
+    return await ctx.db
+      .query("agents")
+      .filter(q => q.eq(q.field("userId"), user._id))
+      .collect();
+  }
+});
 
-  async post(content: Content) {
-    if (this.requestCount.daily >= this.limits.daily) {
-      // Queue for next day
-      await scheduleForTomorrow(content)
-      return { queued: true, reason: "rate_limit" }
+// RIGHT: Handles undefined + system user
+export const listAgents = query({
+  handler: async (ctx) => {
+    const user = await requireAuth(ctx);
+
+    // System user and admins see all
+    if (user.isSystemUser || user.role === "admin") {
+      return await ctx.db.query("agents").collect();
     }
 
-    // Make request and increment counter
-    const result = await linkedInAPI.post(content)
-    this.requestCount.daily++
-    this.requestCount.weekly++
-    return result
+    // Regular users see owned + orphaned (if migration in progress)
+    const agents = await ctx.db.query("agents").collect();
+    return agents.filter(a =>
+      a.userId === user._id ||
+      a.userId === undefined || // migration fallback
+      a._migrationStatus === "pending"
+    );
+  }
+});
+```
+
+#### Detection (Warning Signs)
+
+- Query returns empty array in dev after adding auth
+- Existing agents/content disappear from UI
+- Database has records but UI shows zero
+- Different users see same data (no isolation)
+- TypeScript errors: "Property 'userId' does not exist"
+
+#### Source Confidence
+
+**HIGH** — Verified with:
+- [Convex Auth Documentation](https://docs.convex.dev/auth) (official)
+- [Convex Authorization Best Practices](https://stack.convex.dev/authorization) (official)
+- [Multi-Tenant Data Isolation Anti-Patterns](https://propelius.ai/blogs/tenant-data-isolation-patterns-and-anti-patterns) (2026)
+- [Data Migration Risks](https://medium.com/@kanerika/top-10-data-migration-risks-and-how-to-avoid-them-in-2026-fb5dc93c12f5) (2026)
+
+---
+
+### 2. Next.js Middleware Security Bypass
+
+**Severity:** CRITICAL
+**Phase:** Authentication Foundation (Phase 1)
+
+#### What Goes Wrong
+
+CVE-2025-29927 (CVSS 9.1) allows complete bypass of middleware security checks through manipulation of the `x-middleware-subrequest` header. Applications running Next.js versions 11.1.4 through 15.2.2 with self-hosted deployments are vulnerable.
+
+**The Trap:**
+```typescript
+// middleware.ts — VULNERABLE
+export function middleware(request: NextRequest) {
+  const session = request.cookies.get("__session");
+
+  if (!session) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: ["/agents/:path*", "/content/:path*"],
+};
+```
+
+An attacker sends:
+```bash
+curl -H "x-middleware-subrequest: 1" https://amd.com/agents
+# Middleware skipped, auth bypassed
+```
+
+#### Why It Happens
+
+Next.js middleware runs on Edge Runtime. Certain internal headers (`x-middleware-*`) are used by Next.js for internal routing. Versions before 15.2.3 didn't properly sanitize these headers from external requests, allowing attackers to trick the router into thinking a request is an internal subrequest (which skips middleware).
+
+#### Consequences
+
+- **Complete Auth Bypass:** Unauthenticated access to all protected routes
+- **Data Exposure:** All agents, content, campaigns accessible without login
+- **Privilege Escalation:** Regular users could access admin-only routes
+- **API Abuse:** Unthrottled access to mutations/actions
+
+#### Prevention Strategy
+
+1. **Upgrade Next.js Immediately (MANDATORY)**
+```bash
+# Check current version
+npm list next
+
+# Upgrade to patched version
+npm install next@15.2.3  # or 14.2.25+, 13.5.9+, 12.3.5+
+```
+
+2. **Implement Defense-in-Depth (NEVER rely on middleware alone)**
+```typescript
+// middleware.ts — FIRST LINE OF DEFENSE ONLY
+export async function middleware(request: NextRequest) {
+  // Basic session check (optimistic)
+  const session = request.cookies.get("__session");
+
+  if (!session) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  // DO NOT verify token here (edge runtime limitation)
+  return NextResponse.next();
+}
+
+// app/agents/page.tsx — SECOND LINE OF DEFENSE
+export default async function AgentsPage() {
+  // ALWAYS verify auth at data fetching boundary
+  const user = await requireAuthServer(); // throws if invalid
+
+  const agents = await fetchAgents(user.id);
+  return <AgentsView agents={agents} />;
+}
+
+// convex/queries.ts — THIRD LINE OF DEFENSE
+export const listAgents = query({
+  handler: async (ctx) => {
+    // ALWAYS verify in Convex function
+    const user = await requireAuth(ctx); // throws if invalid
+
+    return await ctx.db
+      .query("agents")
+      .withIndex("by_user", q => q.eq("userId", user._id))
+      .collect();
+  }
+});
+```
+
+3. **Implement Data Access Layer Pattern**
+```typescript
+// lib/data-access/agents.ts
+export async function getAgentsForUser(userId: string) {
+  // ALWAYS verify auth at data access boundary
+  const session = await auth();
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  if (session.user.id !== userId) {
+    throw new Error("Forbidden");
+  }
+
+  return await convexQuery(api.agents.listAgents);
+}
+```
+
+4. **Add Security Headers**
+```typescript
+// next.config.ts
+const nextConfig = {
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          {
+            key: "X-Frame-Options",
+            value: "DENY",
+          },
+          {
+            key: "X-Content-Type-Options",
+            value: "nosniff",
+          },
+          {
+            key: "Referrer-Policy",
+            value: "strict-origin-when-cross-origin",
+          },
+          {
+            key: "Permissions-Policy",
+            value: "geolocation=(), microphone=(), camera=()",
+          },
+        ],
+      },
+    ];
+  },
+};
+```
+
+#### Detection (Warning Signs)
+
+- Next.js version < 15.2.3
+- Auth checks only in middleware
+- No auth verification in page components
+- No auth verification in Convex functions
+- Security audit fails on CVE-2025-29927
+
+#### Source Confidence
+
+**HIGH** — Verified with:
+- [Next.js Authentication Guide](https://nextjs.org/docs/app/guides/authentication) (official)
+- [Next.js Middleware Security Pitfalls 2026](https://workos.com/blog/top-authentication-solutions-nextjs-2026)
+- [CVE-2025-29927 Details](https://medium.com/@entekumejeffrey/middleware-in-next-js-and-react-the-smarter-way-to-handle-protected-routes-ec7a966ead9d) (community)
+
+---
+
+### 3. OAuth Token Refresh Hell
+
+**Severity:** CRITICAL
+**Phase:** Multi-Platform Publishing (Phase 2-3)
+
+#### What Goes Wrong
+
+Each social platform has different OAuth token lifespans and refresh mechanisms. Storing tokens without refresh automation leads to silent publishing failures when tokens expire. LinkedIn (365 days), Instagram (60 days), and Twitter (variable) require different refresh strategies.
+
+**The Trap:**
+```typescript
+// WRONG: Stores tokens without refresh tracking
+const linkedinToken = {
+  accessToken: "AQV...",
+  expiresIn: 31536000, // 365 days
+  createdAt: Date.now(),
+};
+
+// 6 months later, user tries to publish
+await publishToLinkedIn(linkedinToken.accessToken);
+// ERROR: Token expired, no refresh attempted, silent failure
+```
+
+#### Why It Happens
+
+OAuth 2.1 standard (2026) mandates refresh token rotation, but each platform implements it differently:
+
+| Platform | Access Token | Refresh Token | Rotation | Revocation |
+|----------|--------------|---------------|----------|------------|
+| LinkedIn | 60 days | 365 days | No | On user logout |
+| Instagram | 60 days | Must refresh before expiry | Yes | On token reuse |
+| Twitter | Variable (Basic: 2hrs, Pro: longer) | Yes | Yes | On suspicious activity |
+| Facebook | 60 days | Never expires (if used every 60d) | No | On security event |
+
+**Complexity multiplier:** AMD needs to support multiple social accounts per user (e.g., 5 LinkedIn profiles, 3 Instagram Business accounts). Each token expires independently.
+
+#### Consequences
+
+- **Silent Publishing Failures:** Content scheduled but never posted
+- **User Frustration:** "Why isn't my content publishing?"
+- **Token Reuse Detection:** Instagram/Twitter revoke ALL tokens if rotation violated
+- **Credential Compromise:** Expired tokens not revoked create security risk
+- **Support Burden:** "Why do I need to reconnect LinkedIn every 2 months?"
+
+#### Prevention Strategy
+
+1. **Design Token Schema with Refresh Metadata**
+```typescript
+// convex/schema.ts
+export default defineSchema({
+  socialTokens: defineTable({
+    userId: v.id("users"),
+    platform: v.union(
+      v.literal("linkedin"),
+      v.literal("instagram"),
+      v.literal("twitter"),
+      v.literal("facebook")
+    ),
+    platformUserId: v.string(), // e.g., LinkedIn member ID
+    platformUsername: v.string(), // for UI display
+
+    accessToken: v.string(), // encrypted at rest
+    refreshToken: v.optional(v.string()), // encrypted at rest
+
+    expiresAt: v.number(), // Unix timestamp
+    refreshableUntil: v.optional(v.number()), // refresh token expiry
+
+    scopes: v.array(v.string()), // permissions granted
+
+    lastRefreshed: v.optional(v.number()),
+    refreshFailures: v.number(), // track failures
+
+    status: v.union(
+      v.literal("active"),
+      v.literal("refresh_needed"),
+      v.literal("expired"),
+      v.literal("revoked")
+    ),
+
+    metadata: v.object({
+      profilePicture: v.optional(v.string()),
+      displayName: v.optional(v.string()),
+    }),
+  })
+    .index("by_user", ["userId"])
+    .index("by_platform", ["platform", "status"])
+    .index("by_expiry", ["expiresAt"]), // for cron monitoring
+});
+```
+
+2. **Implement Proactive Refresh Cron**
+```typescript
+// convex/crons.ts
+import { cronJobs } from "convex/server";
+
+const crons = cronJobs();
+
+// Run every 6 hours
+crons.interval(
+  "refresh-social-tokens",
+  { hours: 6 },
+  internal.socialTokens.refreshExpiringTokens
+);
+
+export default crons;
+
+// convex/socialTokens.ts
+export const refreshExpiringTokens = internalAction({
+  handler: async (ctx) => {
+    const now = Date.now();
+    const oneDayFromNow = now + (24 * 60 * 60 * 1000);
+
+    // Find tokens expiring in next 24 hours
+    const expiringTokens = await ctx.runQuery(
+      internal.socialTokens.listExpiringTokens,
+      { expiresBy: oneDayFromNow }
+    );
+
+    for (const token of expiringTokens) {
+      try {
+        let newToken;
+
+        switch (token.platform) {
+          case "linkedin":
+            newToken = await refreshLinkedInToken(token.refreshToken);
+            break;
+          case "instagram":
+            newToken = await refreshInstagramToken(token.accessToken);
+            break;
+          case "twitter":
+            newToken = await refreshTwitterToken(token.refreshToken);
+            break;
+        }
+
+        await ctx.runMutation(internal.socialTokens.updateToken, {
+          tokenId: token._id,
+          accessToken: newToken.accessToken,
+          refreshToken: newToken.refreshToken,
+          expiresAt: now + (newToken.expiresIn * 1000),
+          lastRefreshed: now,
+          status: "active",
+        });
+
+        console.log(`Refreshed ${token.platform} token for user ${token.userId}`);
+      } catch (error) {
+        console.error(`Failed to refresh ${token.platform} token:`, error);
+
+        await ctx.runMutation(internal.socialTokens.markTokenStatus, {
+          tokenId: token._id,
+          status: "refresh_needed",
+          refreshFailures: token.refreshFailures + 1,
+        });
+
+        // Notify user if refresh failed 3+ times
+        if (token.refreshFailures >= 2) {
+          await ctx.runMutation(internal.notifications.create, {
+            userId: token.userId,
+            type: "token_refresh_failed",
+            message: `Your ${token.platform} connection needs to be reauthorized`,
+            actionUrl: "/settings/social-accounts",
+          });
+        }
+      }
+    }
+  },
+});
+```
+
+3. **Implement Adaptive Backoff on Rate Limits**
+```typescript
+// lib/social-publishing.ts
+export async function publishToLinkedIn(
+  tokenId: Id<"socialTokens">,
+  content: { text: string; mediaUrls?: string[] }
+) {
+  const token = await getActiveToken(tokenId);
+
+  try {
+    const response = await fetch("https://api.linkedin.com/v2/ugcPosts", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token.accessToken}`,
+        "Content-Type": "application/json",
+        "X-Restli-Protocol-Version": "2.0.0",
+      },
+      body: JSON.stringify({
+        author: `urn:li:person:${token.platformUserId}`,
+        lifecycleState: "PUBLISHED",
+        specificContent: {
+          "com.linkedin.ugc.ShareContent": {
+            shareCommentary: { text: content.text },
+            shareMediaCategory: "NONE",
+          },
+        },
+        visibility: { "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC" },
+      }),
+    });
+
+    // Check rate limit headers
+    const remaining = response.headers.get("X-RateLimit-Remaining");
+    const resetTime = response.headers.get("X-RateLimit-Reset");
+
+    if (remaining && parseInt(remaining) < 10) {
+      console.warn(`LinkedIn rate limit low: ${remaining} remaining`);
+
+      await updateRateLimitStatus(tokenId, {
+        remaining: parseInt(remaining),
+        resetAt: parseInt(resetTime),
+        status: "approaching_limit",
+      });
+    }
+
+    if (response.status === 429) {
+      // Rate limited
+      const retryAfter = response.headers.get("Retry-After") || "3600";
+
+      await updateRateLimitStatus(tokenId, {
+        remaining: 0,
+        resetAt: Date.now() + (parseInt(retryAfter) * 1000),
+        status: "rate_limited",
+      });
+
+      throw new Error(`Rate limited, retry after ${retryAfter} seconds`);
+    }
+
+    if (response.status === 401) {
+      // Token invalid/expired
+      await markTokenExpired(tokenId);
+      throw new Error("Token expired, reauthentication required");
+    }
+
+    if (!response.ok) {
+      throw new Error(`LinkedIn API error: ${response.statusText}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("LinkedIn publish failed:", error);
+    throw error;
   }
 }
 ```
 
-3. **Monitoring requirements:**
-   - Dashboard widget: "LinkedIn API usage: 12/20 today, 45/100 this week"
-   - Alert at 80% daily limit
-   - Block requests at 100% (fail gracefully with user message)
-   - Reset counters at timezone boundaries (not UTC, use user's timezone)
-
-**Warning signs:**
-- LinkedIn API returns 429 errors
-- Users report "post failed" without clear explanation
-- API usage spikes during certain hours
-- Multiple agents hitting same endpoints simultaneously
-
-**Detection method:**
+4. **Encrypt Tokens at Rest**
 ```typescript
-// Add monitoring to every LinkedIn API call
-const response = await linkedInAPI.post(content)
-if (response.status === 429) {
-  logAlert("LinkedIn rate limit hit", {
-    severity: "critical",
-    currentUsage: requestCount
-  })
+// convex/lib/encryption.ts
+import { createCipheriv, createDecipheriv, randomBytes } from "crypto";
+
+const ALGORITHM = "aes-256-gcm";
+const KEY = process.env.TOKEN_ENCRYPTION_KEY; // 32-byte key
+
+export function encryptToken(token: string): {
+  encrypted: string;
+  iv: string;
+  authTag: string;
+} {
+  const iv = randomBytes(16);
+  const cipher = createCipheriv(ALGORITHM, Buffer.from(KEY, "hex"), iv);
+
+  let encrypted = cipher.update(token, "utf8", "hex");
+  encrypted += cipher.final("hex");
+
+  const authTag = cipher.getAuthTag();
+
+  return {
+    encrypted,
+    iv: iv.toString("hex"),
+    authTag: authTag.toString("hex"),
+  };
+}
+
+export function decryptToken(encrypted: string, iv: string, authTag: string): string {
+  const decipher = createDecipheriv(
+    ALGORITHM,
+    Buffer.from(KEY, "hex"),
+    Buffer.from(iv, "hex")
+  );
+
+  decipher.setAuthTag(Buffer.from(authTag, "hex"));
+
+  let decrypted = decipher.update(encrypted, "hex", "utf8");
+  decrypted += decipher.final("utf8");
+
+  return decrypted;
 }
 ```
 
-**Which phase:** LinkedIn Integration (Phase 3) - Implement rate limiter BEFORE first API call
+#### Detection (Warning Signs)
 
-**Source confidence:** HIGH
-- [LinkedIn API Rate Limiting Documentation](https://learn.microsoft.com/en-us/linkedin/shared/api-guide/concepts/rate-limits)
-- [LinkedIn Limits: 100 connection requests/week](https://evaboot.com/blog/linkedin-limits)
-- [Common LinkedIn API Integration Challenges](https://visioninfotech.net/common-challenges-in-linkedin-api-integration-and-how-to-overcome-them/)
+- Tokens stored as plain strings without refresh metadata
+- No cron job for token refresh
+- Publishing failures with "401 Unauthorized" after weeks
+- Users constantly re-connecting social accounts
+- No rate limit tracking
+- No encryption of tokens at rest
+
+#### Source Confidence
+
+**HIGH** — Verified with:
+- [OAuth 2.1 Features 2026](https://rgutierrez2004.medium.com/oauth-2-1-features-you-cant-ignore-in-2026-a15f852cb723) (2026 standard)
+- [Refresh Token Security Best Practices](https://securityboulevard.com/2026/01/what-are-refresh-tokens-complete-implementation-guide-security-best-practices/) (2026)
+- [Token Storage Best Practices](https://auth0.com/docs/secure/security-guidance/data-security/token-storage) (Auth0 official)
+- [OAuth Tokens Security Guide](https://entro.security/glossary/oauth-tokens/) (2026)
 
 ---
 
-### Pitfall 5: OAuth Flow Security Vulnerabilities
+### 4. Instagram Business API Gatekeeping
 
-**What goes wrong:**
-LinkedIn OAuth implementation mistakes create security holes:
-- Redirect URI not validated (account takeover possible)
-- Tokens stored in localStorage (XSS vulnerable)
-- Refresh tokens mishandled (persistent access even after user logout)
-- Email-based identifiers used (mutable, can be reassigned)
+**Severity:** HIGH
+**Phase:** Multi-Platform Publishing (Phase 2-3)
 
-**Why it happens:**
-OAuth is complex. Documentation focuses on "happy path" (successful auth). Security edge cases get overlooked:
-- "It works in dev" → ships with weak validation
-- Token storage simplified for convenience
-- Refresh token rotation not implemented
+#### What Goes Wrong
 
-**Consequences:**
-- User accounts compromised
-- Unauthorized LinkedIn posts from AMD system
-- Reputation damage ("your tool got hacked")
-- Forced security audit and remediation
-- Loss of user trust
+Instagram Graph API requires a Facebook Business account, Instagram Business/Creator account linked to it, and most permissions require App Review with a 60+ day approval process. Starting development without understanding these requirements leads to 2-3 month delays.
 
-**Prevention strategy:**
-
-**Phase-specific approach:**
-1. **LinkedIn Integration phase (OAuth implementation):**
-   - Use PKCE (Proof Key for Code Exchange) flow
-   - Validate redirect URI against whitelist server-side
-   - Store tokens in httpOnly cookies (not localStorage)
-   - Implement token rotation for refresh tokens
-   - Use LinkedIn's immutable user ID (not email)
-
-2. **Security checklist (MANDATORY before OAuth goes live):**
+**The Trap:**
 ```typescript
-// ✅ GOOD OAuth implementation
-const oauth = {
-  // 1. PKCE flow
-  codeVerifier: generateSecureRandom(),
-  codeChallenge: sha256(codeVerifier),
+// Developer starts building Instagram publishing
+async function publishToInstagram(post: Post) {
+  // Uses Instagram Basic Display API (WRONG)
+  const response = await fetch("https://graph.instagram.com/me/media", {
+    method: "POST",
+    // ...
+  });
+}
 
-  // 2. Strict redirect validation
-  redirectUri: "https://app.amd.com/auth/callback", // Exact match
+// 2 weeks later discovers:
+// 1. Basic Display API was DEPRECATED in December 2024
+// 2. Graph API requires Business account (personal won't work)
+// 3. Publishing permission needs App Review
+// 4. App Review takes 60+ days
+// 5. Facebook Business account setup takes 1-2 weeks
+```
 
-  // 3. Secure token storage
-  storeTokens: (tokens) => {
-    // Server-side only, httpOnly cookie
-    res.cookie('linkedin_token', tokens.access_token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'strict'
-    })
+#### Why It Happens
+
+Instagram fully ended the Basic Display API in December 2024. In 2026, ALL integrations must use Instagram Graph API for business/creator accounts. Meta's strategy is to restrict API access to verified businesses with legitimate use cases.
+
+**2026 Requirements:**
+1. Facebook Developer account
+2. Facebook Business account (verified)
+3. Instagram Business or Creator account
+4. Instagram account linked to Facebook Business account
+5. Facebook App created
+6. App submitted for App Review (with video walkthrough)
+7. App approved (60-90 days)
+8. App switched to Live mode (loses sandbox data)
+
+#### Consequences
+
+- **2-3 Month Launch Delay:** App Review alone is 60-90 days
+- **Blocked MVP:** Can't demo Instagram publishing without approval
+- **Scope Reduction:** May need to launch without Instagram initially
+- **Business Account Requirement:** Personal accounts can't use API (user friction)
+- **Content Publishing Limits:** 25 posts per 24-hour window per account
+- **Rate Limits:** 200 API calls per Instagram account per hour
+
+#### Prevention Strategy
+
+1. **Start App Review Process Immediately (Week 1 of v3.0)**
+
+```
+Timeline for Instagram Integration:
+
+Week 1:
+- [ ] Create Facebook Developer account
+- [ ] Create Facebook Business account
+- [ ] Verify business (1-2 weeks)
+- [ ] Create Instagram Business account
+- [ ] Link Instagram to Facebook Business
+
+Week 2:
+- [ ] Create Facebook App
+- [ ] Configure Instagram Graph API permissions
+- [ ] Build demo video showing use case
+- [ ] Write App Review submission
+
+Week 3:
+- [ ] Submit App Review
+- [ ] Wait 60-90 days (BLOCKER)
+
+Week 14-16:
+- [ ] App approved (hopefully)
+- [ ] Switch to Live mode
+- [ ] Re-test in production
+
+Week 17:
+- [ ] Launch Instagram publishing
+```
+
+2. **Implement Instagram-Specific Validations**
+```typescript
+// convex/instagram.ts
+export const validateInstagramConnection = mutation({
+  args: {
+    accessToken: v.string(),
   },
+  handler: async (ctx, args) => {
+    // 1. Verify account type
+    const accountInfo = await fetch(
+      `https://graph.instagram.com/me?fields=id,username,account_type&access_token=${args.accessToken}`
+    ).then(r => r.json());
 
-  // 4. Immutable identifier
-  userId: response.sub, // NOT response.email
+    if (accountInfo.account_type !== "BUSINESS" && accountInfo.account_type !== "CREATOR") {
+      throw new Error(
+        "Instagram cuenta personal detectada. Se requiere cuenta Business o Creator. " +
+        "Convierte tu cuenta en Configuración → Cuenta → Cambiar tipo de cuenta."
+      );
+    }
+
+    // 2. Verify Facebook Page connection
+    const pageInfo = await fetch(
+      `https://graph.instagram.com/${accountInfo.id}?fields=instagram_business_account&access_token=${args.accessToken}`
+    ).then(r => r.json());
+
+    if (!pageInfo.instagram_business_account) {
+      throw new Error(
+        "Cuenta de Instagram no está vinculada a una Página de Facebook. " +
+        "Vincúlala en Configuración de Instagram → Negocios."
+      );
+    }
+
+    // 3. Check publishing permissions
+    const permissions = await fetch(
+      `https://graph.facebook.com/me/permissions?access_token=${args.accessToken}`
+    ).then(r => r.json());
+
+    const requiredPerms = [
+      "instagram_basic",
+      "instagram_content_publish",
+      "pages_read_engagement",
+    ];
+
+    const granted = permissions.data
+      .filter(p => p.status === "granted")
+      .map(p => p.permission);
+
+    const missing = requiredPerms.filter(p => !granted.includes(p));
+
+    if (missing.length > 0) {
+      throw new Error(
+        `Permisos faltantes: ${missing.join(", ")}. ` +
+        "Solicita aprobación de App Review en Facebook Developer Console."
+      );
+    }
+
+    // 4. Store token with Business account metadata
+    await ctx.db.insert("socialTokens", {
+      userId: (await requireAuth(ctx))._id,
+      platform: "instagram",
+      platformUserId: accountInfo.id,
+      platformUsername: accountInfo.username,
+      accessToken: args.accessToken,
+      expiresAt: Date.now() + (60 * 24 * 60 * 60 * 1000), // 60 days
+      scopes: requiredPerms,
+      status: "active",
+      metadata: {
+        accountType: accountInfo.account_type,
+        facebookPageId: pageInfo.instagram_business_account.id,
+      },
+    });
+  },
+});
+```
+
+3. **Implement Rate Limit Coordination**
+```typescript
+// lib/instagram-publisher.ts
+const INSTAGRAM_RATE_LIMITS = {
+  callsPerHour: 200, // per account
+  postsPerDay: 25, // per account
+};
+
+export async function publishToInstagram(
+  tokenId: Id<"socialTokens">,
+  content: {
+    caption: string;
+    mediaUrl: string;
+    mediaType: "IMAGE" | "VIDEO" | "CAROUSEL";
+  }
+) {
+  const token = await getActiveToken(tokenId);
+
+  // 1. Check daily post limit
+  const postsToday = await getPostCountLast24Hours(tokenId);
+  if (postsToday >= INSTAGRAM_RATE_LIMITS.postsPerDay) {
+    throw new Error(
+      "Límite diario alcanzado: Instagram permite máximo 25 publicaciones por 24 horas. " +
+      "Intenta nuevamente mañana."
+    );
+  }
+
+  // 2. Check hourly API call limit
+  const callsThisHour = await getAPICallCountLastHour(tokenId);
+  if (callsThisHour >= INSTAGRAM_RATE_LIMITS.callsPerHour - 10) {
+    throw new Error(
+      "Límite de API cercano: 200 llamadas/hora. Esperando reset..."
+    );
+  }
+
+  // 3. Create media container (2 API calls)
+  const createResponse = await fetch(
+    `https://graph.instagram.com/${token.platformUserId}/media`,
+    {
+      method: "POST",
+      body: JSON.stringify({
+        image_url: content.mediaUrl,
+        caption: content.caption,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token.accessToken}`,
+      },
+    }
+  );
+
+  await trackAPICall(tokenId);
+
+  if (!createResponse.ok) {
+    const error = await createResponse.json();
+    throw new Error(`Instagram API error: ${error.error.message}`);
+  }
+
+  const { id: mediaId } = await createResponse.json();
+
+  // 4. Wait for media processing (check status)
+  await waitForMediaProcessing(token, mediaId);
+
+  // 5. Publish media container (1 API call)
+  const publishResponse = await fetch(
+    `https://graph.instagram.com/${token.platformUserId}/media_publish`,
+    {
+      method: "POST",
+      body: JSON.stringify({ creation_id: mediaId }),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token.accessToken}`,
+      },
+    }
+  );
+
+  await trackAPICall(tokenId);
+  await trackPostPublished(tokenId);
+
+  if (!publishResponse.ok) {
+    const error = await publishResponse.json();
+    throw new Error(`Instagram publish failed: ${error.error.message}`);
+  }
+
+  return await publishResponse.json();
 }
 ```
 
-3. **OAuth security testing:**
-   - Test redirect URI manipulation
-   - Verify token expiration enforced
-   - Confirm logout clears all tokens
-   - Check CSRF protection (state parameter)
+4. **Build Fallback Strategy**
+```typescript
+// If Instagram approval delayed, provide manual workflow
+export function getInstagramManualWorkflow(post: Post) {
+  return {
+    instructions: [
+      "1. Copia el texto del post",
+      "2. Descarga la imagen generada",
+      "3. Abre Instagram en tu móvil",
+      "4. Crea un post nuevo",
+      "5. Pega el texto y sube la imagen",
+      "6. Publica manualmente",
+    ],
+    clipboardContent: post.caption,
+    downloadUrl: post.mediaUrl,
+  };
+}
+```
 
-**Warning signs:**
-- OAuth flow skips redirect URI validation
-- Tokens visible in browser DevTools → Application → LocalStorage
-- Refresh tokens never expire
-- User complaints: "Someone posted from my account"
+#### Detection (Warning Signs)
 
-**Detection method:**
-- Security audit: Check OAuth implementation against [RFC 9700](https://treblle.com/blog/oauth-2.0-for-apis)
-- Penetration test: Attempt redirect URI manipulation
-- Code review: Search for `localStorage.setItem` with "token" or "auth"
+- Started building Instagram integration without Business account setup
+- No App Review submission timeline in roadmap
+- Using Basic Display API (deprecated Dec 2024)
+- No rate limit tracking (200/hr, 25/day)
+- No validation for account type (personal vs business)
+- No Facebook Page linkage check
 
-**Which phase:** LinkedIn Integration (Phase 3) - Security review BEFORE production deploy
+#### Source Confidence
 
-**Source confidence:** HIGH
-- [OAuth 2.0 Security BCP (RFC 9700)](https://treblle.com/blog/oauth-2.0-for-apis)
-- [OAuth Vulnerabilities and Misconfigurations](https://www.descope.com/blog/post/5-oauth-misconfigurations)
-- [ConsentFix Attack (2026)](https://cyberpress.org/new-oauth-based-attack/)
+**HIGH** — Verified with:
+- [Instagram Graph API Guide 2026](https://elfsight.com/blog/instagram-graph-api-complete-developer-guide-for-2026/) (official walkthrough)
+- [Instagram API 2026 Changes](https://storrito.com/resources/Instagram-API-2026/) (Basic Display EOL)
+- [Instagram Business API Requirements](https://tagembed.com/blog/instagram-api/) (2026 comprehensive)
+- [Instagram Graph API Setup](https://mattercall.com/instagram-graph-api) (2026 developer guide)
 
 ---
 
-### Pitfall 6: Wizard Annoyance for Returning Users
+### 5. Twitter/X API Pricing Cliff
 
-**What goes wrong:**
-Guided UX system adds wizard for complex workflows (campaign setup, multi-platform publishing). For new users: helpful. For returning users (80% of sessions after month 1): annoying.
+**Severity:** HIGH
+**Phase:** Multi-Platform Publishing (Phase 2-3)
 
-Common complaint: "I know how to do this, stop forcing me through 7 steps."
+#### What Goes Wrong
 
-**Why it happens:**
-Teams design for first-time experience without escape hatches. Wizard becomes mandatory:
-- No "skip" option
-- No "don't show again" setting
-- No power-user alternative path
-- Can't jump to specific step
+Twitter/X API pricing changed dramatically in 2023-2025. The Free tier (write-only, 1,500 tweets/month) is insufficient for a marketing tool. Basic tier ($200/month) provides read access but with restrictive limits. Pro tier ($5,000/month) is cost-prohibitive for early-stage products.
 
-**Consequences:**
-- Power users abandon system ("too slow")
-- Time-to-task increases for experienced users
-- Users find workarounds (browser back button, URL manipulation)
-- Retention drops after initial adoption period
-
-**Prevention strategy:**
-
-**Phase-specific approach:**
-1. **Guided UX phase:**
-   - Wizards are OPTIONAL, not mandatory
-   - Provide "Quick mode" for experienced users
-   - Remember user preference ("Show wizard: Yes/No")
-   - Allow skipping optional steps
-   - Enable direct navigation to any step
-
-2. **Adaptive UX pattern:**
+**The Trap:**
 ```typescript
-// User completes wizard 3+ times → offer to skip
-if (user.wizardCompletions >= 3) {
-  showBanner({
-    message: "¿Prefieres omitir el asistente? Puedes activarlo en Configuración.",
-    actions: [
-      { label: "Modo rápido", action: enableQuickMode },
-      { label: "Mantener asistente", action: dismiss }
-    ]
+// Developer starts with Free tier, thinking it's enough
+const TWITTER_CONFIG = {
+  tier: "free",
+  monthlyBudget: 1500, // tweets
+};
+
+// Reality:
+// 1. Free tier = WRITE ONLY (no read, no analytics)
+// 2. Can't read tweet performance metrics
+// 3. Can't verify tweet was published
+// 4. Can't implement retry logic (no read to check status)
+// 5. 1,500 tweets/month = 50/day = inadequate for multi-user system
+// 6. Forces upgrade to Basic ($200/mo) or Pro ($5,000/mo)
+```
+
+#### Why It Happens
+
+Twitter/X monetization strategy (2023-2026) aimed to force developers onto paid tiers. Free tier was intentionally crippled (write-only) to push users to Basic. Basic tier read limits (15,000 tweets/month) may seem generous, but for analytics dashboards polling for engagement metrics, it's insufficient.
+
+**2026 Pricing Reality:**
+
+| Tier | Price | Read Limit | Write Limit | Analytics | Notes |
+|------|-------|------------|-------------|-----------|-------|
+| Free | $0 | ❌ None | 1,500/mo | ❌ | Write-only, no verification |
+| Basic | $200/mo | 15,000/mo | 50,000/mo | ✅ Basic | Adequate for small teams |
+| Pro | $5,000/mo | High | High | ✅ Full | Enterprise-level |
+| Pay-Per-Use | Variable | Pay-per-call | Pay-per-call | ✅ Full | Beta, usage-based |
+
+**Hidden costs:**
+- Each analytics dashboard load polls for tweet metrics (5-10 API calls)
+- 10 users × 10 checks/day × 10 calls = 1,000 calls/day = 30,000/month
+- Basic tier (15,000/month) exhausted in 15 days
+
+#### Consequences
+
+- **Unexpected $200/month Cost:** Basic tier required for read access
+- **Analytics Limitation:** Basic tier read limit insufficient for polling
+- **Multi-User Scaling:** 10+ users require Pro tier ($5,000/month)
+- **Feature Parity Gap:** Twitter more expensive than LinkedIn/Instagram
+- **Budget Pressure:** $200-$5,000/mo recurring cost vs free alternatives
+
+#### Prevention Strategy
+
+1. **Clarify Twitter Feature Scope Early**
+```typescript
+// Document Twitter tier requirements in planning
+
+export const TWITTER_FEATURE_MATRIX = {
+  free: {
+    cost: 0,
+    capabilities: [
+      "✅ Publish tweets (1,500/month)",
+      "❌ Read tweet performance",
+      "❌ Verify tweet published",
+      "❌ Analytics dashboard",
+      "❌ Engagement metrics",
+    ],
+    viableFor: "Demo only, not production",
+  },
+  basic: {
+    cost: 200, // per month
+    capabilities: [
+      "✅ Publish tweets (50,000/month)",
+      "✅ Read tweet performance (15,000 reads/month)",
+      "✅ Basic analytics",
+      "⚠️ Limited polling (500 checks/day max)",
+    ],
+    viableFor: "Single-user or 5-10 light users",
+  },
+  pro: {
+    cost: 5000, // per month
+    capabilities: [
+      "✅ High read/write limits",
+      "✅ Full analytics",
+      "✅ Unlimited polling (within rate limits)",
+    ],
+    viableFor: "10+ active users or agency use case",
+  },
+};
+```
+
+2. **Implement Aggressive Caching for Twitter Analytics**
+```typescript
+// convex/twitterAnalytics.ts
+export const fetchTweetMetrics = query({
+  args: {
+    tweetId: v.string(),
+    forceRefresh: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
+    // Check cache first (5-minute TTL)
+    const cached = await ctx.db
+      .query("twitterMetricsCache")
+      .withIndex("by_tweet", q => q.eq("tweetId", args.tweetId))
+      .first();
+
+    const cacheAge = cached ? Date.now() - cached.cachedAt : Infinity;
+    const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+    if (!args.forceRefresh && cached && cacheAge < CACHE_TTL) {
+      return cached.metrics;
+    }
+
+    // Fetch from Twitter API (1 API call)
+    const metrics = await ctx.scheduler.runAfter(0, internal.twitter.fetchMetrics, {
+      tweetId: args.tweetId,
+    });
+
+    // Update cache
+    if (cached) {
+      await ctx.db.patch(cached._id, {
+        metrics,
+        cachedAt: Date.now(),
+      });
+    } else {
+      await ctx.db.insert("twitterMetricsCache", {
+        tweetId: args.tweetId,
+        metrics,
+        cachedAt: Date.now(),
+      });
+    }
+
+    return metrics;
+  },
+});
+```
+
+3. **Implement Read Budget Monitoring**
+```typescript
+// convex/twitterRateLimits.ts
+export const trackTwitterAPICall = mutation({
+  args: {
+    callType: v.union(v.literal("read"), v.literal("write")),
+  },
+  handler: async (ctx, args) => {
+    const now = Date.now();
+    const monthStart = new Date(now).setDate(1);
+
+    const usage = await ctx.db
+      .query("twitterAPIUsage")
+      .withIndex("by_month", q => q.eq("monthStart", monthStart))
+      .first();
+
+    if (!usage) {
+      await ctx.db.insert("twitterAPIUsage", {
+        monthStart,
+        readCalls: args.callType === "read" ? 1 : 0,
+        writeCalls: args.callType === "write" ? 1 : 0,
+        tier: "basic", // from settings
+        limits: {
+          read: 15000,
+          write: 50000,
+        },
+      });
+    } else {
+      const newReadCalls = usage.readCalls + (args.callType === "read" ? 1 : 0);
+      const newWriteCalls = usage.writeCalls + (args.callType === "write" ? 1 : 0);
+
+      await ctx.db.patch(usage._id, {
+        readCalls: newReadCalls,
+        writeCalls: newWriteCalls,
+      });
+
+      // Alert if approaching limit (80%)
+      if (newReadCalls > usage.limits.read * 0.8) {
+        await ctx.db.insert("notifications", {
+          type: "api_limit_warning",
+          message: `Twitter API read limit at ${Math.round((newReadCalls / usage.limits.read) * 100)}%`,
+          severity: "warning",
+        });
+      }
+    }
+  },
+});
+```
+
+4. **Provide Twitter-Free Option**
+```typescript
+// Allow users to opt out of Twitter if budget constrained
+export const PLATFORM_PRICING = {
+  linkedin: {
+    apiCost: 0, // Free API
+    label: "LinkedIn (Gratis)",
+  },
+  instagram: {
+    apiCost: 0, // Free API (with approval)
+    label: "Instagram (Gratis, requiere aprobación)",
+  },
+  twitter: {
+    apiCost: 200, // Basic tier minimum
+    label: "Twitter/X ($200/mes mínimo)",
+    warning: "Twitter requiere suscripción de pago para leer métricas",
+  },
+};
+
+// UI shows cost estimate
+<PlatformSelector
+  platforms={["linkedin", "instagram", "twitter"]}
+  costEstimate={{
+    monthly: 200, // if Twitter selected
+    breakdown: "Twitter Basic tier: $200/mes",
+  }}
+/>
+```
+
+#### Detection (Warning Signs)
+
+- Planning Twitter integration without budget allocation
+- Assuming Free tier is sufficient
+- No read limit monitoring
+- Analytics dashboard polling without caching
+- No cost estimation in UI
+- No fallback plan if API budget exceeded
+
+#### Source Confidence
+
+**HIGH** — Verified with:
+- [Twitter API Pricing 2026](https://getlate.dev/blog/twitter-api-pricing) (comprehensive comparison)
+- [X API Pricing Tiers 2025](https://twitterapi.io/blog/twitter-api-pricing-2025) (official breakdown)
+- [X API Pay-Per-Use Announcement](https://devcommunity.x.com/t/announcing-the-x-api-pay-per-use-pricing-pilot/250253) (official)
+- [Twitter API Limitations Guide](https://data365.co/guides/twitter-api-limitations-and-pricing) (2026)
+
+---
+
+## High Severity Pitfalls
+
+### 6. Analytics Data Freshness vs Cost Trap
+
+**Severity:** HIGH
+**Phase:** Analytics Intelligence (Phase 4)
+
+#### What Goes Wrong
+
+Building analytics dashboards with external API data (LinkedIn, Instagram, Twitter) creates tension between data freshness, API costs, and rate limits. Real-time polling exhausts API quotas quickly. Excessive caching makes dashboard stale. Finding the balance requires careful architecture.
+
+**The Trap:**
+```typescript
+// WRONG: Poll LinkedIn API on every dashboard load
+export default async function AnalyticsPage() {
+  const posts = await getPosts();
+
+  // This makes 1 API call per post on EVERY page load
+  const postsWithMetrics = await Promise.all(
+    posts.map(async post => ({
+      ...post,
+      metrics: await fetchLinkedInMetrics(post.linkedinPostId),
+    }))
+  );
+
+  return <AnalyticsDashboard posts={postsWithMetrics} />;
+}
+
+// Problem:
+// - 50 posts × 10 users/day × 5 views/user = 2,500 API calls/day
+// - LinkedIn rate limit: varies by app, but typically 500-1000/day
+// - Rate limit exhausted by noon
+```
+
+#### Why It Happens
+
+Modern analytics dashboards condition users to expect real-time data. But social media APIs have rate limits designed for periodic batch processing, not real-time polling. Without caching architecture, every dashboard view triggers API calls.
+
+**Rate limit reality (2026):**
+
+| Platform | Rate Limit | Typical Calls for Analytics | Exhaustion Point |
+|----------|------------|------------------------------|------------------|
+| LinkedIn | ~500-1000/day (varies by app) | 1 call/post | 500-1000 posts/day |
+| Instagram | 200/hour/account | 2 calls/post (get post + insights) | 100 posts/hour |
+| Twitter | 15,000 reads/mo (Basic tier) | 1 call/tweet | 500 tweets/day |
+| Facebook | 200/hour/user | 1 call/post | 200 posts/hour |
+
+#### Consequences
+
+- **API Quota Exhaustion:** Dashboard unusable after morning usage
+- **Rate Limit Errors:** Users see "Try again later" messages
+- **Inconsistent Data:** Some posts have metrics, others don't (quota hit)
+- **Cost Escalation:** Twitter Basic ($200/mo) insufficient, forced to Pro ($5,000/mo)
+- **User Frustration:** "Why don't I see my engagement data?"
+
+#### Prevention Strategy
+
+1. **Implement Tiered Caching Strategy**
+```typescript
+// convex/schema.ts
+export default defineSchema({
+  socialMetricsCache: defineTable({
+    platform: v.string(),
+    platformPostId: v.string(),
+    postId: v.id("content"), // reference to content table
+
+    metrics: v.object({
+      impressions: v.number(),
+      engagements: v.number(),
+      likes: v.number(),
+      comments: v.number(),
+      shares: v.number(),
+      clicks: v.optional(v.number()),
+      saves: v.optional(v.number()),
+    }),
+
+    // Caching metadata
+    cachedAt: v.number(),
+    expiresAt: v.number(),
+    cacheTier: v.union(
+      v.literal("hot"), // < 1 hour old
+      v.literal("warm"), // 1-24 hours old
+      v.literal("cold") // > 24 hours old
+    ),
+
+    // API quota tracking
+    apiCallsMade: v.number(),
   })
+    .index("by_post", ["postId"])
+    .index("by_platform_id", ["platform", "platformPostId"])
+    .index("by_expiry", ["expiresAt"]),
+});
+```
+
+2. **Implement Stale-While-Revalidate Pattern**
+```typescript
+// convex/analytics.ts
+export const getPostMetrics = query({
+  args: {
+    postId: v.id("content"),
+    acceptStale: v.optional(v.boolean()), // default true
+  },
+  handler: async (ctx, args) => {
+    const cached = await ctx.db
+      .query("socialMetricsCache")
+      .withIndex("by_post", q => q.eq("postId", args.postId))
+      .first();
+
+    const now = Date.now();
+
+    // Return cached if valid
+    if (cached && cached.expiresAt > now) {
+      return {
+        ...cached.metrics,
+        _cached: true,
+        _age: now - cached.cachedAt,
+      };
+    }
+
+    // Return stale + trigger background refresh
+    if (args.acceptStale && cached) {
+      // Schedule background refresh (non-blocking)
+      ctx.scheduler.runAfter(0, internal.analytics.refreshMetrics, {
+        postId: args.postId,
+      });
+
+      return {
+        ...cached.metrics,
+        _cached: true,
+        _stale: true,
+        _age: now - cached.cachedAt,
+      };
+    }
+
+    // No cache or fresh required — block until fetched
+    return await ctx.scheduler.runAfter(0, internal.analytics.fetchFreshMetrics, {
+      postId: args.postId,
+    });
+  },
+});
+
+export const refreshMetrics = internalAction({
+  args: { postId: v.id("content") },
+  handler: async (ctx, args) => {
+    const post = await ctx.runQuery(internal.content.getById, {
+      id: args.postId,
+    });
+
+    if (!post.platformPostId || !post.platform) return;
+
+    let metrics;
+    switch (post.platform) {
+      case "linkedin":
+        metrics = await fetchLinkedInInsights(post.platformPostId);
+        break;
+      case "instagram":
+        metrics = await fetchInstagramInsights(post.platformPostId);
+        break;
+      case "twitter":
+        metrics = await fetchTwitterAnalytics(post.platformPostId);
+        break;
+    }
+
+    await ctx.runMutation(internal.analytics.updateCache, {
+      postId: args.postId,
+      platform: post.platform,
+      platformPostId: post.platformPostId,
+      metrics,
+      ttl: calculateTTL(post.publishedAt), // dynamic TTL
+    });
+  },
+});
+```
+
+3. **Implement Dynamic TTL Based on Post Age**
+```typescript
+// lib/cache-strategy.ts
+export function calculateTTL(publishedAt: number): number {
+  const age = Date.now() - publishedAt;
+  const ONE_HOUR = 60 * 60 * 1000;
+  const ONE_DAY = 24 * ONE_HOUR;
+  const ONE_WEEK = 7 * ONE_DAY;
+
+  // Hot content (< 24 hours): 5-minute cache
+  if (age < ONE_DAY) {
+    return 5 * 60 * 1000;
+  }
+
+  // Warm content (1-7 days): 1-hour cache
+  if (age < ONE_WEEK) {
+    return ONE_HOUR;
+  }
+
+  // Cold content (> 7 days): 24-hour cache
+  return ONE_DAY;
 }
 ```
 
-3. **Wizard design principles for AMD:**
-   - **First 3 uses:** Wizard enabled by default
-   - **After 3 completions:** Offer quick mode
-   - **Always available:** "Need help?" button to re-enable wizard
-   - **Step indicators:** Show progress, allow clicking to jump
-   - **Optional steps:** Clearly marked, can skip
+4. **Implement Batch Refresh Cron**
+```typescript
+// convex/crons.ts
+import { cronJobs } from "convex/server";
 
-**Warning signs:**
-- Time-to-complete increases for returning users
-- Users ask "How do I skip this?"
-- High wizard abandonment rate (start but don't finish)
-- Browser back button usage during wizard flows
+const crons = cronJobs();
 
-**Detection method:**
-- Segment analytics: New users vs returning users
-  - Track wizard completion time by user experience level
-  - Alert if returning user time-to-task >2x first-time users
-- User feedback: "Was the wizard helpful?" (target: >70% "yes" for new users, >50% for returning)
+// Refresh hot metrics every 15 minutes
+crons.interval(
+  "refresh-hot-metrics",
+  { minutes: 15 },
+  internal.analytics.batchRefreshHot
+);
 
-**Which phase:** Guided UX (Phase 4) - Design with adaptive behavior from start
+// Refresh warm metrics every 6 hours
+crons.interval(
+  "refresh-warm-metrics",
+  { hours: 6 },
+  internal.analytics.batchRefreshWarm
+);
 
-**Source confidence:** HIGH
-- [Wizards: Definition and Design Recommendations (Nielsen Norman Group)](https://www.nngroup.com/articles/wizards/)
-- [Novices like wizards, power users prefer forms](https://www.uxmatters.com/mt/archives/2011/09/wizards-versus-forms.php)
-- [When to Develop a Wizard (UX Articles)](https://articles.uie.com/wizard/)
+export default crons;
+
+// convex/analytics.ts
+export const batchRefreshHot = internalAction({
+  handler: async (ctx) => {
+    const now = Date.now();
+    const oneDayAgo = now - (24 * 60 * 60 * 1000);
+
+    // Get posts published in last 24 hours
+    const recentPosts = await ctx.runQuery(internal.content.listRecent, {
+      since: oneDayAgo,
+      platforms: ["linkedin", "instagram", "twitter"],
+    });
+
+    console.log(`Refreshing metrics for ${recentPosts.length} recent posts`);
+
+    // Batch by platform to respect rate limits
+    const byPlatform = groupBy(recentPosts, p => p.platform);
+
+    for (const [platform, posts] of Object.entries(byPlatform)) {
+      // Stagger requests to avoid rate limit burst
+      for (let i = 0; i < posts.length; i++) {
+        await new Promise(resolve => setTimeout(resolve, 1000)); // 1 sec between requests
+
+        try {
+          await ctx.scheduler.runAfter(0, internal.analytics.refreshMetrics, {
+            postId: posts[i]._id,
+          });
+        } catch (error) {
+          console.error(`Failed to refresh ${platform} post ${posts[i]._id}:`, error);
+        }
+      }
+    }
+  },
+});
+```
+
+5. **Add API Quota Dashboard**
+```typescript
+// Show users real-time API quota status
+export const getAPIQuotaStatus = query({
+  handler: async (ctx) => {
+    const now = Date.now();
+    const hourAgo = now - (60 * 60 * 1000);
+    const dayAgo = now - (24 * 60 * 60 * 1000);
+
+    const quotas = {
+      linkedin: {
+        limit: 500, // daily
+        used: await countAPICalls("linkedin", dayAgo),
+        resetAt: getNextMidnight(),
+      },
+      instagram: {
+        limit: 200, // hourly per account
+        used: await countAPICalls("instagram", hourAgo),
+        resetAt: getNextHour(),
+      },
+      twitter: {
+        limit: 15000, // monthly (Basic tier)
+        used: await countAPICalls("twitter", getMonthStart()),
+        resetAt: getNextMonthStart(),
+      },
+    };
+
+    return quotas;
+  },
+});
+
+// UI Component
+<APIQuotaWidget
+  quotas={quotaStatus}
+  alerts={[
+    quotaStatus.linkedin.used / quotaStatus.linkedin.limit > 0.8
+      ? "LinkedIn API quota at 80%"
+      : null,
+  ]}
+/>
+```
+
+#### Detection (Warning Signs)
+
+- Analytics dashboard makes API calls on every render
+- No caching layer for external API data
+- Same post metrics fetched multiple times per day
+- Rate limit errors appearing in logs
+- API quota exhausted by midday
+- No TTL strategy (all cache or no cache)
+
+#### Source Confidence
+
+**HIGH** — Verified with:
+- [Vercel External API Caching Analytics](https://www.infoq.com/news/2025/07/vercel-api-caching-analytics/) (2025)
+- [Caching Strategies 2026](https://www.dragonflydb.io/guides/caching-strategies-to-know) (comprehensive guide)
+- [Real-Time Analytics vs Caching](https://www.gooddata.com/blog/real-time-analytics-vs-caching-in-data-nalytics/) (2026)
+- [Stale-While-Revalidate Pattern](https://dev.to/budiwidhiyanto/caching-strategies-across-application-layers-building-faster-more-scalable-products-h08) (2026)
+
+---
+
+### 7. Convex Authorization Without RLS
+
+**Severity:** HIGH
+**Phase:** Authentication Foundation (Phase 1)
+
+#### What Goes Wrong
+
+Convex doesn't provide Row-Level Security (RLS) like PostgreSQL. Authorization must be implemented in application code at every query boundary. Forgetting a single authorization check creates a data leak.
+
+**The Trap:**
+```typescript
+// WRONG: Query without authorization check
+export const getContent = query({
+  args: { id: v.id("content") },
+  handler: async (ctx, args) => {
+    // NO AUTH CHECK — any logged-in user can read any content
+    return await ctx.db.get(args.id);
+  },
+});
+
+// User A can access User B's drafts:
+const content = await ctx.runQuery(api.content.getContent, {
+  id: "jd7x9m2k8q5r1p3n4h6g8f0w", // User B's content
+});
+```
+
+#### Why It Happens
+
+Convex philosophy: flexibility over opinionated frameworks. RLS enforces authorization at database level, but Convex runs in V8 isolates with JavaScript-based authorization. This puts burden on developer to never forget an auth check.
+
+**Complexity multiplier:** AMD has 11 tables with complex relationships:
+- Agents can execute tasks
+- Tasks produce content
+- Content has handoffs between agents
+- Campaigns reference content
+- Analytics aggregate across campaigns
+
+A single forgotten check in any of these paths leaks data.
+
+#### Consequences
+
+- **Data Leaks:** User A sees User B's drafts, strategies, campaigns
+- **Compliance Violation:** GDPR requires data isolation
+- **Privilege Escalation:** Regular user accesses admin-only resources
+- **Audit Failure:** No automatic enforcement of access control
+
+#### Prevention Strategy
+
+1. **Create Authorization Helper Library**
+```typescript
+// convex/lib/authorization.ts
+import { QueryCtx, MutationCtx } from "../_generated/server";
+import { Id } from "../_generated/dataModel";
+
+export class UnauthorizedError extends Error {
+  constructor(message = "Unauthorized") {
+    super(message);
+    this.name = "UnauthorizedError";
+  }
+}
+
+export class ForbiddenError extends Error {
+  constructor(message = "Forbidden") {
+    super(message);
+    this.name = "ForbiddenError";
+  }
+}
+
+export async function requireAuth(ctx: QueryCtx | MutationCtx) {
+  const identity = await ctx.auth.getUserIdentity();
+  if (!identity) throw new UnauthorizedError();
+
+  const user = await ctx.db
+    .query("users")
+    .withIndex("by_clerk_id", q => q.eq("clerkId", identity.subject))
+    .first();
+
+  if (!user) throw new UnauthorizedError("User not found in database");
+
+  return user;
+}
+
+export async function requireAdmin(ctx: QueryCtx | MutationCtx) {
+  const user = await requireAuth(ctx);
+
+  if (user.role !== "admin" && !user.isSystemUser) {
+    throw new ForbiddenError("Admin access required");
+  }
+
+  return user;
+}
+
+export async function requireOwnership<T extends { userId?: Id<"users"> }>(
+  ctx: QueryCtx | MutationCtx,
+  resource: T | null
+) {
+  if (!resource) throw new Error("Resource not found");
+
+  const user = await requireAuth(ctx);
+
+  // System user and admin can access everything
+  if (user.isSystemUser || user.role === "admin") {
+    return resource;
+  }
+
+  // Check ownership
+  if (resource.userId !== user._id) {
+    throw new ForbiddenError("Not resource owner");
+  }
+
+  return resource;
+}
+
+export async function filterByOwnership<T extends { userId?: Id<"users"> }>(
+  ctx: QueryCtx | MutationCtx,
+  resources: T[]
+) {
+  const user = await requireAuth(ctx);
+
+  // System user and admin see all
+  if (user.isSystemUser || user.role === "admin") {
+    return resources;
+  }
+
+  // Regular users see only owned
+  return resources.filter(r => r.userId === user._id);
+}
+```
+
+2. **Apply Authorization at Every Query Boundary**
+```typescript
+// convex/content.ts
+import { requireAuth, requireOwnership, filterByOwnership } from "./lib/authorization";
+
+export const list = query({
+  handler: async (ctx) => {
+    const user = await requireAuth(ctx); // ✅ Auth check
+
+    const allContent = await ctx.db.query("content").collect();
+    return filterByOwnership(ctx, allContent); // ✅ Filter by ownership
+  },
+});
+
+export const get = query({
+  args: { id: v.id("content") },
+  handler: async (ctx, args) => {
+    const user = await requireAuth(ctx); // ✅ Auth check
+
+    const content = await ctx.db.get(args.id);
+    return requireOwnership(ctx, content); // ✅ Ownership check
+  },
+});
+
+export const create = mutation({
+  args: { title: v.string(), body: v.string() },
+  handler: async (ctx, args) => {
+    const user = await requireAuth(ctx); // ✅ Auth check
+
+    return await ctx.db.insert("content", {
+      ...args,
+      userId: user._id, // ✅ Set ownership
+      status: "draft",
+      createdAt: Date.now(),
+    });
+  },
+});
+
+export const update = mutation({
+  args: { id: v.id("content"), title: v.optional(v.string()) },
+  handler: async (ctx, args) => {
+    const user = await requireAuth(ctx); // ✅ Auth check
+
+    const content = await ctx.db.get(args.id);
+    await requireOwnership(ctx, content); // ✅ Ownership check
+
+    await ctx.db.patch(args.id, {
+      title: args.title,
+      updatedAt: Date.now(),
+    });
+  },
+});
+
+export const delete_ = mutation({
+  args: { id: v.id("content") },
+  handler: async (ctx, args) => {
+    const user = await requireAuth(ctx); // ✅ Auth check
+
+    const content = await ctx.db.get(args.id);
+    await requireOwnership(ctx, content); // ✅ Ownership check
+
+    await ctx.db.delete(args.id);
+  },
+});
+```
+
+3. **Add Authorization Tests**
+```typescript
+// convex/content.test.ts
+import { test, expect } from "vitest";
+import { convexTest } from "convex-test";
+import schema from "./schema";
+import { api } from "./_generated/api";
+
+test("unauthorized user cannot list content", async () => {
+  const t = convexTest(schema);
+
+  await expect(
+    t.query(api.content.list)
+  ).rejects.toThrow("Unauthorized");
+});
+
+test("user cannot access other user's content", async () => {
+  const t = convexTest(schema);
+
+  // Create two users
+  const userA = await t.run(async (ctx) => {
+    return await ctx.db.insert("users", {
+      clerkId: "user-a",
+      email: "a@example.com",
+      role: "user",
+    });
+  });
+
+  const userB = await t.run(async (ctx) => {
+    return await ctx.db.insert("users", {
+      clerkId: "user-b",
+      email: "b@example.com",
+      role: "user",
+    });
+  });
+
+  // User A creates content
+  const contentId = await t.mutation(api.content.create, {
+    title: "User A's content",
+    body: "Private",
+  }, { as: userA });
+
+  // User B tries to access
+  await expect(
+    t.query(api.content.get, { id: contentId }, { as: userB })
+  ).rejects.toThrow("Forbidden");
+});
+
+test("admin can access all content", async () => {
+  const t = convexTest(schema);
+
+  const admin = await t.run(async (ctx) => {
+    return await ctx.db.insert("users", {
+      clerkId: "admin",
+      email: "admin@example.com",
+      role: "admin",
+    });
+  });
+
+  const user = await t.run(async (ctx) => {
+    return await ctx.db.insert("users", {
+      clerkId: "user",
+      email: "user@example.com",
+      role: "user",
+    });
+  });
+
+  const contentId = await t.mutation(api.content.create, {
+    title: "User content",
+    body: "...",
+  }, { as: user });
+
+  // Admin can access user's content
+  const content = await t.query(api.content.get, { id: contentId }, { as: admin });
+  expect(content).toBeDefined();
+});
+```
+
+4. **Add Lint Rule for Missing Auth Checks**
+```typescript
+// eslint-custom-rules/require-auth-in-handlers.js
+module.exports = {
+  meta: {
+    type: "problem",
+    docs: {
+      description: "Enforce auth check in Convex query/mutation handlers",
+    },
+  },
+  create(context) {
+    return {
+      'CallExpression[callee.name="query"] Property[key.name="handler"]'(node) {
+        const handlerBody = node.value.body.body;
+
+        const hasAuthCheck = handlerBody.some(statement => {
+          return (
+            statement.type === "VariableDeclaration" &&
+            statement.declarations.some(decl =>
+              decl.init?.type === "AwaitExpression" &&
+              decl.init.argument?.callee?.name === "requireAuth"
+            )
+          );
+        });
+
+        if (!hasAuthCheck) {
+          context.report({
+            node,
+            message: "Query handler must call requireAuth(ctx)",
+          });
+        }
+      },
+    };
+  },
+};
+```
+
+#### Detection (Warning Signs)
+
+- Query/mutation handlers without `requireAuth()` call
+- No authorization helpers/utilities
+- Direct database access without ownership checks
+- No authorization tests
+- Users report seeing other users' data
+
+#### Source Confidence
+
+**HIGH** — Verified with:
+- [Convex Authorization Best Practices](https://stack.convex.dev/authorization) (official)
+- [Convex Row-Level Security Discussion](https://stack.convex.dev/row-level-security) (official)
+- [Convex Auth with RBAC Example](https://github.com/get-convex/convex-auth-with-role-based-permissions) (official)
 
 ---
 
 ## Moderate Pitfalls
 
-Mistakes that cause delays, technical debt, or degraded user experience.
+### 8. Social Media Webhook Reliability
 
-### Pitfall 7: Next.js Server/Client Component Confusion
+**Severity:** MEDIUM
+**Phase:** Multi-Platform Publishing (Phase 2-3)
 
-**What goes wrong:**
-Next.js 16 App Router changed component behavior. Common mistakes:
-- Adding "use client" to every component (performance hit)
-- Fetching data through API routes instead of directly in Server Components
-- Real-time updates (Convex subscriptions) attempted in Server Components
-- State management confused between server and client boundaries
+#### What Goes Wrong
 
-**Why it happens:**
-Team used to React 18 patterns. Next.js 16 requires different mental model:
-- Server Components execute on server (no state, no useEffect)
-- Client Components hydrate in browser (can use hooks)
-- Convex `useQuery` only works in Client Components
+Social media APIs use webhooks to notify apps of events (comment on post, mention, etc.). Webhooks have retry limits (Instagram: 5 retries, Twitter: 3 retries over 5 minutes). If your webhook endpoint is down during retries, you lose the event permanently.
 
-**Consequences:**
-- Unnecessary JavaScript sent to browser (slow page loads)
-- Hydration errors and runtime failures
-- Performance regression from v1.0
-- Difficult debugging ("works in dev, breaks in prod")
+#### Why It Happens
 
-**Prevention strategy:**
+Webhooks are fire-and-forget. Platforms retry a few times with exponential backoff, then give up. Unlike polling, there's no way to "catch up" on missed events.
 
-**Phase-specific approach:**
-1. **All phases (affects every feature):**
-   - Default to Server Components
-   - Add "use client" ONLY when needed (state, effects, event handlers, Convex hooks)
-   - Move common UI (nav, sidebar) to layout (only updates page content)
-   - Use dynamic imports for heavy client components
+#### Consequences
 
-2. **AMD-specific patterns:**
-```typescript
-// ✅ GOOD: Server Component fetches data
-// app/agents/page.tsx
-async function AgentsPage() {
-  const agents = await db.agents.getAll() // Direct DB call
-  return <AgentsList agents={agents} />
-}
+- **Lost Notifications:** User comments/mentions not captured
+- **Incomplete Analytics:** Engagement metrics missing
+- **User Frustration:** "Why didn't I get notified?"
 
-// ✅ GOOD: Client Component for real-time
-// components/AgentsList.tsx
-"use client"
-function AgentsList({ agents }: { agents: Agent[] }) {
-  const liveAgents = useQuery(api.agents.list) // Convex subscription
-  return <div>{liveAgents.map(...)}</div>
-}
+#### Prevention
 
-// ❌ BAD: Hitting own API route
-async function AgentsPage() {
-  const res = await fetch('/api/agents') // Unnecessary round-trip
-  const agents = await res.json()
-  return <AgentsList agents={agents} />
-}
-```
+1. Implement webhook queue (Convex scheduled functions)
+2. Use idempotency keys to handle duplicate deliveries
+3. Add webhook health monitoring
+4. Implement exponential backoff on your side
 
-3. **Component decision tree:**
-```
-Need real-time updates (Convex)?       → Client Component
-Need user interaction (onClick)?       → Client Component
-Need browser API (localStorage)?       → Client Component
-Static content?                        → Server Component
-Database query?                        → Server Component
-```
-
-**Warning signs:**
-- Every component has "use client"
-- Page bundles >500KB
-- Lighthouse performance score drops
-- Hydration errors in console
-
-**Detection method:**
-```bash
-# Check bundle size
-npm run build
-# Review .next/build-manifest.json
-# Alert if any page bundle >300KB
-
-# Check for unnecessary client components
-grep -r "use client" app/ | wc -l
-# Should be <30% of total components
-```
-
-**Which phase:** All phases - Enforce through code review checklist
-
-**Source confidence:** HIGH
-- [Next.js App Router: common mistakes and how to fix them](https://upsun.com/blog/avoid-common-mistakes-with-next-js-app-router/)
-- [Next.js Server Components Broke Our App Twice](https://medium.com/lets-code-future/next-js-server-components-broke-our-app-twice-worth-it-e511335eed22)
-- [10 Next.js mistakes slowing your app](https://www.jigz.dev/blogs/10-nextjs-mistakes-slowing-your-app-and-how-to-fix-them-fast)
+**Source:** [Instagram API Webhooks](https://www.unipile.com/how-to-use-instagram-api-webhooks-for-real-time-notifications/), [Twitter Activity Retries](https://developer.twitter.com/en/docs/twitter-api/enterprise/account-activity-api/guides/activity-retries)
 
 ---
 
-### Pitfall 8: React 19 Third-Party Library Incompatibility
+### 9. Multi-Platform Content Format Mismatch
 
-**What goes wrong:**
-AMD uses React 19 (cutting edge). Third-party libraries may not support it yet:
-- UI libraries (charts, editors, components)
-- Utility libraries (form validation, date pickers)
-- Integration SDKs (LinkedIn, analytics)
+**Severity:** MEDIUM
+**Phase:** Multi-Platform Publishing (Phase 2-3)
 
-Symptoms:
-- "React is not defined" errors
-- Hooks throw runtime errors
-- Components render blank or crash
+#### What Goes Wrong
 
-**Why it happens:**
-React 19 changed core APIs:
-- Removed string refs
-- Deprecated `forwardRef`
-- Changed ref cleanup behavior
-- `react-test-renderer` deprecated
+Each platform has different content constraints (LinkedIn: 3,000 chars, Twitter: 280 chars, Instagram: 2,200 chars + image required). Naively publishing same content across platforms creates format errors.
 
-Libraries using old patterns break. Popular libraries (React Router, Redux) may not immediately support React 19.
+#### Why It Happens
 
-**Consequences:**
-- Features blocked waiting for library updates
-- Forced to downgrade React (losing v19 benefits)
-- Emergency rewrites replacing libraries
-- Milestone delays
+Developers assume "social post" is universal format, but each platform has unique rules:
+- LinkedIn: Markdown-like formatting, no hashtag limits
+- Twitter: 280 char limit, max 4 images
+- Instagram: Image required, caption 2,200 chars, max 30 hashtags
 
-**Prevention strategy:**
+#### Prevention
 
-**Phase-specific approach:**
-1. **Before starting any phase:**
-   - Audit all dependencies for React 19 compatibility
-   - Check library changelogs/issues for React 19 mentions
-   - Test critical libraries in isolation (React 19 test project)
-   - Have fallback options for each critical library
+1. Create platform-specific content adapters
+2. Validate content before publish
+3. Implement content transformation pipeline
+4. Show preview for each platform
 
-2. **AMD library compatibility checklist:**
-```typescript
-// Critical libraries to verify:
-{
-  // Rich text editor (Content Pipeline)
-  tiptap: "✅ React 19 compatible (verified 2026-01)",
-
-  // Charts (Control Center dashboards)
-  recharts: "⚠️ Check before Phase 1",
-
-  // Forms (throughout)
-  "react-hook-form": "✅ React 19 compatible",
-
-  // LinkedIn SDK
-  "linkedin-api-client": "⚠️ Verify or use direct fetch"
-}
-```
-
-3. **Mitigation for incompatible libraries:**
-   - Lazy load with dynamic imports (isolate failures)
-   - Wrap in error boundaries
-   - Use direct API calls instead of SDK wrappers
-   - Consider alternative libraries
-
-**Warning signs:**
-- Console errors mentioning "forwardRef" or "string refs"
-- Components that worked in React 18 now crash
-- TypeScript errors in node_modules
-- Test suite failures after React 19 upgrade
-
-**Detection method:**
-```bash
-# Check dependencies for React 19 compatibility
-npm ls react
-# Verify all peer dependencies allow React 19
-
-# Search for deprecated patterns in dependencies
-npm audit
-npx npm-check-updates -u
-```
-
-**Which phase:** Pre-development (before Phase 1) - Verify compatibility during tech stack review
-
-**Source confidence:** HIGH
-- [Common Mistakes When Upgrading to React 19](https://blog.openreplay.com/common-mistakes-upgrading-react-19-avoid/)
-- [React 19 Upgrade Guide](https://react.dev/blog/2024/04/25/react-19-upgrade-guide)
-- [How we migrated MUI X to React 19](https://mui.com/blog/react-19-update/)
+**Source:** [Best Unified Social Media APIs 2026](https://www.outstand.so/blog/best-unified-social-media-apis-for-devs)
 
 ---
 
-### Pitfall 9: Multi-Platform Content Formatting Breakdown
+### 10. Role Creep in RBAC
 
-**What goes wrong:**
-Content pipeline promises "write once, publish everywhere." Reality:
-- LinkedIn truncates at 3000 chars (blog post is 5000)
-- Twitter requires thread splitting (1 post → 8 tweets)
-- Email needs plain text fallback (rich formatting lost)
-- Blog supports embeds (LinkedIn strips them)
+**Severity:** MEDIUM
+**Phase:** Team Collaboration (Phase 5)
 
-Users expect: "Create in pipeline → publish everywhere."
-Reality: Manual reformatting required for each platform.
+#### What Goes Wrong
 
-**Why it happens:**
-Teams underestimate platform differences:
-- Character limits vary (Twitter 280, LinkedIn 3000, blog unlimited)
-- Formatting support differs (markdown, HTML, plain text)
-- Media handling varies (inline images, attachments, links)
-- Hashtag/mention syntax differs
+Role-Based Access Control starts simple (admin, user), but feature requests create role explosion (editor, viewer, contributor, manager, analyst). Users accumulate permissions over time (role creep), violating least privilege.
 
-"Write once publish everywhere" is marketing speak, not reality.
+#### Why It Happens
 
-**Consequences:**
-- Content pipeline partially used (works for blog, manual for others)
-- Users frustrated: "I have to reformat everything anyway"
-- Feature perceived as broken/incomplete
-- Abandonment of multi-platform features
+Business requirements: "Marketing manager needs to approve content but not publish." This creates intermediate roles. Over time, users change roles but keep old permissions.
 
-**Prevention strategy:**
+#### Prevention
 
-**Phase-specific approach:**
-1. **Content Pipeline phase:**
-   - Set realistic expectations (not "write once," but "adapt intelligently")
-   - Implement platform-specific formatters
-   - Provide preview for each platform
-   - Allow platform-specific overrides
+1. Start with minimal roles (admin, user)
+2. Use permission flags instead of roles for granular control
+3. Implement role expiry (time-based permissions)
+4. Audit user permissions quarterly
+5. Prefer ABAC (Attribute-Based Access Control) for complex cases
 
-2. **AMD formatting strategy:**
-```typescript
-// Content transformation pipeline
-class ContentFormatter {
-  format(content: Content, platform: Platform) {
-    switch(platform) {
-      case "linkedin":
-        return this.formatLinkedIn(content) // Truncate, add "read more" link
-
-      case "twitter":
-        return this.formatTwitter(content) // Split into thread
-
-      case "email":
-        return this.formatEmail(content) // Plain text + HTML versions
-
-      case "blog":
-        return content // Full formatting preserved
-    }
-  }
-
-  private formatLinkedIn(content: Content) {
-    if (content.body.length > 2800) {
-      return {
-        body: content.body.slice(0, 2800) + "...",
-        footer: `Leer más: ${content.canonicalUrl}`
-      }
-    }
-    return content
-  }
-}
-```
-
-3. **User experience design:**
-   - Show character count per platform
-   - Highlight content that requires adaptation
-   - Provide "Adapt for [platform]" button
-   - Preview side-by-side (original vs formatted)
-
-**Warning signs:**
-- Users manually copy-paste instead of using pipeline
-- Support requests: "Content doesn't look right on LinkedIn"
-- Publish failures due to platform limits
-- Users publish to one platform, skip others
-
-**Detection method:**
-- Track publish success rate per platform (target: >90%)
-- Monitor "publish all platforms" vs "publish single platform" ratio (target: >50% multi-platform)
-- User survey: "Does content formatting work as expected?" (target: >70% "yes")
-
-**Which phase:** Content Pipeline (Phase 2) - Design platform adapters from start, not retrofit
-
-**Source confidence:** MEDIUM
-- [7 Content Mistakes From 2025 To Avoid In 2026](https://www.writerzden.com/content-writing-mistakes-lessons-2025-2026/)
-- [Content Workflow: A resourceful guide for 2026](https://planable.io/blog/content-workflow/)
-- Note: Limited research on specific formatting pitfalls, relying on general content management best practices
-
----
-
-### Pitfall 10: Approval Workflow Bottlenecks
-
-**What goes wrong:**
-Content pipeline adds approval step (draft → review → approve → publish). Bottlenecks emerge:
-- Single approver becomes bottleneck (vacation = everything stops)
-- Approvers overwhelmed (50 items waiting for review)
-- Unclear responsibilities ("Who approves this?")
-- Lost feedback (comments scattered across Slack, email, dashboard)
-
-**Why it happens:**
-Workflow designed around ideal state, not reality:
-- Assumes approvers always available
-- Assumes linear progression (doesn't handle loops)
-- Assumes clear ownership (reality: ambiguity)
-
-**Consequences:**
-- Content stuck in "review" for days
-- Publishing deadlines missed
-- Users bypass workflow (email content for manual posting)
-- Workflow abandonment
-
-**Prevention strategy:**
-
-**Phase-specific approach:**
-1. **Content Pipeline phase:**
-   - Multiple approvers (avoid single point of failure)
-   - Escalation rules (auto-approve after 48h, or route to backup approver)
-   - Clear ownership (each content type has designated approver)
-   - Centralized feedback (all comments in dashboard, not external)
-
-2. **AMD approval workflow:**
-```typescript
-// Approval rules
-const approvalRules = {
-  // Low-risk: Auto-approve or single reviewer
-  social_post: {
-    approvers: ["social-manager"],
-    autoApproveAfter: "24h",
-    escalateTo: "cmo-001"
-  },
-
-  // Medium-risk: Primary + backup approver
-  blog_post: {
-    approvers: ["content-director", "seo-manager"],
-    requireApprovals: 1, // Either one can approve
-    autoApproveAfter: "48h",
-    escalateTo: "cmo-001"
-  },
-
-  // High-risk: Multiple approvers required
-  whitepaper: {
-    approvers: ["content-director", "cmo-001"],
-    requireApprovals: 2, // Both must approve
-    autoApproveAfter: null, // Never auto-approve
-    escalateTo: null
-  }
-}
-```
-
-3. **Prevent bottlenecks:**
-   - Dashboard for approvers: "You have 12 items to review"
-   - Email digest: Daily summary of pending approvals
-   - SLA tracking: Alert if content stuck >24h
-   - Analytics: Identify bottleneck approvers (>10 items pending)
-
-**Warning signs:**
-- Content in "review" state >48h
-- Approver has >20 items pending
-- Users ask "Who approves this?"
-- Bypass workflows (direct publishing without approval)
-
-**Detection method:**
-```typescript
-// Monitor approval queue health
-const metrics = {
-  avgTimeInReview: calculateAverage(reviewDurations), // Target: <24h
-  maxQueueDepth: Math.max(...approverQueues), // Target: <10
-  bottleneckCount: approvers.filter(a => a.queue > 15).length // Target: 0
-}
-
-if (metrics.avgTimeInReview > 24 * 60 * 60 * 1000) {
-  alert("Approval bottleneck detected")
-}
-```
-
-**Which phase:** Content Pipeline (Phase 2) - Design workflow with bottleneck prevention
-
-**Source confidence:** HIGH
-- [Content Approval Workflow: Steps, Tips, and Tools](https://www.smartsheet.com/content-approval-workflow)
-- [Why content approval workflows matter](https://kontent.ai/blog/content-approval-workflows/)
-- [Too many approvers slow process, too few cause bottlenecks](https://filestage.io/blog/content-approval-workflow/)
-
----
-
-### Pitfall 11: Version Control Chaos in Content Editing
-
-**What goes wrong:**
-Content pipeline supports editing. Users make changes. Problems:
-- "Approved" content edited → now outdated draft
-- Multiple editors change same content → last save wins
-- Feedback applied to old version
-- No way to revert to previous version
-
-**Why it happens:**
-Version control added as afterthought. Database schema doesn't track versions:
-- Single `content` record (not versioned)
-- Updates overwrite previous state
-- No diff tracking
-- No audit log
-
-**Consequences:**
-- Lost work (editor A's changes overwritten by editor B)
-- Re-approval required for minor changes
-- Can't revert mistakes
-- Blame game: "Who changed this?"
-
-**Prevention strategy:**
-
-**Phase-specific approach:**
-1. **Content Pipeline phase:**
-   - Implement version tracking from start (not retrofit)
-   - Store versions as separate records (not in-place updates)
-   - Track changes (who, when, what changed)
-   - Provide "revert to version X" functionality
-
-2. **Convex schema for versioning:**
-```typescript
-// Schema design
-contentVersions: defineTable({
-  contentId: v.id("content"),
-  version: v.number(),
-  title: v.string(),
-  body: v.string(),
-  createdBy: v.id("users"),
-  createdAt: v.number(),
-  changes: v.optional(v.string()), // Diff from previous version
-})
-
-// Creating new version (not updating in place)
-async function updateContent(ctx, { contentId, title, body }) {
-  const current = await ctx.db.get(contentId)
-
-  // Create new version
-  await ctx.db.insert("contentVersions", {
-    contentId,
-    version: current.version + 1,
-    title,
-    body,
-    createdBy: ctx.auth.userId,
-    createdAt: Date.now(),
-    changes: diffStrings(current.body, body)
-  })
-
-  // Update current pointer
-  await ctx.db.patch(contentId, {
-    version: current.version + 1,
-    lastModified: Date.now()
-  })
-}
-```
-
-3. **UI for version control:**
-   - "History" button shows all versions
-   - Click version to preview
-   - "Restore this version" button
-   - Diff view (red = removed, green = added)
-
-**Warning signs:**
-- Users report "my changes disappeared"
-- Multiple editors on same content
-- Need to revert but can't
-- Approval workflow confused by edits
-
-**Detection method:**
-- User feedback: "Have you lost work due to editing conflicts?" (target: <5% "yes")
-- Track edit conflicts (2+ users edit within 5min window)
-- Monitor revert requests (proxy for "need to undo mistakes")
-
-**Which phase:** Content Pipeline (Phase 2) - Design schema with versioning from start
-
-**Source confidence:** MEDIUM
-- [Content approval workflow guide](https://www.contentstack.com/blog/all-about-headless/content-approval-workflow-guide)
-- [Version control issues slow down publication](https://planable.io/blog/content-approval-workflow/)
-- Note: Version control is standard practice, research confirms it's commonly overlooked
-
----
-
-### Pitfall 12: Spanish Text Expansion Layout Breaking
-
-**What goes wrong:**
-AMD is 100% Spanish. English → Spanish translation typically 30% longer:
-- "Save" (4 chars) → "Guardar" (8 chars) = 100% increase
-- Button text overflows
-- Labels truncate
-- Layout breaks on mobile
-
-**Why it happens:**
-UI designed with English in mind (even if Spanish text used). Fixed widths, no overflow handling. Spanish text expansion not tested:
-- Buttons sized for English
-- Form labels assume short text
-- Mobile layout doesn't wrap
-
-**Consequences:**
-- Broken UI on production
-- Text cut off (meaning lost)
-- Mobile UX degraded
-- Appears unprofessional to Spanish users
-
-**Prevention strategy:**
-
-**Phase-specific approach:**
-1. **All phases (affects every UI component):**
-   - Use relative widths (not fixed pixels)
-   - Test with longest Spanish translations
-   - Add 40% padding for text expansion
-   - Enable text wrapping (not truncation)
-
-2. **Tailwind CSS patterns for Spanish:**
-```typescript
-// ❌ BAD: Fixed width
-<button className="w-32">Guardar cambios</button> // Overflows
-
-// ✅ GOOD: Auto width with padding
-<button className="px-6 py-2 min-w-fit">Guardar cambios</button>
-
-// ❌ BAD: Truncate
-<p className="truncate">Nombre del agente</p> // Cuts off text
-
-// ✅ GOOD: Wrap or abbreviate thoughtfully
-<p className="break-words">Nombre del agente</p>
-```
-
-3. **Testing protocol:**
-   - Test every UI component with longest Spanish variant
-   - Test on mobile (text expansion worse on small screens)
-   - Use browser zoom at 150% (simulates larger text)
-   - Checklist: No truncated text, no overlaps, no overflows
-
-**Warning signs:**
-- Text cut off with "..."
-- Buttons with text overflowing edges
-- Layout shifts on different content lengths
-- Mobile users report "can't read text"
-
-**Detection method:**
-```typescript
-// Automated check for fixed widths in buttons
-// Run before each deployment
-const buttons = document.querySelectorAll('button')
-buttons.forEach(btn => {
-  const hasFixedWidth = btn.classList.contains('w-32') ||
-                       btn.classList.contains('w-40')
-  if (hasFixedWidth) {
-    console.warn('Button with fixed width detected:', btn.textContent)
-  }
-})
-```
-
-**Which phase:** All phases - Enforce through design review
-
-**Source confidence:** HIGH
-- [Spanish requires 30% more characters than English](https://latinobridge.com/blog/a-guide-to-ui-localization/)
-- [Text expansion breaks UI layouts](https://hansem.com/blog/ui-ux-localization-mistakes/)
-- [Spanish text expansion issues](https://artonetranslations.com/ui-localization-into-romance-languages/)
+**Source:** [RBAC Migration Pitfalls 2026](https://medium.com/@kanerika/top-10-data-migration-risks-and-how-to-avoid-them-in-2026-fb5dc93c12f5)
 
 ---
 
 ## Minor Pitfalls
 
-Mistakes that cause annoyance but are fixable.
+### 11. LinkedIn API Rate Limit Headers Ignored
 
-### Pitfall 13: Inconsistent State Management Across Features
+**Severity:** LOW
+**Phase:** Multi-Platform Publishing (Phase 2)
 
-**What goes wrong:**
-v2.0 adds features incrementally. Each uses different state pattern:
-- Control Center: Convex real-time subscriptions
-- Content Pipeline: React Context + useState
-- LinkedIn Integration: Redux (added by different dev)
-- Guided UX: localStorage + custom hooks
+#### What Goes Wrong
 
-Result: Debugging nightmare, data sync issues, unnecessary complexity.
+LinkedIn provides rate limit info in response headers (`X-RateLimit-Remaining`, `X-RateLimit-Reset`), but developers ignore them and hit rate limits unexpectedly.
 
-**Why it happens:**
-No state management strategy defined upfront. Each developer chooses familiar pattern. Over time: fragmentation.
+#### Prevention
 
-**Consequences:**
-- Bugs: State out of sync between features
-- Complexity: New devs must learn 4 patterns
-- Performance: Redundant state updates
-- Maintenance: Changes require updating multiple state systems
-
-**Prevention strategy:**
-
-**Phase-specific approach:**
-1. **Before Phase 1:**
-   - Define state management strategy for v2.0
-   - AMD recommendation: Convex for server state + React Context for UI state
-   - Document pattern in ARCHITECTURE.md
-   - Code review enforces consistency
-
-2. **AMD state management strategy:**
-```typescript
-// Server state (data from database): Convex
-const agents = useQuery(api.agents.list)
-const content = useQuery(api.content.list)
-
-// UI state (local, ephemeral): React Context or useState
-const [selectedAgent, setSelectedAgent] = useState(null)
-const { sidebarOpen, setSidebarOpen } = useUIContext()
-
-// User preferences (persistent): localStorage wrapper
-const [preferences, setPreferences] = useLocalStorage("user_prefs")
-
-// ❌ AVOID: Mixing patterns
-// Don't use Redux for some features, Convex for others
-// Don't duplicate server state in React Context
-```
-
-3. **Enforcement:**
-   - Code review checklist: "Does this use agreed state pattern?"
-   - Linting: Block Redux imports (not in agreed stack)
-   - Documentation: State management decision log
-
-**Warning signs:**
-- Multiple state libraries in package.json
-- Data fetched from API also stored in Context
-- State sync bugs ("dashboard shows old data")
-- Developers ask "Which state management should I use?"
-
-**Detection method:**
-```bash
-# Check for multiple state libraries
-cat package.json | grep -E "redux|zustand|jotai|recoil"
-# Should return empty (Convex + React only)
-
-# Check for state management imports
-grep -r "createStore\|createSlice\|atom" src/
-# Should not find Redux/Recoil patterns
-```
-
-**Which phase:** Pre-development (before Phase 1) - Document strategy in ARCHITECTURE.md
-
-**Source confidence:** MEDIUM
-- [Marketing automation state management issues](https://www.tenonhq.com/article/marketing-automation-challenges)
-- [Integration depth impacts scalability](https://msdynamicsworld.com/blog-post/marketing-automation-dynamics-2026-what-actually-matters-now)
-- Note: General software architecture principle, confirmed by marketing automation research
+Always parse rate limit headers and implement adaptive backoff.
 
 ---
 
-### Pitfall 14: Progressive Disclosure Hiding Essential Features
+### 12. Instagram Media Processing Wait
 
-**What goes wrong:**
-Guided UX implements progressive disclosure (hide advanced features). Goes too far:
-- Essential features hidden behind menus
-- Users can't find "Publish" button (collapsed in accordion)
-- Advanced settings needed for basic tasks
-- "Where did the feature go?" confusion
+**Severity:** LOW
+**Phase:** Multi-Platform Publishing (Phase 3)
 
-**Why it happens:**
-Over-application of "simplify the UI" principle. Features hidden to reduce clutter, but some features are needed frequently.
+#### What Goes Wrong
 
-**Consequences:**
-- Users frustrated: "I know this feature exists, but can't find it"
-- Support tickets spike: "How do I [basic task]?"
-- Perceived as "missing features"
-- Workarounds emerge (URL manipulation, browser DevTools)
+Instagram publish is two-step: create media container, then publish. Media must finish processing (5-30 seconds) before publish call. Developers call publish immediately and get error.
 
-**Prevention strategy:**
+#### Prevention
 
-**Phase-specific approach:**
-1. **Guided UX phase:**
-   - Progressive disclosure for OPTIONAL features only
-   - Keep essential features always visible
-   - Usage analytics: If >30% of users need feature, make it visible
-   - Test with real users: "Find the [feature] button"
+Implement polling loop to check media status before publishing.
 
-2. **Essential vs optional for AMD:**
-```typescript
-// ✅ ALWAYS VISIBLE (essential):
-- Create content button
-- Publish button
-- Agent status
-- Active campaigns
-- Navigation menu
-
-// ✅ PROGRESSIVE DISCLOSURE (optional):
-- Advanced SEO settings
-- Custom scheduling rules
-- Bulk operations
-- Export/import data
-- Admin settings
-
-// Decision rule: If >30% of sessions use feature → make visible
-```
-
-3. **Testing protocol:**
-   - User testing: "Publish a LinkedIn post" (observe if they find Publish button)
-   - Analytics: Track "feature discovery time" (target: <30s for essential features)
-   - Feedback: "Could you easily find the feature you needed?" (target: >80% "yes")
-
-**Warning signs:**
-- Users ask "Where is [feature]?"
-- Support tickets about feature location
-- Feature usage drops after UI change
-- Users expand all accordions/menus (defeating progressive disclosure)
-
-**Detection method:**
-- Heatmap analysis: Check click patterns (are users hunting for features?)
-- Session recordings: Watch user struggling to find features
-- Support ticket analysis: Categorize by "feature discovery" issues
-
-**Which phase:** Guided UX (Phase 4) - Test with real users before launch
-
-**Source confidence:** HIGH
-- [Progressive Disclosure: Don't hide essential information](https://www.interaction-design.org/literature/topics/progressive-disclosure)
-- [Making information difficult to access](https://blog.logrocket.com/ux-design/progressive-disclosure-ux-types-use-cases/)
-- [Wizard design best practices (Nielsen Norman Group)](https://www.nngroup.com/articles/wizards/)
+**Source:** [Instagram Graph API Guide 2026](https://elfsight.com/blog/instagram-graph-api-complete-developer-guide-for-2026/)
 
 ---
 
-### Pitfall 15: Dashboard Performance Degradation Over Time
+### 13. Convex Action Timeout on Long API Calls
 
-**What goes wrong:**
-Control Center performs well initially. After weeks:
-- Dashboard loads slow (5s → 20s)
-- Charts lag when updating
-- Browser tab freezes
-- "Out of memory" errors
+**Severity:** LOW
+**Phase:** Multi-Platform Publishing (Phase 2-3)
 
-**Why it happens:**
-Memory leaks and performance issues compound:
-- Convex subscriptions not cleaned up (accumulate over time)
-- Chart data grows unbounded (loading 10,000 data points)
-- setInterval timers not cleared
-- Event listeners not removed
+#### What Goes Wrong
 
-**Consequences:**
-- Degraded user experience over time
-- Users force-refresh browser frequently
-- "System is slow" complaints
-- Browser crashes on long sessions
+Convex Actions have 10-minute timeout. Batch publishing 100 posts can exceed this. Action times out, leaving partial state.
 
-**Prevention strategy:**
+#### Prevention
 
-**Phase-specific approach:**
-1. **Control Center phase:**
-   - Cleanup subscriptions in useEffect
-   - Limit chart data (max 100 points, aggregate older data)
-   - Clear timers/intervals on unmount
-   - Pagination for large lists
+1. Batch in chunks (10 posts per action)
+2. Use Convex scheduled functions for long-running tasks
+3. Implement idempotency for retry safety
 
-2. **React cleanup patterns:**
-```typescript
-// ✅ GOOD: Cleanup subscription
-useEffect(() => {
-  const subscription = convex.subscribe(...)
-
-  return () => {
-    subscription.unsubscribe() // Cleanup
-  }
-}, [])
-
-// ✅ GOOD: Limit chart data
-const chartData = useMemo(() => {
-  return executionData
-    .slice(-100) // Last 100 points only
-    .map(point => ({
-      time: point.time,
-      value: point.value
-    }))
-}, [executionData])
-
-// ❌ BAD: Unbounded data
-const chartData = allExecutions.map(...) // Could be 10k+ points
-```
-
-3. **Performance monitoring:**
-   - Track page load time (target: <2s for dashboard)
-   - Monitor memory usage (alert if >500MB)
-   - Test with long session (4+ hours open)
-   - Use React DevTools Profiler to find leaks
-
-**Warning signs:**
-- Dashboard slow after being open >1 hour
-- Browser tab memory usage increasing over time
-- React DevTools shows components not unmounting
-- Users report "need to refresh often"
-
-**Detection method:**
-```typescript
-// Memory leak detection in development
-if (process.env.NODE_ENV === 'development') {
-  setInterval(() => {
-    const used = (performance as any).memory?.usedJSHeapSize
-    if (used > 500_000_000) { // 500MB
-      console.warn('Potential memory leak detected:', used / 1_000_000, 'MB')
-    }
-  }, 30000) // Check every 30s
-}
-```
-
-**Which phase:** Control Center (Phase 1) - Test with long-running sessions before launch
-
-**Source confidence:** MEDIUM
-- [Real-Time Dashboard Performance Optimization](https://www.topanalyticstools.com/blog/how-to-optimize-real-time-dashboard-performance/)
-- [Dashboard performance monitoring essential](https://estuary.dev/blog/how-to-build-a-real-time-dashboard/)
-- Note: General web performance issue, applies to real-time dashboards specifically
+**Source:** [Convex Actions Documentation](https://docs.convex.dev/functions/actions)
 
 ---
 
-## Phase-Specific Warning Summary
+## Phase-Specific Warnings
 
-Quick reference: Which phases are most vulnerable to which pitfalls.
-
-| Phase | Critical Risks | Prevention Priority |
-|-------|----------------|---------------------|
-| **Phase 1: Control Center** | Pitfall #1 (Convex cost explosion), Pitfall #2 (Alert fatigue), Pitfall #15 (Performance degradation) | 🔴 HIGH - Address in architecture design |
-| **Phase 2: Content Pipeline** | Pitfall #3 (Complexity creep), Pitfall #9 (Multi-platform formatting), Pitfall #10 (Approval bottlenecks), Pitfall #11 (Version control) | 🔴 HIGH - Design for simplicity from start |
-| **Phase 3: LinkedIn Integration** | Pitfall #4 (Rate limit failures), Pitfall #5 (OAuth vulnerabilities) | 🔴 CRITICAL - Security review required |
-| **Phase 4: Guided UX** | Pitfall #6 (Wizard annoyance), Pitfall #14 (Hiding essential features) | 🟡 MEDIUM - Test with real users |
-| **All Phases** | Pitfall #7 (Server/Client components), Pitfall #8 (React 19 compatibility), Pitfall #12 (Spanish text expansion), Pitfall #13 (State management inconsistency) | 🟡 MEDIUM - Enforce through code review |
-
----
-
-## Confidence Assessment
-
-| Domain | Confidence | Source Quality | Notes |
-|--------|------------|----------------|-------|
-| Real-time dashboards | HIGH | Multiple 2026 sources, industry research | Alert fatigue, performance optimization well-documented |
-| Convex subscriptions | HIGH | Official Convex docs, pricing guides | Cost implications verified |
-| Content workflows | HIGH | Multiple 2026 workflow guides | Approval bottlenecks, version control common issues |
-| LinkedIn API | HIGH | Official Microsoft Learn docs, 2026 guides | Rate limits, OAuth security well-documented |
-| Next.js 16 | HIGH | Official Next.js docs, 2026 migration guides | Server/Client component mistakes verified |
-| React 19 | HIGH | Official React docs, real migration stories | Third-party compatibility issues confirmed |
-| OAuth security | HIGH | RFC 9700, security research, 2026 attack reports | Recent ConsentFix attack validates concerns |
-| Wizard UX | HIGH | Nielsen Norman Group, UX research | Power user vs novice tension well-studied |
-| Spanish localization | HIGH | Multiple localization guides | Text expansion issues verified (30% growth rate) |
-| Progressive disclosure | MEDIUM | UX research, some anecdotal | Principles solid, AMD-specific application requires validation |
-| Multi-platform formatting | MEDIUM | Content management research | General principles, less specific technical guidance |
-| State management | MEDIUM | Architecture best practices | AMD-specific strategy needs definition |
+| Phase | Topic | Pitfall | Mitigation |
+|-------|-------|---------|------------|
+| Phase 1 | Auth Foundation | Data ownership black hole | Create system user, backfill userId |
+| Phase 1 | Auth Foundation | Middleware bypass (CVE-2025-29927) | Upgrade Next.js to 15.2.3+, defense-in-depth |
+| Phase 1 | Auth Foundation | Convex auth without RLS | requireAuth() in every handler |
+| Phase 2 | LinkedIn Publishing | OAuth token refresh | Implement cron job, 5-minute cache TTL |
+| Phase 3 | Instagram Publishing | Facebook Business requirement | Start App Review Week 1 (60-90 day wait) |
+| Phase 3 | Instagram Publishing | Rate limits (200/hr, 25/day) | Track usage, queue posts |
+| Phase 3 | Twitter Publishing | API pricing cliff | Budget $200/mo (Basic tier), aggressive caching |
+| Phase 4 | Analytics Intelligence | Data freshness vs cost | Stale-while-revalidate, dynamic TTL |
+| Phase 4 | Analytics Intelligence | API quota exhaustion | Batch cron refresh, quota dashboard |
+| Phase 5 | Team Collaboration | Role creep | Minimal roles + permission flags |
 
 ---
 
-## Research Gaps and Open Questions
+## Research Confidence Assessment
 
-Areas requiring phase-specific validation or deeper investigation:
-
-1. **Convex Cost at Scale:**
-   - What's realistic monthly cost for 50 users with Control Center?
-   - At what point does Convex become prohibitively expensive?
-   - **Recommendation:** Run cost simulation in Phase 1 development
-
-2. **LinkedIn API Restrictions:**
-   - Does LinkedIn differentiate between app posts and bot posts?
-   - Can rate limiter prevent account bans, or are bans inevitable with automation?
-   - **Recommendation:** Test with burner LinkedIn account in Phase 3
-
-3. **Spanish UI Expansion:**
-   - Are there AMD-specific translations that exceed 30% expansion?
-   - Do button labels fit on mobile at 150% zoom?
-   - **Recommendation:** UI audit with longest Spanish translations before each phase
-
-4. **Multi-Platform Formatting:**
-   - Can we achieve 80% automation (20% manual tweaking acceptable)?
-   - Which platform causes most formatting issues?
-   - **Recommendation:** Prototype formatters in Phase 2 before full implementation
-
-5. **Wizard Adaptation:**
-   - At what point do users prefer quick mode? (3 completions? 5? 10?)
-   - Does wizard preference vary by user role?
-   - **Recommendation:** A/B test wizard frequency in Phase 4
+| Area | Confidence | Sources |
+|------|------------|---------|
+| Auth Retrofit | HIGH | Convex official docs, Next.js official, CVE database |
+| OAuth Management | HIGH | OAuth 2.1 spec 2026, Auth0 guides, platform official docs |
+| Instagram API | HIGH | Official Meta docs, 2026 developer guides |
+| Twitter API Pricing | HIGH | Official X pricing, 2026 developer guides |
+| Analytics Caching | HIGH | Vercel 2025 announcements, caching strategy guides |
+| Convex Authorization | HIGH | Official Convex Stack articles, GitHub examples |
+| Social Webhooks | MEDIUM | Platform docs, community guides |
+| Content Formatting | MEDIUM | Unified API comparisons, platform limits |
 
 ---
 
 ## Sources
 
-### Critical Pitfalls (High Confidence)
+**Authentication & Authorization:**
+- [Next.js Authentication Guide](https://nextjs.org/docs/app/guides/authentication)
+- [Top Authentication Solutions Next.js 2026](https://workos.com/blog/top-authentication-solutions-nextjs-2026)
+- [Convex Authorization Best Practices](https://stack.convex.dev/authorization)
+- [Convex Row-Level Security](https://stack.convex.dev/row-level-security)
+- [Convex Auth Documentation](https://docs.convex.dev/auth)
+- [Multi-Tenant Data Isolation Anti-Patterns](https://propelius.ai/blogs/tenant-data-isolation-patterns-and-anti-patterns)
+- [Data Migration Risks 2026](https://medium.com/@kanerika/top-10-data-migration-risks-and-how-to-avoid-them-in-2026-fb5dc93c12f5)
+- [RBAC Migration Challenges](https://learn.microsoft.com/en-us/azure/key-vault/general/rbac-migration)
 
-**Real-Time Dashboards & Performance:**
-- [From Data To Decisions: UX Strategies For Real-Time Dashboards — Smashing Magazine](https://www.smashingmagazine.com/2025/09/ux-strategies-real-time-dashboards/)
-- [How to Optimize Real-Time Dashboard Performance](https://www.topanalyticstools.com/blog/how-to-optimize-real-time-dashboard-performance/)
-- [6 pitfalls of marketing dashboards and how to leap over them](https://www.articulatemarketing.com/blog/pitfalls-of-marketing-dashboards)
+**OAuth & Token Management:**
+- [OAuth 2.1 Features 2026](https://rgutierrez2004.medium.com/oauth-2-1-features-you-cant-ignore-in-2026-a15f852cb723)
+- [Refresh Token Security Best Practices](https://securityboulevard.com/2026/01/what-are-refresh-tokens-complete-implementation-guide-security-best-practices/)
+- [Token Storage Best Practices](https://auth0.com/docs/secure/security-guidance/data-security/token-storage)
+- [OAuth Tokens Security](https://entro.security/glossary/oauth-tokens/)
+- [Google OAuth Best Practices](https://developers.google.com/identity/protocols/oauth2/resources/best-practices)
 
-**Convex Pricing & Optimization:**
-- [ConvexDB Pricing Guide: Plans, Features & Cost Optimization | Airbyte](https://airbyte.com/data-engineering-resources/convexdb-pricing)
-- [Making Convex plans more friendly](https://news.convex.dev/making-convex-plans-more-friendly/)
-- [Convex Plans and Pricing](https://www.convex.dev/pricing)
+**Instagram API:**
+- [Instagram Graph API Guide 2026](https://elfsight.com/blog/instagram-graph-api-complete-developer-guide-for-2026/)
+- [Instagram API 2026 Changes](https://storrito.com/resources/Instagram-API-2026/)
+- [Instagram API Complete Guide](https://tagembed.com/blog/instagram-api/)
+- [Instagram Graph API Setup](https://mattercall.com/instagram-graph-api)
 
-**Alert Fatigue:**
-- [Alert Fatigue: What It Is and How to Prevent It | Datadog](https://www.datadoghq.com/blog/best-practices-to-prevent-alert-fatigue/)
-- [What Is Alert Fatigue? | IBM](https://www.ibm.com/think/topics/alert-fatigue)
-- [Stop Chasing False Alarms: How AI-Powered Traffic Monitoring Cuts Alert Fatigue](https://securityboulevard.com/2026/01/stop-chasing-false-alarms-how-ai-powered-traffic-monitoring-cuts-alert-fatigue/)
+**Twitter/X API:**
+- [Twitter API Pricing 2026](https://getlate.dev/blog/twitter-api-pricing)
+- [X API Pricing Tiers 2025](https://twitterapi.io/blog/twitter-api-pricing-2025)
+- [X Pay-Per-Use Announcement](https://devcommunity.x.com/t/announcing-the-x-api-pay-per-use-pricing-pilot/250253)
+- [Twitter API Limitations](https://data365.co/guides/twitter-api-limitations-and-pricing)
+- [X API Guide 2026](https://getlate.dev/blog/x-api)
 
-**Content Approval Workflows:**
-- [Content Approval Workflow: Steps, Tips, and Tools | Smartsheet](https://www.smartsheet.com/content-approval-workflow)
-- [Why content approval workflows matter | Kontent.ai](https://kontent.ai/blog/content-approval-workflows/)
-- [The Ultimate Guide to Content Approval Workflows | Contentstack](https://www.contentstack.com/blog/all-about-headless/content-approval-workflow-guide)
+**Multi-Platform Publishing:**
+- [Best Unified Social Media APIs 2026](https://www.outstand.so/blog/best-unified-social-media-apis-for-devs)
+- [Social Media APIs Comparison](https://getlate.dev/blog/top-10-social-media-apis-for-developers)
+- [Social Scheduling API Guide 2026](https://sainam.tech/blog/social-scheduling-api-guide-2026/)
 
-**LinkedIn API & Rate Limits:**
-- [LinkedIn API Rate Limiting - LinkedIn | Microsoft Learn](https://learn.microsoft.com/en-us/linkedin/shared/api-guide/concepts/rate-limits)
-- [LinkedIn Limits for Connection Requests & Messages (2026)](https://evaboot.com/blog/linkedin-limits)
-- [Common Challenges in LinkedIn API Integration](https://visioninfotech.net/common-challenges-in-linkedin-api-integration-and-how-to-overcome-them/)
+**Analytics & Caching:**
+- [Vercel External API Caching](https://www.infoq.com/news/2025/07/vercel-api-caching-analytics/)
+- [Caching Strategies 2026](https://www.dragonflydb.io/guides/caching-strategies-to-know)
+- [Real-Time Analytics vs Caching](https://www.gooddata.com/blog/real-time-analytics-vs-caching-in-data-nalytics/)
+- [Caching Architecture Guide](https://dev.to/budiwidhiyanto/caching-strategies-across-application-layers-building-faster-more-scalable-products-h08)
 
-**OAuth Security:**
-- [OAuth 2.0 for APIs: Flows, Tokens, and Pitfalls - Treblle](https://treblle.com/blog/oauth-2.0-for-apis)
-- [OAuth Vulnerabilities and Misconfigurations](https://www.descope.com/blog/post/5-oauth-misconfigurations)
-- [New OAuth-Based Attack Lets Hackers Bypass Microsoft Entra Authentication](https://cyberpress.org/new-oauth-based-attack/)
-
-**Wizard UX:**
-- [Wizards: Definition and Design Recommendations - NN/G](https://www.nngroup.com/articles/wizards/)
-- [Wizards Versus Forms :: UXmatters](https://www.uxmatters.com/mt/archives/2011/09/wizards-versus-forms.php)
-- [When to Develop a Wizard — UX Articles by Center Centre](https://articles.uie.com/wizard/)
-
-**Feature Creep & Technical Debt:**
-- [Feature Creep Is Killing Your Software: Here's How to Stop It](https://www.designrush.com/agency/software-development/trends/feature-creep)
-- [Technical debt: a strategic guide for 2026 | Monday.com](https://monday.com/blog/rnd/technical-debt/)
-- [Why technical debt is quietly eating away your 2026 margins](https://wishtreetech.com/blogs/ai/why-technical-debt-is-quietly-eating-away-your-2026-margins/)
-
-**Next.js 16 & App Router:**
-- [Next.js App Router: common mistakes and how to fix them](https://upsun.com/blog/avoid-common-mistakes-with-next-js-app-router/)
-- [Next.js Server Components Broke Our App Twice. Worth It?](https://medium.com/lets-code-future/next-js-server-components-broke-our-app-twice-worth-it-e511335eed22)
-- [10 Next.js mistakes slowing your app and how to fix them fast](https://www.jigz.dev/blogs/10-nextjs-mistakes-slowing-your-app-and-how-to-fix-them-fast)
-
-**React 19 Migration:**
-- [React 19 Upgrade Guide – React](https://react.dev/blog/2024/04/25/react-19-upgrade-guide)
-- [Common Mistakes When Upgrading to React 19 and How to Avoid Them](https://blog.openreplay.com/common-mistakes-upgrading-react-19-avoid/)
-- [How we migrated MUI X to React 19 - MUI](https://mui.com/blog/react-19-update/)
-
-**Spanish Localization:**
-- [A Guide To UI Localization - LatinoBridge](https://latinobridge.com/blog/a-guide-to-ui-localization/)
-- [Top 5 UI/UX Localization Mistakes to Avoid: Lessons from the Field](https://hansem.com/blog/ui-ux-localization-mistakes/)
-- [UI Localization into Romance Languages - Art One Translations](https://artonetranslations.com/ui-localization-into-romance-languages/)
-
-**Progressive Disclosure:**
-- [Progressive Disclosure Examples to Simplify Complex SaaS Products](https://userpilot.com/blog/progressive-disclosure-examples/)
-- [What is Progressive Disclosure? | IxDF](https://www.interaction-design.org/literature/topics/progressive-disclosure)
-- [Progressive Disclosure - NN/G](https://www.nngroup.com/articles/progressive-disclosure/)
-
-### Moderate Pitfalls (Medium Confidence)
-
-**Content Multi-Platform Formatting:**
-- [7 Content Mistakes From 2025 To Avoid In 2026](https://www.writerzden.com/content-writing-mistakes-lessons-2025-2026/)
-- [Content workflow: A resourceful guide for 2026 to follow](https://planable.io/blog/content-workflow/)
-
-**Marketing Automation State Management:**
-- [8 Common Challenges in Marketing Automation and How To Overcome Them](https://www.tenonhq.com/article/marketing-automation-challenges)
-- [Marketing Automation for Dynamics in 2026: What Actually Matters Now](https://msdynamicsworld.com/blog-post/marketing-automation-dynamics-2026-what-actually-matters-now)
-
-**Dashboard Performance:**
-- [How to Build a Real-Time Dashboard: A Step-by-Step Guide for Engineers](https://estuary.dev/blog/how-to-build-a-real-time-dashboard/)
+**Webhooks & Reliability:**
+- [Instagram API Webhooks](https://www.unipile.com/how-to-use-instagram-api-webhooks-for-real-time-notifications/)
+- [Twitter Activity Retries](https://developer.twitter.com/en/docs/twitter-api/enterprise/account-activity-api/guides/activity-retries)
+- [Webhook Retry Logic Guide](https://latenode.com/blog/integration-api-management/webhook-setup-configuration/how-to-implement-webhook-retry-logic)
+- [API Error Handling 2026](https://easyparser.com/blog/api-error-handling-retry-strategies-python-guide)
 
 ---
 
-## Metadata
-
-**Research date:** 2026-02-05
-**Researcher:** GSD Project Researcher (gsd-project-researcher agent)
-**Project:** AMD v2.0 UX/UI Excellence
-**Milestone:** Subsequent (adding operational features to existing system)
-**Research focus:** Integration pitfalls, complexity management, platform-specific constraints
-
-**Valid until:** 2026-03-05 (30 days - operational best practices evolve slowly)
-
-**Verification note:** All findings cross-referenced with 2026 sources. High confidence areas (Convex, LinkedIn API, Next.js 16, React 19, OAuth, UX patterns) verified with multiple authoritative sources. Medium confidence areas (multi-platform formatting, state management patterns) based on general best practices applied to AMD context.
-
-**Recommendation:** Treat this as living document. Update when:
-- Convex releases pricing changes
-- LinkedIn API policy updates
-- Next.js/React release breaking changes
-- User feedback reveals unexpected pitfalls in production
+*Last updated: 2026-02-05*
+*Confidence: HIGH (official sources + 2026 standards)*
+*Prepared for: v3.0 milestone planning*
