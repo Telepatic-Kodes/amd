@@ -1,5 +1,6 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
+import { requireAuth, getUserId } from "./lib/auth";
 
 export const complete = mutation({
   args: {
@@ -12,8 +13,10 @@ export const complete = mutation({
     departments: v.array(v.string()),
   },
   handler: async (ctx, args) => {
+    const userId = await getUserId(ctx);
     await ctx.db.insert("onboarding", {
       ...args,
+      userId,
       completedAt: Date.now(),
     });
   },
@@ -21,12 +24,14 @@ export const complete = mutation({
 
 export const get = query({
   handler: async (ctx) => {
-    // Obtener el último onboarding completado
-    const onboarding = await ctx.db
+    const userId = await getUserId(ctx);
+    // Obtener el último onboarding completado del usuario
+    const allOnboarding = await ctx.db
       .query("onboarding")
       .order("desc")
-      .first();
+      .collect();
 
-    return onboarding;
+    const userOnboarding = allOnboarding.find(o => o.userId === userId);
+    return userOnboarding;
   },
 });

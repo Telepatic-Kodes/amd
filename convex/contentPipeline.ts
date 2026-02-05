@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { requireAuth, getUserId } from "./lib/auth";
 
 // ===========================================
 // ALLOWED TRANSITIONS MAP
@@ -27,10 +28,14 @@ const ALLOWED_TRANSITIONS: Record<string, string[]> = {
 export const getContentByStatus = query({
   args: {},
   handler: async (ctx) => {
+    const userId = await getUserId(ctx);
     const allContent = await ctx.db.query("content").collect();
 
+    // Filter by userId - show user's content + legacy unassigned content
+    const userContent = allContent.filter(item => item.userId === userId || item.userId === undefined);
+
     // Initialize columns for all 7 Kanban-relevant statuses
-    const columns: Record<string, typeof allContent> = {
+    const columns: Record<string, typeof userContent> = {
       draft: [],
       review: [],
       revision_needed: [],
@@ -41,7 +46,7 @@ export const getContentByStatus = query({
     };
 
     // Group content by status
-    for (const item of allContent) {
+    for (const item of userContent) {
       if (columns[item.status]) {
         columns[item.status].push(item);
       }
@@ -63,7 +68,11 @@ export const getContentByStatus = query({
 export const getContentStatusCounts = query({
   args: {},
   handler: async (ctx) => {
+    const userId = await getUserId(ctx);
     const allContent = await ctx.db.query("content").collect();
+
+    // Filter by userId - show user's content + legacy unassigned content
+    const userContent = allContent.filter(item => item.userId === userId || item.userId === undefined);
 
     const counts = {
       draft: 0,
@@ -73,10 +82,10 @@ export const getContentStatusCounts = query({
       scheduled: 0,
       published: 0,
       archived: 0,
-      total: allContent.length,
+      total: userContent.length,
     };
 
-    for (const item of allContent) {
+    for (const item of userContent) {
       if (item.status in counts) {
         counts[item.status as keyof Omit<typeof counts, "total">]++;
       }
@@ -94,20 +103,25 @@ export const getContentStatusCounts = query({
 export const getScheduledContent = query({
   args: {},
   handler: async (ctx) => {
+    const userId = await getUserId(ctx);
+
     const scheduledItems = await ctx.db
       .query("content")
       .withIndex("by_status", (q) => q.eq("status", "scheduled"))
       .collect();
 
+    // Filter by userId - show user's content + legacy unassigned content
+    const userScheduledItems = scheduledItems.filter(item => item.userId === userId || item.userId === undefined);
+
     // Sort by scheduledFor ascending (soonest first)
-    scheduledItems.sort((a, b) => {
+    userScheduledItems.sort((a, b) => {
       const aTime = a.scheduledFor ?? Infinity;
       const bTime = b.scheduledFor ?? Infinity;
       return aTime - bTime;
     });
 
     // Return relevant fields for the scheduled content view
-    return scheduledItems.map((item) => ({
+    return userScheduledItems.map((item) => ({
       _id: item._id,
       contentId: item.contentId,
       title: item.title,
@@ -136,6 +150,11 @@ export const moveContent = mutation({
     const content = await ctx.db.get(args.id);
     if (!content) {
       throw new Error("Contenido no encontrado");
+    }
+
+    const userId = await getUserId(ctx);
+    if (content.userId && content.userId !== userId) {
+      throw new Error("No tienes permiso para modificar este contenido.");
     }
 
     const currentStatus = content.status;
@@ -187,6 +206,11 @@ export const moveContentToReview = mutation({
       throw new Error("Contenido no encontrado");
     }
 
+    const userId = await getUserId(ctx);
+    if (content.userId && content.userId !== userId) {
+      throw new Error("No tienes permiso para modificar este contenido.");
+    }
+
     const currentStatus = content.status;
     if (currentStatus !== "draft" && currentStatus !== "revision_needed") {
       throw new Error(
@@ -228,6 +252,11 @@ export const approveContent = mutation({
     const content = await ctx.db.get(args.id);
     if (!content) {
       throw new Error("Contenido no encontrado");
+    }
+
+    const userId = await getUserId(ctx);
+    if (content.userId && content.userId !== userId) {
+      throw new Error("No tienes permiso para modificar este contenido.");
     }
 
     const currentStatus = content.status;
@@ -280,6 +309,11 @@ export const rejectContent = mutation({
       throw new Error("Contenido no encontrado");
     }
 
+    const userId = await getUserId(ctx);
+    if (content.userId && content.userId !== userId) {
+      throw new Error("No tienes permiso para modificar este contenido.");
+    }
+
     const currentStatus = content.status;
     if (currentStatus !== "review") {
       throw new Error(
@@ -321,6 +355,11 @@ export const scheduleContent = mutation({
     const content = await ctx.db.get(args.id);
     if (!content) {
       throw new Error("Contenido no encontrado");
+    }
+
+    const userId = await getUserId(ctx);
+    if (content.userId && content.userId !== userId) {
+      throw new Error("No tienes permiso para modificar este contenido.");
     }
 
     const currentStatus = content.status;
@@ -375,6 +414,11 @@ export const publishContent = mutation({
     const content = await ctx.db.get(args.id);
     if (!content) {
       throw new Error("Contenido no encontrado");
+    }
+
+    const userId = await getUserId(ctx);
+    if (content.userId && content.userId !== userId) {
+      throw new Error("No tienes permiso para modificar este contenido.");
     }
 
     const currentStatus = content.status;

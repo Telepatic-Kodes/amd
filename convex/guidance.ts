@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
+import { requireAuth, getUserId } from "./lib/auth";
 
 /**
  * Get or create the singleton guidance record
@@ -7,8 +8,10 @@ import { query, mutation } from "./_generated/server";
 export const getGuidance = query({
   args: {},
   handler: async (ctx) => {
-    const existing = await ctx.db.query("userGuidance").first();
-    if (existing) return existing;
+    const userId = await getUserId(ctx);
+    const allGuidance = await ctx.db.query("userGuidance").collect();
+    const userGuidance = allGuidance.find(g => g.userId === userId);
+    if (userGuidance) return userGuidance;
     return null;
   },
 });
@@ -19,12 +22,20 @@ export const getGuidance = query({
 export const getSetupProgress = query({
   args: {},
   handler: async (ctx) => {
-    const guidance = await ctx.db.query("userGuidance").first();
+    const userId = await getUserId(ctx);
+    const allGuidance = await ctx.db.query("userGuidance").collect();
+    const guidance = allGuidance.find(g => g.userId === userId);
 
     // Compute from actual data if no guidance record
-    const onboarding = await ctx.db.query("onboarding").first();
-    const content = await ctx.db.query("content").collect();
-    const campaigns = await ctx.db.query("campaigns").collect();
+    const allOnboarding = await ctx.db.query("onboarding").collect();
+    const onboarding = allOnboarding.find(o => o.userId === userId);
+
+    const allContent = await ctx.db.query("content").collect();
+    const content = allContent.filter(c => c.userId === userId || c.userId === undefined);
+
+    const allCampaigns = await ctx.db.query("campaigns").collect();
+    const campaigns = allCampaigns.filter(c => c.userId === userId || c.userId === undefined);
+
     const feeds = await ctx.db.query("feeds").collect();
 
     const steps = {
@@ -72,11 +83,14 @@ export const getSetupProgress = query({
 export const initGuidance = mutation({
   args: {},
   handler: async (ctx) => {
-    const existing = await ctx.db.query("userGuidance").first();
+    const userId = await getUserId(ctx);
+    const allGuidance = await ctx.db.query("userGuidance").collect();
+    const existing = allGuidance.find(g => g.userId === userId);
     if (existing) return existing._id;
 
     const now = Date.now();
     return await ctx.db.insert("userGuidance", {
+      userId,
       onboardingCompletions: 0,
       quickModeEnabled: false,
       setupProgress: 0,
@@ -113,10 +127,14 @@ export const completeSetupStep = mutation({
     ),
   },
   handler: async (ctx, args) => {
-    let guidance = await ctx.db.query("userGuidance").first();
+    const userId = await getUserId(ctx);
+    const allGuidance = await ctx.db.query("userGuidance").collect();
+    let guidance = allGuidance.find(g => g.userId === userId);
+
     if (!guidance) {
       const now = Date.now();
       const id = await ctx.db.insert("userGuidance", {
+        userId,
         onboardingCompletions: 0,
         quickModeEnabled: false,
         setupProgress: 0,
@@ -169,7 +187,9 @@ export const completeSetupStep = mutation({
 export const trackFeatureDiscovery = mutation({
   args: { featureId: v.string() },
   handler: async (ctx, args) => {
-    let guidance = await ctx.db.query("userGuidance").first();
+    const userId = await getUserId(ctx);
+    const allGuidance = await ctx.db.query("userGuidance").collect();
+    let guidance = allGuidance.find(g => g.userId === userId);
     if (!guidance) return;
 
     const existing = guidance.featuresDiscovered.find(
@@ -204,7 +224,9 @@ export const trackFeatureDiscovery = mutation({
 export const toggleQuickMode = mutation({
   args: { enabled: v.boolean() },
   handler: async (ctx, args) => {
-    const guidance = await ctx.db.query("userGuidance").first();
+    const userId = await getUserId(ctx);
+    const allGuidance = await ctx.db.query("userGuidance").collect();
+    const guidance = allGuidance.find(g => g.userId === userId);
     if (!guidance) return;
 
     await ctx.db.patch(guidance._id, {
@@ -220,7 +242,9 @@ export const toggleQuickMode = mutation({
 export const incrementOnboardingCompletion = mutation({
   args: {},
   handler: async (ctx) => {
-    const guidance = await ctx.db.query("userGuidance").first();
+    const userId = await getUserId(ctx);
+    const allGuidance = await ctx.db.query("userGuidance").collect();
+    const guidance = allGuidance.find(g => g.userId === userId);
     if (!guidance) return;
 
     await ctx.db.patch(guidance._id, {
