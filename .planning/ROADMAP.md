@@ -149,11 +149,12 @@
   4. All pages require authentication (redirect to login if not authenticated)
   5. User session persists across browser tabs and page refreshes
 
-**Plans:** TBD (estimated 2-3 plans)
+**Plans:** 3 plans in 3 waves
 
 Plans:
-- [ ] 13-01: TBD during phase planning
-- [ ] 13-02: TBD during phase planning
+- [ ] 13-01-PLAN.md — Clerk + Convex auth infrastructure, middleware, sign-in/sign-up pages
+- [ ] 13-02-PLAN.md — Schema migration (users table, userId fields), auth helpers, query/mutation enforcement
+- [ ] 13-03-PLAN.md — Dashboard auth UI (UserMenu, user sync, migration prompt, Spanish labels)
 
 ---
 
