@@ -85,36 +85,39 @@ Deferred to future milestones. Tracked but not in current roadmap.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CC-01 | Pending | Pending |
-| CC-02 | Pending | Pending |
-| CC-03 | Pending | Pending |
-| CC-04 | Pending | Pending |
-| CC-05 | Pending | Pending |
-| CP-01 | Pending | Pending |
-| CP-02 | Pending | Pending |
-| CP-03 | Pending | Pending |
-| CP-04 | Pending | Pending |
-| CP-05 | Pending | Pending |
-| LI-01 | Pending | Pending |
-| LI-02 | Pending | Pending |
-| LI-03 | Pending | Pending |
-| LI-04 | Pending | Pending |
-| LI-05 | Pending | Pending |
-| GX-01 | Pending | Pending |
-| GX-02 | Pending | Pending |
-| GX-03 | Pending | Pending |
-| GX-04 | Pending | Pending |
-| GX-05 | Pending | Pending |
-| UX-01 | Pending | Pending |
-| UX-02 | Pending | Pending |
-| UX-03 | Pending | Pending |
-| UX-04 | Pending | Pending |
+| CC-01 | Phase 9 | Pending |
+| CC-02 | Phase 9 | Pending |
+| CC-03 | Phase 9 | Pending |
+| CC-04 | Phase 9 | Pending |
+| CC-05 | Phase 9 | Pending |
+| CP-01 | Phase 10 | Pending |
+| CP-02 | Phase 10 | Pending |
+| CP-03 | Phase 10 | Pending |
+| CP-04 | Phase 10 | Pending |
+| CP-05 | Phase 10 | Pending |
+| LI-01 | Phase 11 | Pending |
+| LI-02 | Phase 11 | Pending |
+| LI-03 | Phase 11 | Pending |
+| LI-04 | Phase 11 | Pending |
+| LI-05 | Phase 11 | Pending |
+| GX-01 | Phase 12 | Pending |
+| GX-02 | Phase 12 | Pending |
+| GX-03 | Phase 12 | Pending |
+| GX-04 | Phase 12 | Pending |
+| GX-05 | Phase 12 | Pending |
+| UX-01 | Phases 9, 10, 11, 12 | Pending |
+| UX-02 | Phases 9, 10, 11, 12 | Pending |
+| UX-03 | Phases 9, 10, 11, 12 | Pending |
+| UX-04 | Phases 9, 10, 11, 12 | Pending |
 
 **Coverage:**
 - v2.0 requirements: 24 total
-- Mapped to phases: 0 (pending roadmap creation)
-- Unmapped: 24 ⚠️
+- Mapped to phases: 24/24 (100% coverage ✓)
+- Unmapped: 0
+
+**Cross-Cutting Requirements Note:**
+UX-01 through UX-04 (Spanish UI, mobile responsive, toast notifications, loading states) are mapped to ALL phases (9, 10, 11, 12) because they are cross-cutting concerns that apply to every feature, not isolated to one phase.
 
 ---
 *Requirements defined: 2026-02-05*
-*Last updated: 2026-02-05 after initial definition*
+*Last updated: 2026-02-05 after roadmap creation*
