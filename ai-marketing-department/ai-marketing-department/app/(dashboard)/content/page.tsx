@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@convex/_generated/api";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 import {
   FileText,
   Search,
@@ -28,6 +29,7 @@ import {
   Sparkles,
   Edit2,
   Loader2,
+  Columns3,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/Card";
@@ -283,18 +285,27 @@ export default function ContentPage() {
   return (
     <div data-tour="content-section" className="space-y-12">
       {/* Header */}
-      <div className="flex items-center gap-3">
-        <div className="p-2 rounded-xl bg-blue-500/10">
-          <FileText className="h-6 w-6 text-blue-400" />
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-xl bg-blue-500/10">
+            <FileText className="h-6 w-6 text-blue-400" />
+          </div>
+          <div>
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+              Contenido
+            </h1>
+            <p className="text-zinc-400 mt-1 text-lg">
+              Gestiona tus {content.length} piezas de contenido.
+            </p>
+          </div>
         </div>
-        <div>
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
-            Content
-          </h1>
-          <p className="text-zinc-400 mt-1 text-lg">
-            Manage your {content.length} content pieces.
-          </p>
-        </div>
+        <Link
+          href="/content/pipeline"
+          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 transition-colors text-sm font-medium"
+        >
+          <Columns3 className="h-4 w-4" />
+          Vista Pipeline
+        </Link>
       </div>
 
       {/* Filters */}

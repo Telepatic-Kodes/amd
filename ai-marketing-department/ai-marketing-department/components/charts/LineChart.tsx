@@ -19,36 +19,55 @@ interface DataPoint {
 
 interface LineChartProps {
   data: DataPoint[];
-  lines: {
+  lines?: {
     dataKey: string;
     name?: string;
     color?: string;
     strokeDasharray?: string;
   }[];
-  xAxisKey: string;
+  xAxisKey?: string;
   height?: number;
   showGrid?: boolean;
   showLegend?: boolean;
   showXAxis?: boolean;
   showYAxis?: boolean;
+  showTooltip?: boolean;
   valueFormatter?: (value: number) => string;
   labelFormatter?: (label: string) => string;
   className?: string;
+  // Simplified props for single line charts
+  dataKey?: string;
+  name?: string;
 }
 
 export function LineChartComponent({
   data,
-  lines,
-  xAxisKey,
+  lines: propsLines,
+  xAxisKey = 'name',
   height = 300,
   showGrid = true,
   showLegend = true,
   showXAxis = true,
   showYAxis = true,
+  showTooltip = true,
   valueFormatter,
   labelFormatter,
   className,
+  dataKey,
+  name,
 }: LineChartProps) {
+  // Build lines array from props if not provided (for backwards compatibility)
+  const lines = propsLines || (dataKey ? [{ dataKey, name: name || dataKey }] : []);
+
+  // If no data or no lines, return empty container
+  if (!data || !lines || lines.length === 0) {
+    return (
+      <div className={`${className} flex items-center justify-center bg-zinc-900/20 rounded-lg`} style={{ height }}>
+        <p className="text-zinc-500">No data available</p>
+      </div>
+    );
+  }
+
   return (
     <div className={className} style={{ height }}>
       <ResponsiveContainer width="100%" height="100%">
@@ -83,15 +102,17 @@ export function LineChartComponent({
               tickFormatter={valueFormatter}
             />
           )}
-          <Tooltip
-            content={
-              <ChartTooltip
-                valueFormatter={valueFormatter}
-                labelFormatter={labelFormatter}
-              />
-            }
-            cursor={tooltipStyle.cursor}
-          />
+          {showTooltip && (
+            <Tooltip
+              content={
+                <ChartTooltip
+                  valueFormatter={valueFormatter}
+                  labelFormatter={labelFormatter}
+                />
+              }
+              cursor={tooltipStyle.cursor}
+            />
+          )}
           {showLegend && (
             <Legend
               wrapperStyle={{
