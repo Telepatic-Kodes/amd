@@ -14,11 +14,11 @@ See: .planning/PROJECT.md (updated 2026-02-05)
 ## Current Position
 
 Phase: 13 of 18 (Multi-User Authentication Foundation)
-Plan: 02 of 04 completed
+Plan: 02b of 04 completed (Wave 2)
 Status: In progress
-Last activity: 2026-02-05 — Completed 13-02-PLAN.md (Backend auth foundation)
+Last activity: 2026-02-05 — Completed 13-02b-PLAN.md (Function-level auth enforcement)
 
-Progress: [████████████░░░░░░] 69% (v1.0 + v2.0 shipped: 12/18 phases, v3.0: 2/24 plans completed)
+Progress: [████████████░░░░░░] 69% (v1.0 + v2.0 shipped: 12/18 phases, v3.0: 3/24 plans completed)
 
 ## Performance Metrics
 
@@ -35,9 +35,9 @@ Progress: [████████████░░░░░░] 69% (v1.0 + v
 - Average duration: ~7.5 min/plan
 
 **v3.0 Velocity:**
-- Total plans completed: 2/24
-- Average duration: ~3 min/plan
-- Total execution time: ~6 min
+- Total plans completed: 3/24
+- Average duration: ~5 min/plan
+- Total execution time: ~13 min
 
 ## Accumulated Context
 
@@ -55,6 +55,8 @@ Recent decisions affecting current work:
 - **13-02: userId stores Clerk subject string** — Direct filtering without additional lookups, getUserId() extracts from identity.subject
 - **13-02: First user becomes system owner** — Automatic role assignment with isSystemOwner flag for migrations
 - **13-02: Optional userId fields** — Backward compatibility maintained, gradual migration supported
+- **13-02b: Backward-compatible filtering pattern** — Queries filter with `item.userId === userId || item.userId === undefined` for migration grace period
+- **13-02b: System resources remain shared** — Agents, settings, executions accessible to all authenticated users (not user-scoped)
 
 ### Pending Todos
 
@@ -63,9 +65,10 @@ None yet.
 ### Blockers/Concerns
 
 **Phase 13 (Authentication) - IMMEDIATE:**
-- Data migration risk: Existing v2.0 content/agents must be assigned to "system owner" to avoid orphaned records
-- Convex authorization pattern: Defense-in-depth required (middleware + requireAuth in all queries)
-- CVE-2025-29927 mitigation: Never rely on Next.js middleware alone for auth
+- Data migration risk: Existing v2.0 content/agents must be assigned to "system owner" to avoid orphaned records (13-04 will resolve)
+- ✓ Defense-in-depth complete: All user-facing Convex functions enforce auth independently
+- ✓ Backward compatibility: Queries handle undefined userId gracefully during migration
+- Frontend integration pending: Next.js middleware + Clerk components needed (13-03)
 
 **Phase 15 (Multi-Platform) - UPCOMING:**
 - Instagram Business API: App Review required (60-90 day timeline) - must start submission Week 1
@@ -80,9 +83,9 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-05
-Stopped at: Completed 13-02-PLAN.md - Backend auth foundation with users table, auth helpers, and data migration
+Stopped at: Completed 13-02b-PLAN.md - Function-level auth enforcement on all user-facing queries/mutations
 Resume file: None
-Next action: Plan and execute 13-03 (Frontend integration)
+Next action: Plan and execute 13-03 (Frontend integration with Clerk components and middleware)
 
 ---
 
