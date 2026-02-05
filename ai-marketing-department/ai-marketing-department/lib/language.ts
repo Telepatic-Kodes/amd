@@ -217,6 +217,20 @@ export const LABELS = {
   addManual: "Agregar manualmente",
   feedsAdded: "fuentes agregadas",
   feedsSkipped: "fuentes omitidas",
+
+  // Auth translations
+  auth_iniciar_sesion: "Iniciar sesión",
+  auth_registrarse: "Registrarse",
+  auth_cerrar_sesion: "Cerrar sesión",
+  auth_mi_cuenta: "Mi cuenta",
+  auth_perfil: "Perfil",
+  auth_bienvenido: "Bienvenido",
+  auth_no_autenticado: "No autenticado",
+  auth_migracion_titulo: "Migrar datos existentes",
+  auth_migracion_descripcion: "Asignar todos los datos existentes a tu cuenta como propietario del sistema.",
+  auth_migracion_boton: "Ejecutar migración",
+  auth_migracion_completada: "Migración completada",
+  auth_migracion_error: "Error en la migración",
 } as const;
 
 /**

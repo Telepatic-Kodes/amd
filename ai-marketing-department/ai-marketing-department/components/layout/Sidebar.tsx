@@ -8,13 +8,13 @@ import {
     FileText,
     BarChart3,
     Settings,
-    LogOut,
     Sparkles,
     Activity,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { translate } from "@/lib/language";
+import { UserMenu } from "./UserMenu";
 
 // Simplified navigation: 5 main sections (v2.0 adds Control Center)
 const mainNavigation = [
@@ -69,12 +69,11 @@ export function Sidebar() {
                 })}
             </div>
 
-            {/* Disconnect Button */}
+            {/* User Menu */}
             <div className="border-t border-zinc-800 p-4">
-                <button className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-zinc-400 transition-colors hover:bg-white/5 hover:text-white">
-                    <LogOut className="h-5 w-5" />
-                    Salir
-                </button>
+                <div className="flex items-center justify-center">
+                    <UserMenu />
+                </div>
             </div>
         </div>
     );

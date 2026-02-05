@@ -1,6 +1,7 @@
 "use client";
 
-import { useQuery } from "convex/react";
+import { useState, useEffect, useRef } from "react";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "@convex/_generated/api";
 import { motion } from "framer-motion";
 import {
@@ -12,6 +13,8 @@ import {
   Clock,
   CheckCircle,
   AlertCircle,
+  Database,
+  X,
 } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
@@ -24,6 +27,7 @@ import { FeedHealthSummary } from "@/components/feeds/FeedHealthSummary";
 import { NextActionCard } from "@/components/guided-ux/NextActionCard";
 import { SetupProgress } from "@/components/guided-ux/SetupProgress";
 import { ContextualHelp } from "@/components/guided-ux/ContextualHelp";
+import { useToast } from "@/components/ui/Toast";
 
 function formatNumber(num: number) {
   if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
@@ -43,9 +47,82 @@ function generateSparklineData(length: number = 7) {
 }
 
 export default function DashboardPage() {
+  const { success, error } = useToast();
+  const [synced, setSynced] = useState(false);
+  const [migrating, setMigrating] = useState(false);
+  const [showMigrationBanner, setShowMigrationBanner] = useState(false);
+  const syncAttemptedRef = useRef(false);
+
+  // User sync and data
+  const syncUser = useMutation(api.users.getOrCreateUser);
+  const currentUser = useQuery(api.users.getCurrentUser);
+  const migrateData = useMutation(api.migration.migrateExistingDataToOwner);
+
   const campaigns = useQuery(api.functions.listCampaigns, {});
   const content = useQuery(api.functions.listContent, {});
   const agents = useQuery(api.functions.listAgents, {});
+
+  // User sync effect - runs once on mount
+  useEffect(() => {
+    if (!synced && !syncAttemptedRef.current) {
+      syncAttemptedRef.current = true;
+      syncUser()
+        .then(() => {
+          setSynced(true);
+          // Show welcome toast on first sync only
+          const welcomed = localStorage.getItem("amd_welcomed");
+          if (!welcomed) {
+            localStorage.setItem("amd_welcomed", "true");
+            // We'll show personalized welcome after user data loads
+          }
+        })
+        .catch((err) => {
+          error("Error al sincronizar perfil. Intenta recargar la página.", err.message);
+        });
+    }
+  }, [synced, syncUser, error]);
+
+  // Check if migration banner should be shown
+  useEffect(() => {
+    if (currentUser && currentUser.isSystemOwner && synced) {
+      const migrationDone = localStorage.getItem("amd_migration_done");
+      if (!migrationDone) {
+        setShowMigrationBanner(true);
+      }
+    }
+  }, [currentUser, synced]);
+
+  // Show personalized welcome toast after first sync
+  useEffect(() => {
+    if (currentUser && synced) {
+      const welcomed = localStorage.getItem("amd_welcomed");
+      const shownWelcome = localStorage.getItem("amd_welcome_shown");
+      if (welcomed && !shownWelcome) {
+        localStorage.setItem("amd_welcome_shown", "true");
+        const userName = currentUser.name || "usuario";
+        success(`Bienvenido, ${userName}`, "Tu perfil se sincronizó correctamente");
+      }
+    }
+  }, [currentUser, synced, success]);
+
+  // Handle migration
+  const handleMigration = async () => {
+    setMigrating(true);
+    try {
+      const counts = await migrateData();
+      localStorage.setItem("amd_migration_done", "true");
+      setShowMigrationBanner(false);
+      const total = counts.content + counts.tasks + counts.campaigns + counts.onboarding + counts.guidance + counts.linkedin;
+      success(
+        "Migración completada",
+        `${counts.content} contenidos, ${counts.tasks} tareas, ${counts.campaigns} campañas, ${counts.onboarding} onboarding, ${counts.guidance} guías, ${counts.linkedin} conexiones (${total} registros en total)`
+      );
+    } catch (err: any) {
+      error("Error en la migración", err.message);
+    } finally {
+      setMigrating(false);
+    }
+  };
 
   // Calculate summary stats
   const stats = {
@@ -91,13 +168,56 @@ export default function DashboardPage() {
     );
   }
 
+  // Personalized greeting
+  const userName = currentUser?.name || "usuario";
+  const greeting = `Hola, ${userName} 👋`;
+
   return (
     <div className="space-y-6 md:space-y-12">
+      {/* Migration Banner for System Owner */}
+      {showMigrationBanner && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4 md:p-6"
+        >
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex items-start gap-3 flex-1">
+              <Database className="w-6 h-6 text-yellow-400 flex-shrink-0 mt-1" />
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-white mb-2">
+                  {translate("auth_migracion_titulo")}
+                </h3>
+                <p className="text-sm text-zinc-300 mb-4">
+                  {translate("auth_migracion_descripcion")}
+                </p>
+                <button
+                  onClick={handleMigration}
+                  disabled={migrating}
+                  className="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 disabled:bg-yellow-500/50 text-black font-medium rounded-lg transition-colors"
+                >
+                  {migrating ? "Migrando..." : translate("auth_migracion_boton")}
+                </button>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                setShowMigrationBanner(false);
+                localStorage.setItem("amd_migration_dismissed", "true");
+              }}
+              className="text-zinc-500 hover:text-white transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        </motion.div>
+      )}
+
       {/* Header with Greeting */}
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-3xl md:text-5xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
-            ¡Buenos días! 👋
+            {greeting}
           </h1>
           <p className="text-zinc-400 mt-2 md:mt-3 text-base md:text-lg">
             Aquí está lo más importante de tu marketing hoy.
