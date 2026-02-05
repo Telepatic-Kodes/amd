@@ -2,6 +2,7 @@ import { v } from "convex/values";
 import { query } from "./_generated/server";
 import { Id } from "./_generated/dataModel";
 import { Doc } from "./_generated/dataModel";
+import { requireAuth } from "./lib/auth";
 
 // ===========================================
 // CONTROL CENTER QUERIES
@@ -26,6 +27,7 @@ import { Doc } from "./_generated/dataModel";
 export const getControlCenterStatus = query({
   args: {},
   handler: async (ctx) => {
+    await requireAuth(ctx);
     // Fetch all agents (37 agents is small, safe to collect)
     const allAgents = await ctx.db.query("agents").collect();
 
@@ -74,6 +76,7 @@ export const getRecentActivity = query({
     departmentFilter: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    await requireAuth(ctx);
     const limit = args.limit || 50;
 
     // Fetch recent executions using index
@@ -166,6 +169,7 @@ export const getRecentActivity = query({
 export const getControlCenterMetrics = query({
   args: {},
   handler: async (ctx) => {
+    await requireAuth(ctx);
     // Fetch last 100 executions for metrics calculation
     const executions = await ctx.db
       .query("executions")
