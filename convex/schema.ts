@@ -667,6 +667,62 @@ export default defineSchema({
     }),
 
   // ===========================================
+  // LINKEDIN_CONNECTIONS - OAuth tokens y perfil
+  // ===========================================
+  linkedinConnections: defineTable({
+    linkedinMemberId: v.string(),
+    displayName: v.string(),
+    email: v.optional(v.string()),
+    profilePicture: v.optional(v.string()),
+    profileUrl: v.optional(v.string()),
+    accessToken: v.string(),
+    refreshToken: v.optional(v.string()),
+    accessTokenExpiresAt: v.number(),
+    refreshTokenExpiresAt: v.optional(v.number()),
+    scopes: v.array(v.string()),
+    status: v.union(
+      v.literal("connected"),
+      v.literal("expired"),
+      v.literal("disconnected"),
+      v.literal("revoked")
+    ),
+    dailyPostCount: v.number(),
+    lastPostAt: v.optional(v.number()),
+    lastPostCountResetAt: v.number(),
+    connectedAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_memberId", ["linkedinMemberId"])
+    .index("by_status", ["status"]),
+
+  // ===========================================
+  // LINKEDIN_PUBLISH_LOG - Historial de publicaciones
+  // ===========================================
+  linkedinPublishLog: defineTable({
+    contentId: v.id("content"),
+    connectionId: v.id("linkedinConnections"),
+    linkedinPostUrn: v.optional(v.string()),
+    status: v.union(
+      v.literal("pending"),
+      v.literal("published"),
+      v.literal("failed"),
+      v.literal("deleted")
+    ),
+    errorMessage: v.optional(v.string()),
+    publishedAt: v.optional(v.number()),
+    metadata: v.optional(v.object({
+      postType: v.optional(v.string()),
+      characterCount: v.optional(v.number()),
+      hasImage: v.optional(v.boolean()),
+      visibility: v.optional(v.string()),
+    })),
+    createdAt: v.number(),
+  })
+    .index("by_contentId", ["contentId"])
+    .index("by_connectionId", ["connectionId"])
+    .index("by_status", ["status"]),
+
+  // ===========================================
   // KB_AGENT_ACCESS - Audit trail de acceso de agentes
   // ===========================================
   kbAgentAccess: defineTable({

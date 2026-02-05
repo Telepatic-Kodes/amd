@@ -98,11 +98,10 @@ Plans:
   4. User can see connection status (connected/disconnected/token expired) in dashboard
   5. System respects LinkedIn rate limits and prevents account restrictions
 
-**Plans:** TBD
+**Plans:** 1 plan (all-in-one)
 
 Plans:
-- [ ] 11-01: TBD
-- [ ] 11-02: TBD
+- [ ] 11-01: OAuth + Backend + Frontend + Publishing (full implementation)
 
 ---
 

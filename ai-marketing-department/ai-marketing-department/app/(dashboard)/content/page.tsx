@@ -39,6 +39,7 @@ import { EmptyContent } from "@/components/ui/EmptyState";
 import { useToast } from "@/components/ui/Toast";
 import { UploadContentForm } from "@/components/content/UploadContentForm";
 import { EditContentModal } from "@/components/content/EditContentModal";
+import { PublishToLinkedInButton } from "@/components/linkedin/PublishToLinkedInButton";
 
 const CONTENT_TYPES = [
   { value: "", label: "All Types" },
@@ -688,16 +689,29 @@ export default function ContentPage() {
                       
                       {/* Status Actions */}
                       <div className="mt-3 pt-3 border-t border-zinc-800">
-                        <StatusActions 
-                          content={selectedContentData} 
+                        <StatusActions
+                          content={selectedContentData}
                           onStatusChange={async (status) => {
-                            await updateContentStatus({ 
-                              id: selectedContentData._id, 
-                              status: status as any 
+                            await updateContentStatus({
+                              id: selectedContentData._id,
+                              status: status as any
                             });
-                          }} 
+                          }}
                         />
                       </div>
+
+                      {/* LinkedIn Publish */}
+                      {(selectedContentData.status === "approved" ||
+                        selectedContentData.status === "scheduled" ||
+                        selectedContentData.status === "published") && (
+                        <div className="mt-3 pt-3 border-t border-zinc-800">
+                          <PublishToLinkedInButton
+                            contentId={selectedContentData._id}
+                            contentBody={selectedContentData.body}
+                            contentStatus={selectedContentData.status}
+                          />
+                        </div>
+                      )}
                     </div>
 
                     {/* Edit Button in Details */}
