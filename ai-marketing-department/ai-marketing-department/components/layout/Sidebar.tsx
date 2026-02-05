@@ -10,14 +10,16 @@ import {
     Settings,
     LogOut,
     Sparkles,
+    Activity,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { translate } from "@/lib/language";
 
-// Simplified navigation: 4 main sections only
+// Simplified navigation: 5 main sections (v2.0 adds Control Center)
 const mainNavigation = [
     { name: translate("home"), href: "/", icon: Home, label: "Tu centro de comando" },
+    { name: translate("controlCenter"), href: "/control-center", icon: Activity, label: "Monitorea tus agentes en tiempo real" },
     { name: translate("content"), href: "/content", icon: FileText, label: "Crea y gestiona contenido" },
     { name: translate("analytics"), href: "/results", icon: BarChart3, label: "Ve tus resultados" },
     { name: translate("settings"), href: "/settings", icon: Settings, label: "Configuración avanzada" },

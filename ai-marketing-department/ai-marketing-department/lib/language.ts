@@ -119,6 +119,22 @@ export const LABELS = {
   nextSyncIn: "Próxima actualización en",
   minutes: "minutos",
 
+  // Control Center
+  controlCenter: "Centro de Control",
+  controlCenterDescription: "Monitorea todos los agentes en tiempo real",
+  agentStatus: "Estado de agentes",
+  allDepartments: "Todos",
+  tokensUsed: "Tokens usados",
+  tasksCompleted: "Tareas completadas",
+  successRateLabel: "Tasa de éxito",
+  totalCost: "Costo total",
+  agentsActive: "agentes activos",
+  agentsError: "con errores",
+  agentsPaused: "pausados",
+  agentsMaintenance: "en mantenimiento",
+  noActivity: "Sin actividad reciente",
+  recentActivity: "Actividad reciente",
+
   // Template-related
   templates: "Plantillas",
   template: "Plantilla",
@@ -153,6 +169,11 @@ export function translateStatus(status: string): string {
     paused: LABELS.paused,
     error: LABELS.error,
     syncing: LABELS.syncing,
+    maintenance: "Mantenimiento",
+    running: "Ejecutando",
+    completed: "Completado",
+    failed: "Fallido",
+    pending: "Pendiente",
   };
   return statusMap[status] || status;
 }
@@ -172,6 +193,11 @@ export function getStatusVariant(status: string): "default" | "success" | "warni
     paused: "warning",
     error: "error",
     syncing: "info",
+    maintenance: "warning",
+    running: "info",
+    completed: "success",
+    failed: "error",
+    pending: "default",
   };
   return variantMap[status] || "default";
 }
