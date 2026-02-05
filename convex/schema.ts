@@ -58,6 +58,7 @@ export default defineSchema({
   // TASKS - Tareas asignadas a agentes
   // ===========================================
   tasks: defineTable({
+    userId: v.optional(v.string()),
     taskId: v.string(), // UUID o ID secuencial
     title: v.string(), // Título descriptivo
     type: v.string(), // "write_blog", "analyze_keywords", etc.
@@ -102,7 +103,8 @@ export default defineSchema({
     .index("by_status", ["status"])
     .index("by_priority_status", ["priority", "status"])
     .index("by_parent", ["parentTaskId"])
-    .index("by_scheduled", ["scheduledFor"]),
+    .index("by_scheduled", ["scheduledFor"])
+    .index("by_userId", ["userId"]),
 
   // ===========================================
   // EXECUTIONS - Log de ejecuciones de agentes
@@ -167,6 +169,7 @@ export default defineSchema({
   // CONTENT - Contenido generado por agentes
   // ===========================================
   content: defineTable({
+    userId: v.optional(v.string()),
     contentId: v.string(), // UUID
     type: v.union(
       v.literal("blog"),
@@ -236,12 +239,14 @@ export default defineSchema({
     .index("by_status", ["status"])
     .index("by_createdBy", ["createdBy"])
     .index("by_type_status", ["type", "status"])
-    .index("by_scheduled", ["scheduledFor"]),
+    .index("by_scheduled", ["scheduledFor"])
+    .index("by_userId", ["userId"]),
 
   // ===========================================
   // CAMPAIGNS - Campañas de marketing
   // ===========================================
   campaigns: defineTable({
+    userId: v.optional(v.string()),
     campaignId: v.string(),
     name: v.string(),
     description: v.string(),
@@ -294,7 +299,8 @@ export default defineSchema({
   })
     .index("by_campaignId", ["campaignId"])
     .index("by_status", ["status"])
-    .index("by_type", ["type"]),
+    .index("by_type", ["type"])
+    .index("by_userId", ["userId"]),
 
   // ===========================================
   // KEYWORDS - Tracking de keywords SEO
@@ -539,6 +545,7 @@ export default defineSchema({
   // ONBOARDING - Configuración inicial
   // ===========================================
   onboarding: defineTable({
+    userId: v.optional(v.string()),
     companyName: v.string(),
     industry: v.string(),
     description: v.string(),
@@ -547,7 +554,8 @@ export default defineSchema({
     feeds: v.array(v.string()),
     departments: v.array(v.string()),
     completedAt: v.number(),
-  }),
+  })
+    .index("by_userId", ["userId"]),
 
   // ===========================================
   // KNOWLEDGE BASES - Base de conocimiento de empresa
@@ -670,6 +678,7 @@ export default defineSchema({
   // LINKEDIN_CONNECTIONS - OAuth tokens y perfil
   // ===========================================
   linkedinConnections: defineTable({
+    userId: v.optional(v.string()),
     linkedinMemberId: v.string(),
     displayName: v.string(),
     email: v.optional(v.string()),
@@ -693,7 +702,8 @@ export default defineSchema({
     updatedAt: v.number(),
   })
     .index("by_memberId", ["linkedinMemberId"])
-    .index("by_status", ["status"]),
+    .index("by_status", ["status"])
+    .index("by_userId", ["userId"]),
 
   // ===========================================
   // LINKEDIN_PUBLISH_LOG - Historial de publicaciones
@@ -726,6 +736,7 @@ export default defineSchema({
   // USER_GUIDANCE - Estado de guía y onboarding
   // ===========================================
   userGuidance: defineTable({
+    userId: v.optional(v.string()),
     onboardingCompletions: v.number(),
     quickModeEnabled: v.boolean(),
     setupProgress: v.number(),
@@ -747,7 +758,30 @@ export default defineSchema({
     tourSkippedAt: v.optional(v.number()),
     createdAt: v.number(),
     updatedAt: v.number(),
-  }),
+  })
+    .index("by_userId", ["userId"]),
+
+  // ===========================================
+  // USERS - Clerk user data synced to Convex
+  // ===========================================
+  users: defineTable({
+    clerkId: v.string(),       // Clerk user ID (from getUserIdentity().subject)
+    email: v.string(),
+    name: v.optional(v.string()),
+    imageUrl: v.optional(v.string()),
+    role: v.union(
+      v.literal("owner"),      // System owner (first user / migration target)
+      v.literal("admin"),      // Full access
+      v.literal("editor"),     // Can create/edit content
+      v.literal("viewer")      // Read-only
+    ),
+    isSystemOwner: v.optional(v.boolean()),  // Flag for data migration target
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_clerkId", ["clerkId"])
+    .index("by_email", ["email"])
+    .index("by_role", ["role"]),
 
   // ===========================================
   // KB_AGENT_ACCESS - Audit trail de acceso de agentes
