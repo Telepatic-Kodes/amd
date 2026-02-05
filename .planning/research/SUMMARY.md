@@ -1,333 +1,350 @@
 # Project Research Summary
 
-**Project:** RSS Feed Integration for AI Marketing Department (AMD)
-**Domain:** RSS feed aggregation for AI agent content consumption
-**Researched:** 2026-01-27
+**Project:** AMD (AI Marketing Department) v2.0 UX/UI Excellence
+**Domain:** Marketing Automation Dashboard with Multi-Agent Operations
+**Researched:** 2026-02-05
 **Confidence:** HIGH
 
 ## Executive Summary
 
-This project integrates RSS feed aggregation into AMD's existing Next.js 16 + Convex stack to provide 37 AI marketing agents with fresh industry content. The recommended approach is a lightweight, serverless-native solution using **Feedsmith for parsing**, **native fetch for HTTP**, and **Convex built-in crons for scheduling**. This minimalist stack adds only one new dependency while leveraging existing infrastructure.
+AMD v2.0 adds operational capabilities to an existing 37-agent marketing automation system. The research examined four feature categories: Control Center (real-time monitoring), Content Pipeline (workflow management), LinkedIn Integration (social publishing), and Guided UX (onboarding/wizards). The key finding is that **90% of requirements can be met with the existing stack** (Next.js 16, React 19, Convex, Tailwind 4) by adding only two lightweight libraries: Sonner (toast notifications, 8KB) and Onborda (guided tours, 15KB).
 
-The critical architectural decision is to adopt a **fan-out pattern** where each feed is synced by a separate Convex action to avoid timeout issues. Feed items are stored with composite-key deduplication (not trusting unreliable GUIDs) and injected into agent contexts at execution time rather than maintained as persistent knowledge. The system follows AMD's established patterns: actions for external operations, mutations for storage, and event-driven handoffs between agents.
+The recommended approach leverages Convex's reactive query system for real-time features, implements OAuth via Convex actions for security, extends the existing content schema with workflow states, and uses a headless state machine for guided onboarding. The core risk is **complexity creep** — v1.0 solved "too complex" by simplifying to 4 navigation items and 3-step onboarding; v2.0 must avoid recreating that problem by adding operational features without careful UX design.
 
-The primary risks are GUID unreliability causing duplicates, malformed XML crashing parsers, and action timeouts when scaling to multiple feeds. These are mitigated through composite key hashing, lenient parsing with validation layers, and one-feed-per-action architecture from day one. This approach integrates seamlessly with AMD's existing 37-agent system without requiring significant architectural changes.
+Critical mitigation strategies: implement subscription budgeting to prevent Convex cost explosion (Pitfall #1), design smart alert filtering to avoid alert fatigue (Pitfall #2), use progressive disclosure to hide advanced pipeline features behind "Quick mode" (Pitfall #3), implement centralized rate limiting before any LinkedIn API calls (Pitfall #4), and follow OAuth security best practices with PKCE flow and httpOnly cookies (Pitfall #5). All pitfalls are addressable if caught during architecture design before implementation.
 
 ## Key Findings
 
 ### Recommended Stack
 
-The stack prioritizes serverless-safe, TypeScript-native libraries that integrate with Convex's runtime constraints. **Feedsmith (v2.8.0)** is the clear winner for RSS parsing—released 7 days ago, actively maintained, uses fast-xml-parser internally (no XMLHttpRequest issues), and handles RSS 2.0, RSS 1.0 (RDF), Atom, and JSON feeds with proper namespace support for marketing content (iTunes, Dublin Core, Media RSS).
+The existing stack (Next.js 16, React 19, Tailwind 4, Convex, Recharts) covers 90% of v2.0 needs. Research found NO major refactoring required. Only three targeted additions needed:
 
-**Core technologies:**
-- **Feedsmith (^2.8.0)**: RSS/Atom/RDF parsing — Modern, TypeScript-native, tree-shakable, serverless-safe (no XMLHttpRequest or native bindings)
-- **Native fetch (built-in)**: HTTP retrieval — Already available in Convex actions, no external HTTP library needed
-- **Convex built-in crons**: Scheduling — Native feature, no external scheduler required, survives deployments
-- **fast-xml-parser (^5.3.0)**: XML processing — Used internally by Feedsmith, handles malformed XML gracefully
+**Core technologies (existing):**
+- **Next.js 16 + React 19**: App Router with Server/Client components — already working in v1.0
+- **Convex**: Real-time subscriptions via WebSocket — already provides reactive queries out-of-the-box, no Socket.io needed
+- **Recharts**: Chart library — custom components already built (LineChart, AreaChart, DonutChart) with theme system
+- **Tailwind 4 + Framer Motion**: Styling and animations — already integrated
+- **TipTap**: Rich text editor — already installed for content creation
 
-**Why not alternatives:**
-- rss-parser: Uses XMLHttpRequest internally, causes serverless runtime issues, stale maintenance (3+ years)
-- feedparser: Streaming-based, overkill for daily batch sync use case
-- axios: Unnecessary dependency when native fetch works in Convex actions
+**Required additions (new):**
+- **Sonner** (8KB): Toast notifications for alerts, status updates, LinkedIn publish confirmations — React 19 compatible, TypeScript-first
+- **Onborda** (15KB): Guided UX wizard system — built for Next.js, uses Framer Motion (already installed), Tailwind-based
+- **LinkedIn Posts API**: Native `fetch` (no library) — OAuth 2.0 authentication, ~20 requests/day rate limit
+
+**Explicitly rejected:**
+- Socket.io (Convex already provides real-time via WebSocket)
+- Tremor UI library (custom Recharts components sufficient)
+- React Flow (content pipeline is linear, not DAG-based)
+- State management library (Convex handles server state, React Context for UI state)
+- Scheduling library (Convex has built-in cron jobs)
 
 ### Expected Features
 
-RSS feed aggregation for AI consumption differs fundamentally from human-facing readers. The focus is on structured data output, consistent schemas, and programmatic access rather than pretty UIs, offline reading, or social features.
+Research identified table stakes features (users expect them) versus differentiators (competitive advantage).
 
 **Must have (table stakes):**
-- Multi-feed subscription with RSS 2.0, Atom, RSS 1.0 (RDF) support — Core purpose
-- Feed parsing with error tolerance — 10% of feeds are malformed at any time
-- Content normalization across formats — Unified schema for AI consumption
-- Persistent storage with deduplication — Prevent reprocessing same items
-- Scheduled daily fetching — Automated background updates
-- Basic keyword filtering — Essential for brand monitoring use case
-- Feed health tracking — Know when feeds break or go stale
-- Structured JSON output — Machine-readable, not HTML rendering
+- **Control Center:** Real-time agent status, activity feed, task queue, responsive mobile layout
+- **Content Pipeline:** Draft/Review/Approved/Published states, content preview, version history, edit locks
+- **LinkedIn Integration:** OAuth 2.0 auth, text post publishing, rate limit handling, error feedback
+- **Guided UX:** Progress indicator, Back/Next navigation, step validation, 3-5 steps max, clear labels
 
 **Should have (competitive):**
-- Brand mention alerting — Priority notifications for monitored terms
-- AI-powered categorization — Route content to appropriate agents (e.g., trend curator vs brand monitor)
-- Sentiment analysis — Understand tone of brand mentions
-- Summary generation — Reduce agent token consumption by pre-summarizing
+- **Control Center:** Agent performance metrics (success rate, avg duration), smart notifications (context-aware, not every event)
+- **Content Pipeline:** Bulk actions (approve/reject multiple items), conditional approval rules (CFO approval for budget posts)
+- **LinkedIn Integration:** Image optimization (auto-resize to LinkedIn specs), optimal timing suggestions
+- **Guided UX:** Contextual help tooltips, smart field pre-fill, progress persistence (resume after abandonment)
 
 **Defer (v2+):**
-- Full-text extraction — Many feeds truncate content; web scraping adds complexity
-- Trend detection — Requires topic modeling, frequency analysis across feeds
-- Semantic deduplication — Embedding-based similarity detection for near-duplicates
-- Human-facing reader UI — Agents are the consumers, not humans; admin UI for feed management only
-- Social media integration — Different product domain, adds API complexity
-- Podcast/video handling — Different media type, separate processing pipeline
+- Agent interrupt/escalation controls (high complexity)
+- Parallel approval tracks (complex state machine)
+- LinkedIn post performance tracking (requires Analytics API)
+- Multi-account LinkedIn management (multiple OAuth tokens)
+- Conditional wizard branching (dynamic state machine)
 
 ### Architecture Approach
 
-The architecture follows AMD's existing Convex patterns: actions for external fetch, mutations for reliable storage, and cron-triggered orchestration. The design is intentionally simple: **Fetch → Parse → Dedupe → Store → Query**. A cron job triggers a batch orchestrator mutation that schedules individual actions for each feed (fan-out pattern), preventing action timeouts and isolating feed failures. Each action fetches XML, parses with Feedsmith, generates content hashes for deduplication, and hands off to a mutation for atomic storage.
+Use Convex's reactive query system for all real-time features, implement OAuth via Convex actions (server-side security), extend existing content schema with workflow states, and use headless state machine for guided UX.
 
 **Major components:**
-1. **Feed Registry** — Stores feed URLs, categories, sync config in `feeds` table; supports dynamic feed management
-2. **Sync Engine** — Orchestrates fetch + parse + store via actions; implements fan-out pattern (one action per feed)
-3. **Deduplication Layer** — Generates composite content hashes (GUID + URL + title) to handle unreliable GUIDs
-4. **Storage Layer** — Persists feed items with AI-enhanced fields (summary, topics, sentiment) populated asynchronously
-5. **Agent Context Injection** — Queries relevant feed items at agent execution time and injects into systemPrompt
-6. **Health Monitoring** — Tracks sync success, consecutive failures, staleness for operational visibility
 
-**Key architectural patterns:**
-- **Scheduler-first pattern**: Mutation schedules action (provides audit trail, retry capability, rate limiting)
-- **Content hash deduplication**: SHA-256 of GUID or (URL + title) prevents duplicate storage
-- **Batch insert with single mutation**: Collect all new items, insert atomically for better performance
-- **Agent context injection**: Query fresh data per task rather than persistent agent "knowledge"
+1. **Control Center (Real-time Dashboard)**
+   - Pattern: Reactive queries with aggregation
+   - Use `useQuery(api.controlCenter.getLiveAgentStatus)` — auto-updates on agent execution
+   - Single aggregated subscription instead of 37 separate subscriptions (cost optimization)
+   - Limit result sets with `.take(limit)` instead of `.collect()` (performance)
+
+2. **Content Pipeline (Workflow Extension)**
+   - Pattern: Schema extension + optimistic updates
+   - Extend existing `content` table with `workflowStage`, `assignedTo`, `stateTransitions`
+   - State machine validates transitions (draft → review → approved → published)
+   - React 19's `useOptimistic` for drag-and-drop state updates
+
+3. **LinkedIn Integration (OAuth + API)**
+   - Pattern: OAuth via Convex actions + secure token storage
+   - NEVER expose client secret in frontend — use Convex actions (server-side)
+   - Store tokens in Convex database with encryption (ENCRYPTION_KEY env var)
+   - Validate state parameter for CSRF protection
+   - Centralized rate limiter (80% of limit, reserve 20% for manual)
+
+4. **Guided UX Onboarding (State Machine)**
+   - Pattern: Headless state machine + backend persistence
+   - Add `onboardingProgress` table (userId, currentStep, completedSteps, skippedSteps)
+   - OnboardingStateMachine class handles step logic, conditions, dependencies
+   - Wizards are OPTIONAL, not mandatory — offer "Quick mode" after 3 completions
 
 ### Critical Pitfalls
 
-1. **GUID Unreliability and Deduplication Failures** — RSS GUIDs are not guaranteed unique; some feeds reuse them, change them when URLs change, or omit them entirely. Never trust GUID alone. Implement composite key hashing: `hash(feedUrl + (guid || link) + pubDate + title)`. Store original GUID separately for debugging. Add content-based similarity detection (85% overlap) for near-duplicates. **Phase 1 critical** — foundational for all subsequent work.
+Research identified 15 domain-specific pitfalls with verified prevention strategies.
 
-2. **Malformed XML and Feed Format Chaos** — Approximately 10% of RSS feeds are invalid XML at any time (unclosed tags, unescaped ampersands, encoding issues). Use lenient parser (Feedsmith/rss-parser) with error recovery. Validate items before storage (must have title or description + link or guid). Normalize all content to UTF-8. Log parsing errors with feed context. **Phase 1 critical** — parsing must be robust from day one.
+**Top 5 critical (require architecture changes):**
 
-3. **Convex Action Timeout During Multi-Feed Sync** — Actions have 10-minute timeout; fetching multiple feeds sequentially exhausts this. Implement fan-out pattern: orchestrator mutation schedules separate action for each feed. Set 30-second timeout per individual feed fetch. Track sync status per feed in database. **Architectural decision for Phase 1, critical for Phase 2 scaling**.
+1. **Real-Time Subscription Cost Explosion**
+   - **Problem:** Unoptimized subscriptions create 37+ active connections per user, Convex costs spike 400%+
+   - **Prevention:** Aggregate agent status into single subscription, use polling (5-30s) for non-critical data, implement subscription budgeting in Phase 1
+   - **Detection:** Monitor Convex dashboard "Active Subscriptions" metric (alert if >100)
 
-4. **Cron Job Skipping Due to Long-Running Executions** — Convex skips subsequent cron runs if previous execution is still running. Track sync state (`lastSyncAttempt`, `lastSuccessfulSync`, `status`) in database. Add health check queries that agents can call to verify content freshness. Alert on sync gaps exceeding 26 hours for daily syncs. Design for idempotency.
+2. **Alert Fatigue from Real-Time Monitoring**
+   - **Problem:** 50+ alerts/day, users ignore all notifications including critical ones (51% of teams overwhelmed)
+   - **Prevention:** Evaluation windows (alert only if condition persists 5+ minutes), group related alerts, severity levels (critical/warning/info)
+   - **Detection:** Track alert-to-action ratio (target: >60% of alerts result in action)
 
-5. **Ignoring HTTP 429 Rate Limits** — Rate limiting can permanently block your IP from feed providers. Check and respect `Retry-After` header on HTTP 429. Implement exponential backoff (1s, 2s, 4s, 8s). Spread feed fetches over time rather than burst-fetching. Store rate limit status per feed source.
+3. **Content Pipeline Complexity Creep**
+   - **Problem:** v1.0 solved "too complex," v2.0 recreates it by adding 12-step workflows
+   - **Prevention:** Default to simplest path (draft → publish directly), hide advanced workflow behind "Advanced mode" toggle, measure >70% using simple 2-step flow
+   - **Detection:** Track steps-per-publish (target: median ≤3), time-from-draft-to-published (target: <5min)
+
+4. **LinkedIn API Rate Limit Cascading Failures**
+   - **Problem:** 100 connection requests/week limit, exceeding causes account restrictions (days to weeks resolution)
+   - **Prevention:** Centralized rate limiter BEFORE any API calls, use 80% of limit (reserve 20%), queue system with automatic pacing
+   - **Detection:** Monitor daily/weekly usage, alert at 80% limit, block at 100%
+
+5. **OAuth Flow Security Vulnerabilities**
+   - **Problem:** Redirect URI not validated, tokens in localStorage (XSS vulnerable), refresh tokens mishandled
+   - **Prevention:** Use PKCE flow, validate redirect URI server-side, store tokens in httpOnly cookies, implement token rotation
+   - **Detection:** Security audit against RFC 9700, penetration test redirect URI manipulation
+
+**Top 5 moderate (require design changes):**
+
+6. **Next.js Server/Client Component Confusion** — Default to Server Components, add "use client" only when needed
+7. **React 19 Third-Party Library Incompatibility** — Audit dependencies before phases, test in isolation
+8. **Multi-Platform Content Formatting Breakdown** — Platform-specific formatters, preview for each platform
+9. **Approval Workflow Bottlenecks** — Multiple approvers, escalation rules, auto-approve after 48h
+10. **Version Control Chaos in Content Editing** — Store versions as separate records, not in-place updates
 
 ## Implications for Roadmap
 
-Based on research, suggested phase structure prioritizes foundation-first with critical reliability features, then scales to multiple feeds, finally adds AI enrichment and operational tooling.
+Based on research, recommended 4-phase structure aligned with dependencies and complexity:
 
-### Phase 1: Core Feed Sync Engine (Foundation)
-
-**Rationale:** Establish reliable single-feed syncing before scaling. This phase addresses the three critical pitfalls (GUID unreliability, malformed XML, action timeouts) and implements the foundational architecture patterns that all subsequent phases depend on.
-
-**Delivers:**
-- Database schema (`feeds`, `feedItems`, `feedSyncLog` tables)
-- Single-feed sync action with Feedsmith parsing
-- Composite key deduplication (hash of GUID/URL/title)
-- Lenient XML parsing with validation layer
-- Basic feed health tracking (last sync, error count)
-- Manual trigger capability for testing
-
-**Addresses (from FEATURES.md):**
-- Feed parsing with error tolerance
-- Content normalization across RSS/Atom/RDF formats
-- Persistent storage with deduplication
-- Feed health tracking
-
-**Avoids (from PITFALLS.md):**
-- Pitfall #1: GUID unreliability (composite key strategy)
-- Pitfall #2: Malformed XML (lenient parser + validation)
-- Pitfall #4: Cron skipping (sync state tracking from start)
-
-**Tech decisions:**
-- Install Feedsmith (one dependency)
-- Use native fetch in Convex actions
-- Implement SHA-256 content hashing with native crypto
-
-**Research flag:** Standard patterns — Well-documented RSS parsing, no additional research needed.
-
-### Phase 2: Multi-Feed Orchestration (Scale)
-
-**Rationale:** Expand to multiple feeds using fan-out architecture to prevent action timeouts. This phase implements the orchestration pattern critical for production use at scale (10-100+ feeds).
+### Phase 1: Control Center Foundation (2 weeks)
+**Rationale:** Visibility is #1 user pain point ("what are agents doing?"). Real-time features require subscription architecture design upfront to prevent cost explosion.
 
 **Delivers:**
-- Batch orchestrator mutation (schedules individual feed actions)
-- Fan-out pattern implementation (one action per feed)
-- HTTP 429 rate limit handling with exponential backoff
-- Staggered feed fetching to avoid burst traffic
-- Per-feed error isolation (one feed failure doesn't block others)
-- Feed health dashboard (consecutive failures, staleness alerts)
+- Real-time agent status dashboard (what's running now)
+- Agent activity feed (chronological log)
+- Task queue visualization (pending/running/completed)
+- Mobile-responsive monitoring
 
 **Addresses (from FEATURES.md):**
-- Multi-feed subscription
-- Scheduled fetching with configurable intervals
-- OPML import for bulk feed onboarding
+- Table stakes: Real-time status, activity feed, task queue, responsive layout
+- Defer: Agent performance metrics (analytics), interrupt controls (complex)
 
 **Avoids (from PITFALLS.md):**
-- Pitfall #3: Action timeout (fan-out pattern prevents sequential processing)
-- Pitfall #5: Rate limiting (429 handling, staggered fetches)
-- Pitfall #8: No feed health monitoring (operational visibility)
+- Pitfall #1 (Subscription cost explosion) — implement aggregated queries from start
+- Pitfall #2 (Alert fatigue) — smart alert filtering with evaluation windows
+- Pitfall #15 (Performance degradation) — test with long-running sessions
 
 **Uses (from STACK.md):**
-- Convex built-in crons for daily orchestration trigger
-- Convex scheduler for per-feed action fan-out
+- Convex reactive queries (existing)
+- Recharts custom components (existing)
+- Sonner for toast alerts (NEW — install in Phase 1)
 
-**Research flag:** Standard patterns — Established serverless orchestration, no additional research needed.
+**Research flag:** YES — Needs deeper research on Convex subscription patterns and cost optimization strategies.
 
-### Phase 3: Agent Integration (Connection)
-
-**Rationale:** Connect feed content to existing AMD agent system. This phase makes the feed data actually useful by injecting it into agent contexts at execution time.
+### Phase 2: Content Pipeline Enhancement (2 weeks)
+**Rationale:** Builds on existing content management (evolutionary, not revolutionary). Must design with progressive disclosure from start to avoid complexity creep.
 
 **Delivers:**
-- Agent context injection in `executeAgent` action
-- Relevance query (filter by topics, keywords, date range)
-- Feed tool registration for agents (`"feeds"` in config.tools)
-- Basic keyword filtering (include/exclude lists)
-- Content usage tracking (`usedInContentIds` linking to content table)
+- Review/Approved/Published workflow states
+- Content preview (reuse existing rendering)
+- Version history (timestamp + user)
+- Bulk approval actions
 
 **Addresses (from FEATURES.md):**
-- Basic keyword filtering
-- Structured JSON output for AI consumption
-- Source attribution tracking
+- Table stakes: Status states, preview, version history, edit locks
+- Should have: Bulk actions (low complexity win)
+- Defer: AI-powered routing (complex), parallel approvals (state machine complexity)
 
 **Avoids (from PITFALLS.md):**
-- Pitfall #7: Storing raw HTML (sanitize to plain text for AI consumption)
-- Pitfall #9: Partial feed content (flag truncated items, check for content:encoded)
+- Pitfall #3 (Complexity creep) — default to simple 2-step flow (draft → publish)
+- Pitfall #9 (Multi-platform formatting) — platform-specific formatters with preview
+- Pitfall #10 (Approval bottlenecks) — multiple approvers, escalation rules
+- Pitfall #11 (Version control chaos) — versioned records from start
 
 **Implements (from ARCHITECTURE.md):**
-- Agent context injection pattern
-- Query layer for agent access to feed items
+- Schema extension: `workflowStage`, `assignedTo`, `stateTransitions` fields
+- Optimistic updates: React 19's `useOptimistic` for drag-and-drop
 
-**Research flag:** Needs light research — Agent prompt engineering for optimal feed context injection (format, token limits, relevance scoring).
+**Research flag:** NO — Standard CMS patterns, well-documented state machines.
 
-### Phase 4: AI Enrichment (Intelligence)
-
-**Rationale:** Add AI-powered categorization, sentiment analysis, and summarization to improve content quality and reduce agent token consumption. This phase can run asynchronously without blocking core sync.
+### Phase 3: LinkedIn Publishing Integration (2 weeks)
+**Rationale:** Requires content pipeline states (approved content → publish). High complexity due to OAuth + API integration. CRITICAL security review required before production.
 
 **Delivers:**
-- Background AI processing (separate cron processes new items)
-- Auto-categorization (LLM-based topic extraction)
-- Sentiment analysis (positive/neutral/negative tagging)
-- AI-generated summaries (reduce context window usage)
-- Relevance scoring (0-100 for domain fit)
+- OAuth 2.0 authentication flow
+- Text post publishing (LinkedIn Posts API)
+- Basic rate limit handling
+- Image optimization (auto-resize to LinkedIn specs)
 
 **Addresses (from FEATURES.md):**
-- AI-powered categorization (route to appropriate agents)
-- Sentiment analysis (brand mention tone understanding)
-- Summary generation (token reduction for agent context)
+- Table stakes: OAuth flow, text publishing, rate limit handling, error feedback
+- Should have: Image optimization (low complexity win)
+- Defer: Multi-account (complex OAuth), performance tracking (Analytics API), hashtag suggestions (NLP)
 
 **Avoids (from PITFALLS.md):**
-- Anti-Pattern #4: AI processing during sync (two-phase approach: sync first, enrich later)
+- Pitfall #4 (Rate limit failures) — centralized rate limiter BEFORE first API call
+- Pitfall #5 (OAuth vulnerabilities) — PKCE flow, httpOnly cookies, CSRF protection
 
-**Tech decisions:**
-- Reuse existing Claude API integration from AMD
-- Process items in batches to control costs
-- Mark items as `processed` to avoid reprocessing
+**Implements (from ARCHITECTURE.md):**
+- Convex actions for OAuth token exchange (server-side security)
+- Encrypted token storage in Convex database
+- Scheduled publishing via Convex cron jobs (every 5 minutes)
 
-**Research flag:** Standard patterns — AI summarization and classification are established use cases in AMD; leverage existing prompt patterns.
+**Research flag:** YES — OAuth flow specifics, rate limit handling strategy, token refresh implementation.
 
-### Phase 5: Brand Monitoring & Alerts (Operations)
-
-**Rationale:** Implement real-time monitoring for brand mentions and critical keywords. This phase supports AMD's brand monitoring use case specifically.
-
-**Delivers:**
-- Priority keyword alerting (brand mentions, competitor terms)
-- Notification system integration (Slack, email, internal alerts)
-- Trend detection across feeds (topic frequency analysis)
-- Feed trust scoring (track source quality over time)
-
-**Addresses (from FEATURES.md):**
-- Brand mention alerting
-- Trend detection
-- Feed trust scoring
-
-**Avoids:**
-- Anti-Feature: Real-time push notifications (batch processing sufficient for daily sync cadence)
-
-**Research flag:** Needs research — Notification system architecture, alert fatigue prevention strategies, trend detection algorithms for marketing content.
-
-### Phase 6: Advanced Features (Polish)
-
-**Rationale:** Add nice-to-have features that improve quality but aren't critical for core functionality. These can be deferred or implemented incrementally based on usage feedback.
+### Phase 4: Guided UX Layer (2 weeks)
+**Rationale:** Applies to all previous phases; easier to add after core features exist. Wizard patterns are well-established, implementation is straightforward.
 
 **Delivers:**
-- Full-text extraction for truncated feeds (web scraping)
-- Semantic deduplication (embedding-based similarity)
-- HTTP conditional GET (ETag/Last-Modified caching)
-- Admin UI for feed management (add/edit/pause feeds)
-- OPML export (backup and portability)
+- Wizard component library (reusable)
+- Progress indicator (step X of Y)
+- LinkedIn OAuth setup wizard
+- Content creation wizard (optional alternative to full editor)
 
 **Addresses (from FEATURES.md):**
-- Full-text extraction
-- Semantic deduplication
-- OPML import/export
+- Table stakes: Progress indicator, Back/Next navigation, step validation, linear flow
+- Should have: Contextual help tooltips (low complexity, high value)
+- Defer: Conditional branching (state machine complexity), progress persistence (draft storage)
 
 **Avoids (from PITFALLS.md):**
-- Pitfall #11: Fetching unchanged feeds (conditional GET optimization)
-- Pitfall #10: Hardcoded feed config (admin UI for dynamic management)
+- Pitfall #6 (Wizard annoyance) — adaptive behavior, offer "Quick mode" after 3 completions
+- Pitfall #14 (Hiding essential features) — progressive disclosure for OPTIONAL features only
 
-**Research flag:** Needs research — Web scraping strategies, readability algorithms, legal/compliance considerations for full-text extraction.
+**Implements (from ARCHITECTURE.md):**
+- `onboardingProgress` table (userId, currentStep, completedSteps)
+- OnboardingStateMachine class with conditional step logic
+- Smart recommendations engine based on user state
+
+**Research flag:** NO — Wizard patterns well-established (Nielsen Norman Group guidelines).
 
 ### Phase Ordering Rationale
 
-- **Foundation first (Phase 1)**: Solve critical pitfalls before scaling. Composite key deduplication and lenient parsing must be correct from day one or you'll rewrite later.
-- **Scale second (Phase 2)**: Fan-out architecture enables 10-100+ feeds without code changes. Rate limiting and health monitoring prevent operational fires.
-- **Integration third (Phase 3)**: No point collecting content if agents can't access it. Basic keyword filtering here enables brand monitoring use case.
-- **Intelligence fourth (Phase 4)**: AI enrichment improves quality but isn't blocking. Two-phase approach (sync then enrich) keeps sync fast and cheap.
-- **Monitoring fifth (Phase 5)**: Brand alerts deliver immediate value once basic integration works. Trend detection builds on categorization from Phase 4.
-- **Polish last (Phase 6)**: Full-text extraction and semantic deduplication are nice-to-have; defer until core system proves valuable.
+**Dependencies:**
+1. Content Pipeline MUST precede LinkedIn Integration (approved state required before publishing)
+2. Control Center can be parallel to Content Pipeline (independent features)
+3. Guided UX can be applied incrementally (doesn't block other features)
 
-**Dependency flow:**
-```
-Phase 1 (Foundation)
-    ├─> Phase 2 (Multi-Feed) — depends on: core sync engine
-    │       ├─> Phase 3 (Agent Integration) — depends on: scaled feed collection
-    │       │       ├─> Phase 4 (AI Enrichment) — depends on: agent access patterns
-    │       │       │       ├─> Phase 5 (Brand Monitoring) — depends on: categorization
-    │       │       │       │       └─> Phase 6 (Advanced Features) — depends on: usage feedback
-```
+**Groupings:**
+- Phase 1 + 2 address core operational visibility (monitoring + workflows)
+- Phase 3 is isolated (external integration)
+- Phase 4 is a layer across all features
+
+**Risk mitigation:**
+- Phases 1 + 3 have critical pitfalls requiring architecture design BEFORE implementation
+- Phases 2 + 4 have standard patterns, lower risk
+
+**Complexity gradient:**
+- Phase 1: Medium (real-time patterns, existing in v1.0)
+- Phase 2: Low (CMS patterns, well-documented)
+- Phase 3: High (OAuth + API, security critical)
+- Phase 4: Medium (state machine, UX patterns)
 
 ### Research Flags
 
-**Phases needing deeper research during planning:**
-- **Phase 3 (Agent Integration):** Prompt engineering for feed context injection — optimal format, token budget, relevance scoring heuristics
-- **Phase 5 (Brand Monitoring):** Notification architecture — alert fatigue prevention, escalation rules, Slack/email integration patterns
-- **Phase 6 (Full-Text Extraction):** Web scraping strategies — readability algorithms (Mozilla Readability vs Newspaper3k), legal compliance, site-specific handling
+**Phases likely needing deeper research during planning:**
+- **Phase 1 (Control Center):** Convex subscription optimization patterns, cost modeling for 50+ users, alert aggregation strategies
+- **Phase 3 (LinkedIn Integration):** OAuth 2.0 PKCE flow implementation, token refresh logic, rate limiter architecture, scheduled publishing with timezone support
 
 **Phases with standard patterns (skip research-phase):**
-- **Phase 1 (Foundation):** RSS parsing is well-documented; Feedsmith docs + examples sufficient
-- **Phase 2 (Multi-Feed):** Serverless fan-out is established pattern; Convex docs cover scheduler usage
-- **Phase 4 (AI Enrichment):** AMD already has Claude integration; reuse existing summarization/classification patterns
+- **Phase 2 (Content Pipeline):** CMS workflow states are well-documented, multiple references (Sanity, Contentstack, Planable)
+- **Phase 4 (Guided UX):** Wizard patterns established by Nielsen Norman Group, onboarding libraries well-reviewed
 
 ## Confidence Assessment
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Stack | HIGH | Feedsmith verified via official docs, npm package inspection, GitHub activity. Convex patterns verified via official docs and existing AMD codebase inspection. |
-| Features | HIGH | Multiple authoritative sources (Zapier, DevOpsSchool) agree on RSS aggregator table stakes. AI-powered features validated via existing implementations (RSSbrew, n8n workflows). |
-| Architecture | HIGH | Patterns verified via Convex official docs, best practices guide, and direct inspection of AMD's existing `actions.ts`, `crons.ts`, `schema.ts` codebase. Fan-out pattern is standard serverless approach. |
-| Pitfalls | HIGH | GUID unreliability confirmed by RSS Board and GitHub issues. Action timeout limits verified via Convex official docs. Malformed XML documented by feedparser, Superfeedr, MDN. Rate limiting is standard HTTP practice. |
+| Stack | HIGH | Existing stack verified working in v1.0, new libraries (Sonner, Onborda) verified with official docs and React 19 compatibility |
+| Features | HIGH | Feature expectations cross-referenced with multiple 2026 sources (InfoQ, NN/g, Microsoft Learn), table stakes vs differentiators validated |
+| Architecture | HIGH | Convex real-time patterns already working in v1.0, OAuth patterns verified with RFC 9700 and Microsoft Learn official docs |
+| Pitfalls | HIGH | 15 pitfalls researched with 2026 sources, prevention strategies validated (Convex pricing, LinkedIn API limits, OAuth security, wizard UX) |
 
 **Overall confidence:** HIGH
 
-All four research areas have authoritative sources (official documentation, verified implementations, direct codebase inspection). The stack is proven serverless-safe (Feedsmith explicitly designed for edge/serverless), the architecture follows established AMD patterns (verified via code inspection), and pitfalls are well-documented with clear mitigation strategies.
-
 ### Gaps to Address
 
-- **Date parsing edge cases:** While dayjs is recommended for robust date parsing, need to validate specific RSS date formats encountered in target feeds during Phase 1 testing. Fallback strategy (use current time) may cause ordering issues for feeds with missing pubDate.
+**Cost modeling (Phase 1):**
+- What's realistic monthly Convex cost for 50 users with Control Center?
+- At what point does Convex become prohibitively expensive?
+- **How to handle:** Run cost simulation in Phase 1 development, monitor Convex dashboard metrics weekly
 
-- **Feed discovery and validation:** Research doesn't cover how AMD will discover and validate new feeds before adding them (e.g., checking feed validity, detecting format, testing parse success). Should establish feed onboarding process during Phase 2 planning.
+**LinkedIn API restrictions (Phase 3):**
+- Does LinkedIn differentiate between app posts and bot posts?
+- Can rate limiter prevent account bans, or are bans inevitable with automation?
+- **How to handle:** Test with burner LinkedIn account in Phase 3, implement safety margin (80% of limit)
 
-- **Token cost estimation:** AI enrichment (Phase 4) will consume Claude API tokens for summarization/categorization. Need to estimate cost per feed item and establish budget alerts during Phase 4 planning.
+**Spanish UI expansion (all phases):**
+- Are there AMD-specific translations that exceed 30% expansion (verified average)?
+- Do button labels fit on mobile at 150% zoom?
+- **How to handle:** UI audit with longest Spanish translations before each phase, use relative widths (not fixed pixels)
 
-- **Full-text extraction legality:** Phase 6 full-text extraction involves web scraping which has legal/compliance implications (ToS violations, copyright). Consult legal before implementing; may need user-agent transparency, rate limiting, robots.txt respect.
+**Multi-platform formatting (Phase 2):**
+- Can we achieve 80% automation (20% manual tweaking acceptable)?
+- Which platform causes most formatting issues (LinkedIn 3000 char limit, Twitter threads)?
+- **How to handle:** Prototype formatters in Phase 2 before full implementation, provide platform-specific previews
 
-- **Semantic deduplication threshold:** Research suggests 85% similarity threshold for semantic deduplication but doesn't provide validation. Need to experiment with actual feed data during Phase 6 to tune threshold and avoid false positives.
+**Wizard adaptation (Phase 4):**
+- At what point do users prefer quick mode? (3 completions? 5? 10?)
+- Does wizard preference vary by user role (creator vs manager)?
+- **How to handle:** A/B test wizard frequency in Phase 4, track completion time by experience level
 
 ## Sources
 
 ### Primary (HIGH confidence)
-- [Feedsmith npm package](https://www.npmjs.com/package/feedsmith) — Version 2.8.0, maintenance status, TypeScript support verification
-- [Feedsmith Quick Start](https://feedsmith.dev/quick-start) — Official usage examples, API reference
-- [Feedsmith GitHub](https://github.com/macieklamberski/feedsmith) — Source code inspection, issue tracker, recent commits
-- [Convex Actions Documentation](https://docs.convex.dev/functions/actions) — Action execution model, timeout limits, fetch availability
-- [Convex Cron Jobs Documentation](https://docs.convex.dev/scheduling/cron-jobs) — Scheduling patterns, skip behavior, orchestration examples
-- [Convex Best Practices](https://docs.convex.dev/understanding/best-practices/) — Mutation-action patterns, batch operations
-- AMD existing codebase (`actions.ts`, `crons.ts`, `schema.ts`, `CLAUDE.md`) — Verified architectural patterns via direct file inspection
+
+**Stack & Technology:**
+- [Sonner GitHub](https://github.com/emilkowalski/sonner) — Toast notification library, React 19 compatibility verified
+- [Onborda GitHub](https://github.com/uixmat/onborda) — Guided onboarding for Next.js, Framer Motion integration
+- [LinkedIn Posts API Official Docs](https://learn.microsoft.com/en-us/linkedin/marketing/community-management/shares/posts-api?view=li-lms-2026-01) — 2026-01 version, rate limits, API versioning
+- [LinkedIn OAuth 2.0 Authentication](https://learn.microsoft.com/en-us/linkedin/shared/authentication/authentication) — 3-legged flow, PKCE requirements
+- [Convex Documentation](https://docs.convex.dev/home) — Real-time subscriptions, reactive queries
+
+**Features & UX:**
+- [Multi-Agent Design Patterns (InfoQ, January 2026)](https://www.infoq.com/news/2026/01/multi-agent-design-patterns/) — Hub-and-spoke architecture, human-in-the-loop patterns
+- [Wizards: Design Guidelines (Nielsen Norman Group)](https://www.nngroup.com/articles/wizards/) — Step validation, progress indicators, wizard vs forms
+- [Content Approval Workflow (Smartsheet)](https://www.smartsheet.com/content-approval-workflow) — Standard state transitions, bottleneck prevention
+- [Drafts & Publishing Workflow (Sanity CMS)](https://www.sanity.io/glossary/drafts--publishing-workflow) — Version control, collaborative editing
+
+**Pitfalls & Security:**
+- [OAuth 2.0 Security BCP (RFC 9700)](https://treblle.com/blog/oauth-2.0-for-apis) — PKCE flow, state validation, token storage
+- [LinkedIn API Rate Limits (Microsoft Learn)](https://learn.microsoft.com/en-us/linkedin/shared/api-guide/concepts/rate-limits) — 100 connection requests/week, 500 API calls/day standard tier
+- [Alert Fatigue: What It Is and How to Prevent It (Datadog)](https://www.datadoghq.com/blog/best-practices-to-prevent-alert-fatigue/) — Evaluation windows, severity levels
+- [ConvexDB Pricing Guide (Airbyte)](https://airbyte.com/data-engineering-resources/convexdb-pricing) — Usage-based pricing, database operations
+- [Next.js App Router: common mistakes (Upsun)](https://upsun.com/blog/avoid-common-mistakes-with-next-js-app-router/) — Server/Client component patterns
 
 ### Secondary (MEDIUM confidence)
-- [Zapier Best RSS Readers 2026](https://zapier.com/blog/best-rss-feed-reader-apps/) — Feature comparison, table stakes identification
-- [DevOpsSchool RSS Aggregator Comparison](https://www.devopsschool.com/blog/top-10-rss-aggregators-features-pros-cons-comparison/) — Market analysis, expected features
-- [RSSbrew GitHub](https://github.com/yinan-c/RSSbrew) — AI summarization implementation example
-- [Auto-News GitHub](https://github.com/finaldie/auto-news) — Multi-source LLM aggregator patterns
-- [feedparser Documentation](https://feedparser.readthedocs.io/) — Content normalization, HTML sanitization approaches
-- [RSS Board on GUIDs](https://www.rssboard.org/news/217/unique-and-use-rss-guid-like-everybody) — GUID reliability discussion
-- [MDN HTTP 429](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/429) — Rate limiting best practices
-- [Superfeedr Debugging Feeds](https://blog.superfeedr.com/debugging-rss-feeds/) — Common feed parsing issues
-- [RSSHub Date Handling](https://docs.rsshub.app/joinus/advanced/pub-date) — Date parsing strategies
-- [Brand24 Brand Monitoring](https://brand24.com/blog/brand-monitoring-tools/) — Brand monitoring feature reference
 
-### Tertiary (LOW confidence, needs validation)
-- [Raymond Camden: Building RSS Parser with Cloudflare Workers](https://www.raymondcamden.com/2023/10/31/building-a-generic-rss-parser-service-with-cloudflare-workers) — rss-parser XMLHttpRequest issues (2023 article, may be dated)
-- [Apify RSS Aggregator](https://apify.com/primeparse/rss-aggregator) — AI summarization approach (commercial product, not verified implementation)
-- [FiveFilters Full-Text RSS](https://www.fivefilters.org/full-text-rss/) — Full-text extraction service (mentioned for Phase 6 consideration)
+**Best Practices:**
+- [Top 9 React notification libraries in 2026 (Knock)](https://knock.app/blog/the-top-notification-libraries-for-react) — Sonner vs alternatives comparison
+- [5 Best React Onboarding Libraries in 2026 (OnboardJS)](https://onboardjs.com/blog/5-best-react-onboarding-libraries-in-2025-compared) — Onborda vs React Joyride vs Intro.js
+- [Server-Sent Events Beat WebSockets for 95% of Real-Time Apps (Dev.to)](https://dev.to/polliog/server-sent-events-beat-websockets-for-95-of-real-time-apps-heres-why-a4l) — When to use SSE vs WebSocket
+- [React 19 Upgrade Guide (React.dev)](https://react.dev/blog/2024/04/25/react-19-upgrade-guide) — Deprecated patterns, breaking changes
+- [Feature Creep Is Killing Your Software (DesignRush)](https://www.designrush.com/agency/software-development/trends/feature-creep) — 80% of features rarely used (Pendo study)
+
+### Tertiary (community insights)
+
+- [Convex Plans and Pricing (Convex)](https://www.convex.dev/pricing) — Plan details, need real-world usage data
+- [Spanish requires 30% more characters than English (LatinoB ridge)](https://latinobridge.com/blog/a-guide-to-ui-localization/) — Text expansion in Romance languages
+- [Progressive Disclosure Examples (UserPilot)](https://userpilot.com/blog/progressive-disclosure-examples/) — SaaS examples, needs AMD-specific validation
 
 ---
-*Research completed: 2026-01-27*
+*Research completed: 2026-02-05*
 *Ready for roadmap: yes*

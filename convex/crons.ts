@@ -110,4 +110,17 @@ crons.daily(
   {}
 );
 
+// ===========================================
+// LINKEDIN TOKEN CHECK (Phase 11)
+// ===========================================
+
+// Check LinkedIn token expiration daily at 7:00 AM UTC
+// Marks expired connections so the UI can prompt reconnection
+crons.daily(
+  "check-linkedin-tokens",
+  { hourUTC: 7, minuteUTC: 0 },
+  internal.linkedin.mutations.checkTokenExpiration,
+  {}
+);
+
 export default crons;

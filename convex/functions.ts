@@ -624,6 +624,64 @@ export const updateContentStatus = mutation({
   },
 });
 
+export const updateContent = mutation({
+  args: {
+    id: v.id("content"),
+    title: v.optional(v.string()),
+    body: v.optional(v.string()),
+    summary: v.optional(v.string()),
+    seo: v.optional(
+      v.object({
+        metaTitle: v.string(),
+        metaDescription: v.string(),
+        slug: v.string(),
+        canonicalUrl: v.optional(v.string()),
+      })
+    ),
+    metadata: v.optional(
+      v.object({
+        targetKeywords: v.optional(v.array(v.string())),
+        tone: v.optional(v.string()),
+        targetAudience: v.optional(v.string()),
+      })
+    ),
+  },
+  handler: async (ctx, args) => {
+    const { id, ...updates } = args;
+    const content = await ctx.db.get(id);
+    if (!content) throw new Error("Content not found");
+
+    const finalUpdates: any = { updatedAt: Date.now() };
+
+    if (updates.title) finalUpdates.title = updates.title;
+    if (updates.summary !== undefined) finalUpdates.summary = updates.summary;
+
+    if (updates.body) {
+      finalUpdates.body = updates.body;
+      // Recalculate wordCount and readingTime
+      const wordCount = updates.body.split(/\s+/).filter((w: string) => w.length > 0).length;
+      finalUpdates.metadata = {
+        ...content.metadata,
+        wordCount,
+        readingTime: Math.ceil(wordCount / 200), // 200 words/min
+      };
+    }
+
+    if (updates.seo) {
+      finalUpdates.seo = { ...content.seo, ...updates.seo };
+    }
+
+    if (updates.metadata) {
+      finalUpdates.metadata = {
+        ...finalUpdates.metadata,
+        ...updates.metadata,
+      };
+    }
+
+    await ctx.db.patch(id, finalUpdates);
+  },
+});
+
 // ===========================================
 // METRICS QUERIES
 // ===========================================

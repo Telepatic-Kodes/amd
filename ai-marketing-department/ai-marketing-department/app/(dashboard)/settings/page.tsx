@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@convex/_generated/api";
 import { motion } from "framer-motion";
@@ -17,7 +17,11 @@ import {
   AlertCircle,
   Bot,
   Zap,
+  Linkedin,
+  Sparkles,
 } from "lucide-react";
+import { LinkedInConnectionCard } from "@/components/linkedin/LinkedInConnectionCard";
+import { QuickModeToggle } from "@/components/guided-ux/QuickModeToggle";
 import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
@@ -25,8 +29,10 @@ import { SimpleCounter } from "@/components/ui/AnimatedCounter";
 
 const SETTING_CATEGORIES = [
   { id: "integrations", label: "Integrations", icon: Key },
+  { id: "linkedin", label: "LinkedIn", icon: Linkedin },
   { id: "notifications", label: "Notifications", icon: Bell },
   { id: "agents", label: "Agent Config", icon: Bot },
+  { id: "guidance", label: "Guía UX", icon: Sparkles },
   { id: "system", label: "System", icon: Database },
 ];
 
@@ -38,7 +44,13 @@ export default function SettingsPage() {
   const updateSetting = useMutation(api.functions.updateSetting);
   const upgradeAllAgents = useMutation(api.functions.upgradeAllAgentsModel);
 
+  const completeStep = useMutation(api.guidance.completeSetupStep);
   const [formState, setFormState] = useState<Record<string, any>>({});
+
+  // Auto-mark "settingsReviewed" setup step
+  useEffect(() => {
+    completeStep({ step: "settingsReviewed" }).catch(() => {});
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSave = async (key: string, value: any, description?: string) => {
     setSaveStatus("saving");
@@ -81,7 +93,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div data-tour="settings" className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -279,6 +291,51 @@ export default function SettingsPage() {
                     <p className="text-xs text-zinc-500 mt-1">
                       Receive notifications about agent activities
                     </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
+
+          {activeCategory === "linkedin" && (
+            <motion.div
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.2 }}
+              className="space-y-6"
+            >
+              <Card>
+                <CardHeader>
+                  <h3 className="flex items-center gap-2 font-semibold text-lg text-white">
+                    <Linkedin className="h-5 w-5 text-[#0A66C2]" />
+                    LinkedIn Integration
+                  </h3>
+                  <p className="text-sm text-zinc-400 mt-1">
+                    Conecta tu cuenta de LinkedIn para publicar contenido directamente desde AMD.
+                  </p>
+                </CardHeader>
+                <CardContent className="p-6 pt-0 space-y-4">
+                  <LinkedInConnectionCard
+                    convexSiteUrl={
+                      typeof window !== "undefined"
+                        ? process.env.NEXT_PUBLIC_CONVEX_URL?.replace(".cloud", ".site")
+                        : undefined
+                    }
+                  />
+
+                  <div className="p-4 rounded-lg border border-zinc-800 bg-zinc-900/50 space-y-3">
+                    <h4 className="text-sm font-medium text-zinc-300">Configuración requerida</h4>
+                    <div className="space-y-2 text-xs text-zinc-500">
+                      <p>1. Crear app en <a href="https://www.linkedin.com/developers/apps" target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:underline">LinkedIn Developer Portal</a></p>
+                      <p>2. Agregar productos: &ldquo;Share on LinkedIn&rdquo; y &ldquo;Sign In with LinkedIn using OpenID Connect&rdquo;</p>
+                      <p>3. Configurar Redirect URL en OAuth 2.0 settings: <code className="bg-zinc-800 px-1 rounded text-zinc-300">{`{CONVEX_SITE_URL}/linkedin/callback`}</code></p>
+                      <p>4. Agregar variables de entorno en Convex Dashboard:</p>
+                      <ul className="ml-4 space-y-1 list-disc">
+                        <li><code className="bg-zinc-800 px-1 rounded text-zinc-300">LINKEDIN_CLIENT_ID</code></li>
+                        <li><code className="bg-zinc-800 px-1 rounded text-zinc-300">LINKEDIN_CLIENT_SECRET</code></li>
+                        <li><code className="bg-zinc-800 px-1 rounded text-zinc-300">FRONTEND_URL</code> (ej: http://localhost:3000)</li>
+                      </ul>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -618,6 +675,43 @@ export default function SettingsPage() {
                         <span className="text-zinc-500">Sonnet 4 pricing:</span>
                         <span className="text-white ml-1">$3/M input, $15/M output</span>
                       </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
+
+          {activeCategory === "guidance" && (
+            <motion.div
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.2 }}
+              className="space-y-6"
+            >
+              <Card>
+                <CardHeader>
+                  <h3 className="flex items-center gap-2 font-semibold text-lg text-white">
+                    <Sparkles className="h-5 w-5 text-indigo-500" />
+                    Guía y Onboarding
+                  </h3>
+                  <p className="text-sm text-zinc-400 mt-1">
+                    Configura la experiencia de guía del sistema.
+                  </p>
+                </CardHeader>
+                <CardContent className="p-6 pt-0 space-y-4">
+                  <QuickModeToggle />
+
+                  <div className="p-4 rounded-lg border border-zinc-800 bg-zinc-900/50 space-y-3">
+                    <h4 className="text-sm font-medium text-zinc-300">Sobre el Modo Express</h4>
+                    <div className="space-y-2 text-xs text-zinc-500">
+                      <p>El Modo Express se desbloquea después de completar el onboarding 3 veces.</p>
+                      <p>Cuando está activado:</p>
+                      <ul className="ml-4 space-y-1 list-disc">
+                        <li>Se omiten textos explicativos en el wizard</li>
+                        <li>Los pasos se simplifican</li>
+                        <li>Las animaciones son más rápidas</li>
+                      </ul>
                     </div>
                   </div>
                 </CardContent>

@@ -1,141 +1,123 @@
-# Requirements: AMD RSS Feed Integration
+# Requirements: AMD v2.0 UX/UI Excellence
 
-**Defined:** 2026-01-27
-**Core Value:** Los agentes de contenido tienen acceso a información fresca y relevante del mercado para crear contenido más actual y competitivo.
+**Defined:** 2026-02-05
+**Core Value:** Non-technical users can manage a complete marketing department in minutes, not hours.
 
-## v1 Requirements
+## v2.0 Requirements
 
-Requirements for initial release. Each maps to roadmap phases.
+Requirements for v2.0 milestone. Each maps to roadmap phases.
 
-### Feed Management (FEED)
+### Control Center
 
-- [ ] **FEED-01**: Usuario puede agregar feed RSS manualmente desde dashboard
-- [ ] **FEED-02**: Sistema valida feed antes de agregarlo (parsea correctamente)
-- [ ] **FEED-03**: Usuario puede pausar/activar feeds individuales
-- [ ] **FEED-04**: Usuario puede eliminar feeds
-- [ ] **FEED-05**: Usuario puede ver lista de feeds con estado de sync
-- [ ] **FEED-06**: Sistema soporta RSS 2.0, Atom, y RSS 1.0 (RDF)
+- [ ] **CC-01**: Dashboard muestra estado real-time de los 37 agentes (activo/idle/error)
+- [ ] **CC-02**: Activity feed con timeline de acciones de cada agente (qué hizo, cuándo, resultado)
+- [ ] **CC-03**: Métricas operativas (tokens usados, tareas completadas, tasa de éxito)
+- [ ] **CC-04**: Sistema de alertas inteligentes (errores, agentes caídos, límites alcanzados)
+- [ ] **CC-05**: Vista por departamento (filtrar agentes por sus 6 departamentos)
 
-### Sync Engine (SYNC)
+### Content Pipeline
 
-- [ ] **SYNC-01**: Sistema sincroniza feeds diariamente via cron job
-- [ ] **SYNC-02**: Sistema usa composite key para deduplicación (no confía en GUID solo)
-- [ ] **SYNC-03**: Sistema maneja XML malformado sin crashear (lenient parsing)
-- [ ] **SYNC-04**: Sistema implementa fan-out (un action por feed) para evitar timeouts
-- [ ] **SYNC-05**: Sistema respeta HTTP 429 con exponential backoff
-- [ ] **SYNC-06**: Sistema trackea health de cada feed (last sync, error count)
-- [ ] **SYNC-07**: Sistema normaliza contenido a schema consistente
+- [ ] **CP-01**: Vista visual tipo Kanban del pipeline (Draft → Review → Approved → Published)
+- [ ] **CP-02**: Drag & drop para mover contenido entre estados
+- [ ] **CP-03**: Acciones de workflow (enviar a review, aprobar, rechazar, publicar)
+- [ ] **CP-04**: Scheduling de publicación (programar fecha/hora)
+- [ ] **CP-05**: Vista de contenido programado (calendario o lista temporal)
 
-### Storage (STOR)
+### LinkedIn Integration
 
-- [ ] **STOR-01**: Feed items se almacenan en tabla `feedItems` en Convex
-- [ ] **STOR-02**: Feeds se almacenan en tabla `feeds` en Convex
-- [ ] **STOR-03**: Sync logs se almacenan en tabla `feedSyncLog`
-- [ ] **STOR-04**: Items incluyen: title, link, content, publishedAt, contentHash
-- [ ] **STOR-05**: Sistema previene duplicados via contentHash index
+- [ ] **LI-01**: Flujo OAuth 2.0 para conectar cuenta LinkedIn (server-side, seguro)
+- [ ] **LI-02**: Publicar contenido aprobado directamente a LinkedIn desde la app
+- [ ] **LI-03**: Preview del post antes de publicar (cómo se verá en LinkedIn)
+- [ ] **LI-04**: Estado de conexión visible (conectado/desconectado/token expirado)
+- [ ] **LI-05**: Rate limit handling (respetar límites de LinkedIn API)
 
-### Agent Integration (AGNT)
+### Guided UX
 
-- [ ] **AGNT-01**: Agentes pueden consultar feed items relevantes durante ejecución
-- [ ] **AGNT-02**: Feed items se inyectan en contexto del agente (systemPrompt)
-- [ ] **AGNT-03**: Agentes pueden filtrar por keywords/temas
-- [ ] **AGNT-04**: Sistema trackea qué items usó cada agente
-- [ ] **AGNT-05**: Agentes de Content usan feeds como inspiración
-- [ ] **AGNT-06**: Agentes de Social usan feeds para curación
-- [ ] **AGNT-07**: Agentes de SEO usan feeds para monitoreo de mercado
+- [ ] **GX-01**: Wizard de onboarding para usuarios nuevos (3-5 pasos guiados)
+- [ ] **GX-02**: "Siguiente acción recomendada" en dashboard principal
+- [ ] **GX-03**: Tooltips contextuales en toda la app (explicaciones inline)
+- [ ] **GX-04**: Wizard adaptativo (ofrece "modo rápido" después de 3 completaciones)
+- [ ] **GX-05**: Progreso visible del setup inicial (barra de completamiento)
 
-### Dashboard UI (DASH)
+### UX General
 
-- [ ] **DASH-01**: Dashboard muestra feeds configurados
-- [ ] **DASH-02**: Dashboard muestra estado de sincronización por feed
-- [ ] **DASH-03**: Dashboard muestra últimos items sincronizados
-- [ ] **DASH-04**: Dashboard permite trigger manual de sync
+- [ ] **UX-01**: Todas las interfaces en español 100%
+- [ ] **UX-02**: Mobile responsive para todas las nuevas features
+- [ ] **UX-03**: Toast notifications (Sonner) para feedback de acciones
+- [ ] **UX-04**: Loading states y skeleton screens en todas las vistas
 
-### AI Enrichment (ENRCH)
+## Future Requirements (v3.0+)
 
-- [ ] **ENRCH-01**: Sistema categoriza items automáticamente (topic extraction)
-- [ ] **ENRCH-02**: Sistema genera resumen de items (reduce tokens)
-- [ ] **ENRCH-03**: Sistema detecta sentimiento (positive/neutral/negative)
-- [ ] **ENRCH-04**: Enrichment corre en background (no bloquea sync)
+Deferred to future milestones. Tracked but not in current roadmap.
 
-### Monitoring (MNTR)
+### Multi-Platform Publishing
 
-- [ ] **MNTR-01**: Sistema alerta sobre menciones de marca (keywords prioritarios)
-- [ ] **MNTR-02**: Sistema detecta tendencias across feeds
-- [ ] **MNTR-03**: Sistema asigna trust score a feeds según calidad
+- **MP-01**: Publicar a Twitter/X desde la app
+- **MP-02**: Publicar a Instagram desde la app
+- **MP-03**: Multi-platform preview (ver cómo se ve en cada red)
+- **MP-04**: Cross-platform scheduling (una publicación, múltiples redes)
 
-## v2 Requirements
+### Advanced Analytics
 
-Deferred to future release. Tracked but not in current roadmap.
+- **AA-01**: Métricas de LinkedIn posts (engagement, reach, clicks)
+- **AA-02**: A/B testing de contenido
+- **AA-03**: Reportes automatizados de rendimiento
 
-### Advanced Features
+### Collaboration
 
-- **ADV-01**: Full-text extraction para feeds truncados (web scraping)
-- **ADV-02**: Deduplicación semántica (embeddings para near-duplicates)
-- **ADV-03**: HTTP conditional GET (ETag/Last-Modified caching)
-- **ADV-04**: OPML import para bulk onboarding de feeds
-- **ADV-05**: OPML export para backup/portabilidad
-- **ADV-06**: Sugerencia automática de feeds por keywords
+- **CO-01**: Comentarios en contenido (feedback de equipo)
+- **CO-02**: Roles y permisos (editor, reviewer, publisher)
+- **CO-03**: Version history de contenido
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| Bypass de paywalls | Ilegal, viola ToS |
-| Scraping de sitios sin RSS | Complejidad legal y técnica |
-| Análisis de sentimiento real-time | Batch diario es suficiente |
-| Integración con APIs de pago (NewsAPI) | Puede agregarse después |
-| Reader UI para humanos | Los agentes son los consumidores |
-| Podcast/video handling | Pipeline separado, diferente media type |
+| Dark mode / theming | No resuelve el problema de UX clarity |
+| Full social media integrations | Solo LinkedIn como PoC en v2.0; expandir en v3.0 |
+| Multilingual (i18n framework) | Spanish-only por ahora; i18n deferred to v3.0 |
+| Agent customization UI | Backend concern, no frontend |
+| Real-time chat/messaging | Complexity vs value too high |
+| Video upload/publishing | LinkedIn video API tiene restricciones adicionales |
+| Collaborative editing | Requires conflict resolution; defer to v3.0 |
 
 ## Traceability
 
-Which phases cover which requirements. Updated during roadmap creation.
-
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FEED-01 | Phase 2 | Pending |
-| FEED-02 | Phase 1 | Pending |
-| FEED-03 | Phase 2 | Pending |
-| FEED-04 | Phase 2 | Pending |
-| FEED-05 | Phase 2 | Pending |
-| FEED-06 | Phase 1 | Pending |
-| SYNC-01 | Phase 2 | Pending |
-| SYNC-02 | Phase 1 | Pending |
-| SYNC-03 | Phase 1 | Pending |
-| SYNC-04 | Phase 2 | Pending |
-| SYNC-05 | Phase 2 | Pending |
-| SYNC-06 | Phase 1 | Pending |
-| SYNC-07 | Phase 1 | Pending |
-| STOR-01 | Phase 1 | Pending |
-| STOR-02 | Phase 1 | Pending |
-| STOR-03 | Phase 1 | Pending |
-| STOR-04 | Phase 1 | Pending |
-| STOR-05 | Phase 1 | Pending |
-| AGNT-01 | Phase 3 | Pending |
-| AGNT-02 | Phase 3 | Pending |
-| AGNT-03 | Phase 3 | Pending |
-| AGNT-04 | Phase 3 | Pending |
-| AGNT-05 | Phase 3 | Pending |
-| AGNT-06 | Phase 3 | Pending |
-| AGNT-07 | Phase 3 | Pending |
-| DASH-01 | Phase 2 | Pending |
-| DASH-02 | Phase 2 | Pending |
-| DASH-03 | Phase 2 | Pending |
-| DASH-04 | Phase 2 | Pending |
-| ENRCH-01 | Phase 4 | Pending |
-| ENRCH-02 | Phase 4 | Pending |
-| ENRCH-03 | Phase 4 | Pending |
-| ENRCH-04 | Phase 4 | Pending |
-| MNTR-01 | Phase 5 | Pending |
-| MNTR-02 | Phase 5 | Pending |
-| MNTR-03 | Phase 5 | Pending |
+| CC-01 | Phase 9 | Pending |
+| CC-02 | Phase 9 | Pending |
+| CC-03 | Phase 9 | Pending |
+| CC-04 | Phase 9 | Pending |
+| CC-05 | Phase 9 | Pending |
+| CP-01 | Phase 10 | Pending |
+| CP-02 | Phase 10 | Pending |
+| CP-03 | Phase 10 | Pending |
+| CP-04 | Phase 10 | Pending |
+| CP-05 | Phase 10 | Pending |
+| LI-01 | Phase 11 | Pending |
+| LI-02 | Phase 11 | Pending |
+| LI-03 | Phase 11 | Pending |
+| LI-04 | Phase 11 | Pending |
+| LI-05 | Phase 11 | Pending |
+| GX-01 | Phase 12 | Pending |
+| GX-02 | Phase 12 | Pending |
+| GX-03 | Phase 12 | Pending |
+| GX-04 | Phase 12 | Pending |
+| GX-05 | Phase 12 | Pending |
+| UX-01 | Phases 9, 10, 11, 12 | Pending |
+| UX-02 | Phases 9, 10, 11, 12 | Pending |
+| UX-03 | Phases 9, 10, 11, 12 | Pending |
+| UX-04 | Phases 9, 10, 11, 12 | Pending |
 
 **Coverage:**
-- v1 requirements: 37 total
-- Mapped to phases: 37
-- Unmapped: 0 ✓
+- v2.0 requirements: 24 total
+- Mapped to phases: 24/24 (100% coverage ✓)
+- Unmapped: 0
+
+**Cross-Cutting Requirements Note:**
+UX-01 through UX-04 (Spanish UI, mobile responsive, toast notifications, loading states) are mapped to ALL phases (9, 10, 11, 12) because they are cross-cutting concerns that apply to every feature, not isolated to one phase.
 
 ---
-*Requirements defined: 2026-01-27*
-*Last updated: 2026-01-27 after research synthesis*
+*Requirements defined: 2026-02-05*
+*Last updated: 2026-02-05 after roadmap creation*

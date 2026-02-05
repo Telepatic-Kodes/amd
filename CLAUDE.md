@@ -309,7 +309,7 @@ await ctx.runMutation(internal.functions.createHandoff, {
 | `/` | Dashboard | Vista general: agentes activos, tareas, métricas |
 | `/agents` | Agents | Gestionar 37 agentes, filtrar por departamento/estado |
 | `/campaigns` | Campaigns | Crear y monitorear campañas multicanal |
-| `/content` | Content | Ver contenido generado, aprobar, publicar |
+| `/content` | Content | Crear, editar, aprobar y publicar contenido multicanal |
 | `/analytics` | Analytics | Métricas de rendimiento, tokens, costos |
 | `/settings` | Settings | API keys, configuración, modelo default |
 | `/org` | Org Chart | Visualización del organigrama de agentes |
@@ -328,12 +328,115 @@ await ctx.runMutation(internal.functions.createHandoff, {
 ### Mutations (Escritura)
 - `createTask(agentId, type, input)` - Crear tarea
 - `updateAgentStatus(id, status)` - Cambiar estado de agente
-- `updateContentStatus(id, status)` - Aprobar/publicar contenido
+- `createContent(type, title, body, summary?, metadata, seo, createdBy)` - Crear contenido manualmente
+- `updateContent(id, title?, body?, summary?, seo?, metadata?)` - Editar contenido generado
+- `updateContentStatus(id, status)` - Cambiar estado (draft → review → approved → published)
 
 ### Actions (Ejecución Externa)
 - `executeAgent(agentId, taskType, input)` - Ejecutar agente con Claude
 - `callClaude(prompt, config)` - Llamada directa a Claude API
 - `runScheduledAgents(trigger)` - Ejecutar agentes por trigger
+
+---
+
+## Workflow de Gestión de Contenido
+
+El sistema de contenido soporta un flujo completo de **crear → editar → aprobar → publicar**.
+
+### Componentes UI
+
+| Componente | Ubicación | Función |
+|-----------|-----------|---------|
+| `UploadContentForm` | Header `/content` | Formulario inline para crear contenido manualmente |
+| `EditContentModal` | Modal `/content` | Editor full-screen con campos SEO y metadata |
+| `StatusActions` | Panel derecho | Botones contextuales para workflow de aprobación |
+
+### Estados de Contenido
+
+```
+draft → review → revision_needed → approved → scheduled → published → archived
+  ↓        ↓            ↓              ↓          ↓           ↓
+ [1]      [2]          [2]           [3]        [4]         [5]
+```
+
+**[1]** Usuario crea contenido manualmente con `UploadContentForm`
+**[2]** Se envía a revisión, puede solicitar cambios o aprobar
+**[3]** Una vez aprobado, puede programarse o publicar inmediatamente
+**[4]** Opción de programar publicación para fecha futura
+**[5]** Una vez publicado, puede archivarse
+
+### Tipos de Contenido Soportados
+
+- `blog` - Artículos y posts
+- `social_linkedin` - Contenido profesional
+- `social_twitter` - Tweets y threads
+- `social_instagram` - Posts visuales
+- `social_tiktok` - Videos cortos
+- `email` - Campañas de email
+- `newsletter` - Newsletters semanales
+- `ad_copy` - Copy para publicidad
+- `landing_page` - Páginas de conversión
+- `whitepaper` - Guías técnicas
+- `case_study` - Historias de éxito
+- `video_script` - Scripts para videos
+
+### Campos Editables
+
+**Básicos:**
+- Title (requerido)
+- Body (requerido, mín 50 chars)
+- Summary (opcional)
+
+**SEO (accordion):**
+- Meta Title (55-60 chars recomendado)
+- Meta Description (150-160 chars recomendado)
+- Canonical URL (opcional)
+- Slug (url-friendly)
+
+**Metadata (accordion):**
+- Target Keywords (comma-separated)
+- Tone (professional, casual, friendly, technical)
+- Target Audience (descripción de público)
+
+### Ejemplo de Uso
+
+```typescript
+// 1. Crear contenido
+const contentId = await createContent({
+  type: "blog",
+  title: "AI Marketing Trends 2024",
+  body: "Long form content here...",
+  metadata: { wordCount: 1200, readingTime: 6 },
+  createdBy: "user-id",
+});
+
+// 2. Editar contenido
+await updateContent({
+  id: contentId,
+  title: "Updated: AI Marketing Trends 2024",
+  body: "Updated content with more details...",
+});
+
+// 3. Enviar a revisión
+await updateContentStatus({
+  id: contentId,
+  status: "review",
+});
+
+// 4. Aprobar
+await updateContentStatus({
+  id: contentId,
+  status: "approved",
+  approvedBy: "manager-id",
+});
+
+// 5. Publicar
+await updateContentStatus({
+  id: contentId,
+  status: "published",
+  publishedUrl: "https://blog.example.com/article-slug",
+});
+```
 
 ---
 
@@ -453,3 +556,124 @@ npx convex dashboard     # Abrir dashboard de Convex
 - Cada agente tiene su propio `systemPrompt` configurable
 - Los handoffs se registran para trazabilidad completa
 - El modelo default es `claude-sonnet-4-20250514` con temperatura `0.7`
+
+---
+
+## Historial de Cambios (v2.1 - Enero 2026)
+
+### ✨ Nueva Funcionalidad: Content Management System
+
+#### **Implementado (29 de Enero)**
+
+**Backend - Nuevas Mutations:**
+- `createContent(type, title, body, metadata, seo, createdBy)` - Crear contenido manualmente
+- `updateContent(id, title?, body?, summary?, seo?, metadata?)` - Editar todos los campos
+- `updateContentStatus(id, status)` - Workflow de aprobación (draft → review → approved → published)
+
+**Frontend - Nuevos Componentes:**
+1. **`UploadContentForm.tsx`** (components/content/)
+   - Formulario inline colapsable
+   - Validación client-side (title: min 5, body: min 50)
+   - Auto-cálculo de wordCount y readingTime
+   - Integración con createContent mutation
+
+2. **`EditContentModal.tsx`** (components/content/)
+   - Modal full-screen con editor
+   - Secciones acordeón: Básico, SEO, Metadata
+   - Indicadores de caracteres (55-60 / 150-160)
+   - Integración con updateContent mutation
+
+3. **`StatusActions` Component** (inline en content/page.tsx)
+   - Botones contextuales según estado
+   - Transiciones de workflow: Draft → Review → Approved → Published
+   - Loading states y error handling
+
+**Integración:**
+- ✅ `/content` página completamente funcional
+- ✅ Botón "Add Content" en header
+- ✅ Botón "Edit" en tarjetas (hover)
+- ✅ Panel de workflow en detalles (derecha)
+- ✅ Convex reactivity (auto-updates sin refresh)
+
+**Documentación:**
+- ✅ `CLAUDE.md` actualizado con APIs nuevas
+- ✅ Tipos de contenido (12 tipos soportados)
+- ✅ Ejemplos de uso en TypeScript
+
+---
+
+### 🐛 Bug Fixes & Mejoras
+
+#### **LineChart Component - Corrección de Type Safety (29 de Enero)**
+
+**Problema:**
+- `LineChartComponent` requería `lines` array obligatorio
+- Results page pasaba props incompatibles (`dataKey`, `name`)
+- Error en runtime: "Cannot read properties of undefined (reading 'map')"
+
+**Solución:**
+- Hicimos `lines` prop opcional con backwards compatibility
+- Agregamos lógica para construir `lines` desde `dataKey` + `name`
+- Agregamos validación de datos vacíos
+- Agregamos prop `showTooltip` para controlar tooltip
+
+**Cambios en `components/charts/LineChart.tsx`:**
+```typescript
+// Antes: lines requerido
+lines: { dataKey: string; ... }[]
+
+// Ahora: opcional + backwards compatible
+lines?: { dataKey: string; ... }[]
+dataKey?: string      // para single line charts
+name?: string         // nombre de la línea
+showTooltip?: boolean // mostrar tooltip
+```
+
+**Impacto:**
+- ✅ LineChart ahora soporta ambos modos de uso
+- ✅ Type safety mejorada
+- ✅ Compatibilidad con código existente
+- ✅ Error en results page resuelto
+
+---
+
+### 📊 Estado Actual
+
+| Componente | Status | Últimas Actualizaciones |
+|-----------|--------|------------------------|
+| **Content Management** | ✅ MVP Completo | Create, Edit, Publish Workflow |
+| **LineChart** | ✅ Corregido | Type safety & backwards compatibility |
+| **Dashboard** | ✅ Funcional | 5 páginas + Analytics |
+| **Convex Backend** | ✅ Activo | Real-time sync, 37 agentes |
+| **TypeScript** | ✅ Strict | No errors en producción |
+
+---
+
+### 🚀 Stack Actual (Jan 2026)
+
+- **Backend:** Convex (serverless, real-time)
+- **Frontend:** Next.js 16 (Turbopack), React 19
+- **UI:** Tailwind 4, Lucide Icons, Framer Motion
+- **LLM:** Claude Sonnet 4 (claude-sonnet-4-20250514)
+- **Orquestación:** n8n workflows + Manual API
+- **Database:** Convex managed (11 tablas)
+
+---
+
+### 📝 Próximas Iteraciones
+
+**Corto plazo (Semana 1):**
+- [ ] Rich text editor (TipTap)
+- [ ] File upload (PDF, DOCX)
+- [ ] Scheduling UI (date picker)
+
+**Medio plazo (Semana 2-3):**
+- [ ] Version history
+- [ ] Comments/feedback en content
+- [ ] Multi-platform formatting
+
+**Largo plazo (Mes 2):**
+- [ ] Templates para contenido
+- [ ] Bulk operations
+- [ ] Analytics integration
+- [ ] Collaborative editing

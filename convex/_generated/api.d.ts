@@ -11,6 +11,7 @@
 import type * as actions from "../actions.js";
 import type * as agentSdk from "../agentSdk.js";
 import type * as analysis_metrics from "../analysis/metrics.js";
+import type * as controlCenter from "../controlCenter.js";
 import type * as crons from "../crons.js";
 import type * as enrichment_index from "../enrichment/index.js";
 import type * as enrichment_mutations from "../enrichment/mutations.js";
@@ -30,6 +31,7 @@ import type * as feeds_queries from "../feeds/queries.js";
 import type * as feeds_scheduleFeedSync from "../feeds/scheduleFeedSync.js";
 import type * as feeds_storeFeedItems from "../feeds/storeFeedItems.js";
 import type * as feeds_syncAllFeeds from "../feeds/syncAllFeeds.js";
+import type * as feeds_templates from "../feeds/templates.js";
 import type * as feeds_utils_hash from "../feeds/utils/hash.js";
 import type * as feeds_utils_index from "../feeds/utils/index.js";
 import type * as feeds_utils_opmlGenerator from "../feeds/utils/opmlGenerator.js";
@@ -62,6 +64,7 @@ declare const fullApi: ApiFromModules<{
   actions: typeof actions;
   agentSdk: typeof agentSdk;
   "analysis/metrics": typeof analysis_metrics;
+  controlCenter: typeof controlCenter;
   crons: typeof crons;
   "enrichment/index": typeof enrichment_index;
   "enrichment/mutations": typeof enrichment_mutations;
@@ -81,6 +84,7 @@ declare const fullApi: ApiFromModules<{
   "feeds/scheduleFeedSync": typeof feeds_scheduleFeedSync;
   "feeds/storeFeedItems": typeof feeds_storeFeedItems;
   "feeds/syncAllFeeds": typeof feeds_syncAllFeeds;
+  "feeds/templates": typeof feeds_templates;
   "feeds/utils/hash": typeof feeds_utils_hash;
   "feeds/utils/index": typeof feeds_utils_index;
   "feeds/utils/opmlGenerator": typeof feeds_utils_opmlGenerator;
