@@ -72,7 +72,7 @@ export const executeAgentWithKB = action({
           kbSections = await ctx.runQuery(
             api.kb.agentQueries.searchKBSections,
             {
-              kbIds: visibleKBs.map((kb) => kb._id),
+              kbIds: visibleKBs.map((kb: any) => kb._id),
               keywords,
               limit: 5,
             }

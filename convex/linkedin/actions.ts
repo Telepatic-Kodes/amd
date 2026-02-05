@@ -9,7 +9,7 @@ const LINKEDIN_API_VERSION = "202601";
  */
 export const publishToLinkedIn = action({
   args: { contentId: v.id("content") },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<{ success: boolean; postUrn: string | undefined; linkedinUrl: string | null }> => {
     // 1. Get content by _id
     const content = await ctx.runQuery(
       internal.linkedin.internalQueries.getContentById,
@@ -39,7 +39,7 @@ export const publishToLinkedIn = action({
     }
 
     // 5. Get full connection with token (internal query needed)
-    const fullConnection = await ctx.runQuery(
+    const fullConnection: any = await ctx.runQuery(
       internal.linkedin.internalQueries.getConnectionWithToken,
       { connectionId: connection._id }
     );
@@ -60,7 +60,7 @@ export const publishToLinkedIn = action({
 
     // 7. Publish to LinkedIn
     try {
-      const response = await fetch("https://api.linkedin.com/rest/posts", {
+      const response: Response = await fetch("https://api.linkedin.com/rest/posts", {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${fullConnection.accessToken}`,
@@ -102,7 +102,7 @@ export const publishToLinkedIn = action({
       }
 
       // Get post URN from response header
-      const postUrn = response.headers.get("x-restli-id") || undefined;
+      const postUrn: string | undefined = response.headers.get("x-restli-id") || undefined;
 
       // 8. Log success
       await ctx.runMutation(internal.linkedin.mutations.logPublishAttempt, {
@@ -158,7 +158,7 @@ export const exchangeCodeForTokens = internalAction({
     code: v.string(),
     redirectUri: v.string(),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<{ connectionId: any; displayName: string }> => {
     const clientId = process.env.LINKEDIN_CLIENT_ID;
     const clientSecret = process.env.LINKEDIN_CLIENT_SECRET;
 

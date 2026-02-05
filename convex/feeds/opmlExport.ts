@@ -48,7 +48,7 @@ export const exportAsOPML = internalAction({
     return {
       xml: opmlXml,
       feedCount: feeds.length,
-      categories: [...new Set(feeds.map((f: any) => f.category))],
+      categories: [...new Set(feeds.map((f: any) => f.category))] as string[],
     };
   },
 });
