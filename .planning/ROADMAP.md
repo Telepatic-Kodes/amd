@@ -49,11 +49,12 @@
   4. User receives toast notifications for critical events (agent errors, limits reached)
   5. Control Center works on mobile devices with touch-friendly interface
 
-**Plans:** TBD
+**Plans:** 3 plans
 
 Plans:
-- [ ] 09-01: TBD
-- [ ] 09-02: TBD
+- [ ] 09-01-PLAN.md — Convex backend queries for Control Center (aggregated agent status, activity feed, metrics)
+- [ ] 09-02-PLAN.md — Control Center page with agent status grid, metrics summary, navigation, and Spanish translations
+- [ ] 09-03-PLAN.md — Activity feed component, toast notifications for critical events, mobile responsiveness polish
 
 ---
 
@@ -133,7 +134,7 @@ Phases execute in numeric order: 9 → 10 → 11 → 12
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 9. Control Center Foundation | 0/TBD | Not started | - |
+| 9. Control Center Foundation | 0/3 | Planned | - |
 | 10. Content Pipeline Enhancement | 0/TBD | Not started | - |
 | 11. LinkedIn Publishing Integration | 0/TBD | Not started | - |
 | 12. Guided UX Layer | 0/TBD | Not started | - |
@@ -147,4 +148,5 @@ Phases execute in numeric order: 9 → 10 → 11 → 12
 ---
 
 *Roadmap created: 2026-02-05*
-*Ready for: `/gsd:plan-phase 9`*
+*Phase 9 planned: 2026-02-05*
+*Ready for: `/gsd:execute-phase 9`*
