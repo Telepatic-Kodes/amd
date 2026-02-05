@@ -92,7 +92,7 @@ export function AgentStatusGrid({
   const renderAgentCard = (agent: Agent) => {
     const shouldPulse = statusPulse[agent.status];
     return (
-      <Card key={agent._id} className="p-3 hover:border-zinc-700 transition-colors">
+      <Card key={agent._id} className="p-3 min-h-[72px] hover:border-zinc-700 transition-colors">
         <div className="flex items-center gap-2 mb-2">
           <div
             className={`w-2 h-2 rounded-full ${statusColors[agent.status]} ${
@@ -119,7 +119,7 @@ export function AgentStatusGrid({
       <div key={dept} className="mb-6">
         <button
           onClick={() => toggleDepartment(dept)}
-          className="flex items-center gap-2 mb-3 text-white font-semibold hover:text-zinc-300 transition-colors"
+          className="flex items-center gap-2 mb-3 min-h-[44px] py-2 text-white font-semibold hover:text-zinc-300 transition-colors"
         >
           {isCollapsed ? (
             <ChevronRight className="w-4 h-4" />
@@ -165,26 +165,28 @@ export function AgentStatusGrid({
         </span>
       </div>
 
-      {/* Department Filter Tabs */}
-      <div className="mb-6 flex gap-2 flex-wrap">
-        {allDepartments.map((dept) => {
-          const isActive = selectedDepartment === dept;
-          const label =
-            dept === "all" ? translate("allDepartments") : departmentNames[dept] || dept;
-          return (
-            <button
-              key={dept}
-              onClick={() => setSelectedDepartment(dept)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                isActive
-                  ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30"
-                  : "bg-zinc-800/50 text-zinc-400 hover:bg-zinc-800 hover:text-white border border-transparent"
-              }`}
-            >
-              {label}
-            </button>
-          );
-        })}
+      {/* Department Filter Tabs - Horizontal scroll on mobile */}
+      <div className="mb-6 overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
+        <div className="flex gap-2 flex-nowrap min-w-min">
+          {allDepartments.map((dept) => {
+            const isActive = selectedDepartment === dept;
+            const label =
+              dept === "all" ? translate("allDepartments") : departmentNames[dept] || dept;
+            return (
+              <button
+                key={dept}
+                onClick={() => setSelectedDepartment(dept)}
+                className={`px-4 py-3 min-h-[44px] rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
+                  isActive
+                    ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30"
+                    : "bg-zinc-800/50 text-zinc-400 hover:bg-zinc-800 hover:text-white border border-transparent"
+                }`}
+              >
+                {label}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Agent Grid */}
