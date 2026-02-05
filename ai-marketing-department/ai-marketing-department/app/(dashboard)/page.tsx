@@ -21,6 +21,9 @@ import { Sparkline } from "@/components/charts/Sparkline";
 import { chartColors } from "@/components/charts/theme";
 import { translate } from "@/lib/language";
 import { FeedHealthSummary } from "@/components/feeds/FeedHealthSummary";
+import { NextActionCard } from "@/components/guided-ux/NextActionCard";
+import { SetupProgress } from "@/components/guided-ux/SetupProgress";
+import { ContextualHelp } from "@/components/guided-ux/ContextualHelp";
 
 function formatNumber(num: number) {
   if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
@@ -102,6 +105,9 @@ export default function DashboardPage() {
         </div>
       </div>
 
+      {/* Next Action Recommendation */}
+      <NextActionCard />
+
       {/* Key Metrics - Simplified to 3 larger cards */}
       <div data-tour="home-metrics" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
         {/* Campaigns Running */}
@@ -120,7 +126,14 @@ export default function DashboardPage() {
             <p className="text-4xl font-bold text-white mb-2">
               <SimpleCounter value={stats.activeCampaigns} />
             </p>
-            <p className="text-base text-zinc-400">{translate("activeCampaigns")}</p>
+            <ContextualHelp
+              id="metric-campaigns"
+              content="Campañas con estado 'activo'. Incluye campañas de contenido, redes sociales, email y paid media."
+              placement="bottom"
+              showOnce
+            >
+              <p className="text-base text-zinc-400">{translate("activeCampaigns")}</p>
+            </ContextualHelp>
             <div className="mt-4 h-10">
               <Sparkline
                 data={generateSparklineData()}
@@ -148,7 +161,14 @@ export default function DashboardPage() {
             <p className="text-4xl font-bold text-white mb-2">
               <SimpleCounter value={contentStats.approved + contentStats.published} />
             </p>
-            <p className="text-base text-zinc-400">{translate("approved")}</p>
+            <ContextualHelp
+              id="metric-content-ready"
+              content="Contenido aprobado y publicado. Este es el contenido listo para compartir o que ya fue publicado."
+              placement="bottom"
+              showOnce
+            >
+              <p className="text-base text-zinc-400">{translate("approved")}</p>
+            </ContextualHelp>
             <div className="mt-4 h-10">
               <Sparkline
                 data={generateSparklineData()}
@@ -176,7 +196,14 @@ export default function DashboardPage() {
             <p className="text-4xl font-bold text-white mb-2">
               <SimpleCounter value={contentStats.review} />
             </p>
-            <p className="text-base text-zinc-400">{translate("review")}</p>
+            <ContextualHelp
+              id="metric-in-review"
+              content="Contenido esperando tu revisión y aprobación antes de ser publicado."
+              placement="bottom"
+              showOnce
+            >
+              <p className="text-base text-zinc-400">{translate("review")}</p>
+            </ContextualHelp>
             <div className="mt-4 h-10">
               <Sparkline
                 data={generateSparklineData()}
@@ -291,6 +318,9 @@ export default function DashboardPage() {
 
       {/* Feed Health Summary Widget */}
       <FeedHealthSummary />
+
+      {/* Setup Progress */}
+      <SetupProgress />
     </div>
   );
 }

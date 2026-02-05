@@ -196,6 +196,19 @@ export const LABELS = {
   linkedinSeeMore: "...ver más",
   linkedinPublishHistory: "Historial de Publicaciones",
 
+  // Guided UX
+  setupProgress: "Progreso de Configuración",
+  setupComplete: "Configuración completada",
+  nextRecommendedAction: "Siguiente paso recomendado",
+  dismissForToday: "Ocultar por hoy",
+  quickMode: "Modo Express",
+  quickModeEnabled: "Modo Express activado",
+  quickModeDescription: "Configuración rápida sin explicaciones",
+  guidanceSettings: "Guía y Onboarding",
+  contextualHelp: "Ayuda contextual",
+  stepCompleted: "Paso completado",
+  stepsRemaining: "pasos restantes",
+
   // Template-related
   templates: "Plantillas",
   template: "Plantilla",

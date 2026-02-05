@@ -1,6 +1,7 @@
 "use client";
 
-import { useQuery } from "convex/react";
+import { useEffect } from "react";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "@convex/_generated/api";
 import {
   BarChart3,
@@ -56,6 +57,12 @@ function formatDate(dateStr: string) {
 
 export default function AnalyticsPage() {
   const analytics = useQuery(api.functions.getAnalyticsOverview);
+  const completeStep = useMutation(api.guidance.completeSetupStep);
+
+  // Auto-mark "analyticsViewed" setup step
+  useEffect(() => {
+    completeStep({ step: "analyticsViewed" }).catch(() => {});
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!analytics) {
     return (

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "lucide-react";
@@ -26,6 +26,8 @@ const TOTAL_STEPS = 3;
 export default function OnboardingPage() {
   const router = useRouter();
   const completeOnboarding = useMutation(api.onboarding.complete);
+  const incrementOnboarding = useMutation(api.guidance.incrementOnboardingCompletion);
+  const initGuidance = useMutation(api.guidance.initGuidance);
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -76,6 +78,9 @@ export default function OnboardingPage() {
     setLoading(true);
     try {
       await completeOnboarding(data);
+      // Track onboarding completion in guidance system
+      await initGuidance();
+      await incrementOnboarding();
       router.push("/");
     } catch {
       setLoading(false);

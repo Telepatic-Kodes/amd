@@ -723,6 +723,33 @@ export default defineSchema({
     .index("by_status", ["status"]),
 
   // ===========================================
+  // USER_GUIDANCE - Estado de guía y onboarding
+  // ===========================================
+  userGuidance: defineTable({
+    onboardingCompletions: v.number(),
+    quickModeEnabled: v.boolean(),
+    setupProgress: v.number(),
+    setupSteps: v.object({
+      companyConfigured: v.boolean(),
+      goalsSet: v.boolean(),
+      feedsConfigured: v.boolean(),
+      firstContentCreated: v.boolean(),
+      firstCampaignCreated: v.boolean(),
+      analyticsViewed: v.boolean(),
+      settingsReviewed: v.boolean(),
+    }),
+    featuresDiscovered: v.array(v.object({
+      featureId: v.string(),
+      firstSeen: v.number(),
+      interactionCount: v.number(),
+    })),
+    tourCompleted: v.boolean(),
+    tourSkippedAt: v.optional(v.number()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  }),
+
+  // ===========================================
   // KB_AGENT_ACCESS - Audit trail de acceso de agentes
   // ===========================================
   kbAgentAccess: defineTable({

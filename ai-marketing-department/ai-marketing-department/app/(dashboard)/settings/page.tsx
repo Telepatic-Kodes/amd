@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@convex/_generated/api";
 import { motion } from "framer-motion";
@@ -18,8 +18,10 @@ import {
   Bot,
   Zap,
   Linkedin,
+  Sparkles,
 } from "lucide-react";
 import { LinkedInConnectionCard } from "@/components/linkedin/LinkedInConnectionCard";
+import { QuickModeToggle } from "@/components/guided-ux/QuickModeToggle";
 import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
@@ -30,6 +32,7 @@ const SETTING_CATEGORIES = [
   { id: "linkedin", label: "LinkedIn", icon: Linkedin },
   { id: "notifications", label: "Notifications", icon: Bell },
   { id: "agents", label: "Agent Config", icon: Bot },
+  { id: "guidance", label: "Guía UX", icon: Sparkles },
   { id: "system", label: "System", icon: Database },
 ];
 
@@ -41,7 +44,13 @@ export default function SettingsPage() {
   const updateSetting = useMutation(api.functions.updateSetting);
   const upgradeAllAgents = useMutation(api.functions.upgradeAllAgentsModel);
 
+  const completeStep = useMutation(api.guidance.completeSetupStep);
   const [formState, setFormState] = useState<Record<string, any>>({});
+
+  // Auto-mark "settingsReviewed" setup step
+  useEffect(() => {
+    completeStep({ step: "settingsReviewed" }).catch(() => {});
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSave = async (key: string, value: any, description?: string) => {
     setSaveStatus("saving");
@@ -666,6 +675,43 @@ export default function SettingsPage() {
                         <span className="text-zinc-500">Sonnet 4 pricing:</span>
                         <span className="text-white ml-1">$3/M input, $15/M output</span>
                       </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
+
+          {activeCategory === "guidance" && (
+            <motion.div
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.2 }}
+              className="space-y-6"
+            >
+              <Card>
+                <CardHeader>
+                  <h3 className="flex items-center gap-2 font-semibold text-lg text-white">
+                    <Sparkles className="h-5 w-5 text-indigo-500" />
+                    Guía y Onboarding
+                  </h3>
+                  <p className="text-sm text-zinc-400 mt-1">
+                    Configura la experiencia de guía del sistema.
+                  </p>
+                </CardHeader>
+                <CardContent className="p-6 pt-0 space-y-4">
+                  <QuickModeToggle />
+
+                  <div className="p-4 rounded-lg border border-zinc-800 bg-zinc-900/50 space-y-3">
+                    <h4 className="text-sm font-medium text-zinc-300">Sobre el Modo Express</h4>
+                    <div className="space-y-2 text-xs text-zinc-500">
+                      <p>El Modo Express se desbloquea después de completar el onboarding 3 veces.</p>
+                      <p>Cuando está activado:</p>
+                      <ul className="ml-4 space-y-1 list-disc">
+                        <li>Se omiten textos explicativos en el wizard</li>
+                        <li>Los pasos se simplifican</li>
+                        <li>Las animaciones son más rápidas</li>
+                      </ul>
                     </div>
                   </div>
                 </CardContent>
