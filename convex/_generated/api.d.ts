@@ -43,6 +43,11 @@ import type * as feeds_utils_validation from "../feeds/utils/validation.js";
 import type * as functions from "../functions.js";
 import type * as guidance from "../guidance.js";
 import type * as http from "../http.js";
+import type * as instagram_actions from "../instagram/actions.js";
+import type * as instagram_internalQueries from "../instagram/internalQueries.js";
+import type * as instagram_mutations from "../instagram/mutations.js";
+import type * as instagram_queries from "../instagram/queries.js";
+import type * as instagram_validation from "../instagram/validation.js";
 import type * as kb_agentAction from "../kb/agentAction.js";
 import type * as kb_agentQueries from "../kb/agentQueries.js";
 import type * as kb_mutations from "../kb/mutations.js";
@@ -64,6 +69,11 @@ import type * as monitoring_mutations from "../monitoring/mutations.js";
 import type * as monitoring_queries from "../monitoring/queries.js";
 import type * as onboarding from "../onboarding.js";
 import type * as seed from "../seed.js";
+import type * as twitter_actions from "../twitter/actions.js";
+import type * as twitter_internalQueries from "../twitter/internalQueries.js";
+import type * as twitter_mutations from "../twitter/mutations.js";
+import type * as twitter_queries from "../twitter/queries.js";
+import type * as twitter_threadSplitter from "../twitter/threadSplitter.js";
 import type * as users from "../users.js";
 
 import type {
@@ -108,6 +118,11 @@ declare const fullApi: ApiFromModules<{
   functions: typeof functions;
   guidance: typeof guidance;
   http: typeof http;
+  "instagram/actions": typeof instagram_actions;
+  "instagram/internalQueries": typeof instagram_internalQueries;
+  "instagram/mutations": typeof instagram_mutations;
+  "instagram/queries": typeof instagram_queries;
+  "instagram/validation": typeof instagram_validation;
   "kb/agentAction": typeof kb_agentAction;
   "kb/agentQueries": typeof kb_agentQueries;
   "kb/mutations": typeof kb_mutations;
@@ -129,6 +144,11 @@ declare const fullApi: ApiFromModules<{
   "monitoring/queries": typeof monitoring_queries;
   onboarding: typeof onboarding;
   seed: typeof seed;
+  "twitter/actions": typeof twitter_actions;
+  "twitter/internalQueries": typeof twitter_internalQueries;
+  "twitter/mutations": typeof twitter_mutations;
+  "twitter/queries": typeof twitter_queries;
+  "twitter/threadSplitter": typeof twitter_threadSplitter;
   users: typeof users;
 }>;
 
