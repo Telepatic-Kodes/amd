@@ -17,6 +17,7 @@ import {
 import { cn } from "@/lib/utils";
 import { translate } from "@/lib/language";
 import { UserMenu } from "./UserMenu";
+import { NotificationCenter } from "@/components/dashboard/NotificationCenter";
 
 const mainNavigation = [
     { name: translate("home"), href: "/", icon: Home, label: "Tu centro de comando", badgeKey: null },
@@ -43,11 +44,12 @@ export function Sidebar() {
     return (
         <div data-tour="sidebar" className="hidden md:flex h-screen w-56 flex-col fixed left-0 top-0 border-r border-[var(--border)] bg-[var(--surface)]">
             {/* Logo Header */}
-            <div className="flex h-14 items-center border-b border-[var(--border)] px-5">
+            <div className="flex h-14 items-center justify-between border-b border-[var(--border)] px-5">
                 <Link href="/" className="flex items-center gap-2 font-semibold text-[var(--text-primary)]">
                     <Sparkles className="h-4 w-4 text-emerald-500" />
                     <span className="text-sm">AMD</span>
                 </Link>
+                <NotificationCenter />
             </div>
 
             {/* Navigation */}

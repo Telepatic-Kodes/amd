@@ -142,6 +142,20 @@ export default function DashboardPage() {
     return map;
   }, [activity]);
 
+  // Recent executions per agent (last 5) for mini execution bars
+  const recentExecutionsByAgent = useMemo(() => {
+    if (!activity) return undefined;
+    const map: Record<string, string[]> = {};
+    for (const item of activity) {
+      const key = item.agentId;
+      if (!map[key]) map[key] = [];
+      if (map[key].length < 5) {
+        map[key].push(item.status);
+      }
+    }
+    return map;
+  }, [activity]);
+
   // Sparkline data — derive hourly activity trends from activity feed
   const { sparkTasks, sparkHealth } = useMemo(() => {
     if (!activity || activity.length === 0) return { sparkTasks: undefined, sparkHealth: undefined };
@@ -244,11 +258,11 @@ export default function DashboardPage() {
         animate="visible"
         className="space-y-3"
       >
-        <div className="flex items-baseline justify-between">
-          <h1 className="text-xl font-semibold text-[var(--text-primary)]">
+        <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1">
+          <h1 className="text-lg sm:text-xl font-semibold text-[var(--text-primary)]">
             {greeting}, {userName}
           </h1>
-          <p className="text-sm text-[var(--text-tertiary)] capitalize">
+          <p className="text-xs sm:text-sm text-[var(--text-tertiary)] capitalize">
             {dateStr} &middot; {timeStr}
           </p>
         </div>
@@ -276,12 +290,12 @@ export default function DashboardPage() {
 
       {/* Section C: Agent Command Grid */}
       <motion.div custom={2} variants={sectionVariants} initial="hidden" animate="visible">
-        <AgentCommandGrid agentsByDepartment={agentsByDepartment} lastActivityByAgent={lastActivityByAgent} />
+        <AgentCommandGrid agentsByDepartment={agentsByDepartment} lastActivityByAgent={lastActivityByAgent} recentExecutionsByAgent={recentExecutionsByAgent} />
       </motion.div>
 
       {/* Section D: Two-Column Bottom */}
       <motion.div custom={3} variants={sectionVariants} initial="hidden" animate="visible">
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 lg:gap-6">
           {/* Left: Activity Summary (60%) */}
           <div className="lg:col-span-3">
             <ActivitySummary activities={activity} />

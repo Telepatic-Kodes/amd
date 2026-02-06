@@ -19,9 +19,12 @@ interface AgentLastActivity {
   timestamp: number;
 }
 
+type ExecutionStatus = "success" | "failure" | "completed" | "failed" | "running" | "pending";
+
 interface AgentCommandGridProps {
   agentsByDepartment?: Record<string, Agent[]>;
   lastActivityByAgent?: Record<string, AgentLastActivity>;
+  recentExecutionsByAgent?: Record<string, ExecutionStatus[]>;
 }
 
 const departmentLabels: Record<string, string> = {
@@ -38,10 +41,12 @@ function DepartmentCard({
   dept,
   agents,
   lastActivityByAgent,
+  recentExecutionsByAgent,
 }: {
   dept: string;
   agents: Agent[];
   lastActivityByAgent?: Record<string, AgentLastActivity>;
+  recentExecutionsByAgent?: Record<string, ExecutionStatus[]>;
 }) {
   const router = useRouter();
   const [expanded, setExpanded] = useState(false);
@@ -94,6 +99,7 @@ function DepartmentCard({
             status={lead.status}
             lastAction={lastActivityByAgent?.[lead._id]?.description}
             lastActionTime={lastActivityByAgent?.[lead._id]?.timestamp}
+            recentExecutions={recentExecutionsByAgent?.[lead._id]}
             onClick={() => router.push("/agents")}
           />
         </div>
@@ -113,6 +119,7 @@ function DepartmentCard({
                     status={agent.status}
                     lastAction={activity?.description}
                     lastActionTime={activity?.timestamp}
+                    recentExecutions={recentExecutionsByAgent?.[agent._id]}
                     onClick={() => router.push("/agents")}
                   />
                 );
@@ -142,7 +149,7 @@ function DepartmentCard({
   );
 }
 
-export function AgentCommandGrid({ agentsByDepartment, lastActivityByAgent }: AgentCommandGridProps) {
+export function AgentCommandGrid({ agentsByDepartment, lastActivityByAgent, recentExecutionsByAgent }: AgentCommandGridProps) {
   if (!agentsByDepartment) return <AgentCommandGridSkeleton />;
 
   const departments = Object.entries(agentsByDepartment);
@@ -159,6 +166,7 @@ export function AgentCommandGrid({ agentsByDepartment, lastActivityByAgent }: Ag
             dept={dept}
             agents={agents}
             lastActivityByAgent={lastActivityByAgent}
+            recentExecutionsByAgent={recentExecutionsByAgent}
           />
         ))}
       </div>

@@ -190,6 +190,15 @@ body {
   outline: none;
 }
 
+/* Hide scrollbar for horizontal scroll containers */
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
 /* Touch target utility - ensures mobile tap targets are at least 44x44px */
 .touch-target {
   min-width: 44px;

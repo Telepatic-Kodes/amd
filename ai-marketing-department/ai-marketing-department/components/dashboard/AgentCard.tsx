@@ -4,11 +4,14 @@ import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 
+type ExecutionStatus = "success" | "failure" | "completed" | "failed" | "running" | "pending";
+
 interface AgentCardProps {
   name: string;
   status: "active" | "paused" | "error" | "maintenance";
   lastAction?: string;
   lastActionTime?: number;
+  recentExecutions?: ExecutionStatus[];
   onClick?: () => void;
 }
 
@@ -29,7 +32,16 @@ function humanizeAction(desc: string): string {
   return desc.length > 40 ? desc.slice(0, 37) + "..." : desc;
 }
 
-export function AgentCard({ name, status, lastAction, lastActionTime, onClick }: AgentCardProps) {
+const execColors: Record<string, string> = {
+  success: "bg-emerald-500",
+  completed: "bg-emerald-500",
+  failure: "bg-red-500",
+  failed: "bg-red-500",
+  running: "bg-amber-500",
+  pending: "bg-zinc-600",
+};
+
+export function AgentCard({ name, status, lastAction, lastActionTime, recentExecutions, onClick }: AgentCardProps) {
   const config = statusConfig[status] || statusConfig.paused;
 
   const timeAgo = lastActionTime
@@ -60,6 +72,16 @@ export function AgentCard({ name, status, lastAction, lastActionTime, onClick }:
           {lastAction && timeAgo && " · "}
           {timeAgo}
         </p>
+      )}
+      {recentExecutions && recentExecutions.length > 0 && (
+        <div className="flex items-center gap-0.5 pl-4 mt-1.5" title="Ultimas ejecuciones">
+          {recentExecutions.map((exec, i) => (
+            <div
+              key={i}
+              className={cn("h-1 w-3 rounded-sm", execColors[exec] || "bg-zinc-600")}
+            />
+          ))}
+        </div>
       )}
     </button>
   );

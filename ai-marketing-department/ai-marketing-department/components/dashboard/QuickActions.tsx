@@ -34,14 +34,14 @@ export function QuickActions() {
   const router = useRouter();
 
   return (
-    <div className="flex items-center gap-2 flex-wrap">
+    <div className="flex items-center gap-2 overflow-x-auto pb-1 -mb-1 scrollbar-none">
       {actions.map((action) => {
         const Icon = action.icon;
         return (
           <button
             key={action.label}
             onClick={() => router.push(action.href)}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${action.color}`}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors shrink-0 ${action.color}`}
           >
             <Icon className="h-3.5 w-3.5" />
             {action.label}
