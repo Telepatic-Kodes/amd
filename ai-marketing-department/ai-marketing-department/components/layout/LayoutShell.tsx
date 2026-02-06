@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { useConvexAuth } from "convex/react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { MobileNav } from "@/components/layout/MobileNav";
 import { ProductTour } from "@/components/ui/ProductTour";
@@ -9,6 +10,7 @@ import { shouldShowTour } from "@/lib/tour-utils";
 
 export function LayoutShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { isLoading, isAuthenticated } = useConvexAuth();
   const isOnboarding = pathname.startsWith("/onboarding");
   const [showTour, setShowTour] = useState(false);
 
@@ -22,6 +24,16 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
 
   if (isOnboarding) {
     return <>{children}</>;
+  }
+
+  // Wait for Convex auth (JWT from Clerk) before rendering dashboard content
+  // This prevents Convex queries from firing without a valid token
+  if (isLoading || !isAuthenticated) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-zinc-400 animate-pulse">Cargando...</div>
+      </div>
+    );
   }
 
   return (
