@@ -202,12 +202,15 @@ Plans:
   4. User can see platform connection status and rate limit warnings in settings
   5. User receives clear error messages when platform-specific requirements aren't met
 
-**Plans:** TBD (estimated 3-4 plans)
+**Plans:** 6 plans in 4 waves
 
 Plans:
-- [ ] 15-01: TBD during phase planning (likely Twitter OAuth + publishing)
-- [ ] 15-02: TBD during phase planning (likely Instagram OAuth + publishing)
-- [ ] 15-03: TBD during phase planning (likely cross-platform UI)
+- [ ] 15-01-PLAN.md — Schema tables (4 new) + OAuth HTTP routes for Twitter and Instagram (Wave 1)
+- [ ] 15-02-PLAN.md — Twitter/X backend: OAuth token exchange, tweet/thread publishing, thread splitter (Wave 2)
+- [ ] 15-03-PLAN.md — Instagram backend: Facebook OAuth, image/carousel publishing, content validation (Wave 2)
+- [ ] 15-04-PLAN.md — Twitter/X frontend: ConnectionCard, PublishButton, PostPreview, ThreadPreview (Wave 3)
+- [ ] 15-05-PLAN.md — Instagram frontend: ConnectionCard, PublishButton, PostPreview, CarouselPreview (Wave 3)
+- [ ] 15-06-PLAN.md — Settings integration, multi-platform publish panel, translations, human verify (Wave 4)
 
 **Note:** Instagram App Review takes 60-90 days. Start submission in Week 1 of this phase.
 
@@ -293,7 +296,7 @@ Phases execute in numeric order: 13 → 14 → 15 → 16 → 17 → 18
 |-------|----------------|--------|-----------|
 | 13. Multi-User Authentication | 4/4 | ✅ Complete | 2026-02-05 |
 | 14. Analytics & Intelligence | 3/3 | ✅ Complete | 2026-02-06 |
-| 15. Multi-Platform Publishing | 0/TBD | Not started | - |
+| 15. Multi-Platform Publishing | 0/6 | In progress | - |
 | 16. Cross-Platform Features | 0/TBD | Not started | - |
 | 17. Team Collaboration & Version History | 0/TBD | Not started | - |
 | 18. Automated Reports | 0/TBD | Not started | - |
