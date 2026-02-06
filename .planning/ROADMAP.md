@@ -233,11 +233,11 @@ Plans:
   4. Content automatically adapts to platform requirements (truncate for Twitter, hashtags for Instagram)
   5. User receives consolidated status updates (success/failure per platform)
 
-**Plans:** TBD (estimated 2 plans)
+**Plans:** 2 plans in 2 waves
 
 Plans:
-- [ ] 16-01: TBD during phase planning
-- [ ] 16-02: TBD during phase planning
+- [ ] 16-01-PLAN.md — Cross-platform backend: content adapter, batch publish action, unified history query (Wave 1)
+- [ ] 16-02-PLAN.md — Cross-platform frontend: multi-platform publish panel, side-by-side previews, unified timeline (Wave 2)
 
 ---
 
