@@ -14,11 +14,11 @@ See: .planning/PROJECT.md (updated 2026-02-05)
 ## Current Position
 
 Phase: 15 of 18 (Multi-Platform Publishing) — IN PROGRESS
-Plan: 1 of 5 completed
+Plan: 3 of 5 completed
 Status: Phase in progress
-Last activity: 2026-02-06 — Completed 15-01-PLAN.md
+Last activity: 2026-02-06 — Completed 15-03-PLAN.md
 
-Progress: [███████████████░░░] 85% (v1.0 + v2.0 shipped: 12/18 phases, v3.0: 9/24 plans completed)
+Progress: [████████████████░░] 87% (v1.0 + v2.0 shipped: 12/18 phases, v3.0: 11/24 plans completed)
 
 ## Performance Metrics
 
@@ -35,9 +35,9 @@ Progress: [███████████████░░░] 85% (v1.0 + v
 - Average duration: ~7.5 min/plan
 
 **v3.0 Velocity:**
-- Total plans completed: 9/24
-- Average duration: ~3.9 min/plan
-- Total execution time: ~35.8 min
+- Total plans completed: 11/24
+- Average duration: ~4.0 min/plan
+- Total execution time: ~49.4 min
 
 ## Accumulated Context
 
@@ -66,6 +66,8 @@ Recent decisions affecting current work:
 - **15-01: Twitter PKCE flow** — code_verifier generation + SHA-256 hashing for secure OAuth 2.0 with Twitter API
 - **15-01: Instagram via Facebook OAuth** — Instagram Business API accessed through Facebook OAuth with Page linking requirement
 - **15-01: Cookie-based CSRF with fallback** — State validation via cookies with warning-only if missing (browser compatibility)
+- **15-03: Container status polling** — Instagram Container API is async; poll status_code until FINISHED (5 attempts, 2s delay) before publishing
+- **15-03: 60-day Instagram tokens** — Long-lived tokens expire in 60 days (vs LinkedIn 365d), isExpiringSoon flag at <7 days
 
 ### Pending Todos
 
@@ -84,8 +86,8 @@ None yet.
 
 **Phase 15 (Multi-Platform) - IN PROGRESS:**
 - ✓ Plan 15-01: Schema tables + OAuth routes for Twitter and Instagram
-- ⏳ Plan 15-02: Twitter backend actions (token exchange, publishing)
-- ⏳ Plan 15-03: Instagram backend actions (token exchange, media upload)
+- ✓ Plan 15-02: Twitter backend actions (token exchange, publishing)
+- ✓ Plan 15-03: Instagram backend actions (token exchange, media upload)
 - ⏳ Plan 15-04: Frontend connection management UI
 - ⏳ Plan 15-05: Multi-platform publishing queue system
 - Instagram Business API: App Review required (60-90 day timeline) - must start submission Week 1
@@ -102,9 +104,9 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-06
-Stopped at: Completed 15-01-PLAN.md (Schema & OAuth Routes)
+Stopped at: Completed 15-03-PLAN.md (Instagram Backend)
 Resume file: None
-Next action: /gsd:execute-plan 15-02 (Twitter Backend) or /gsd:execute-plan 15-03 (Instagram Backend)
+Next action: /gsd:execute-plan 15-04 (Frontend Connection Management UI) or /gsd:execute-plan 15-05 (Multi-Platform Publishing Queue)
 
 ---
 
