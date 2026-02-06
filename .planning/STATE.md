@@ -14,11 +14,11 @@ See: .planning/PROJECT.md (updated 2026-02-05)
 ## Current Position
 
 Phase: 15 of 18 (Multi-Platform Publishing) — IN PROGRESS
-Plan: 3 of 5 completed
+Plan: 4 of 5 completed
 Status: Phase in progress
-Last activity: 2026-02-06 — Completed 15-03-PLAN.md
+Last activity: 2026-02-06 — Completed 15-04-PLAN.md
 
-Progress: [████████████████░░] 87% (v1.0 + v2.0 shipped: 12/18 phases, v3.0: 11/24 plans completed)
+Progress: [████████████████░░] 88% (v1.0 + v2.0 shipped: 12/18 phases, v3.0: 12/24 plans completed)
 
 ## Performance Metrics
 
@@ -35,9 +35,9 @@ Progress: [████████████████░░] 87% (v1.0 + v
 - Average duration: ~7.5 min/plan
 
 **v3.0 Velocity:**
-- Total plans completed: 11/24
-- Average duration: ~4.0 min/plan
-- Total execution time: ~49.4 min
+- Total plans completed: 12/24
+- Average duration: ~4.6 min/plan
+- Total execution time: ~56.1 min
 
 ## Accumulated Context
 
@@ -68,6 +68,8 @@ Recent decisions affecting current work:
 - **15-01: Cookie-based CSRF with fallback** — State validation via cookies with warning-only if missing (browser compatibility)
 - **15-03: Container status polling** — Instagram Container API is async; poll status_code until FINISHED (5 attempts, 2s delay) before publishing
 - **15-03: 60-day Instagram tokens** — Long-lived tokens expire in 60 days (vs LinkedIn 365d), isExpiringSoon flag at <7 days
+- **15-04: Client-side thread splitter** — Duplicates server logic for accurate tweet/thread preview; splits on paragraph → sentence → word boundaries
+- **15-04: Twitter brand color #1DA1F2** — Classic Twitter blue for platform consistency, differentiates from LinkedIn (#0A66C2)
 
 ### Pending Todos
 
@@ -88,7 +90,7 @@ None yet.
 - ✓ Plan 15-01: Schema tables + OAuth routes for Twitter and Instagram
 - ✓ Plan 15-02: Twitter backend actions (token exchange, publishing)
 - ✓ Plan 15-03: Instagram backend actions (token exchange, media upload)
-- ⏳ Plan 15-04: Frontend connection management UI
+- ✓ Plan 15-04: Twitter frontend components (connection card, publish button, previews)
 - ⏳ Plan 15-05: Multi-platform publishing queue system
 - Instagram Business API: App Review required (60-90 day timeline) - must start submission Week 1
 - Twitter API pricing: Free tier is write-only; Basic tier ($200/mo) minimum for analytics access
@@ -104,9 +106,9 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-06
-Stopped at: Completed 15-03-PLAN.md (Instagram Backend)
+Stopped at: Completed 15-04-PLAN.md (Twitter Frontend Components)
 Resume file: None
-Next action: /gsd:execute-plan 15-04 (Frontend Connection Management UI) or /gsd:execute-plan 15-05 (Multi-Platform Publishing Queue)
+Next action: /gsd:execute-plan 15-05 (Multi-Platform Publishing Queue)
 
 ---
 
