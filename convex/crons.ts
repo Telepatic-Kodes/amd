@@ -123,4 +123,18 @@ crons.daily(
   {}
 );
 
+// ===========================================
+// LINKEDIN ENGAGEMENT FETCHER (Phase 14)
+// ===========================================
+
+// Fetch LinkedIn post engagement hourly
+// Uses dynamic TTL to prioritize recent posts (hot: 30min, warm: 4h, cold: 24h)
+// Rate limit: max 10 posts per run to stay under LinkedIn's ~500 calls/day
+crons.hourly(
+  "fetch linkedin engagement",
+  { minuteUTC: 15 }, // 15 minutes past each hour
+  internal.linkedin.engagement.fetchAllRecentEngagement,
+  {}
+);
+
 export default crons;
