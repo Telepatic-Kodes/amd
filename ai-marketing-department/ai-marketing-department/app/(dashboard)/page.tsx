@@ -142,6 +142,39 @@ export default function DashboardPage() {
     return map;
   }, [activity]);
 
+  // Sparkline data — derive hourly activity trends from activity feed
+  const { sparkTasks, sparkHealth } = useMemo(() => {
+    if (!activity || activity.length === 0) return { sparkTasks: undefined, sparkHealth: undefined };
+
+    const ONE_HOUR = 60 * 60 * 1000;
+    const now = Date.now();
+    const buckets: Record<number, { total: number; success: number }> = {};
+
+    // Build 8 hourly buckets going backwards
+    for (let i = 0; i < 8; i++) {
+      buckets[i] = { total: 0, success: 0 };
+    }
+
+    for (const item of activity) {
+      const hoursAgo = Math.floor((now - item.timestamp) / ONE_HOUR);
+      if (hoursAgo >= 0 && hoursAgo < 8) {
+        buckets[hoursAgo].total++;
+        if (item.status === "success" || item.status === "completed") {
+          buckets[hoursAgo].success++;
+        }
+      }
+    }
+
+    // Reverse so oldest is first (left side of sparkline)
+    const tasksArr = Array.from({ length: 8 }, (_, i) => buckets[7 - i].total);
+    const healthArr = Array.from({ length: 8 }, (_, i) => {
+      const b = buckets[7 - i];
+      return b.total > 0 ? (b.success / b.total) * 100 : 100;
+    });
+
+    return { sparkTasks: tasksArr, sparkHealth: healthArr };
+  }, [activity]);
+
   // Live clock — updates every minute
   const [currentTime, setCurrentTime] = useState(new Date());
   useEffect(() => {
@@ -235,6 +268,8 @@ export default function DashboardPage() {
             totalTasksToday={(metrics?.tasks?.completedToday ?? 0) + (metrics?.tasks?.running ?? 0)}
             contentInFlight={contentInFlight}
             successRate={metrics?.successRate ?? 100}
+            sparkTasks={sparkTasks}
+            sparkHealth={sparkHealth}
           />
         )}
       </motion.div>

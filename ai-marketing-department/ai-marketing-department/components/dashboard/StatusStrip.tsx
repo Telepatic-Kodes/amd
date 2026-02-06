@@ -10,6 +10,8 @@ interface StatusStripProps {
   totalTasksToday: number;
   contentInFlight: number;
   successRate: number;
+  sparkTasks?: number[];
+  sparkHealth?: number[];
 }
 
 export function StatusStrip({
@@ -20,6 +22,8 @@ export function StatusStrip({
   totalTasksToday,
   contentInFlight,
   successRate,
+  sparkTasks,
+  sparkHealth,
 }: StatusStripProps) {
   const healthIndicator: "green" | "amber" | "red" =
     successRate >= 95 ? "green" : successRate >= 80 ? "amber" : "red";
@@ -35,6 +39,8 @@ export function StatusStrip({
         label="Tareas Hoy"
         value={totalTasksToday === 0 ? "—" : `${tasksCompletedToday}/${totalTasksToday}`}
         subtitle={totalTasksToday === 0 ? "sin tareas" : "completadas"}
+        sparkData={sparkTasks}
+        sparkColor="#a1a1aa"
       />
       <MetricPill
         label="Pipeline"
@@ -46,6 +52,7 @@ export function StatusStrip({
         label="Salud del Sistema"
         value={`${successRate.toFixed(0)}%`}
         indicator={healthIndicator}
+        sparkData={sparkHealth}
       />
     </div>
   );

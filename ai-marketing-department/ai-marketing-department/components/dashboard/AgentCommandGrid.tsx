@@ -65,13 +65,19 @@ function DepartmentCard({
           <div className="flex items-center gap-1">
             {activeCount > 0 && (
               <span className="flex items-center gap-0.5 text-[10px] text-emerald-400">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                <span className="relative h-1.5 w-1.5">
+                  <span className="absolute inset-0 rounded-full bg-emerald-500" />
+                  <span className="absolute inset-0 rounded-full bg-emerald-500 animate-status-ping" />
+                </span>
                 {activeCount}
               </span>
             )}
             {errorCount > 0 && (
               <span className="flex items-center gap-0.5 text-[10px] text-red-400">
-                <span className="h-1.5 w-1.5 rounded-full bg-red-500" />
+                <span className="relative h-1.5 w-1.5">
+                  <span className="absolute inset-0 rounded-full bg-red-500" />
+                  <span className="absolute inset-0 rounded-full bg-red-500 animate-status-ping" />
+                </span>
                 {errorCount}
               </span>
             )}

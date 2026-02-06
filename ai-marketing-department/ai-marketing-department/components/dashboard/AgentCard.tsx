@@ -46,10 +46,10 @@ export function AgentCard({ name, status, lastAction, lastActionTime, onClick }:
       )}
     >
       <div className="flex items-center gap-2 mb-1.5">
-        <div className="relative shrink-0">
-          <div className={cn("h-2 w-2 rounded-full", config.color)} />
+        <div className="relative shrink-0 h-2 w-2">
+          <div className={cn("absolute inset-0 rounded-full", config.color)} />
           {config.pulse && (
-            <div className={cn("absolute inset-0 h-2 w-2 rounded-full animate-status-pulse", config.color)} />
+            <div className={cn("absolute inset-0 rounded-full opacity-60 animate-status-ping", config.color)} />
           )}
         </div>
         <span className="text-sm font-medium text-[var(--text-primary)] truncate">{name}</span>

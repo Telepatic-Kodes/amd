@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { FileText } from "lucide-react";
 
@@ -14,14 +15,16 @@ interface ContentPipelineProps {
 }
 
 const stages = [
-  { key: "draft", label: "Borrador", color: "text-zinc-400", bar: "bg-zinc-500" },
-  { key: "review", label: "En Revision", color: "text-amber-400", bar: "bg-amber-500" },
-  { key: "approved", label: "Aprobado", color: "text-blue-400", bar: "bg-blue-500" },
-  { key: "scheduled", label: "Programado", color: "text-purple-400", bar: "bg-purple-500" },
-  { key: "published", label: "Publicado", color: "text-emerald-400", bar: "bg-emerald-500" },
+  { key: "draft", label: "Borrador", color: "text-zinc-400", bar: "bg-zinc-500", hoverBg: "hover:bg-zinc-500/5" },
+  { key: "review", label: "En Revision", color: "text-amber-400", bar: "bg-amber-500", hoverBg: "hover:bg-amber-500/5" },
+  { key: "approved", label: "Aprobado", color: "text-blue-400", bar: "bg-blue-500", hoverBg: "hover:bg-blue-500/5" },
+  { key: "scheduled", label: "Programado", color: "text-purple-400", bar: "bg-purple-500", hoverBg: "hover:bg-purple-500/5" },
+  { key: "published", label: "Publicado", color: "text-emerald-400", bar: "bg-emerald-500", hoverBg: "hover:bg-emerald-500/5" },
 ] as const;
 
 export function ContentPipeline({ counts }: ContentPipelineProps) {
+  const router = useRouter();
+
   if (!counts) return <ContentPipelineSkeleton />;
 
   const total = Object.values(counts).reduce((a, b) => a + b, 0);
@@ -31,7 +34,7 @@ export function ContentPipeline({ counts }: ContentPipelineProps) {
       <h2 className="text-sm font-medium uppercase tracking-wide text-[var(--text-tertiary)]">
         Pipeline de Contenido
       </h2>
-      <div className="rounded-lg border border-[var(--border)] bg-[var(--surface-raised)] p-4 space-y-4">
+      <div className="rounded-lg border border-[var(--border)] bg-[var(--surface-raised)] p-2 space-y-1">
         {total === 0 ? (
           <div className="flex flex-col items-center justify-center py-8 text-center">
             <FileText className="h-6 w-6 text-zinc-600 mb-2" />
@@ -42,8 +45,15 @@ export function ContentPipeline({ counts }: ContentPipelineProps) {
             const count = counts[stage.key] ?? 0;
             const pct = total > 0 ? (count / total) * 100 : 0;
             return (
-              <div key={stage.key} className="space-y-1.5">
-                <div className="flex items-center justify-between">
+              <button
+                key={stage.key}
+                onClick={() => router.push(`/content?status=${stage.key}`)}
+                className={cn(
+                  "w-full text-left rounded-md px-3 py-2.5 transition-colors cursor-pointer",
+                  stage.hoverBg
+                )}
+              >
+                <div className="flex items-center justify-between mb-1.5">
                   <span className="text-sm text-[var(--text-secondary)]">{stage.label}</span>
                   <span className={cn("text-sm font-semibold tabular-nums", stage.color)}>
                     {count}
@@ -55,7 +65,7 @@ export function ContentPipeline({ counts }: ContentPipelineProps) {
                     style={{ width: `${pct}%` }}
                   />
                 </div>
-              </div>
+              </button>
             );
           })
         )}
