@@ -14,11 +14,11 @@ See: .planning/PROJECT.md (updated 2026-02-05)
 ## Current Position
 
 Phase: 15 of 18 (Multi-Platform Publishing) — IN PROGRESS
-Plan: 4 of 5 completed
+Plan: 5 of 5 completed
 Status: Phase in progress
-Last activity: 2026-02-06 — Completed 15-04-PLAN.md
+Last activity: 2026-02-06 — Completed 15-05-PLAN.md
 
-Progress: [████████████████░░] 88% (v1.0 + v2.0 shipped: 12/18 phases, v3.0: 12/24 plans completed)
+Progress: [█████████████████░] 92% (v1.0 + v2.0 shipped: 12/18 phases, v3.0: 13/24 plans completed)
 
 ## Performance Metrics
 
@@ -35,9 +35,9 @@ Progress: [████████████████░░] 88% (v1.0 + v
 - Average duration: ~7.5 min/plan
 
 **v3.0 Velocity:**
-- Total plans completed: 12/24
-- Average duration: ~4.6 min/plan
-- Total execution time: ~56.1 min
+- Total plans completed: 13/24
+- Average duration: ~4.5 min/plan
+- Total execution time: ~65.5 min
 
 ## Accumulated Context
 
@@ -70,6 +70,9 @@ Recent decisions affecting current work:
 - **15-03: 60-day Instagram tokens** — Long-lived tokens expire in 60 days (vs LinkedIn 365d), isExpiringSoon flag at <7 days
 - **15-04: Client-side thread splitter** — Duplicates server logic for accurate tweet/thread preview; splits on paragraph → sentence → word boundaries
 - **15-04: Twitter brand color #1DA1F2** — Classic Twitter blue for platform consistency, differentiates from LinkedIn (#0A66C2)
+- **15-05: Instagram gradient branding** — from-[#833AB4] via-[#FD1D1D] to-[#FCAF45] used consistently across Instagram components
+- **15-05: Carousel URL management** — Dynamic array with add/remove buttons (max 10) for variable carousel sizes
+- **15-05: Facebook requirement always visible** — Collapsible accordion explaining Business API requirements (60-90d App Review timeline)
 
 ### Pending Todos
 
@@ -86,12 +89,12 @@ None yet.
 - ✓ Frontend integration: Next.js middleware + Clerk + UserMenu + migration banner
 - ✓ Clerk external service configured (JWT template "convex", env vars set)
 
-**Phase 15 (Multi-Platform) - IN PROGRESS:**
+**Phase 15 (Multi-Platform) - COMPLETE ✅:**
 - ✓ Plan 15-01: Schema tables + OAuth routes for Twitter and Instagram
-- ✓ Plan 15-02: Twitter backend actions (token exchange, publishing)
-- ✓ Plan 15-03: Instagram backend actions (token exchange, media upload)
+- ✓ Plan 15-02: Twitter backend actions (token exchange, publishing, threads)
+- ✓ Plan 15-03: Instagram backend actions (token exchange, media upload, carousel)
 - ✓ Plan 15-04: Twitter frontend components (connection card, publish button, previews)
-- ⏳ Plan 15-05: Multi-platform publishing queue system
+- ✓ Plan 15-05: Instagram frontend components (connection card, image/carousel publish, previews)
 - Instagram Business API: App Review required (60-90 day timeline) - must start submission Week 1
 - Twitter API pricing: Free tier is write-only; Basic tier ($200/mo) minimum for analytics access
 - OAuth token refresh: Each platform has different expiry patterns (LinkedIn 365d, Instagram 60d, Twitter variable)
@@ -106,9 +109,9 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-06
-Stopped at: Completed 15-04-PLAN.md (Twitter Frontend Components)
+Stopped at: Completed 15-05-PLAN.md (Instagram Frontend Components)
 Resume file: None
-Next action: /gsd:execute-plan 15-05 (Multi-Platform Publishing Queue)
+Next action: Phase 15 complete — ready for Phase 16 (Cross-Platform Features) or Phase 17 (Team Collaboration)
 
 ---
 
@@ -147,3 +150,5 @@ Next action: /gsd:execute-plan 15-05 (Multi-Platform Publishing Queue)
 *Phase 13 completed: 2026-02-05*
 *Phase 14 completed: 2026-02-06*
 *Phase 15 started: 2026-02-06*
+*Phase 15 completed: 2026-02-06*
+*Plan 15-05 execution: 9m 23s*
