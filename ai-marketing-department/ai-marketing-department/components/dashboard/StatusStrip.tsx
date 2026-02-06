@@ -33,8 +33,8 @@ export function StatusStrip({
       />
       <MetricPill
         label="Tareas Hoy"
-        value={`${tasksCompletedToday}/${totalTasksToday}`}
-        subtitle="completadas"
+        value={totalTasksToday === 0 ? "—" : `${tasksCompletedToday}/${totalTasksToday}`}
+        subtitle={totalTasksToday === 0 ? "sin tareas" : "completadas"}
       />
       <MetricPill
         label="Pipeline"

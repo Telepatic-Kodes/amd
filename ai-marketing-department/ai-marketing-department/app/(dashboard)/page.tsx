@@ -142,17 +142,23 @@ export default function DashboardPage() {
     return map;
   }, [activity]);
 
+  // Live clock — updates every minute
+  const [currentTime, setCurrentTime] = useState(new Date());
+  useEffect(() => {
+    const interval = setInterval(() => setCurrentTime(new Date()), 60_000);
+    return () => clearInterval(interval);
+  }, []);
+
   // Greeting
   const userName = currentUser?.name || "usuario";
-  const hour = new Date().getHours();
+  const hour = currentTime.getHours();
   const greeting = hour < 12 ? "Buenos dias" : hour < 18 ? "Buenas tardes" : "Buenas noches";
-  const now = new Date();
-  const dateStr = now.toLocaleDateString("es-CL", {
+  const dateStr = currentTime.toLocaleDateString("es-CL", {
     weekday: "long",
     day: "numeric",
     month: "long",
   });
-  const timeStr = now.toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit" });
+  const timeStr = currentTime.toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit" });
 
   const isLoading = !agents || !content;
 
