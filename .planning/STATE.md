@@ -13,12 +13,12 @@ See: .planning/PROJECT.md (updated 2026-02-05)
 
 ## Current Position
 
-Phase: 14 of 18 (Analytics & Intelligence) — COMPLETE ✅
-Plan: 3/3 completed
-Status: Phase complete, verified
-Last activity: 2026-02-06 — Phase 14 verified and complete
+Phase: 15 of 18 (Multi-Platform Publishing) — IN PROGRESS
+Plan: 1 of 5 completed
+Status: Phase in progress
+Last activity: 2026-02-06 — Completed 15-01-PLAN.md
 
-Progress: [██████████████░░░░] 80% (v1.0 + v2.0 shipped: 12/18 phases, v3.0: 8/24 plans completed)
+Progress: [███████████████░░░] 85% (v1.0 + v2.0 shipped: 12/18 phases, v3.0: 9/24 plans completed)
 
 ## Performance Metrics
 
@@ -35,9 +35,9 @@ Progress: [██████████████░░░░] 80% (v1.0 + v
 - Average duration: ~7.5 min/plan
 
 **v3.0 Velocity:**
-- Total plans completed: 8/24
-- Average duration: ~4.1 min/plan
-- Total execution time: ~33 min
+- Total plans completed: 9/24
+- Average duration: ~3.9 min/plan
+- Total execution time: ~35.8 min
 
 ## Accumulated Context
 
@@ -63,6 +63,9 @@ Recent decisions affecting current work:
 - **14-02: Rate limit protection at batch level** — Max 10 posts/run, 429 stops batch immediately to prevent cascade failures
 - **14-03: Client-side CSV generation** — Blob + download link pattern avoids backend endpoint, works with Convex useQuery pre-fetch
 - **14-03: Spanish locale for analytics** — Intl.NumberFormat('es-ES') for currency/dates matches UX-01 requirement
+- **15-01: Twitter PKCE flow** — code_verifier generation + SHA-256 hashing for secure OAuth 2.0 with Twitter API
+- **15-01: Instagram via Facebook OAuth** — Instagram Business API accessed through Facebook OAuth with Page linking requirement
+- **15-01: Cookie-based CSRF with fallback** — State validation via cookies with warning-only if missing (browser compatibility)
 
 ### Pending Todos
 
@@ -79,7 +82,12 @@ None yet.
 - ✓ Frontend integration: Next.js middleware + Clerk + UserMenu + migration banner
 - ✓ Clerk external service configured (JWT template "convex", env vars set)
 
-**Phase 15 (Multi-Platform) - UPCOMING:**
+**Phase 15 (Multi-Platform) - IN PROGRESS:**
+- ✓ Plan 15-01: Schema tables + OAuth routes for Twitter and Instagram
+- ⏳ Plan 15-02: Twitter backend actions (token exchange, publishing)
+- ⏳ Plan 15-03: Instagram backend actions (token exchange, media upload)
+- ⏳ Plan 15-04: Frontend connection management UI
+- ⏳ Plan 15-05: Multi-platform publishing queue system
 - Instagram Business API: App Review required (60-90 day timeline) - must start submission Week 1
 - Twitter API pricing: Free tier is write-only; Basic tier ($200/mo) minimum for analytics access
 - OAuth token refresh: Each platform has different expiry patterns (LinkedIn 365d, Instagram 60d, Twitter variable)
@@ -94,9 +102,9 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-06
-Stopped at: Phase 14 complete and verified
+Stopped at: Completed 15-01-PLAN.md (Schema & OAuth Routes)
 Resume file: None
-Next action: /gsd:plan-phase 15 (Multi-Platform Publishing) or /gsd:discuss-phase 15
+Next action: /gsd:execute-plan 15-02 (Twitter Backend) or /gsd:execute-plan 15-03 (Instagram Backend)
 
 ---
 
@@ -131,5 +139,7 @@ Next action: /gsd:plan-phase 15 (Multi-Platform Publishing) or /gsd:discuss-phas
 
 ---
 
-*State updated: 2026-02-05*
+*State updated: 2026-02-06*
 *Phase 13 completed: 2026-02-05*
+*Phase 14 completed: 2026-02-06*
+*Phase 15 started: 2026-02-06*
