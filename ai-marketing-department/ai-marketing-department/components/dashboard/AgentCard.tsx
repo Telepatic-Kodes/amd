@@ -19,6 +19,16 @@ const statusConfig: Record<string, { color: string; label: string; pulse?: boole
   maintenance: { color: "bg-orange-400", label: "Mantenimiento" },
 };
 
+function humanizeAction(desc: string): string {
+  if (desc === "Ejecución exitosa") return "Ejecucion exitosa";
+  if (desc === "Ejecución fallida") return "Ejecucion fallida";
+  if (desc.match(/^scheduled_/i)) return "Tarea programada";
+  if (desc.match(/^manual_/i)) return "Tarea manual";
+  if (desc.match(/^[a-z_]+-\d{3}\s*-\s*\d{4}-/i)) return "Tarea ejecutada";
+  // Truncate long descriptions
+  return desc.length > 40 ? desc.slice(0, 37) + "..." : desc;
+}
+
 export function AgentCard({ name, status, lastAction, lastActionTime, onClick }: AgentCardProps) {
   const config = statusConfig[status] || statusConfig.paused;
 
@@ -44,11 +54,12 @@ export function AgentCard({ name, status, lastAction, lastActionTime, onClick }:
         </div>
         <span className="text-sm font-medium text-[var(--text-primary)] truncate">{name}</span>
       </div>
-      {lastAction && (
-        <p className="text-xs text-[var(--text-tertiary)] truncate pl-4">{lastAction}</p>
-      )}
-      {timeAgo && (
-        <p className="text-xs text-[var(--text-tertiary)] pl-4 mt-0.5">{timeAgo}</p>
+      {(lastAction || timeAgo) && (
+        <p className="text-xs text-[var(--text-tertiary)] truncate pl-4 mt-0.5">
+          {lastAction && humanizeAction(lastAction)}
+          {lastAction && timeAgo && " · "}
+          {timeAgo}
+        </p>
       )}
     </button>
   );

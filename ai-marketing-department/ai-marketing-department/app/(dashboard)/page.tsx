@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@convex/_generated/api";
 import { motion } from "framer-motion";
@@ -9,6 +9,7 @@ import { StatusStrip, StatusStripSkeleton } from "@/components/dashboard/StatusS
 import { AgentCommandGrid } from "@/components/dashboard/AgentCommandGrid";
 import { DashboardActivityFeed } from "@/components/dashboard/ActivityFeed";
 import { ContentPipeline } from "@/components/dashboard/ContentPipeline";
+import { QuickActions } from "@/components/dashboard/QuickActions";
 import { translate } from "@/lib/language";
 import { useToast } from "@/components/ui/Toast";
 
@@ -18,7 +19,7 @@ const sectionVariants = {
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.05, duration: 0.3, ease: "easeOut" },
+    transition: { delay: i * 0.05, duration: 0.3, ease: "easeOut" as const },
   }),
 };
 
@@ -127,6 +128,20 @@ export default function DashboardPage() {
       }, {} as Record<string, Array<Record<string, unknown>>>)
     : undefined;
 
+  // Build last-activity-per-agent map from activity feed
+  const lastActivityByAgent = useMemo(() => {
+    if (!activity) return undefined;
+    const map: Record<string, { description: string; timestamp: number }> = {};
+    for (const item of activity) {
+      const key = item.agentId;
+      // Keep only the most recent activity per agent (list is sorted desc)
+      if (!map[key]) {
+        map[key] = { description: item.description, timestamp: item.timestamp };
+      }
+    }
+    return map;
+  }, [activity]);
+
   // Greeting
   const userName = currentUser?.name || "usuario";
   const hour = new Date().getHours();
@@ -188,14 +203,17 @@ export default function DashboardPage() {
         variants={sectionVariants}
         initial="hidden"
         animate="visible"
-        className="flex items-baseline justify-between"
+        className="space-y-3"
       >
-        <h1 className="text-xl font-semibold text-[var(--text-primary)]">
-          {greeting}, {userName}
-        </h1>
-        <p className="text-sm text-[var(--text-tertiary)] capitalize">
-          {dateStr} &middot; {timeStr}
-        </p>
+        <div className="flex items-baseline justify-between">
+          <h1 className="text-xl font-semibold text-[var(--text-primary)]">
+            {greeting}, {userName}
+          </h1>
+          <p className="text-sm text-[var(--text-tertiary)] capitalize">
+            {dateStr} &middot; {timeStr}
+          </p>
+        </div>
+        <QuickActions />
       </motion.div>
 
       {/* Section B: Status Strip */}
@@ -217,7 +235,7 @@ export default function DashboardPage() {
 
       {/* Section C: Agent Command Grid */}
       <motion.div custom={2} variants={sectionVariants} initial="hidden" animate="visible">
-        <AgentCommandGrid agentsByDepartment={agentsByDepartment} />
+        <AgentCommandGrid agentsByDepartment={agentsByDepartment} lastActivityByAgent={lastActivityByAgent} />
       </motion.div>
 
       {/* Section D: Two-Column Bottom */}

@@ -11,8 +11,14 @@ interface Agent {
   role?: string;
 }
 
+interface AgentLastActivity {
+  description: string;
+  timestamp: number;
+}
+
 interface AgentCommandGridProps {
   agentsByDepartment?: Record<string, Agent[]>;
+  lastActivityByAgent?: Record<string, AgentLastActivity>;
 }
 
 const departmentLabels: Record<string, string> = {
@@ -25,7 +31,7 @@ const departmentLabels: Record<string, string> = {
   ops: "Operaciones",
 };
 
-export function AgentCommandGrid({ agentsByDepartment }: AgentCommandGridProps) {
+export function AgentCommandGrid({ agentsByDepartment, lastActivityByAgent }: AgentCommandGridProps) {
   const router = useRouter();
 
   if (!agentsByDepartment) return <AgentCommandGridSkeleton />;
@@ -47,14 +53,19 @@ export function AgentCommandGrid({ agentsByDepartment }: AgentCommandGridProps) 
               <span className="text-xs text-[var(--text-tertiary)]">{agents.length}</span>
             </div>
             <div className="space-y-1.5">
-              {agents.slice(0, 4).map((agent) => (
-                <AgentCard
-                  key={agent._id}
-                  name={agent.name}
-                  status={agent.status}
-                  onClick={() => router.push(`/agents`)}
-                />
-              ))}
+              {agents.slice(0, 4).map((agent) => {
+                const activity = lastActivityByAgent?.[agent._id];
+                return (
+                  <AgentCard
+                    key={agent._id}
+                    name={agent.name}
+                    status={agent.status}
+                    lastAction={activity?.description}
+                    lastActionTime={activity?.timestamp}
+                    onClick={() => router.push(`/agents`)}
+                  />
+                );
+              })}
               {agents.length > 4 && (
                 <p className="text-xs text-[var(--text-tertiary)] pl-4">
                   +{agents.length - 4} mas

@@ -21,6 +21,41 @@ interface DashboardActivityFeedProps {
   activities: ActivityItem[] | undefined;
 }
 
+/**
+ * Converts raw task descriptions (e.g. "scheduled_demandgen-006 - 2026-02-06T00:00:04.528Z")
+ * into human-readable text.
+ */
+function humanizeDescription(item: ActivityItem): string {
+  const desc = item.description;
+
+  // Execution descriptions from backend
+  if (desc === "Ejecución exitosa") return "Ejecucion completada exitosamente";
+  if (desc === "Ejecución fallida") return "Ejecucion fallida";
+
+  // Scheduled/cron task titles: "scheduled_demandgen-006 - 2026-02-..."
+  const scheduledMatch = desc.match(/^scheduled_([a-z]+-\d+)/i);
+  if (scheduledMatch) return "Tarea programada ejecutada";
+
+  // Manual task titles: "manual_content-002 - ..."
+  const manualMatch = desc.match(/^manual_([a-z]+-\d+)/i);
+  if (manualMatch) return "Tarea manual ejecutada";
+
+  // If it looks like a raw taskId pattern, simplify it
+  if (desc.match(/^[a-z_]+-\d{3}\s*-\s*\d{4}-/i)) return "Tarea ejecutada";
+
+  // Otherwise return as-is (it's already a real title like "Escribe un blog sobre X")
+  return desc;
+}
+
+const statusLabel: Record<string, { text: string; color: string }> = {
+  success: { text: "Exitoso", color: "text-emerald-400" },
+  failure: { text: "Fallido", color: "text-red-400" },
+  completed: { text: "Completado", color: "text-emerald-400" },
+  failed: { text: "Fallido", color: "text-red-400" },
+  running: { text: "En curso", color: "text-amber-400" },
+  pending: { text: "Pendiente", color: "text-zinc-400" },
+};
+
 const departmentBadgeColors: Record<string, string> = {
   content: "bg-blue-500/10 text-blue-400",
   social: "bg-purple-500/10 text-purple-400",
@@ -57,6 +92,7 @@ export function DashboardActivityFeed({ activities }: DashboardActivityFeedProps
             {activities.map((item) => {
               const Icon = typeIcons[item.type] || Activity;
               const badgeColor = departmentBadgeColors[item.department] || departmentBadgeColors.leadership;
+              const status = statusLabel[item.status];
               const timeAgo = formatDistanceToNow(new Date(item.timestamp), {
                 addSuffix: true,
                 locale: es,
@@ -71,11 +107,26 @@ export function DashboardActivityFeed({ activities }: DashboardActivityFeedProps
                         {item.agentName}
                       </span>
                       <span className="text-sm text-[var(--text-secondary)]">
-                        {item.description}
+                        {humanizeDescription(item)}
                       </span>
+                      {status && (
+                        <span className={`text-xs font-medium ${status.color}`}>
+                          {status.text}
+                        </span>
+                      )}
                     </div>
                     <div className="flex items-center gap-2 mt-1">
                       <span className="text-xs text-[var(--text-tertiary)]">{timeAgo}</span>
+                      {item.duration && (
+                        <span className="text-xs text-[var(--text-tertiary)]">
+                          {item.duration < 1000 ? `${item.duration}ms` : `${(item.duration / 1000).toFixed(1)}s`}
+                        </span>
+                      )}
+                      {item.tokensUsed && (
+                        <span className="text-xs text-[var(--text-tertiary)]">
+                          {item.tokensUsed.toLocaleString()} tokens
+                        </span>
+                      )}
                       <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${badgeColor}`}>
                         {item.department}
                       </span>
