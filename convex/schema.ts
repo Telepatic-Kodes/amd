@@ -753,6 +753,124 @@ export default defineSchema({
     .index("by_userId", ["userId"]),
 
   // ===========================================
+  // TWITTER_CONNECTIONS - OAuth tokens y perfil de Twitter/X
+  // ===========================================
+  twitterConnections: defineTable({
+    userId: v.optional(v.string()),
+    twitterUserId: v.string(),
+    username: v.string(),
+    displayName: v.string(),
+    profileImageUrl: v.optional(v.string()),
+    accessToken: v.string(),
+    refreshToken: v.optional(v.string()),
+    accessTokenExpiresAt: v.number(),
+    scopes: v.array(v.string()),
+    status: v.union(
+      v.literal("connected"),
+      v.literal("expired"),
+      v.literal("disconnected"),
+      v.literal("revoked")
+    ),
+    dailyTweetCount: v.number(),
+    lastTweetAt: v.optional(v.number()),
+    lastTweetCountResetAt: v.number(),
+    connectedAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_twitterUserId", ["twitterUserId"])
+    .index("by_status", ["status"])
+    .index("by_userId", ["userId"]),
+
+  // ===========================================
+  // TWITTER_PUBLISH_LOG - Historial de publicaciones en Twitter/X
+  // ===========================================
+  twitterPublishLog: defineTable({
+    contentId: v.id("content"),
+    connectionId: v.id("twitterConnections"),
+    tweetIds: v.optional(v.array(v.string())),
+    status: v.union(
+      v.literal("pending"),
+      v.literal("published"),
+      v.literal("failed"),
+      v.literal("deleted")
+    ),
+    errorMessage: v.optional(v.string()),
+    publishedAt: v.optional(v.number()),
+    metadata: v.optional(v.object({
+      tweetCount: v.optional(v.number()),
+      characterCount: v.optional(v.number()),
+      isThread: v.optional(v.boolean()),
+      threadUrl: v.optional(v.string()),
+    })),
+    createdAt: v.number(),
+  })
+    .index("by_contentId", ["contentId"])
+    .index("by_connectionId", ["connectionId"])
+    .index("by_status", ["status"]),
+
+  // ===========================================
+  // INSTAGRAM_CONNECTIONS - OAuth tokens y perfil de Instagram Business
+  // ===========================================
+  instagramConnections: defineTable({
+    userId: v.optional(v.string()),
+    instagramUserId: v.string(),
+    username: v.string(),
+    displayName: v.string(),
+    profilePictureUrl: v.optional(v.string()),
+    facebookPageId: v.string(),
+    facebookPageName: v.optional(v.string()),
+    accessToken: v.string(),
+    accessTokenExpiresAt: v.number(),
+    scopes: v.array(v.string()),
+    status: v.union(
+      v.literal("connected"),
+      v.literal("expired"),
+      v.literal("disconnected"),
+      v.literal("revoked"),
+      v.literal("pending_review")
+    ),
+    dailyPostCount: v.number(),
+    lastPostAt: v.optional(v.number()),
+    lastPostCountResetAt: v.number(),
+    connectedAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_instagramUserId", ["instagramUserId"])
+    .index("by_status", ["status"])
+    .index("by_userId", ["userId"]),
+
+  // ===========================================
+  // INSTAGRAM_PUBLISH_LOG - Historial de publicaciones en Instagram
+  // ===========================================
+  instagramPublishLog: defineTable({
+    contentId: v.id("content"),
+    connectionId: v.id("instagramConnections"),
+    instagramMediaId: v.optional(v.string()),
+    mediaType: v.union(
+      v.literal("image"),
+      v.literal("carousel"),
+      v.literal("video")
+    ),
+    status: v.union(
+      v.literal("pending"),
+      v.literal("published"),
+      v.literal("failed"),
+      v.literal("deleted")
+    ),
+    errorMessage: v.optional(v.string()),
+    publishedAt: v.optional(v.number()),
+    metadata: v.optional(v.object({
+      captionLength: v.optional(v.number()),
+      imageCount: v.optional(v.number()),
+      permalink: v.optional(v.string()),
+    })),
+    createdAt: v.number(),
+  })
+    .index("by_contentId", ["contentId"])
+    .index("by_connectionId", ["connectionId"])
+    .index("by_status", ["status"]),
+
+  // ===========================================
   // USER_GUIDANCE - Estado de guía y onboarding
   // ===========================================
   userGuidance: defineTable({
