@@ -733,6 +733,26 @@ export default defineSchema({
     .index("by_status", ["status"]),
 
   // ===========================================
+  // LINKEDIN_ENGAGEMENT - Cached LinkedIn post engagement snapshots
+  // ===========================================
+  linkedinEngagement: defineTable({
+    contentId: v.id("content"),
+    linkedinPostUrn: v.string(),
+    likes: v.number(),
+    comments: v.number(),
+    shares: v.number(),
+    impressions: v.number(),
+    clicks: v.optional(v.number()),
+    engagement_rate: v.optional(v.number()),
+    fetchedAt: v.number(),
+    userId: v.optional(v.string()),
+  })
+    .index("by_contentId", ["contentId"])
+    .index("by_contentId_fetchedAt", ["contentId", "fetchedAt"])
+    .index("by_fetchedAt", ["fetchedAt"])
+    .index("by_userId", ["userId"]),
+
+  // ===========================================
   // USER_GUIDANCE - Estado de guía y onboarding
   // ===========================================
   userGuidance: defineTable({
