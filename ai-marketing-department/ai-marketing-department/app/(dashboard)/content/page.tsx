@@ -39,7 +39,7 @@ import { EmptyContent } from "@/components/ui/EmptyState";
 import { useToast } from "@/components/ui/Toast";
 import { UploadContentForm } from "@/components/content/UploadContentForm";
 import { EditContentModal } from "@/components/content/EditContentModal";
-import { PublishToLinkedInButton } from "@/components/linkedin/PublishToLinkedInButton";
+import { ContentDetailPlatformPublish } from "@/components/content/ContentDetailPlatformPublish";
 
 const CONTENT_TYPES = [
   { value: "", label: "All Types" },
@@ -700,18 +700,14 @@ export default function ContentPage() {
                         />
                       </div>
 
-                      {/* LinkedIn Publish */}
-                      {(selectedContentData.status === "approved" ||
-                        selectedContentData.status === "scheduled" ||
-                        selectedContentData.status === "published") && (
-                        <div className="mt-3 pt-3 border-t border-zinc-800">
-                          <PublishToLinkedInButton
-                            contentId={selectedContentData._id}
-                            contentBody={selectedContentData.body}
-                            contentStatus={selectedContentData.status}
-                          />
-                        </div>
-                      )}
+                      {/* Multi-Platform Publish Panel */}
+                      <div className="mt-3 pt-3 border-t border-zinc-800">
+                        <ContentDetailPlatformPublish
+                          contentId={selectedContentData._id}
+                          contentBody={selectedContentData.body}
+                          contentStatus={selectedContentData.status}
+                        />
+                      </div>
                     </div>
 
                     {/* Edit Button in Details */}
