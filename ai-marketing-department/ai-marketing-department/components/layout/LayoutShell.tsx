@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useConvexAuth } from "convex/react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { MobileNav } from "@/components/layout/MobileNav";
+import { CommandPalette } from "@/components/dashboard/CommandPalette";
 import { ProductTour } from "@/components/ui/ProductTour";
 import { shouldShowTour } from "@/lib/tour-utils";
 
@@ -43,6 +44,7 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
         <div className="container mx-auto p-4 md:p-6 pb-20 md:pb-6 max-w-7xl">{children}</div>
       </main>
       <MobileNav />
+      <CommandPalette />
 
       {/* Product Tour - shows only for first-time users */}
       {showTour && (
