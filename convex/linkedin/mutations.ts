@@ -251,3 +251,40 @@ export const checkTokenExpiration = internalMutation({
     }
   },
 });
+
+/**
+ * Store engagement snapshot in linkedinEngagement table
+ * Called by engagement fetcher action
+ */
+export const storeEngagementSnapshot = internalMutation({
+  args: {
+    contentId: v.id("content"),
+    linkedinPostUrn: v.string(),
+    likes: v.number(),
+    comments: v.number(),
+    shares: v.number(),
+    impressions: v.number(),
+    clicks: v.optional(v.number()),
+    engagement_rate: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const now = Date.now();
+
+    // Get userId from content if available (for backward compatibility)
+    const content = await ctx.db.get(args.contentId);
+    const userId = content?.userId;
+
+    await ctx.db.insert("linkedinEngagement", {
+      contentId: args.contentId,
+      linkedinPostUrn: args.linkedinPostUrn,
+      likes: args.likes,
+      comments: args.comments,
+      shares: args.shares,
+      impressions: args.impressions,
+      clicks: args.clicks || 0,
+      engagement_rate: args.engagement_rate || 0,
+      fetchedAt: now,
+      userId,
+    });
+  },
+});

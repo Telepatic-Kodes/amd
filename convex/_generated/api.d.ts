@@ -11,6 +11,7 @@
 import type * as actions from "../actions.js";
 import type * as agentSdk from "../agentSdk.js";
 import type * as analysis_metrics from "../analysis/metrics.js";
+import type * as analytics from "../analytics.js";
 import type * as contentPipeline from "../contentPipeline.js";
 import type * as controlCenter from "../controlCenter.js";
 import type * as crons from "../crons.js";
@@ -49,10 +50,13 @@ import type * as kb_processFile from "../kb/processFile.js";
 import type * as kb_queries from "../kb/queries.js";
 import type * as kb_scrapeUrl from "../kb/scrapeUrl.js";
 import type * as kb_uploadFile from "../kb/uploadFile.js";
+import type * as lib_auth from "../lib/auth.js";
 import type * as linkedin_actions from "../linkedin/actions.js";
+import type * as linkedin_engagement from "../linkedin/engagement.js";
 import type * as linkedin_internalQueries from "../linkedin/internalQueries.js";
 import type * as linkedin_mutations from "../linkedin/mutations.js";
 import type * as linkedin_queries from "../linkedin/queries.js";
+import type * as migration from "../migration.js";
 import type * as monitoring_actions from "../monitoring/actions.js";
 import type * as monitoring_config from "../monitoring/config.js";
 import type * as monitoring_index from "../monitoring/index.js";
@@ -60,6 +64,7 @@ import type * as monitoring_mutations from "../monitoring/mutations.js";
 import type * as monitoring_queries from "../monitoring/queries.js";
 import type * as onboarding from "../onboarding.js";
 import type * as seed from "../seed.js";
+import type * as users from "../users.js";
 
 import type {
   ApiFromModules,
@@ -71,6 +76,7 @@ declare const fullApi: ApiFromModules<{
   actions: typeof actions;
   agentSdk: typeof agentSdk;
   "analysis/metrics": typeof analysis_metrics;
+  analytics: typeof analytics;
   contentPipeline: typeof contentPipeline;
   controlCenter: typeof controlCenter;
   crons: typeof crons;
@@ -109,10 +115,13 @@ declare const fullApi: ApiFromModules<{
   "kb/queries": typeof kb_queries;
   "kb/scrapeUrl": typeof kb_scrapeUrl;
   "kb/uploadFile": typeof kb_uploadFile;
+  "lib/auth": typeof lib_auth;
   "linkedin/actions": typeof linkedin_actions;
+  "linkedin/engagement": typeof linkedin_engagement;
   "linkedin/internalQueries": typeof linkedin_internalQueries;
   "linkedin/mutations": typeof linkedin_mutations;
   "linkedin/queries": typeof linkedin_queries;
+  migration: typeof migration;
   "monitoring/actions": typeof monitoring_actions;
   "monitoring/config": typeof monitoring_config;
   "monitoring/index": typeof monitoring_index;
@@ -120,6 +129,7 @@ declare const fullApi: ApiFromModules<{
   "monitoring/queries": typeof monitoring_queries;
   onboarding: typeof onboarding;
   seed: typeof seed;
+  users: typeof users;
 }>;
 
 /**
