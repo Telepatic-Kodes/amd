@@ -187,7 +187,7 @@ Plans:
 
 ---
 
-### Phase 15: Multi-Platform Publishing (Twitter/X + Instagram)
+### Phase 15: Multi-Platform Publishing (Twitter/X + Instagram) ✅
 
 **Goal:** Users can publish approved content to LinkedIn, Twitter/X, and Instagram from a single interface with platform-specific formatting
 
@@ -196,21 +196,23 @@ Plans:
 **Requirements:** TX-01, TX-02, TX-03, TX-04, TX-05, IG-01, IG-02, IG-03, IG-04, IG-05, UX-01, UX-02, UX-03, UX-04
 
 **Success Criteria** (what must be TRUE):
-  1. User can connect Twitter/X account and publish tweets (with thread support for long content)
-  2. User can connect Instagram Business account and publish image posts with captions
-  3. User can preview how content looks on each platform before publishing
-  4. User can see platform connection status and rate limit warnings in settings
-  5. User receives clear error messages when platform-specific requirements aren't met
+  1. ✅ User can connect Twitter/X account and publish tweets (with thread support for long content)
+  2. ✅ User can connect Instagram Business account and publish image posts with captions
+  3. ✅ User can preview how content looks on each platform before publishing
+  4. ✅ User can see platform connection status and rate limit warnings in settings
+  5. ✅ User receives clear error messages when platform-specific requirements aren't met
 
 **Plans:** 6 plans in 4 waves
 
 Plans:
-- [ ] 15-01-PLAN.md — Schema tables (4 new) + OAuth HTTP routes for Twitter and Instagram (Wave 1)
-- [ ] 15-02-PLAN.md — Twitter/X backend: OAuth token exchange, tweet/thread publishing, thread splitter (Wave 2)
-- [ ] 15-03-PLAN.md — Instagram backend: Facebook OAuth, image/carousel publishing, content validation (Wave 2)
-- [ ] 15-04-PLAN.md — Twitter/X frontend: ConnectionCard, PublishButton, PostPreview, ThreadPreview (Wave 3)
-- [ ] 15-05-PLAN.md — Instagram frontend: ConnectionCard, PublishButton, PostPreview, CarouselPreview (Wave 3)
-- [ ] 15-06-PLAN.md — Settings integration, multi-platform publish panel, translations, human verify (Wave 4)
+- [x] 15-01-PLAN.md — Schema tables (4 new) + OAuth HTTP routes for Twitter and Instagram (Wave 1)
+- [x] 15-02-PLAN.md — Twitter/X backend: OAuth token exchange, tweet/thread publishing, thread splitter (Wave 2)
+- [x] 15-03-PLAN.md — Instagram backend: Facebook OAuth, image/carousel publishing, content validation (Wave 2)
+- [x] 15-04-PLAN.md — Twitter/X frontend: ConnectionCard, PublishButton, PostPreview, ThreadPreview (Wave 3)
+- [x] 15-05-PLAN.md — Instagram frontend: ConnectionCard, PublishButton, PostPreview, CarouselPreview (Wave 3)
+- [x] 15-06-PLAN.md — Settings integration, multi-platform publish panel, translations, human verify (Wave 4)
+
+**Completed:** 2026-02-06
 
 **Note:** Instagram App Review takes 60-90 days. Start submission in Week 1 of this phase.
 
@@ -296,7 +298,7 @@ Phases execute in numeric order: 13 → 14 → 15 → 16 → 17 → 18
 |-------|----------------|--------|-----------|
 | 13. Multi-User Authentication | 4/4 | ✅ Complete | 2026-02-05 |
 | 14. Analytics & Intelligence | 3/3 | ✅ Complete | 2026-02-06 |
-| 15. Multi-Platform Publishing | 0/6 | In progress | - |
+| 15. Multi-Platform Publishing | 6/6 | ✅ Complete | 2026-02-06 |
 | 16. Cross-Platform Features | 0/TBD | Not started | - |
 | 17. Team Collaboration & Version History | 0/TBD | Not started | - |
 | 18. Automated Reports | 0/TBD | Not started | - |
@@ -315,3 +317,5 @@ Phases execute in numeric order: 13 → 14 → 15 → 16 → 17 → 18
 *v1.0 shipped: 2026-01-30*
 *v2.0 shipped: 2026-02-05*
 *v3.0 Phase 13 completed: 2026-02-05*
+*v3.0 Phase 14 completed: 2026-02-06*
+*v3.0 Phase 15 completed: 2026-02-06*
