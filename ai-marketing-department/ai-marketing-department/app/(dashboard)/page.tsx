@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { Database, X } from "lucide-react";
 import { StatusStrip, StatusStripSkeleton } from "@/components/dashboard/StatusStrip";
 import { AgentCommandGrid } from "@/components/dashboard/AgentCommandGrid";
-import { DashboardActivityFeed } from "@/components/dashboard/ActivityFeed";
+import { ActivitySummary } from "@/components/dashboard/ActivitySummary";
 import { ContentPipeline } from "@/components/dashboard/ContentPipeline";
 import { QuickActions } from "@/components/dashboard/QuickActions";
 import { translate } from "@/lib/language";
@@ -247,9 +247,9 @@ export default function DashboardPage() {
       {/* Section D: Two-Column Bottom */}
       <motion.div custom={3} variants={sectionVariants} initial="hidden" animate="visible">
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-          {/* Left: Activity Feed (60%) */}
+          {/* Left: Activity Summary (60%) */}
           <div className="lg:col-span-3">
-            <DashboardActivityFeed activities={activity} />
+            <ActivitySummary activities={activity} />
           </div>
           {/* Right: Content Pipeline (40%) */}
           <div className="lg:col-span-2">
