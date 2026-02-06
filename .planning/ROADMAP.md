@@ -32,7 +32,7 @@
 
 **Milestone Goal:** Make AMD 100% operational with real-time monitoring, guided workflows, and end-to-end content publishing.
 
-**Target:** Control Center operativo, Pipeline de contenido completo, LinkedIn integration, Sistema de guía inteligente, Claridad de ejecución
+**Target:** Control Center operativo, Pipeline de contenido completo, LinkedIn integration, Sistema de guia inteligente, Claridad de ejecucion
 
 ### Phase 9: Control Center Foundation ✅
 
@@ -120,7 +120,7 @@
 
 ---
 
-## 📋 v3.0 Intelligence & Scale (Planned)
+## v3.0 Intelligence & Scale (Planned)
 
 **Milestone Goal:** Transform AMD from a single-user publishing tool into a multi-user, multi-platform marketing intelligence system with real analytics data.
 
@@ -176,11 +176,12 @@ Plans:
   4. User can export analytics data as CSV for external reporting
   5. User can identify best-performing content by engagement metrics
 
-**Plans:** TBD (estimated 2-3 plans)
+**Plans:** 3 plans in 2 waves
 
 Plans:
-- [ ] 14-01: TBD during phase planning
-- [ ] 14-02: TBD during phase planning
+- [ ] 14-01-PLAN.md — Schema (linkedinEngagement table) + analytics queries with date filtering (Wave 1)
+- [ ] 14-02-PLAN.md — LinkedIn engagement fetcher action + cron job (Wave 2)
+- [ ] 14-03-PLAN.md — Analytics dashboard UI with date filters, engagement display, CSV export (Wave 2)
 
 ---
 
@@ -289,7 +290,7 @@ Phases execute in numeric order: 13 → 14 → 15 → 16 → 17 → 18
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 13. Multi-User Authentication | 4/4 | ✅ Complete | 2026-02-05 |
-| 14. Analytics & Intelligence | 0/TBD | Not started | - |
+| 14. Analytics & Intelligence | 0/3 | 🚧 Planned | - |
 | 15. Multi-Platform Publishing | 0/TBD | Not started | - |
 | 16. Cross-Platform Features | 0/TBD | Not started | - |
 | 17. Team Collaboration & Version History | 0/TBD | Not started | - |
