@@ -14,11 +14,11 @@ See: .planning/PROJECT.md (updated 2026-02-05)
 ## Current Position
 
 Phase: 14 of 18 (Analytics & Intelligence) — IN PROGRESS
-Plan: 01 of 04 completed (Wave 1)
+Plan: 02 of 04 completed (Wave 2)
 Status: In progress
-Last activity: 2026-02-06 — Completed 14-01-PLAN.md (Analytics data foundation)
+Last activity: 2026-02-06 — Completed 14-02-PLAN.md (LinkedIn engagement fetcher)
 
-Progress: [█████████████░░░░░] 73% (v1.0 + v2.0 shipped: 12/18 phases, v3.0: 5/24 plans completed)
+Progress: [█████████████░░░░░] 75% (v1.0 + v2.0 shipped: 12/18 phases, v3.0: 6/24 plans completed)
 
 ## Performance Metrics
 
@@ -35,9 +35,9 @@ Progress: [█████████████░░░░░] 73% (v1.0 + v
 - Average duration: ~7.5 min/plan
 
 **v3.0 Velocity:**
-- Total plans completed: 5/24
+- Total plans completed: 6/24
 - Average duration: ~4 min/plan
-- Total execution time: ~21 min
+- Total execution time: ~24 min
 
 ## Accumulated Context
 
@@ -59,6 +59,8 @@ Recent decisions affecting current work:
 - **13-02b: System resources remain shared** — Agents, settings, executions accessible to all authenticated users (not user-scoped)
 - **14-01: In-memory analytics aggregation** — No @convex-dev/aggregate dependency; direct queries with .collect() + JS reduce/filter for date-filtered analytics
 - **14-01: Query-time daily rollups** — No pre-aggregation tables; compute tasksByDay on-demand from filtered tasks
+- **14-02: Dynamic TTL caching** — Hot posts (<48h) refresh every 30min, warm (2-14d) every 4h, cold (>14d) every 24h for optimal API usage
+- **14-02: Rate limit protection at batch level** — Max 10 posts/run, 429 stops batch immediately to prevent cascade failures
 
 ### Pending Todos
 
@@ -82,16 +84,17 @@ None yet.
 
 **Phase 14 (Analytics) - IN PROGRESS:**
 - ✓ Plan 14-01 complete: linkedinEngagement table + 5 analytics queries (AI-01, AI-02, AI-03, AI-04)
-- API rate limits: Instagram 200/hr, LinkedIn ~500/day, Twitter 15K reads/month - caching strategy critical
+- ✓ Plan 14-02 complete: LinkedIn engagement fetcher with dynamic TTL caching and hourly cron
+- API rate limits: LinkedIn ~500/day (safe: 240/day with 10 posts/run × 24 hourly crons)
 - ✓ Convex Aggregate avoided: In-memory aggregation chosen for simplicity (concern resolved)
-- Stale-while-revalidate caching: Dynamic TTL based on post age (hot: 5min, warm: 1hr, cold: 24hr)
+- ✓ Dynamic TTL implemented: Hot (<48h) 30min, warm (2-14d) 4h, cold (>14d) 24h
 
 ## Session Continuity
 
 Last session: 2026-02-06
-Stopped at: Completed 14-01-PLAN.md (Analytics data foundation)
+Stopped at: Completed 14-02-PLAN.md (LinkedIn engagement fetcher)
 Resume file: None
-Next action: /gsd:execute-plan 14-02 (LinkedIn Engagement Fetcher) or continue with Phase 14 plans
+Next action: /gsd:execute-plan 14-03 (Analytics Dashboard) or continue with Phase 14 plans
 
 ---
 
