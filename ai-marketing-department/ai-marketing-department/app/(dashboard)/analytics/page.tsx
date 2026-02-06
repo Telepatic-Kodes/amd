@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@convex/_generated/api";
 import {
@@ -12,11 +12,13 @@ import {
   TrendingUp,
   Bot,
   Activity,
+  Trophy,
+  Lightbulb,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
-import { BarChart, ProgressBarChart } from "@/components/charts/BarChart";
+import { BarChart } from "@/components/charts/BarChart";
 import { AreaChart } from "@/components/charts/AreaChart";
 import { DonutChart } from "@/components/charts/DonutChart";
 import { Sparkline } from "@/components/charts/Sparkline";
@@ -25,6 +27,10 @@ import { SimpleCounter, CurrencyCounter, PercentageCounter } from "@/components/
 import { TrendIndicator } from "@/components/ui/TrendIndicator";
 import { SkeletonStat, SkeletonChart, SkeletonTable } from "@/components/ui/Skeleton";
 import { EmptyExecutions, EmptyAgents } from "@/components/ui/EmptyState";
+import { DateRangeFilter } from "@/components/analytics/DateRangeFilter";
+import { ContentPerformanceTable } from "@/components/analytics/ContentPerformanceTable";
+import { ContentInsightsPanel } from "@/components/analytics/ContentInsightsPanel";
+import { CsvExportButton } from "@/components/analytics/CsvExportButton";
 
 function formatNumber(num: number) {
   if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
@@ -33,7 +39,7 @@ function formatNumber(num: number) {
 }
 
 function formatCurrency(amount: number) {
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat("es-ES", {
     style: "currency",
     currency: "USD",
     minimumFractionDigits: 2,
@@ -49,14 +55,37 @@ function formatDuration(ms: number) {
 
 function formatDate(dateStr: string) {
   const date = new Date(dateStr);
-  return date.toLocaleDateString("en-US", {
+  return date.toLocaleDateString("es-ES", {
     month: "short",
     day: "numeric",
   });
 }
 
 export default function AnalyticsPage() {
-  const analytics = useQuery(api.functions.getAnalyticsOverview);
+  // State for date range
+  const [dateRange, setDateRange] = useState<{
+    startDate: number;
+    endDate: number;
+    label: string;
+  }>(() => {
+    // Default: last 30 days
+    const endDate = Date.now();
+    const startDate = endDate - 30 * 24 * 60 * 60 * 1000;
+    return { startDate, endDate, label: "30 dias" };
+  });
+
+  // Queries with date range
+  const analytics = useQuery(api.analytics.getAnalyticsWithDateRange, {
+    startDate: dateRange.startDate,
+    endDate: dateRange.endDate,
+  });
+
+  const contentPerformance = useQuery(api.analytics.getContentPerformance, {
+    startDate: dateRange.startDate,
+    endDate: dateRange.endDate,
+    sortBy: "engagement",
+  });
+
   const completeStep = useMutation(api.guidance.completeSetupStep);
 
   // Auto-mark "analyticsViewed" setup step
@@ -69,10 +98,10 @@ export default function AnalyticsPage() {
       <div className="space-y-8">
         <div>
           <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
-            Analytics
+            Analiticas
           </h1>
           <p className="text-zinc-400 mt-2">
-            Performance metrics and insights.
+            Metricas de rendimiento e inteligencia de tu equipo de marketing IA.
           </p>
         </div>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -101,23 +130,21 @@ export default function AnalyticsPage() {
       other: data.total - data.completed - data.failed,
     }));
 
-  // Prepare area chart data (mock trends over time)
-  const trendData = barChartData.map((d, i) => ({
+  // Prepare area chart data (tokens and executions over time)
+  const trendData = barChartData.map((d) => ({
     date: d.date,
-    executions: Math.floor(Math.random() * 50) + 20 + i * 5,
-    tokens: Math.floor(Math.random() * 5000) + 1000,
-    cost: Math.random() * 0.5 + 0.1,
+    tasks: d.completed + d.failed + d.other,
   }));
 
   // Prepare horizontal bar chart data for top agents
   const topAgentsData = topAgents.slice(0, 5).map((agent, i) => ({
     name: agent.name.length > 20 ? agent.name.substring(0, 20) + '...' : agent.name,
     executions: agent.count,
-    successRate: agent.successRate,
+    successRate: agent.successCount > 0 ? (agent.successCount / agent.count) * 100 : 0,
     color: seriesColors[i % seriesColors.length],
   }));
 
-  // Mock cost distribution by department
+  // Mock cost distribution by department (will be real data later)
   const costDistribution = [
     { name: 'Content', value: 35, color: chartColors.departments.content },
     { name: 'Social', value: 25, color: chartColors.departments.social },
@@ -126,7 +153,7 @@ export default function AnalyticsPage() {
     { name: 'Ops', value: 8, color: chartColors.departments.ops },
   ];
 
-  // Mock sparkline data for stats
+  // Mock sparkline data for stats (placeholder until we have historical trend data)
   const generateSparkline = (base: number) =>
     Array.from({ length: 7 }, () => ({
       value: Math.max(0, base * (0.7 + Math.random() * 0.6)),
@@ -137,59 +164,61 @@ export default function AnalyticsPage() {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
-          Analytics
+          Analiticas
         </h1>
         <p className="text-zinc-400 mt-2">
-          Performance metrics and insights for your AI marketing team.
+          Metricas de rendimiento e inteligencia de tu equipo de marketing IA.
         </p>
       </div>
 
-      {/* Overview Stats with Sparklines */}
+      {/* Controls Row: Date Range + CSV Export */}
+      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+        <DateRangeFilter value={dateRange} onChange={setDateRange} />
+        <CsvExportButton startDate={dateRange.startDate} endDate={dateRange.endDate} />
+      </div>
+
+      {/* Overview Stats */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <MetricCard
           icon={Zap}
           iconBg="bg-indigo-500/10"
           iconColor="text-indigo-400"
-          title="Executions"
+          title="Ejecuciones"
           value={overview.totalExecutions}
           badge={`${overview.totalExecutions} total`}
           sparklineData={generateSparkline(overview.totalExecutions / 7)}
-          trend={12}
         />
         <MetricCard
           icon={CheckCircle2}
           iconBg="bg-green-500/10"
           iconColor="text-green-400"
-          title="Success Rate"
+          title="Tasa de Exito"
           value={overview.successRate}
           isPercentage
           badge={`${overview.successRate.toFixed(1)}%`}
           badgeVariant="success"
           sparklineData={generateSparkline(overview.successRate)}
-          trend={3}
         />
         <MetricCard
           icon={Activity}
           iconBg="bg-purple-500/10"
           iconColor="text-purple-400"
-          title="Tokens Used"
+          title="Tokens Usados"
           value={overview.totalTokens}
           formatter={formatNumber}
           badge={formatNumber(overview.totalTokens)}
           sparklineData={generateSparkline(overview.totalTokens / 7)}
-          trend={-5}
         />
         <MetricCard
           icon={DollarSign}
           iconBg="bg-orange-500/10"
           iconColor="text-orange-400"
-          title="Total Cost"
+          title="Costo Total"
           value={overview.totalCost}
           isCurrency
           badge={formatCurrency(overview.totalCost)}
           badgeVariant="warning"
           sparklineData={generateSparkline(overview.totalCost / 7)}
-          trend={8}
         />
       </div>
 
@@ -200,7 +229,7 @@ export default function AnalyticsPage() {
           <CardHeader>
             <h3 className="flex items-center gap-2 font-semibold text-lg text-white">
               <BarChart3 className="h-5 w-5 text-indigo-500" />
-              Tasks by Day (Last 7 Days)
+              Tareas por Dia
             </h3>
           </CardHeader>
           <CardContent className="p-6 pt-0">
@@ -209,9 +238,9 @@ export default function AnalyticsPage() {
                 <BarChart
                   data={barChartData}
                   bars={[
-                    { dataKey: 'completed', name: 'Completed', color: chartColors.success },
-                    { dataKey: 'failed', name: 'Failed', color: chartColors.error },
-                    { dataKey: 'other', name: 'Other', color: '#52525b' },
+                    { dataKey: 'completed', name: 'Completadas', color: chartColors.success },
+                    { dataKey: 'failed', name: 'Fallidas', color: chartColors.error },
+                    { dataKey: 'other', name: 'Otras', color: '#52525b' },
                   ]}
                   xAxisKey="date"
                   height={240}
@@ -231,7 +260,7 @@ export default function AnalyticsPage() {
           <CardHeader>
             <h3 className="flex items-center gap-2 font-semibold text-lg text-white">
               <TrendingUp className="h-5 w-5 text-green-500" />
-              Performance Trends
+              Tendencias de Rendimiento
             </h3>
           </CardHeader>
           <CardContent className="p-6 pt-0">
@@ -239,8 +268,7 @@ export default function AnalyticsPage() {
               <AreaChart
                 data={trendData}
                 areas={[
-                  { dataKey: 'executions', name: 'Executions', color: chartColors.primary },
-                  { dataKey: 'tokens', name: 'Tokens (÷100)', color: chartColors.tertiary },
+                  { dataKey: 'tasks', name: 'Tareas', color: chartColors.primary },
                 ]}
                 xAxisKey="date"
                 height={240}
@@ -255,6 +283,38 @@ export default function AnalyticsPage() {
         </Card>
       </div>
 
+      {/* Content Performance Section */}
+      <Card>
+        <CardHeader>
+          <h3 className="flex items-center gap-2 font-semibold text-lg text-white">
+            <Trophy className="h-5 w-5 text-yellow-500" />
+            Rendimiento de Contenido
+          </h3>
+        </CardHeader>
+        <CardContent className="p-6 pt-0">
+          <ContentPerformanceTable
+            data={contentPerformance || []}
+            isLoading={!contentPerformance}
+          />
+        </CardContent>
+      </Card>
+
+      {/* Content Insights Section (AL-04) */}
+      <Card>
+        <CardHeader>
+          <h3 className="flex items-center gap-2 font-semibold text-lg text-white">
+            <Lightbulb className="h-5 w-5 text-amber-400" />
+            Insights de Contenido
+          </h3>
+        </CardHeader>
+        <CardContent className="p-6 pt-0">
+          <ContentInsightsPanel
+            data={contentPerformance || []}
+            isLoading={!contentPerformance}
+          />
+        </CardContent>
+      </Card>
+
       {/* Second Row - Top Agents & Cost Distribution */}
       <div className="grid gap-6 md:grid-cols-2">
         {/* Top Agents - Horizontal Bar */}
@@ -262,7 +322,7 @@ export default function AnalyticsPage() {
           <CardHeader>
             <h3 className="flex items-center gap-2 font-semibold text-lg text-white">
               <Bot className="h-5 w-5 text-cyan-500" />
-              Top Agents by Executions
+              Top Agentes por Ejecuciones
             </h3>
           </CardHeader>
           <CardContent className="p-6 pt-0">
@@ -312,7 +372,7 @@ export default function AnalyticsPage() {
           <CardHeader>
             <h3 className="flex items-center gap-2 font-semibold text-lg text-white">
               <DollarSign className="h-5 w-5 text-amber-500" />
-              Cost Distribution
+              Distribucion de Costos
             </h3>
           </CardHeader>
           <CardContent className="p-6 pt-0">
@@ -336,7 +396,7 @@ export default function AnalyticsPage() {
         <CardHeader>
           <h3 className="flex items-center gap-2 font-semibold text-lg text-white">
             <Clock className="h-5 w-5 text-blue-500" />
-            Recent Executions
+            Ejecuciones Recientes
           </h3>
         </CardHeader>
         <CardContent className="p-6 pt-0">
@@ -347,12 +407,12 @@ export default function AnalyticsPage() {
               <table className="w-full">
                 <thead>
                   <tr className="text-left text-xs text-zinc-500 border-b border-zinc-800">
-                    <th className="pb-3 font-medium">Status</th>
-                    <th className="pb-3 font-medium">Duration</th>
+                    <th className="pb-3 font-medium">Estado</th>
+                    <th className="pb-3 font-medium">Duracion</th>
                     <th className="pb-3 font-medium">Tokens</th>
-                    <th className="pb-3 font-medium">Cost</th>
-                    <th className="pb-3 font-medium">LLM Calls</th>
-                    <th className="pb-3 font-medium">Time</th>
+                    <th className="pb-3 font-medium">Costo</th>
+                    <th className="pb-3 font-medium">Agente</th>
+                    <th className="pb-3 font-medium">Hora</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -365,23 +425,23 @@ export default function AnalyticsPage() {
                         <Badge
                           variant={exec.status === "success" ? "success" : "error"}
                         >
-                          {exec.status}
+                          {exec.status === "success" ? "Exito" : "Error"}
                         </Badge>
                       </td>
                       <td className="py-3 text-sm text-zinc-300 font-mono">
                         {formatDuration(exec.duration)}
                       </td>
                       <td className="py-3 text-sm text-zinc-300 font-mono">
-                        {formatNumber(exec.tokensUsed.total)}
+                        {formatNumber(exec.tokens)}
                       </td>
                       <td className="py-3 text-sm text-zinc-300 font-mono">
                         {formatCurrency(exec.cost)}
                       </td>
-                      <td className="py-3 text-sm text-zinc-300 font-mono">
-                        {exec.llmCalls}
+                      <td className="py-3 text-sm text-zinc-400 truncate max-w-[150px]">
+                        {exec.agentName}
                       </td>
                       <td className="py-3 text-sm text-zinc-500">
-                        {new Date(exec.timestamp).toLocaleString("en-US", {
+                        {new Date(exec.timestamp).toLocaleString("es-ES", {
                           month: "short",
                           day: "numeric",
                           hour: "2-digit",
@@ -406,7 +466,7 @@ export default function AnalyticsPage() {
                 <Clock className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-xs text-zinc-500">Avg Duration</p>
+                <p className="text-xs text-zinc-500">Duracion Promedio</p>
                 <p className="text-lg font-semibold text-white">
                   {formatDuration(overview.avgDuration)}
                 </p>
@@ -422,7 +482,7 @@ export default function AnalyticsPage() {
                 <Activity className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-xs text-zinc-500">Avg Cost/Execution</p>
+                <p className="text-xs text-zinc-500">Costo Promedio/Ejecucion</p>
                 <p className="text-lg font-semibold text-white">
                   {overview.totalExecutions > 0
                     ? formatCurrency(overview.totalCost / overview.totalExecutions)
@@ -440,7 +500,7 @@ export default function AnalyticsPage() {
                 <Zap className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-xs text-zinc-500">Avg Tokens/Execution</p>
+                <p className="text-xs text-zinc-500">Tokens Promedio/Ejecucion</p>
                 <p className="text-lg font-semibold text-white">
                   {overview.totalExecutions > 0
                     ? formatNumber(overview.totalTokens / overview.totalExecutions)
