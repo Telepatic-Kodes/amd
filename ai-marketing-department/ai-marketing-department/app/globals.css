@@ -4,6 +4,17 @@
   --background: #000000;
   --foreground: #ededed;
 
+  /* Command Center design tokens */
+  --accent: #10b981;
+  --accent-muted: #065f46;
+  --surface: #09090b;
+  --surface-raised: #18181b;
+  --border: rgba(255, 255, 255, 0.06);
+  --border-hover: rgba(255, 255, 255, 0.1);
+  --text-primary: #fafafa;
+  --text-secondary: #a1a1aa;
+  --text-tertiary: #71717a;
+
   /* Spacing tokens */
   --spacing-section: 3rem;
   --spacing-card: 1.5rem;
@@ -15,6 +26,15 @@
   --font-size-subheading: 1.5rem;
   --font-size-body: 1rem;
   --font-size-small: 0.875rem;
+}
+
+/* Pulse animation for running agent status dots */
+@keyframes status-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.animate-status-pulse {
+  animation: status-pulse 2s ease-in-out infinite;
 }
 
 @theme inline {

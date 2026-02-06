@@ -5,20 +5,19 @@ import { usePathname } from "next/navigation";
 import { Home, FileText, BarChart3, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-// Mobile bottom navigation - 4 primary items
 const mobileNavItems = [
   { name: "Inicio", href: "/", icon: Home },
   { name: "Contenido", href: "/content", icon: FileText },
   { name: "Resultados", href: "/results", icon: BarChart3 },
-  { name: "Configuración", href: "/settings", icon: Settings },
+  { name: "Config", href: "/settings", icon: Settings },
 ];
 
 export function MobileNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-zinc-800 bg-zinc-950/95 backdrop-blur-xl">
-      <div className="grid grid-cols-4 h-20">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-[var(--border)] bg-[var(--surface)]">
+      <div className="grid grid-cols-4 h-16">
         {mobileNavItems.map((item) => {
           const Icon = item.icon;
           const isActive =
@@ -32,12 +31,12 @@ export function MobileNav() {
               className={cn(
                 "flex flex-col items-center justify-center gap-1 min-h-[44px] min-w-[44px] transition-colors",
                 isActive
-                  ? "text-indigo-400 bg-indigo-500/10"
-                  : "text-zinc-400 active:bg-white/5"
+                  ? "text-emerald-400"
+                  : "text-zinc-500 active:bg-white/[0.03]"
               )}
             >
               <Icon className="h-5 w-5 flex-shrink-0" />
-              <span className="text-xs font-medium">{item.name}</span>
+              <span className="text-[10px] font-medium">{item.name}</span>
             </Link>
           );
         })}

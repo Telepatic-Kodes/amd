@@ -16,32 +16,29 @@ import { cn } from "@/lib/utils";
 import { translate } from "@/lib/language";
 import { UserMenu } from "./UserMenu";
 
-// Simplified navigation: 5 main sections (v2.0 adds Control Center)
 const mainNavigation = [
     { name: translate("home"), href: "/", icon: Home, label: "Tu centro de comando" },
     { name: translate("controlCenter"), href: "/control-center", icon: Activity, label: "Monitorea tus agentes en tiempo real" },
     { name: translate("content"), href: "/content", icon: FileText, label: "Crea y gestiona contenido" },
     { name: translate("analytics"), href: "/results", icon: BarChart3, label: "Ve tus resultados" },
-    { name: translate("settings"), href: "/settings", icon: Settings, label: "Configuración avanzada" },
+    { name: translate("settings"), href: "/settings", icon: Settings, label: "Configuracion avanzada" },
 ];
 
 export function Sidebar() {
     const pathname = usePathname();
 
     return (
-        <div data-tour="sidebar" className="hidden md:flex h-screen w-64 flex-col fixed left-0 top-0 border-r border-zinc-800 bg-zinc-950/50 backdrop-blur-xl">
+        <div data-tour="sidebar" className="hidden md:flex h-screen w-56 flex-col fixed left-0 top-0 border-r border-[var(--border)] bg-[var(--surface)]">
             {/* Logo Header */}
-            <div className="flex h-16 items-center border-b border-zinc-800 px-6">
-                <Link href="/" className="flex items-center gap-2 font-bold text-white">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-500">
-                        <Sparkles className="h-5 w-5" />
-                    </div>
-                    <span>AMD</span>
+            <div className="flex h-14 items-center border-b border-[var(--border)] px-5">
+                <Link href="/" className="flex items-center gap-2 font-semibold text-[var(--text-primary)]">
+                    <Sparkles className="h-4 w-4 text-emerald-500" />
+                    <span className="text-sm">AMD</span>
                 </Link>
             </div>
 
-            {/* Navigation - Simplified to 4 main items */}
-            <div className="flex flex-1 flex-col overflow-y-auto p-4">
+            {/* Navigation */}
+            <div className="flex flex-1 flex-col overflow-y-auto py-3 px-2">
                 {mainNavigation.map((item) => {
                     const Icon = item.icon;
                     const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
@@ -51,17 +48,17 @@ export function Sidebar() {
                             key={item.href}
                             href={item.href}
                             className={cn(
-                                "flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all duration-200 mb-2 group relative",
+                                "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors mb-0.5 group relative",
                                 isActive
-                                    ? "bg-indigo-500/20 text-indigo-300 shadow-[0_0_20px_rgba(99,102,241,0.1)]"
-                                    : "text-zinc-400 hover:bg-white/5 hover:text-white"
+                                    ? "border-l-2 border-emerald-500 bg-emerald-500/5 text-white pl-[10px]"
+                                    : "text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.03]"
                             )}
                             title={item.label}
                         >
-                            <Icon className="h-5 w-5 flex-shrink-0" />
+                            <Icon className="h-4 w-4 flex-shrink-0" />
                             <span>{item.name}</span>
                             {/* Tooltip on hover */}
-                            <div className="absolute left-64 ml-2 px-2 py-1 bg-zinc-800 text-zinc-200 text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+                            <div className="absolute left-56 ml-2 px-2 py-1 bg-zinc-800 text-zinc-200 text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
                                 {item.label}
                             </div>
                         </Link>
@@ -70,7 +67,7 @@ export function Sidebar() {
             </div>
 
             {/* User Menu */}
-            <div className="border-t border-zinc-800 p-4">
+            <div className="border-t border-[var(--border)] p-3">
                 <div className="flex items-center justify-center">
                     <UserMenu />
                 </div>
