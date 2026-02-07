@@ -900,6 +900,36 @@ export default defineSchema({
     .index("by_userId", ["userId"]),
 
   // ===========================================
+  // CONTENT_VERSIONS - Version history snapshots
+  // ===========================================
+  contentVersions: defineTable({
+    contentId: v.id("content"),           // Reference to parent content
+    version: v.number(),                   // Sequential version number (1, 2, 3...)
+    // Snapshot of content at this version
+    title: v.string(),
+    body: v.string(),
+    summary: v.optional(v.string()),
+    metadata: v.optional(v.any()),         // Full metadata snapshot
+    seo: v.optional(v.any()),              // Full SEO snapshot
+    status: v.string(),                    // Content status at time of snapshot
+    // Attribution
+    editedBy: v.string(),                  // Clerk userId who made the change
+    editedByName: v.optional(v.string()),  // Display name for UI
+    changeType: v.union(
+      v.literal("created"),
+      v.literal("edited"),
+      v.literal("status_change"),
+      v.literal("rollback")
+    ),
+    changeSummary: v.optional(v.string()), // e.g. "Estado cambiado de borrador a revisión"
+    createdAt: v.number(),
+  })
+    .index("by_contentId", ["contentId"])
+    .index("by_contentId_version", ["contentId", "version"])
+    .index("by_editedBy", ["editedBy"])
+    .index("by_createdAt", ["createdAt"]),
+
+  // ===========================================
   // USERS - Clerk user data synced to Convex
   // ===========================================
   users: defineTable({
