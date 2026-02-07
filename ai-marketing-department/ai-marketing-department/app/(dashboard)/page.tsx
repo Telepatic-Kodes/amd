@@ -5,21 +5,26 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "@convex/_generated/api";
 import { motion } from "framer-motion";
 import { Database, X } from "lucide-react";
-import { StatusStrip, StatusStripSkeleton } from "@/components/dashboard/StatusStrip";
-import { AgentCommandGrid } from "@/components/dashboard/AgentCommandGrid";
+import { QuickActions } from "@/components/dashboard/QuickActions";
+import { KpiCard, KpiCardSkeleton } from "@/components/dashboard/KpiCard";
+import { ChartsRow, ChartsRowSkeleton } from "@/components/dashboard/ChartsRow";
+import { TopAgentsTable, TopAgentsTableSkeleton } from "@/components/dashboard/TopAgentsTable";
+import { AgentHealthBar } from "@/components/dashboard/AgentHealthBar";
 import { ActivitySummary } from "@/components/dashboard/ActivitySummary";
 import { ContentPipeline } from "@/components/dashboard/ContentPipeline";
-import { QuickActions } from "@/components/dashboard/QuickActions";
 import { translate } from "@/lib/language";
 import { useToast } from "@/components/ui/Toast";
 
-// Staggered fade-in for each section
 const sectionVariants = {
-  hidden: { opacity: 0, y: 12 },
+  hidden: { opacity: 0, y: 8 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.05, duration: 0.3, ease: "easeOut" as const },
+    transition: {
+      delay: i * 0.04,
+      duration: 0.4,
+      ease: [0.25, 0.1, 0.25, 1] as [number, number, number, number],
+    },
   }),
 };
 
@@ -35,12 +40,32 @@ export default function DashboardPage() {
   const currentUser = useQuery(api.users.getCurrentUser);
   const migrateData = useMutation(api.migration.migrateExistingDataToOwner);
 
-  // Data queries
+  // Analytics queries — last 30 days
+  const dateRange = useMemo(() => ({
+    startDate: Date.now() - 30 * 24 * 60 * 60 * 1000,
+    endDate: Date.now(),
+  }), []);
+
+  const analytics = useQuery(api.analytics.getAnalyticsWithDateRange, dateRange);
+  const pipelineMetrics = useQuery(api.analytics.getContentPipelineMetrics, dateRange);
+  const agentPerformance = useQuery(api.analytics.getAgentPerformanceSummary, dateRange);
+
+  // Existing queries — kept for components that need them
   const controlStatus = useQuery(api.controlCenter.getControlCenterStatus);
-  const metrics = useQuery(api.controlCenter.getControlCenterMetrics);
   const activity = useQuery(api.controlCenter.getRecentActivity, {});
-  const agents = useQuery(api.functions.listAgents, {});
   const content = useQuery(api.functions.listContent, {});
+
+  // Content counts for ContentPipeline
+  const contentCounts = useMemo(() => {
+    if (!content) return undefined;
+    return {
+      draft: content.filter((c: Record<string, unknown>) => c.status === "draft").length,
+      review: content.filter((c: Record<string, unknown>) => c.status === "review").length,
+      approved: content.filter((c: Record<string, unknown>) => c.status === "approved").length,
+      scheduled: content.filter((c: Record<string, unknown>) => c.status === "scheduled").length,
+      published: content.filter((c: Record<string, unknown>) => c.status === "published").length,
+    };
+  }, [content]);
 
   // User sync effect
   useEffect(() => {
@@ -103,92 +128,6 @@ export default function DashboardPage() {
     }
   };
 
-  // Derived stats for status strip
-  const activeAgents = agents?.filter((a: Record<string, unknown>) => a.status === "active").length ?? 0;
-  const totalAgents = agents?.length ?? 0;
-  const errorAgents = agents?.filter((a: Record<string, unknown>) => a.status === "error").length ?? 0;
-
-  const contentCounts = {
-    draft: content?.filter((c: Record<string, unknown>) => c.status === "draft").length ?? 0,
-    review: content?.filter((c: Record<string, unknown>) => c.status === "review").length ?? 0,
-    approved: content?.filter((c: Record<string, unknown>) => c.status === "approved").length ?? 0,
-    scheduled: content?.filter((c: Record<string, unknown>) => c.status === "scheduled").length ?? 0,
-    published: content?.filter((c: Record<string, unknown>) => c.status === "published").length ?? 0,
-  };
-
-  const contentInFlight = contentCounts.draft + contentCounts.review + contentCounts.approved + contentCounts.scheduled;
-
-  // Build agent-by-department map from the agents list directly
-  const agentsByDepartment = agents
-    ? agents.reduce((acc: Record<string, Array<Record<string, unknown>>>, agent: Record<string, unknown>) => {
-        const dept = (agent.department as string) || "unknown";
-        if (!acc[dept]) acc[dept] = [];
-        acc[dept].push(agent);
-        return acc;
-      }, {} as Record<string, Array<Record<string, unknown>>>)
-    : undefined;
-
-  // Build last-activity-per-agent map from activity feed
-  const lastActivityByAgent = useMemo(() => {
-    if (!activity) return undefined;
-    const map: Record<string, { description: string; timestamp: number }> = {};
-    for (const item of activity) {
-      const key = item.agentId;
-      // Keep only the most recent activity per agent (list is sorted desc)
-      if (!map[key]) {
-        map[key] = { description: item.description, timestamp: item.timestamp };
-      }
-    }
-    return map;
-  }, [activity]);
-
-  // Recent executions per agent (last 5) for mini execution bars
-  const recentExecutionsByAgent = useMemo(() => {
-    if (!activity) return undefined;
-    const map: Record<string, string[]> = {};
-    for (const item of activity) {
-      const key = item.agentId;
-      if (!map[key]) map[key] = [];
-      if (map[key].length < 5) {
-        map[key].push(item.status);
-      }
-    }
-    return map;
-  }, [activity]);
-
-  // Sparkline data — derive hourly activity trends from activity feed
-  const { sparkTasks, sparkHealth } = useMemo(() => {
-    if (!activity || activity.length === 0) return { sparkTasks: undefined, sparkHealth: undefined };
-
-    const ONE_HOUR = 60 * 60 * 1000;
-    const now = Date.now();
-    const buckets: Record<number, { total: number; success: number }> = {};
-
-    // Build 8 hourly buckets going backwards
-    for (let i = 0; i < 8; i++) {
-      buckets[i] = { total: 0, success: 0 };
-    }
-
-    for (const item of activity) {
-      const hoursAgo = Math.floor((now - item.timestamp) / ONE_HOUR);
-      if (hoursAgo >= 0 && hoursAgo < 8) {
-        buckets[hoursAgo].total++;
-        if (item.status === "success" || item.status === "completed") {
-          buckets[hoursAgo].success++;
-        }
-      }
-    }
-
-    // Reverse so oldest is first (left side of sparkline)
-    const tasksArr = Array.from({ length: 8 }, (_, i) => buckets[7 - i].total);
-    const healthArr = Array.from({ length: 8 }, (_, i) => {
-      const b = buckets[7 - i];
-      return b.total > 0 ? (b.success / b.total) * 100 : 100;
-    });
-
-    return { sparkTasks: tasksArr, sparkHealth: healthArr };
-  }, [activity]);
-
   // Live clock — updates every minute
   const [currentTime, setCurrentTime] = useState(new Date());
   useEffect(() => {
@@ -207,10 +146,45 @@ export default function DashboardPage() {
   });
   const timeStr = currentTime.toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit" });
 
-  const isLoading = !agents || !content;
+  // Derive sparkline data from tasksByDay for KPI cards
+  const kpiSparkData = useMemo(() => {
+    if (!analytics?.tasksByDay) return undefined;
+    const entries = Object.entries(analytics.tasksByDay)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .slice(-8);
+    return entries.map(([, stats]) => stats.total);
+  }, [analytics?.tasksByDay]);
+
+  // Top agents data for table
+  const topAgentsData = useMemo(() => {
+    if (!agentPerformance) return [];
+    return agentPerformance.map((a) => ({
+      name: a.name,
+      department: a.department,
+      totalExecutions: a.totalExecutions,
+      successRate: a.successRate,
+      avgDuration: a.avgDuration,
+    }));
+  }, [agentPerformance]);
+
+  const isLoading = !analytics;
+
+  // Format token count for display
+  const formatTokens = (v: number) => {
+    if (v >= 1_000_000) return `${(v / 1_000_000).toFixed(1)}M`;
+    if (v >= 1_000) return `${(v / 1_000).toFixed(1)}K`;
+    return Math.round(v).toLocaleString();
+  };
+
+  // Format duration in seconds
+  const formatDuration = (v: number) => {
+    const secs = v / 1000;
+    if (secs < 60) return `${secs.toFixed(1)}s`;
+    return `${(secs / 60).toFixed(1)}m`;
+  };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Migration Banner */}
       {showMigrationBanner && (
         <motion.div
@@ -250,7 +224,7 @@ export default function DashboardPage() {
         </motion.div>
       )}
 
-      {/* Section A: Top Bar */}
+      {/* Section A: Header */}
       <motion.div
         custom={0}
         variants={sectionVariants}
@@ -259,52 +233,103 @@ export default function DashboardPage() {
         className="space-y-3"
       >
         <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1">
-          <h1 className="text-lg sm:text-xl font-semibold text-[var(--text-primary)]">
+          <h1 className="text-base font-medium text-[var(--text-primary)]">
             {greeting}, {userName}
           </h1>
-          <p className="text-xs sm:text-sm text-[var(--text-tertiary)] capitalize">
+          <p className="text-xs text-[var(--text-tertiary)] capitalize">
             {dateStr} &middot; {timeStr}
           </p>
         </div>
         <QuickActions />
       </motion.div>
 
-      {/* Section B: Status Strip */}
+      {/* Section B: KPI Strip */}
       <motion.div custom={1} variants={sectionVariants} initial="hidden" animate="visible">
         {isLoading ? (
-          <StatusStripSkeleton />
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            {[...Array(6)].map((_, i) => <KpiCardSkeleton key={i} />)}
+          </div>
         ) : (
-          <StatusStrip
-            activeAgents={activeAgents}
-            totalAgents={totalAgents}
-            agentsHealthy={errorAgents === 0}
-            tasksCompletedToday={metrics?.tasks?.completedToday ?? 0}
-            totalTasksToday={(metrics?.tasks?.completedToday ?? 0) + (metrics?.tasks?.running ?? 0)}
-            contentInFlight={contentInFlight}
-            successRate={metrics?.successRate ?? 100}
-            sparkTasks={sparkTasks}
-            sparkHealth={sparkHealth}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            <KpiCard
+              label="Ejecuciones"
+              value={analytics.overview.totalExecutions}
+              sparkData={kpiSparkData}
+              sparkColor="#6366f1"
+            />
+            <KpiCard
+              label="Tasa Exito"
+              value={analytics.overview.successRate}
+              isPercentage
+              sparkColor="#22c55e"
+            />
+            <KpiCard
+              label="Tokens"
+              value={analytics.overview.totalTokens}
+              formatter={formatTokens}
+              sparkColor="#06b6d4"
+            />
+            <KpiCard
+              label="Costo"
+              value={analytics.overview.totalCost}
+              isCurrency
+              sparkColor="#f59e0b"
+            />
+            <KpiCard
+              label="Publicado"
+              value={analytics.overview.contentCreated}
+              sparkColor="#3b82f6"
+            />
+            <KpiCard
+              label="Duracion"
+              value={analytics.overview.avgDuration}
+              formatter={formatDuration}
+              sparkColor="#8b5cf6"
+            />
+          </div>
+        )}
+      </motion.div>
+
+      {/* Section C: Charts Row */}
+      <motion.div custom={2} variants={sectionVariants} initial="hidden" animate="visible">
+        {!analytics || !pipelineMetrics ? (
+          <ChartsRowSkeleton />
+        ) : (
+          <ChartsRow
+            tasksByDay={analytics.tasksByDay}
+            statusDistribution={pipelineMetrics.statusDistribution}
+            totalContent={pipelineMetrics.totalContent}
           />
         )}
       </motion.div>
 
-      {/* Section C: Agent Command Grid */}
-      <motion.div custom={2} variants={sectionVariants} initial="hidden" animate="visible">
-        <AgentCommandGrid agentsByDepartment={agentsByDepartment} lastActivityByAgent={lastActivityByAgent} recentExecutionsByAgent={recentExecutionsByAgent} />
-      </motion.div>
-
-      {/* Section D: Two-Column Bottom */}
+      {/* Section D: Detail Grid */}
       <motion.div custom={3} variants={sectionVariants} initial="hidden" animate="visible">
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 lg:gap-6">
-          {/* Left: Activity Summary (60%) */}
+        <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">
+          {/* Left: Top Agents Table */}
+          <div className="lg:col-span-4">
+            {!agentPerformance ? (
+              <TopAgentsTableSkeleton />
+            ) : (
+              <TopAgentsTable agents={topAgentsData} />
+            )}
+          </div>
+
+          {/* Mid: Content Pipeline */}
+          <div className="lg:col-span-3">
+            <ContentPipeline counts={contentCounts} contentItems={content} />
+          </div>
+
+          {/* Right: Activity Summary */}
           <div className="lg:col-span-3">
             <ActivitySummary activities={activity} />
           </div>
-          {/* Right: Content Pipeline (40%) */}
-          <div className="lg:col-span-2">
-            <ContentPipeline counts={contentCounts} />
-          </div>
         </div>
+      </motion.div>
+
+      {/* Section E: Agent Health Bar */}
+      <motion.div custom={4} variants={sectionVariants} initial="hidden" animate="visible">
+        <AgentHealthBar agentsByDepartment={controlStatus?.agentsByDepartment} />
       </motion.div>
     </div>
   );

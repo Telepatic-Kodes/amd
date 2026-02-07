@@ -8,25 +8,25 @@ const actions = [
     label: "Crear Contenido",
     icon: FileText,
     href: "/content",
-    color: "text-blue-400 bg-blue-500/10 hover:bg-blue-500/20",
+    color: "text-[var(--text-secondary)] bg-white/[0.04] hover:bg-white/[0.06] border border-[var(--border)]",
   },
   {
     label: "Ejecutar Agente",
     icon: Zap,
     href: "/control-center",
-    color: "text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20",
+    color: "text-[var(--text-secondary)] bg-white/[0.04] hover:bg-white/[0.06] border border-[var(--border)]",
   },
   {
     label: "Ver Resultados",
     icon: BarChart3,
     href: "/results",
-    color: "text-purple-400 bg-purple-500/10 hover:bg-purple-500/20",
+    color: "text-[var(--text-secondary)] bg-white/[0.04] hover:bg-white/[0.06] border border-[var(--border)]",
   },
   {
     label: "Nueva Tarea",
     icon: Plus,
     href: "/control-center",
-    color: "text-amber-400 bg-amber-500/10 hover:bg-amber-500/20",
+    color: "text-[var(--text-secondary)] bg-white/[0.04] hover:bg-white/[0.06] border border-[var(--border)]",
   },
 ];
 
