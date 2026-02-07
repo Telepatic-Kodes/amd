@@ -2,23 +2,23 @@
 
 **Started:** 2026-01-30
 **Current Milestone:** v3.0 Intelligence & Scale
-**Status:** Phase 14 complete — ready for Phase 15
+**Status:** Phase 16 complete — ready for Phase 17
 
 ## Project Reference
 
 See: .planning/PROJECT.md (updated 2026-02-05)
 
 **Core Value:** Non-technical users can manage a complete marketing department in minutes, not hours.
-**Current Focus:** Phase 15 complete — ready for Phase 16 (Cross-Platform Features)
+**Current Focus:** Phase 16 complete — ready for Phase 17 (Team Collaboration & Version History)
 
 ## Current Position
 
-Phase: 16 of 18 (Cross-Platform Features) — IN PROGRESS
-Plan: 2 of 4 completed
-Status: In progress
-Last activity: 2026-02-07 — Completed 16-02-PLAN.md
+Phase: 16 of 18 (Cross-Platform Features) — COMPLETE
+Plan: 2 of 2 completed
+Status: Complete
+Last activity: 2026-02-07 — Layout fix and Spanish localization polish for 16-02
 
-Progress: [███████████████████░] 95% (v1.0 + v2.0 shipped: 12/18 phases, v3.0: 21/24 plans completed)
+Progress: [████████████████████] 96% (v1.0 + v2.0 shipped: 12/18 phases, v3.0: 22/24 plans completed)
 
 ## Performance Metrics
 
@@ -111,20 +111,19 @@ None yet.
 - ✓ Verification passed: 5/5 success criteria, 12/12 requirements satisfied
 - ✓ All 9 commits clean, TypeScript compiles, Convex deploys
 
-**Phase 16 (Cross-Platform Features) - IN PROGRESS:**
+**Phase 16 (Cross-Platform Features) - COMPLETE ✅:**
 - ✓ Plan 16-01: Cross-platform backend (lib/contentAdapters.ts, batch publish action, unified history query)
 - ✓ Plan 16-02: Cross-platform frontend UI (multi-platform publish panel, side-by-side previews, unified timeline)
+- Layout fix: StatusActions/CrossPlatformPublishPanel properly placed in content detail panel
+- Full Spanish localization: dropdowns, labels, buttons, dates, toasts in content page
 - 6 files created, 4 commits, TypeScript and Convex compile clean
-- Pure TS content adapters shared between backend and frontend
-- Batch publish with checkboxes, previews showing adapted content, per-platform toast results
-- Unified publishing history timeline with all 3 platforms, Spanish relative timestamps
 
 ## Session Continuity
 
 Last session: 2026-02-07
-Stopped at: Completed 16-02-PLAN.md (Cross-Platform Frontend UI)
+Stopped at: Phase 16 complete — layout fix and Spanish localization polish
 Resume file: None
-Next action: Plan 16-03 or 16-04 (remaining cross-platform features)
+Next action: Phase 17 (Team Collaboration & Version History) — needs planning
 
 ---
 
