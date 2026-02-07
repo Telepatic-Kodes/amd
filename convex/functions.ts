@@ -2,6 +2,7 @@ import { v } from "convex/values";
 import { mutation, query, action } from "./_generated/server";
 import { Id } from "./_generated/dataModel";
 import { requireAuth, getUserId } from "./lib/auth";
+import { requireRole, getUserRole, canTransitionContent } from "./lib/permissions";
 
 // ===========================================
 // AGENT QUERIES
@@ -544,6 +545,13 @@ export const listContent = query({
   },
 });
 
+export const getContentById = query({
+  args: { id: v.id("content") },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.id);
+  },
+});
+
 export const createContent = mutation({
   args: {
     type: v.union(
@@ -580,11 +588,14 @@ export const createContent = mutation({
         canonicalUrl: v.optional(v.string()),
       })
     ),
-    createdBy: v.id("agents"),
+    createdBy: v.union(v.id("agents"), v.literal("system")),
     sourceTaskId: v.optional(v.id("tasks")),
     parentContentId: v.optional(v.id("content")),
   },
   handler: async (ctx, args) => {
+    // RBAC Guard: Only editors and above can create content
+    await requireRole(ctx, "content:create");
+
     const userId = await getUserId(ctx);
     const now = Date.now();
     const contentId = `content_${now}_${Math.random().toString(36).substr(2, 9)}`;
@@ -621,6 +632,14 @@ export const updateContentStatus = mutation({
     const content = await ctx.db.get(args.id);
     if (!content) throw new Error("Contenido no encontrado");
 
+    // RBAC Guard: Check role-based transition permission
+    const role = await getUserRole(ctx);
+    const canTransition = canTransitionContent(role, content.status as any, args.status as any);
+    if (!canTransition) {
+      throw new Error(`No tienes permiso para cambiar el estado a ${args.status}.`);
+    }
+
+    // Secondary guard: Ownership check (backward compatibility)
     const userId = await getUserId(ctx);
     if (content.userId && content.userId !== userId) {
       throw new Error("No tienes permiso para modificar este contenido.");
@@ -668,10 +687,14 @@ export const updateContent = mutation({
     ),
   },
   handler: async (ctx, args) => {
+    // RBAC Guard: Only editors and above can edit content
+    await requireRole(ctx, "content:edit");
+
     const { id, ...updates } = args;
     const content = await ctx.db.get(id);
     if (!content) throw new Error("Contenido no encontrado");
 
+    // Secondary guard: Ownership check (backward compatibility)
     const userId = await getUserId(ctx);
     if (content.userId && content.userId !== userId) {
       throw new Error("No tienes permiso para modificar este contenido.");

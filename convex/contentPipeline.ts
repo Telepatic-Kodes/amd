@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { requireAuth, getUserId } from "./lib/auth";
+import { getUserRole, canTransitionContent } from "./lib/permissions";
 
 // ===========================================
 // ALLOWED TRANSITIONS MAP
@@ -152,6 +153,14 @@ export const moveContent = mutation({
       throw new Error("Contenido no encontrado");
     }
 
+    // RBAC Guard: Check role-based transition permission
+    const role = await getUserRole(ctx);
+    const canTransition = canTransitionContent(role, content.status as any, args.toStatus as any);
+    if (!canTransition) {
+      throw new Error(`No tienes permiso para cambiar el estado a ${args.toStatus}.`);
+    }
+
+    // Secondary guard: Ownership check (backward compatibility)
     const userId = await getUserId(ctx);
     if (content.userId && content.userId !== userId) {
       throw new Error("No tienes permiso para modificar este contenido.");
@@ -206,6 +215,14 @@ export const moveContentToReview = mutation({
       throw new Error("Contenido no encontrado");
     }
 
+    // RBAC Guard: Check role-based transition permission
+    const role = await getUserRole(ctx);
+    const canTransition = canTransitionContent(role, content.status as any, "review");
+    if (!canTransition) {
+      throw new Error("No tienes permiso para enviar contenido a revisión.");
+    }
+
+    // Secondary guard: Ownership check (backward compatibility)
     const userId = await getUserId(ctx);
     if (content.userId && content.userId !== userId) {
       throw new Error("No tienes permiso para modificar este contenido.");
@@ -254,6 +271,14 @@ export const approveContent = mutation({
       throw new Error("Contenido no encontrado");
     }
 
+    // RBAC Guard: Check role-based transition permission
+    const role = await getUserRole(ctx);
+    const canTransition = canTransitionContent(role, content.status as any, "approved");
+    if (!canTransition) {
+      throw new Error("No tienes permiso para aprobar contenido.");
+    }
+
+    // Secondary guard: Ownership check (backward compatibility)
     const userId = await getUserId(ctx);
     if (content.userId && content.userId !== userId) {
       throw new Error("No tienes permiso para modificar este contenido.");
@@ -309,6 +334,14 @@ export const rejectContent = mutation({
       throw new Error("Contenido no encontrado");
     }
 
+    // RBAC Guard: Check role-based transition permission
+    const role = await getUserRole(ctx);
+    const canTransition = canTransitionContent(role, content.status as any, "revision_needed");
+    if (!canTransition) {
+      throw new Error("No tienes permiso para rechazar contenido.");
+    }
+
+    // Secondary guard: Ownership check (backward compatibility)
     const userId = await getUserId(ctx);
     if (content.userId && content.userId !== userId) {
       throw new Error("No tienes permiso para modificar este contenido.");
@@ -357,6 +390,14 @@ export const scheduleContent = mutation({
       throw new Error("Contenido no encontrado");
     }
 
+    // RBAC Guard: Check role-based transition permission
+    const role = await getUserRole(ctx);
+    const canTransition = canTransitionContent(role, content.status as any, "scheduled");
+    if (!canTransition) {
+      throw new Error("No tienes permiso para programar contenido.");
+    }
+
+    // Secondary guard: Ownership check (backward compatibility)
     const userId = await getUserId(ctx);
     if (content.userId && content.userId !== userId) {
       throw new Error("No tienes permiso para modificar este contenido.");
@@ -416,6 +457,14 @@ export const publishContent = mutation({
       throw new Error("Contenido no encontrado");
     }
 
+    // RBAC Guard: Check role-based transition permission
+    const role = await getUserRole(ctx);
+    const canTransition = canTransitionContent(role, content.status as any, "published");
+    if (!canTransition) {
+      throw new Error("No tienes permiso para publicar contenido.");
+    }
+
+    // Secondary guard: Ownership check (backward compatibility)
     const userId = await getUserId(ctx);
     if (content.userId && content.userId !== userId) {
       throw new Error("No tienes permiso para modificar este contenido.");
