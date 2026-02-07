@@ -2,6 +2,7 @@ import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { requireAuth, getUserId } from "./lib/auth";
 import { getUserRole, canTransitionContent } from "./lib/permissions";
+import { createVersionSnapshot } from "./contentVersions";
 
 // ===========================================
 // ALLOWED TRANSITIONS MAP
@@ -188,6 +189,10 @@ export const moveContent = mutation({
 
     await ctx.db.patch(args.id, updates);
 
+    // Create version snapshot with Spanish summary
+    const summary = `Estado cambiado de ${currentStatus} a ${args.toStatus}`;
+    await createVersionSnapshot(ctx, args.id, "status_change", summary);
+
     // Audit log
     await ctx.db.insert("auditLog", {
       action: "content.status_changed",
@@ -241,6 +246,10 @@ export const moveContentToReview = mutation({
       status: "review",
       updatedAt: now,
     });
+
+    // Create version snapshot
+    const summary = `Estado cambiado de ${currentStatus} a review`;
+    await createVersionSnapshot(ctx, args.id, "status_change", summary);
 
     // Audit log
     await ctx.db.insert("auditLog", {
@@ -303,6 +312,10 @@ export const approveContent = mutation({
 
     await ctx.db.patch(args.id, updates);
 
+    // Create version snapshot
+    const summary = `Estado cambiado de ${currentStatus} a approved`;
+    await createVersionSnapshot(ctx, args.id, "status_change", summary);
+
     // Audit log
     await ctx.db.insert("auditLog", {
       action: "content.approved",
@@ -360,6 +373,10 @@ export const rejectContent = mutation({
       status: "revision_needed",
       updatedAt: now,
     });
+
+    // Create version snapshot
+    const summary = `Estado cambiado de ${currentStatus} a revision_needed`;
+    await createVersionSnapshot(ctx, args.id, "status_change", summary);
 
     // Audit log
     await ctx.db.insert("auditLog", {
@@ -423,6 +440,10 @@ export const scheduleContent = mutation({
       scheduledFor: args.scheduledFor,
       updatedAt: now,
     });
+
+    // Create version snapshot
+    const summary = `Estado cambiado de ${currentStatus} a scheduled`;
+    await createVersionSnapshot(ctx, args.id, "status_change", summary);
 
     // Audit log
     await ctx.db.insert("auditLog", {
@@ -489,6 +510,10 @@ export const publishContent = mutation({
     }
 
     await ctx.db.patch(args.id, updates);
+
+    // Create version snapshot
+    const summary = `Estado cambiado de ${currentStatus} a published`;
+    await createVersionSnapshot(ctx, args.id, "status_change", summary);
 
     // Audit log
     await ctx.db.insert("auditLog", {

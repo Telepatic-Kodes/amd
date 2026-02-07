@@ -3,6 +3,7 @@ import { mutation, query, action } from "./_generated/server";
 import { Id } from "./_generated/dataModel";
 import { requireAuth, getUserId } from "./lib/auth";
 import { requireRole, getUserRole, canTransitionContent } from "./lib/permissions";
+import { createVersionSnapshot, logContentAction } from "./contentVersions";
 
 // ===========================================
 // AGENT QUERIES
@@ -600,7 +601,7 @@ export const createContent = mutation({
     const now = Date.now();
     const contentId = `content_${now}_${Math.random().toString(36).substr(2, 9)}`;
 
-    return await ctx.db.insert("content", {
+    const newContentId = await ctx.db.insert("content", {
       contentId,
       ...args,
       userId,
@@ -608,6 +609,12 @@ export const createContent = mutation({
       createdAt: now,
       updatedAt: now,
     });
+
+    // Create version snapshot and audit log
+    await createVersionSnapshot(ctx, newContentId, "created", "Contenido creado");
+    await logContentAction(ctx, newContentId, "created");
+
+    return newContentId;
   },
 });
 
@@ -646,6 +653,7 @@ export const updateContentStatus = mutation({
     }
 
     const now = Date.now();
+    const oldStatus = content.status;
     const updates: any = {
       status: args.status,
       updatedAt: now,
@@ -661,6 +669,23 @@ export const updateContentStatus = mutation({
     }
 
     await ctx.db.patch(args.id, updates);
+
+    // Create version snapshot with Spanish summary
+    const summary = `Estado cambiado de ${oldStatus} a ${args.status}`;
+    await createVersionSnapshot(ctx, args.id, "status_change", summary);
+
+    // Log audit trail with appropriate action
+    const statusActionMap: Record<string, string> = {
+      review: "sent_to_review",
+      approved: "approved",
+      published: "published",
+      archived: "archived",
+      scheduled: "scheduled",
+      revision_needed: "rejected",
+      draft: "reverted_to_draft",
+    };
+    const action = statusActionMap[args.status] || "status_changed";
+    await logContentAction(ctx, args.id, action, { from: oldStatus, to: args.status });
   },
 });
 
@@ -728,6 +753,11 @@ export const updateContent = mutation({
     }
 
     await ctx.db.patch(id, finalUpdates);
+
+    // Create version snapshot and audit log
+    const fieldsChanged = Object.keys(updates).filter(k => k !== "updatedAt");
+    await createVersionSnapshot(ctx, id, "edited", "Contenido editado");
+    await logContentAction(ctx, id, "edited", { fields: fieldsChanged });
   },
 });
 
