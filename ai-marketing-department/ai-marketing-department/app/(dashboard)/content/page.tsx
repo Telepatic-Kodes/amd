@@ -30,6 +30,7 @@ import {
   Edit2,
   Loader2,
   Columns3,
+  History,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/Card";
@@ -39,37 +40,39 @@ import { EmptyContent } from "@/components/ui/EmptyState";
 import { useToast } from "@/components/ui/Toast";
 import { UploadContentForm } from "@/components/content/UploadContentForm";
 import { EditContentModal } from "@/components/content/EditContentModal";
-import { ContentDetailPlatformPublish } from "@/components/content/ContentDetailPlatformPublish";
 import { CrossPlatformPublishPanel } from "@/components/content/CrossPlatformPublishPanel";
 import { UnifiedPublishHistory } from "@/components/content/UnifiedPublishHistory";
 import { AnalyzeButton } from "@/components/content/AnalyzeButton";
 import { ContentAnalysisPanel } from "@/components/content/ContentAnalysisPanel";
 import { GenerateContentModal } from "@/components/content/GenerateContentModal";
+import { VersionHistory } from "@/components/content/VersionHistory";
+import { VersionDiff } from "@/components/content/VersionDiff";
+import { RollbackDialog } from "@/components/content/RollbackDialog";
 
 const CONTENT_TYPES = [
-  { value: "", label: "All Types" },
+  { value: "", label: "Todos los tipos" },
   { value: "blog", label: "Blog" },
   { value: "social_linkedin", label: "LinkedIn" },
   { value: "social_twitter", label: "Twitter" },
   { value: "social_instagram", label: "Instagram" },
   { value: "email", label: "Email" },
   { value: "newsletter", label: "Newsletter" },
-  { value: "ad_copy", label: "Ad Copy" },
+  { value: "ad_copy", label: "Anuncio" },
   { value: "landing_page", label: "Landing Page" },
   { value: "whitepaper", label: "Whitepaper" },
-  { value: "case_study", label: "Case Study" },
-  { value: "video_script", label: "Video Script" },
+  { value: "case_study", label: "Caso de Éxito" },
+  { value: "video_script", label: "Guión de Video" },
 ];
 
 const CONTENT_STATUSES = [
-  { value: "", label: "All Statuses" },
-  { value: "draft", label: "Draft" },
-  { value: "review", label: "In Review" },
-  { value: "revision_needed", label: "Needs Revision" },
-  { value: "approved", label: "Approved" },
-  { value: "scheduled", label: "Scheduled" },
-  { value: "published", label: "Published" },
-  { value: "archived", label: "Archived" },
+  { value: "", label: "Todos los estados" },
+  { value: "draft", label: "Borrador" },
+  { value: "review", label: "En Revisión" },
+  { value: "revision_needed", label: "Necesita Cambios" },
+  { value: "approved", label: "Aprobado" },
+  { value: "scheduled", label: "Programado" },
+  { value: "published", label: "Publicado" },
+  { value: "archived", label: "Archivado" },
 ];
 
 const typeColors: Record<string, string> = {
@@ -103,9 +106,9 @@ const typeIcons: Record<string, React.ElementType> = {
 };
 
 function formatDate(timestamp: number) {
-  return new Date(timestamp).toLocaleDateString("en-US", {
-    month: "short",
+  return new Date(timestamp).toLocaleDateString("es-ES", {
     day: "numeric",
+    month: "short",
     year: "numeric",
   });
 }
@@ -216,6 +219,9 @@ export default function ContentPage() {
   const [editingContent, setEditingContent] = useState<any | null>(null);
   const [analysisContentId, setAnalysisContentId] = useState<string | null>(null);
   const [showGenerateModal, setShowGenerateModal] = useState(false);
+  const [showVersionHistory, setShowVersionHistory] = useState(false);
+  const [diffVersions, setDiffVersions] = useState<{ versionAId: any; versionBId: any } | null>(null);
+  const [rollbackTarget, setRollbackTarget] = useState<{ versionId: any; versionNumber: number } | null>(null);
 
   const content = useQuery(api.functions.listContent, {
     type: typeFilter || undefined,
@@ -252,7 +258,7 @@ export default function ContentPage() {
   // Copy to clipboard helper
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
-    success("Copied!", "Content copied to clipboard");
+    success("Copiado", "Contenido copiado al portapapeles");
   };
 
   // Animation variants
@@ -335,7 +341,7 @@ export default function ContentPage() {
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
           <input
             type="text"
-            placeholder="Search content..."
+            placeholder="Buscar contenido..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full rounded-lg border border-zinc-800 bg-zinc-950/50 py-2 pl-10 pr-4 text-sm text-white placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
@@ -432,13 +438,13 @@ export default function ContentPage() {
       {/* Stats Summary */}
       <div className="flex flex-wrap gap-2">
         <Badge variant="default">
-          {content.filter((c: { status: string }) => c.status === "draft").length} Drafts
+          {content.filter((c: { status: string }) => c.status === "draft").length} Borradores
         </Badge>
         <Badge variant="warning">
-          {content.filter((c: { status: string }) => c.status === "review").length} In Review
+          {content.filter((c: { status: string }) => c.status === "review").length} En Revisión
         </Badge>
         <Badge variant="success">
-          {content.filter((c: { status: string }) => c.status === "published").length} Published
+          {content.filter((c: { status: string }) => c.status === "published").length} Publicados
         </Badge>
       </div>
 
@@ -726,6 +732,44 @@ export default function ContentPage() {
                       contentHashtags={selectedContentData.metadata?.targetKeywords}
                     />
 
+                    {/* Version History (Collapsible) */}
+                    <div className="pt-3 border-t border-zinc-800">
+                      <button
+                        onClick={() => setShowVersionHistory(!showVersionHistory)}
+                        className="flex items-center justify-between w-full text-left"
+                      >
+                        <div className="flex items-center gap-2">
+                          <History className="h-4 w-4 text-zinc-400" />
+                          <p className="text-sm font-medium text-white">Historial de versiones</p>
+                        </div>
+                        <ChevronDown
+                          className={cn(
+                            "h-4 w-4 text-zinc-400 transition-transform",
+                            showVersionHistory && "rotate-180"
+                          )}
+                        />
+                      </button>
+                      <AnimatePresence>
+                        {showVersionHistory && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="overflow-hidden"
+                          >
+                            <div className="mt-3">
+                              <VersionHistory
+                                contentId={selectedContentData._id}
+                                onCompare={(vA, vB) => setDiffVersions({ versionAId: vA, versionBId: vB })}
+                                onRollback={(vId, vNum) => setRollbackTarget({ versionId: vId, versionNumber: vNum })}
+                              />
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+
                     {/* Action Buttons */}
                     <div className="flex gap-2">
                       <motion.button
@@ -906,6 +950,29 @@ export default function ContentPage() {
           />
         )}
       </AnimatePresence>
+
+      {/* Version Diff Modal */}
+      {diffVersions && (
+        <VersionDiff
+          versionAId={diffVersions.versionAId}
+          versionBId={diffVersions.versionBId}
+          onClose={() => setDiffVersions(null)}
+        />
+      )}
+
+      {/* Rollback Dialog */}
+      {rollbackTarget && selectedContentData && (
+        <RollbackDialog
+          contentId={selectedContentData._id}
+          versionId={rollbackTarget.versionId}
+          versionNumber={rollbackTarget.versionNumber}
+          onClose={() => setRollbackTarget(null)}
+          onSuccess={() => {
+            setRollbackTarget(null);
+            setShowVersionHistory(false);
+          }}
+        />
+      )}
     </div>
   );
 }
