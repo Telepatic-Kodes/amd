@@ -258,11 +258,12 @@ Plans:
   4. User can compare two versions to see differences (diff view)
   5. User can rollback to a previous version with confirmation dialog
 
-**Plans:** TBD (estimated 2-3 plans)
+**Plans:** 3 plans in 2 waves
 
 Plans:
-- [ ] 17-01: TBD during phase planning (likely RBAC implementation)
-- [ ] 17-02: TBD during phase planning (likely version history)
+- [ ] 17-01-PLAN.md — RBAC backend: schema roles, permission matrix, server-side enforcement on all mutations (Wave 1)
+- [ ] 17-02-PLAN.md — Version history backend: contentVersions table, snapshots on edit, diff/rollback, audit trail (Wave 1)
+- [ ] 17-03-PLAN.md — Frontend: team management UI, role-aware navigation, version history timeline, diff view, rollback dialog (Wave 2)
 
 ---
 
@@ -302,7 +303,7 @@ Phases execute in numeric order: 13 → 14 → 15 → 16 → 17 → 18
 | 14. Analytics & Intelligence | 3/3 | ✅ Complete | 2026-02-06 |
 | 15. Multi-Platform Publishing | 6/6 | ✅ Complete | 2026-02-06 |
 | 16. Cross-Platform Features | 2/2 | ✅ Complete | 2026-02-07 |
-| 17. Team Collaboration & Version History | 0/TBD | Not started | - |
+| 17. Team Collaboration & Version History | 0/3 | Planned | - |
 | 18. Automated Reports | 0/TBD | Not started | - |
 
 ---
