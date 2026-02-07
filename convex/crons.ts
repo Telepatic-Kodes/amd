@@ -137,4 +137,24 @@ crons.hourly(
   {}
 );
 
+// ===========================================
+// AUTOMATED REPORTS (Phase 18)
+// ===========================================
+
+// Weekly report — Monday 8:00 AM UTC
+crons.weekly(
+  "send-weekly-report",
+  { dayOfWeek: "monday", hourUTC: 8, minuteUTC: 0 },
+  api.reportsActions.generateWeeklyReport,
+  {}
+);
+
+// Monthly report — 1st of month, 9:00 AM UTC
+crons.monthly(
+  "send-monthly-report",
+  { day: 1, hourUTC: 9, minuteUTC: 0 },
+  api.reportsActions.generateMonthlyReport,
+  {}
+);
+
 export default crons;
