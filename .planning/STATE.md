@@ -14,11 +14,11 @@ See: .planning/PROJECT.md (updated 2026-02-05)
 ## Current Position
 
 Phase: 16 of 18 (Cross-Platform Features) — IN PROGRESS
-Plan: 1 of 4 completed
+Plan: 2 of 4 completed
 Status: In progress
-Last activity: 2026-02-07 — Completed 16-01-PLAN.md
+Last activity: 2026-02-07 — Completed 16-02-PLAN.md
 
-Progress: [███████████████████░] 95% (v1.0 + v2.0 shipped: 12/18 phases, v3.0: 20/24 plans completed)
+Progress: [███████████████████░] 95% (v1.0 + v2.0 shipped: 12/18 phases, v3.0: 21/24 plans completed)
 
 ## Performance Metrics
 
@@ -113,17 +113,18 @@ None yet.
 
 **Phase 16 (Cross-Platform Features) - IN PROGRESS:**
 - ✓ Plan 16-01: Cross-platform backend (lib/contentAdapters.ts, batch publish action, unified history query)
-- 3 files created, 2 commits, Convex compiles clean
-- Pure TS content adapters for Twitter/LinkedIn/Instagram with platform-specific constraints
-- Promise.allSettled batch publishing with per-platform error handling
-- Unified history query merges all 3 platform logs with normalized format
+- ✓ Plan 16-02: Cross-platform frontend UI (multi-platform publish panel, side-by-side previews, unified timeline)
+- 6 files created, 4 commits, TypeScript and Convex compile clean
+- Pure TS content adapters shared between backend and frontend
+- Batch publish with checkboxes, previews showing adapted content, per-platform toast results
+- Unified publishing history timeline with all 3 platforms, Spanish relative timestamps
 
 ## Session Continuity
 
 Last session: 2026-02-07
-Stopped at: Completed 16-01-PLAN.md (Cross-Platform Backend)
+Stopped at: Completed 16-02-PLAN.md (Cross-Platform Frontend UI)
 Resume file: None
-Next action: Plan 16-02 (Cross-Platform Frontend UI)
+Next action: Plan 16-03 or 16-04 (remaining cross-platform features)
 
 ---
 
