@@ -40,6 +40,10 @@ import { useToast } from "@/components/ui/Toast";
 import { UploadContentForm } from "@/components/content/UploadContentForm";
 import { EditContentModal } from "@/components/content/EditContentModal";
 import { ContentDetailPlatformPublish } from "@/components/content/ContentDetailPlatformPublish";
+import { CrossPlatformPublishPanel } from "@/components/content/CrossPlatformPublishPanel";
+import { AnalyzeButton } from "@/components/content/AnalyzeButton";
+import { ContentAnalysisPanel } from "@/components/content/ContentAnalysisPanel";
+import { GenerateContentModal } from "@/components/content/GenerateContentModal";
 
 const CONTENT_TYPES = [
   { value: "", label: "All Types" },
@@ -209,6 +213,8 @@ export default function ContentPage() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [editingContent, setEditingContent] = useState<any | null>(null);
+  const [analysisContentId, setAnalysisContentId] = useState<string | null>(null);
+  const [showGenerateModal, setShowGenerateModal] = useState(false);
 
   const content = useQuery(api.functions.listContent, {
     type: typeFilter || undefined,
@@ -300,13 +306,22 @@ export default function ContentPage() {
             </p>
           </div>
         </div>
-        <Link
-          href="/content/pipeline"
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 transition-colors text-sm font-medium"
-        >
-          <Columns3 className="h-4 w-4" />
-          Vista Pipeline
-        </Link>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowGenerateModal(true)}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 transition-colors text-sm font-medium"
+          >
+            <Sparkles className="h-4 w-4" />
+            Generar Contenido
+          </button>
+          <Link
+            href="/content/pipeline"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 transition-colors text-sm font-medium"
+          >
+            <Columns3 className="h-4 w-4" />
+            Vista Pipeline
+          </Link>
+        </div>
       </div>
 
       {/* Filters */}
@@ -502,6 +517,7 @@ export default function ContentPage() {
                           >
                             <Edit2 className="h-3.5 w-3.5" />
                           </button>
+                          <AnalyzeButton contentId={item._id} />
                         </div>
 
                         <div
@@ -702,24 +718,36 @@ export default function ContentPage() {
 
                       {/* Multi-Platform Publish Panel */}
                       <div className="mt-3 pt-3 border-t border-zinc-800">
-                        <ContentDetailPlatformPublish
+                        <CrossPlatformPublishPanel
                           contentId={selectedContentData._id}
                           contentBody={selectedContentData.body}
                           contentStatus={selectedContentData.status}
+                          contentHashtags={selectedContentData.metadata?.targetKeywords}
                         />
                       </div>
                     </div>
 
-                    {/* Edit Button in Details */}
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => setEditingContent(selectedContentData)}
-                      className="w-full px-4 py-2 rounded-lg bg-indigo-500 hover:bg-indigo-600 text-white font-medium transition-colors flex items-center justify-center gap-2"
-                    >
-                      <Edit2 className="h-4 w-4" />
-                      Edit Content
-                    </motion.button>
+                    {/* Action Buttons */}
+                    <div className="flex gap-2">
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => setEditingContent(selectedContentData)}
+                        className="flex-1 px-4 py-2 rounded-lg bg-indigo-500 hover:bg-indigo-600 text-white font-medium transition-colors flex items-center justify-center gap-2"
+                      >
+                        <Edit2 className="h-4 w-4" />
+                        Editar
+                      </motion.button>
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => setAnalysisContentId(selectedContentData._id)}
+                        className="px-4 py-2 rounded-lg bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 font-medium transition-colors flex items-center justify-center gap-2 border border-purple-500/20"
+                      >
+                        <Sparkles className="h-4 w-4" />
+                        Analizar
+                      </motion.button>
+                    </div>
 
                     {/* Preview with copy button */}
                     <div>
@@ -853,6 +881,25 @@ export default function ContentPage() {
           onSuccess={() => setEditingContent(null)}
         />
       )}
+
+      {/* Generate Content Modal */}
+      {showGenerateModal && (
+        <GenerateContentModal
+          isOpen={showGenerateModal}
+          onClose={() => setShowGenerateModal(false)}
+        />
+      )}
+
+      {/* Content Analysis Panel */}
+      <AnimatePresence>
+        {analysisContentId && (
+          <ContentAnalysisPanel
+            contentId={analysisContentId as any}
+            isOpen={!!analysisContentId}
+            onClose={() => setAnalysisContentId(null)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
