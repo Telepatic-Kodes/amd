@@ -314,6 +314,34 @@ export const LABELS = {
   auth_migracion_boton: "Ejecutar migración",
   auth_migracion_completada: "Migración completada",
   auth_migracion_error: "Error en la migración",
+
+  // Team & Roles
+  team: "Equipo",
+  teamManagement: "Gestión de equipo",
+  roleUpdated: "Rol actualizado",
+  roleUpdateError: "Error al actualizar rol",
+  owner: "Propietario",
+  admin: "Administrador",
+  editor: "Editor",
+  reviewer: "Revisor",
+  publisher: "Publicador",
+  viewer: "Lector",
+  noPermission: "No tienes permiso para esta acción",
+
+  // Version History
+  versionHistory: "Historial de versiones",
+  version: "Versión",
+  rollback: "Revertir",
+  rollbackConfirm: "¿Revertir a esta versión?",
+  rollbackSuccess: "Contenido revertido exitosamente",
+  changes: "Cambios",
+  noChanges: "Sin cambios",
+  compareVersions: "Comparar versiones",
+  editedBy: "Editado por",
+  createdVersion: "Creado",
+  editedVersion: "Editado",
+  statusChanged: "Estado cambiado",
+  rolledBack: "Revertido",
 } as const;
 
 /**

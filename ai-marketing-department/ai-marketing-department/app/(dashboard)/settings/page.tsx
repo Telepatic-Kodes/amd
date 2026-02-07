@@ -20,11 +20,13 @@ import {
   Linkedin,
   Sparkles,
   Share2,
+  Users,
 } from "lucide-react";
 import { LinkedInConnectionCard } from "@/components/linkedin/LinkedInConnectionCard";
 import { TwitterConnectionCard } from "@/components/twitter/TwitterConnectionCard";
 import { InstagramConnectionCard } from "@/components/instagram/InstagramConnectionCard";
 import { QuickModeToggle } from "@/components/guided-ux/QuickModeToggle";
+import { TeamManagement } from "@/components/team/TeamManagement";
 import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
@@ -33,6 +35,7 @@ import { SimpleCounter } from "@/components/ui/AnimatedCounter";
 const SETTING_CATEGORIES = [
   { id: "integrations", label: "Integrations", icon: Key },
   { id: "platforms", label: "Plataformas", icon: Share2 },
+  { id: "team", label: "Equipo", icon: Users },
   { id: "notifications", label: "Notifications", icon: Bell },
   { id: "agents", label: "Agent Config", icon: Bot },
   { id: "guidance", label: "Guía UX", icon: Sparkles },
@@ -44,11 +47,21 @@ export default function SettingsPage() {
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
 
   const settings = useQuery(api.functions.listSettings);
+  const currentUser = useQuery(api.users.getCurrentUser);
   const updateSetting = useMutation(api.functions.updateSetting);
   const upgradeAllAgents = useMutation(api.functions.upgradeAllAgentsModel);
 
   const completeStep = useMutation(api.guidance.completeSetupStep);
   const [formState, setFormState] = useState<Record<string, any>>({});
+
+  // Filter categories based on user role
+  const visibleCategories = SETTING_CATEGORIES.filter((category) => {
+    // "team" tab only visible to owner/admin
+    if (category.id === "team") {
+      return currentUser?.role === "owner" || currentUser?.role === "admin";
+    }
+    return true;
+  });
 
   // Auto-mark "settingsReviewed" setup step
   useEffect(() => {
@@ -150,7 +163,7 @@ export default function SettingsPage() {
           <Card>
             <CardContent className="p-2">
               <nav className="space-y-1">
-                {SETTING_CATEGORIES.map((category) => (
+                {visibleCategories.map((category) => (
                   <button
                     key={category.id}
                     onClick={() => setActiveCategory(category.id)}
@@ -681,6 +694,17 @@ export default function SettingsPage() {
                   </div>
                 </CardContent>
               </Card>
+            </motion.div>
+          )}
+
+          {activeCategory === "team" && (
+            <motion.div
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.2 }}
+              className="space-y-6"
+            >
+              <TeamManagement />
             </motion.div>
           )}
 
