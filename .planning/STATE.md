@@ -2,23 +2,23 @@
 
 **Started:** 2026-01-30
 **Current Milestone:** v3.0 Intelligence & Scale
-**Status:** Phase 17 in progress — RBAC backend complete
+**Status:** Phase 17 in progress — Version history backend complete
 
 ## Project Reference
 
 See: .planning/PROJECT.md (updated 2026-02-05)
 
 **Core Value:** Non-technical users can manage a complete marketing department in minutes, not hours.
-**Current Focus:** Phase 17 (Team Collaboration & Version History) — 1/4 plans complete
+**Current Focus:** Phase 17 (Team Collaboration & Version History) — 2/4 plans complete
 
 ## Current Position
 
 Phase: 17 of 18 (Team Collaboration & Version History) — IN PROGRESS
-Plan: 1 of 4 completed
+Plan: 2 of 4 completed
 Status: In progress
-Last activity: 2026-02-07 — Completed 17-01-PLAN.md (RBAC backend)
+Last activity: 2026-02-07 — Completed 17-02-PLAN.md (Version history backend)
 
-Progress: [████████████████████░] 96% (v1.0 + v2.0 shipped: 12/18 phases, v3.0: 23/24 plans completed)
+Progress: [████████████████████░] 97% (v1.0 + v2.0 shipped: 12/18 phases, v3.0: 24/24 plans completed)
 
 ## Performance Metrics
 
@@ -35,9 +35,9 @@ Progress: [████████████████████░] 96% 
 - Average duration: ~7.5 min/plan
 
 **v3.0 Velocity:**
-- Total plans completed: 23/24
-- Average duration: ~4.5 min/plan
-- Total execution time: ~106 min
+- Total plans completed: 24/24
+- Average duration: ~4.6 min/plan
+- Total execution time: ~111 min
 
 ## Accumulated Context
 
@@ -80,6 +80,10 @@ Recent decisions affecting current work:
 - **17-01: Status transition permissions** — canTransitionContent maps content lifecycle transitions to specific permissions (edit, review, publish, archive)
 - **17-01: Backward-compatible RBAC** — Existing owner/editor users retain full capabilities; permission checks EXPAND auth model without breaking flows
 - **17-01: System owner role protection** — isSystemOwner flag prevents accidental role changes to first user who owns legacy data
+- **17-02: Internal helpers pattern** — createVersionSnapshot and logContentAction are plain async functions, not Convex API endpoints (reduces API surface area)
+- **17-02: Sequential version numbering** — Version numbers computed by counting existing versions (1, 2, 3...) for simplicity and human readability
+- **17-02: Client-side text diffing** — Backend provides version snapshots + change flags; actual text diffing happens client-side for performance
+- **17-02: Rollback creates new version** — Rollback preserves audit trail by creating rollback snapshot before restoring content
 
 ### Pending Todos
 
@@ -128,13 +132,19 @@ None yet.
 - All content mutations protected with role checks (9 mutations)
 - updateUserRole mutation with system owner and last-admin guards
 - 2 commits (47d9f24, f75ec3c), TypeScript compiles clean, ~6 min duration
+- ✓ Plan 17-02: Version history backend (automatic snapshots, diff, rollback, audit trail)
+- contentVersions table with 4 indexes (by_contentId, by_version, by_editedBy, by_createdAt)
+- convex/contentVersions.ts created with 3 API endpoints + 2 internal helpers (291 lines)
+- All content mutations (createContent, updateContent, updateContentStatus, contentPipeline) create version snapshots
+- Sequential version numbering (1, 2, 3...), Spanish summaries, client-side text diffing
+- 2 commits (4950a3f, 7c30ca7), TypeScript compiles clean, ~5 min duration
 
 ## Session Continuity
 
-Last session: 2026-02-07 19:31 UTC
-Stopped at: Completed 17-01-PLAN.md (RBAC backend)
+Last session: 2026-02-07 19:40 UTC
+Stopped at: Completed 17-02-PLAN.md (Version history backend)
 Resume file: None
-Next action: Phase 17 Plan 02 (RBAC frontend UI) — team management page, role selector, permission-based UI
+Next action: Phase 17 Plan 03 (Version history frontend UI) — version timeline, diff view, rollback modal
 
 ---
 
