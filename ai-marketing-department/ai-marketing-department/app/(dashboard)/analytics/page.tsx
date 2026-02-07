@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@convex/_generated/api";
+import { ReportHistory } from "@/components/reports/ReportHistory";
+import { ReportPreview } from "@/components/reports/ReportPreview";
 import {
   BarChart3,
   Zap,
@@ -73,6 +75,9 @@ export default function AnalyticsPage() {
     const startDate = endDate - 30 * 24 * 60 * 60 * 1000;
     return { startDate, endDate, label: "30 dias" };
   });
+
+  // State for report preview
+  const [selectedReportId, setSelectedReportId] = useState<string | null>(null);
 
   // Queries with date range
   const analytics = useQuery(api.analytics.getAnalyticsWithDateRange, {
@@ -511,6 +516,19 @@ export default function AnalyticsPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Report History Section */}
+      <div className="mt-8">
+        <ReportHistory onViewReport={(id) => setSelectedReportId(id)} />
+      </div>
+
+      {/* Report Preview Modal */}
+      {selectedReportId && (
+        <ReportPreview
+          reportId={selectedReportId}
+          onClose={() => setSelectedReportId(null)}
+        />
+      )}
     </div>
   );
 }
