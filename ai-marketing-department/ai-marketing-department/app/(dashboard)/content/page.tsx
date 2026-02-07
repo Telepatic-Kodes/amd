@@ -41,6 +41,7 @@ import { UploadContentForm } from "@/components/content/UploadContentForm";
 import { EditContentModal } from "@/components/content/EditContentModal";
 import { ContentDetailPlatformPublish } from "@/components/content/ContentDetailPlatformPublish";
 import { CrossPlatformPublishPanel } from "@/components/content/CrossPlatformPublishPanel";
+import { UnifiedPublishHistory } from "@/components/content/UnifiedPublishHistory";
 import { AnalyzeButton } from "@/components/content/AnalyzeButton";
 import { ContentAnalysisPanel } from "@/components/content/ContentAnalysisPanel";
 import { GenerateContentModal } from "@/components/content/GenerateContentModal";
@@ -138,7 +139,7 @@ function StatusActions({ content, onStatusChange }: { content: any; onStatusChan
         className="w-full px-3 py-1.5 rounded bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-white text-sm font-medium transition-colors flex items-center justify-center gap-2"
       >
         {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
-        Submit for Review
+        Enviar a Revisión
       </button>
     );
   }
@@ -152,7 +153,7 @@ function StatusActions({ content, onStatusChange }: { content: any; onStatusChan
           disabled={isLoading}
           className="flex-1 px-3 py-1.5 rounded border border-zinc-700 hover:bg-zinc-800 disabled:opacity-50 text-zinc-300 text-sm font-medium transition-colors"
         >
-          Request Revision
+          Solicitar Cambios
         </button>
         <button
           onClick={() => handleStatusChange("approved")}
@@ -160,7 +161,7 @@ function StatusActions({ content, onStatusChange }: { content: any; onStatusChan
           className="flex-1 px-3 py-1.5 rounded bg-green-500 hover:bg-green-600 disabled:opacity-50 text-white text-sm font-medium transition-colors flex items-center justify-center gap-2"
         >
           {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
-          Approve
+          Aprobar
         </button>
       </div>
     );
@@ -175,7 +176,7 @@ function StatusActions({ content, onStatusChange }: { content: any; onStatusChan
           disabled={isLoading}
           className="flex-1 px-3 py-1.5 rounded border border-zinc-700 hover:bg-zinc-800 disabled:opacity-50 text-zinc-300 text-sm font-medium transition-colors"
         >
-          Schedule
+          Programar
         </button>
         <button
           onClick={() => handleStatusChange("published")}
@@ -183,7 +184,7 @@ function StatusActions({ content, onStatusChange }: { content: any; onStatusChan
           className="flex-1 px-3 py-1.5 rounded bg-indigo-500 hover:bg-indigo-600 disabled:opacity-50 text-white text-sm font-medium transition-colors flex items-center justify-center gap-2"
         >
           {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
-          Publish Now
+          Publicar Ahora
         </button>
       </div>
     );
@@ -197,7 +198,7 @@ function StatusActions({ content, onStatusChange }: { content: any; onStatusChan
         disabled={isLoading}
         className="w-full px-3 py-1.5 rounded border border-zinc-700 hover:bg-zinc-800 disabled:opacity-50 text-zinc-400 text-sm font-medium transition-colors"
       >
-        Archive
+        Archivar
       </button>
     );
   }
@@ -671,7 +672,7 @@ export default function ContentPage() {
                   <div className="flex items-center justify-between mb-6">
                     <h3 className="text-xl font-semibold text-white flex items-center gap-2">
                       <Sparkles className="h-4 w-4 text-blue-400" />
-                      Content Details
+                      Detalles del Contenido
                     </h3>
                     <button
                       onClick={() => setSelectedContent(null)}
@@ -684,7 +685,7 @@ export default function ContentPage() {
                   <div className="space-y-4">
                     {/* Title */}
                     <div>
-                      <p className="text-xs text-zinc-500 mb-1 uppercase tracking-wider">Title</p>
+                      <p className="text-xs text-zinc-500 mb-1 uppercase tracking-wider">Título</p>
                       <p className="text-white font-medium">
                         {selectedContentData.title}
                       </p>
@@ -693,39 +694,37 @@ export default function ContentPage() {
                     {/* Type & Status */}
                     <div className="flex gap-4">
                       <div>
-                        <p className="text-xs text-zinc-500 mb-1 uppercase tracking-wider">Type</p>
+                        <p className="text-xs text-zinc-500 mb-1 uppercase tracking-wider">Tipo</p>
                         <Badge className={typeColors[selectedContentData.type]}>
                           {formatTypeName(selectedContentData.type)}
                         </Badge>
                       </div>
                       <div>
-                        <p className="text-xs text-zinc-500 mb-1 uppercase tracking-wider">Status</p>
+                        <p className="text-xs text-zinc-500 mb-1 uppercase tracking-wider">Estado</p>
                         <StatusBadge status={selectedContentData.status} />
                       </div>
-                      
-                      {/* Status Actions */}
-                      <div className="mt-3 pt-3 border-t border-zinc-800">
-                        <StatusActions
-                          content={selectedContentData}
-                          onStatusChange={async (status) => {
-                            await updateContentStatus({
-                              id: selectedContentData._id,
-                              status: status as any
-                            });
-                          }}
-                        />
-                      </div>
-
-                      {/* Multi-Platform Publish Panel */}
-                      <div className="mt-3 pt-3 border-t border-zinc-800">
-                        <CrossPlatformPublishPanel
-                          contentId={selectedContentData._id}
-                          contentBody={selectedContentData.body}
-                          contentStatus={selectedContentData.status}
-                          contentHashtags={selectedContentData.metadata?.targetKeywords}
-                        />
-                      </div>
                     </div>
+
+                    {/* Status Actions */}
+                    <div className="pt-3 border-t border-zinc-800">
+                      <StatusActions
+                        content={selectedContentData}
+                        onStatusChange={async (status) => {
+                          await updateContentStatus({
+                            id: selectedContentData._id,
+                            status: status as any
+                          });
+                        }}
+                      />
+                    </div>
+
+                    {/* Multi-Platform Publish Panel */}
+                    <CrossPlatformPublishPanel
+                      contentId={selectedContentData._id}
+                      contentBody={selectedContentData.body}
+                      contentStatus={selectedContentData.status}
+                      contentHashtags={selectedContentData.metadata?.targetKeywords}
+                    />
 
                     {/* Action Buttons */}
                     <div className="flex gap-2">
@@ -752,13 +751,13 @@ export default function ContentPage() {
                     {/* Preview with copy button */}
                     <div>
                       <div className="flex items-center justify-between mb-1">
-                        <p className="text-xs text-zinc-500 uppercase tracking-wider">Preview</p>
+                        <p className="text-xs text-zinc-500 uppercase tracking-wider">Vista Previa</p>
                         <button
                           onClick={() => copyToClipboard(selectedContentData.body)}
                           className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-colors"
                         >
                           <Copy className="h-3 w-3" />
-                          Copy all
+                          Copiar todo
                         </button>
                       </div>
                       <div className="rounded-lg bg-zinc-900/50 p-3 max-h-48 overflow-y-auto border border-zinc-800/50">
@@ -772,11 +771,11 @@ export default function ContentPage() {
                   {/* Metadata */}
                   {selectedContentData.metadata && (
                     <div>
-                      <p className="text-xs text-zinc-500 mb-1">Metadata</p>
+                      <p className="text-xs text-zinc-500 mb-1">Metadatos</p>
                       <div className="grid grid-cols-2 gap-2">
                         {selectedContentData.metadata.wordCount && (
                           <div className="rounded-lg bg-zinc-900/50 p-2">
-                            <p className="text-xs text-zinc-500">Words</p>
+                            <p className="text-xs text-zinc-500">Palabras</p>
                             <p className="text-zinc-300 font-mono">
                               {selectedContentData.metadata.wordCount}
                             </p>
@@ -784,7 +783,7 @@ export default function ContentPage() {
                         )}
                         {selectedContentData.metadata.readingTime && (
                           <div className="rounded-lg bg-zinc-900/50 p-2">
-                            <p className="text-xs text-zinc-500">Read Time</p>
+                            <p className="text-xs text-zinc-500">Lectura</p>
                             <p className="text-zinc-300 font-mono">
                               {selectedContentData.metadata.readingTime} min
                             </p>
@@ -797,7 +796,7 @@ export default function ContentPage() {
                   {/* Keywords */}
                   {selectedContentData.metadata?.targetKeywords && (
                     <div>
-                      <p className="text-xs text-zinc-500 mb-1">Target Keywords</p>
+                      <p className="text-xs text-zinc-500 mb-1">Palabras Clave</p>
                       <div className="flex flex-wrap gap-1">
                         {selectedContentData.metadata.targetKeywords.map(
                           (keyword: string) => (
@@ -841,7 +840,7 @@ export default function ContentPage() {
                   {/* Published URL */}
                   {selectedContentData.publishedUrl && (
                     <div>
-                      <p className="text-xs text-zinc-500 mb-1">Published URL</p>
+                      <p className="text-xs text-zinc-500 mb-1">URL Publicada</p>
                       <a
                         href={selectedContentData.publishedUrl}
                         target="_blank"
@@ -849,14 +848,14 @@ export default function ContentPage() {
                         className="text-indigo-400 hover:text-indigo-300 text-sm flex items-center gap-1"
                       >
                         <Eye className="h-3 w-3" />
-                        View Published
+                        Ver publicado
                       </a>
                     </div>
                   )}
 
                   {/* Dates */}
                   <div>
-                    <p className="text-xs text-zinc-500 mb-1 uppercase tracking-wider">Created</p>
+                    <p className="text-xs text-zinc-500 mb-1 uppercase tracking-wider">Creado</p>
                     <div className="flex items-center gap-2 text-sm">
                       <Calendar className="h-4 w-4 text-zinc-500" />
                       <span className="text-zinc-300">
@@ -871,6 +870,13 @@ export default function ContentPage() {
         )}
         </AnimatePresence>
       </div>
+
+      {/* Unified Publishing History */}
+      {!selectedContent && (
+        <div className="mt-12">
+          <UnifiedPublishHistory limit={20} />
+        </div>
+      )}
 
       {/* Edit Content Modal */}
       {editingContent && (
