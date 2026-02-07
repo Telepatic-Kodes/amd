@@ -223,7 +223,7 @@ export default defineSchema({
       v.literal("published"),
       v.literal("archived")
     ),
-    createdBy: v.id("agents"),
+    createdBy: v.union(v.id("agents"), v.literal("system")),
     reviewedBy: v.optional(v.id("agents")),
     approvedBy: v.optional(v.string()), // Puede ser humano
     sourceTaskId: v.optional(v.id("tasks")),
@@ -911,6 +911,8 @@ export default defineSchema({
       v.literal("owner"),      // System owner (first user / migration target)
       v.literal("admin"),      // Full access
       v.literal("editor"),     // Can create/edit content
+      v.literal("reviewer"),   // Can review and approve content
+      v.literal("publisher"),  // Can publish approved content
       v.literal("viewer")      // Read-only
     ),
     isSystemOwner: v.optional(v.boolean()),  // Flag for data migration target
@@ -920,6 +922,128 @@ export default defineSchema({
     .index("by_clerkId", ["clerkId"])
     .index("by_email", ["email"])
     .index("by_role", ["role"]),
+
+  // ===========================================
+  // BRAND_PROFILES - Perfil de marca para onboarding
+  // ===========================================
+  brandProfiles: defineTable({
+    userId: v.optional(v.string()),
+    companyName: v.string(),
+    industry: v.string(),
+    website: v.optional(v.string()),
+    description: v.string(),
+    voice: v.object({
+      tone: v.array(v.string()),
+      personality: v.array(v.string()),
+      dos: v.array(v.string()),
+      donts: v.array(v.string()),
+    }),
+    audience: v.object({
+      segments: v.array(v.object({
+        name: v.string(),
+        demographics: v.optional(v.string()),
+        painPoints: v.array(v.string()),
+      })),
+    }),
+    strategy: v.object({
+      topics: v.array(v.string()),
+      channels: v.array(v.string()),
+      postingFrequency: v.optional(v.string()),
+    }),
+    competitors: v.array(v.object({
+      name: v.string(),
+      url: v.optional(v.string()),
+      notes: v.optional(v.string()),
+    })),
+    references: v.optional(v.array(v.string())),
+    visual: v.optional(v.object({
+      primaryColor: v.optional(v.string()),
+      secondaryColor: v.optional(v.string()),
+      logoDescription: v.optional(v.string()),
+      styleNotes: v.optional(v.string()),
+    })),
+    kbId: v.optional(v.id("knowledgeBases")),
+    maturityScore: v.optional(v.number()),
+    maturityLevel: v.optional(v.string()),
+    lastAnalyzedAt: v.optional(v.number()),
+    status: v.union(v.literal("draft"), v.literal("complete")),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_status", ["status"]),
+
+  // ===========================================
+  // BRAND_SOURCES - Fuentes externas para enriquecer KB de marca
+  // ===========================================
+  brandSources: defineTable({
+    brandProfileId: v.id("brandProfiles"),
+    name: v.string(),
+    sourceType: v.union(
+      v.literal("url"), v.literal("feed"),
+      v.literal("upload"), v.literal("note")
+    ),
+    url: v.optional(v.string()),
+    storageId: v.optional(v.id("_storage")),
+    content: v.optional(v.string()),
+    fileType: v.optional(v.string()),
+    status: v.union(
+      v.literal("pending"), v.literal("processing"),
+      v.literal("active"), v.literal("error"), v.literal("paused")
+    ),
+    processingError: v.optional(v.string()),
+    kbDocumentId: v.optional(v.id("kbDocuments")),
+    syncFrequency: v.optional(v.union(v.literal("daily"), v.literal("weekly"))),
+    lastSyncAt: v.optional(v.number()),
+    sectionsCreated: v.optional(v.number()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_brandProfileId", ["brandProfileId"])
+    .index("by_status", ["status"]),
+
+  // ===========================================
+  // BRAND_SUGGESTIONS - Sugerencias IA para mejorar perfil
+  // ===========================================
+  brandSuggestions: defineTable({
+    brandProfileId: v.id("brandProfiles"),
+    category: v.string(),
+    title: v.string(),
+    description: v.string(),
+    priority: v.string(),
+    suggestedData: v.optional(v.any()),
+    status: v.string(),
+    generatedAt: v.number(),
+    appliedAt: v.optional(v.number()),
+    tokensUsed: v.optional(v.number()),
+  })
+    .index("by_brandProfileId", ["brandProfileId"])
+    .index("by_status", ["status"]),
+
+  // ===========================================
+  // CONTENT_ANALYSES - Análisis de calidad de contenido
+  // ===========================================
+  contentAnalyses: defineTable({
+    contentId: v.id("content"),
+    brandAlignment: v.number(),
+    engagementPrediction: v.number(),
+    channelOptimization: v.number(),
+    overallScore: v.number(),
+    details: v.object({
+      brandNotes: v.array(v.string()),
+      engagementNotes: v.array(v.string()),
+      channelNotes: v.array(v.string()),
+    }),
+    suggestions: v.array(v.object({
+      type: v.string(),
+      description: v.string(),
+      priority: v.string(),
+      suggestedText: v.optional(v.string()),
+    })),
+    analyzedAt: v.number(),
+    tokensUsed: v.optional(v.number()),
+  })
+    .index("by_contentId", ["contentId"]),
 
   // ===========================================
   // KB_AGENT_ACCESS - Audit trail de acceso de agentes
