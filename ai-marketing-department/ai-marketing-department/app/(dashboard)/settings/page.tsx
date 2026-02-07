@@ -21,12 +21,14 @@ import {
   Sparkles,
   Share2,
   Users,
+  FileText,
 } from "lucide-react";
 import { LinkedInConnectionCard } from "@/components/linkedin/LinkedInConnectionCard";
 import { TwitterConnectionCard } from "@/components/twitter/TwitterConnectionCard";
 import { InstagramConnectionCard } from "@/components/instagram/InstagramConnectionCard";
 import { QuickModeToggle } from "@/components/guided-ux/QuickModeToggle";
 import { TeamManagement } from "@/components/team/TeamManagement";
+import { ReportSettings } from "@/components/reports/ReportSettings";
 import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
@@ -38,6 +40,7 @@ const SETTING_CATEGORIES = [
   { id: "team", label: "Equipo", icon: Users },
   { id: "notifications", label: "Notifications", icon: Bell },
   { id: "agents", label: "Agent Config", icon: Bot },
+  { id: "reports", label: "Reportes", icon: FileText },
   { id: "guidance", label: "Guía UX", icon: Sparkles },
   { id: "system", label: "System", icon: Database },
 ];
@@ -705,6 +708,30 @@ export default function SettingsPage() {
               className="space-y-6"
             >
               <TeamManagement />
+            </motion.div>
+          )}
+
+          {activeCategory === "reports" && (
+            <motion.div
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.2 }}
+              className="space-y-6"
+            >
+              <Card>
+                <CardHeader>
+                  <h3 className="flex items-center gap-2 font-semibold text-lg text-white">
+                    <FileText className="h-5 w-5 text-indigo-500" />
+                    Reportes Automaticos
+                  </h3>
+                  <p className="text-sm text-zinc-400 mt-1">
+                    Configura reportes automaticos semanales y mensuales.
+                  </p>
+                </CardHeader>
+                <CardContent className="p-6 pt-0">
+                  <ReportSettings />
+                </CardContent>
+              </Card>
             </motion.div>
           )}
 
