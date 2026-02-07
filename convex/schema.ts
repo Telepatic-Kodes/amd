@@ -1088,4 +1088,47 @@ export default defineSchema({
     .index("by_agent", ["agentId"])
     .index("by_kb", ["kbId"])
     .index("by_task", ["taskId"]),
+
+  // ===========================================
+  // REPORTS - Reportes generados automáticamente
+  // ===========================================
+  reports: defineTable({
+    userId: v.string(),
+    type: v.union(v.literal("weekly"), v.literal("monthly")),
+    title: v.string(),
+    periodStart: v.number(),
+    periodEnd: v.number(),
+    htmlContent: v.string(),
+    metrics: v.object({
+      totalContent: v.number(),
+      contentPublished: v.number(),
+      totalTokens: v.number(),
+      totalCost: v.number(),
+      successRate: v.number(),
+      topPlatform: v.optional(v.string()),
+      totalEngagement: v.optional(v.number()),
+    }),
+    narrative: v.optional(v.string()),
+    emailSent: v.boolean(),
+    emailSentAt: v.optional(v.number()),
+    emailError: v.optional(v.string()),
+    generatedAt: v.number(),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_userId_type", ["userId", "type"])
+    .index("by_generatedAt", ["generatedAt"]),
+
+  // ===========================================
+  // REPORT_SETTINGS - Configuración de reportes por usuario
+  // ===========================================
+  reportSettings: defineTable({
+    userId: v.string(),
+    emailEnabled: v.boolean(),
+    frequency: v.union(v.literal("weekly"), v.literal("monthly"), v.literal("both")),
+    recipientEmail: v.optional(v.string()),
+    includeNarrative: v.boolean(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_userId", ["userId"]),
 });
