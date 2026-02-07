@@ -2,23 +2,23 @@
 
 **Started:** 2026-01-30
 **Current Milestone:** v3.0 Intelligence & Scale
-**Status:** Phase 17 in progress — Version history backend complete
+**Status:** Phase 17 in progress — Version history UI complete
 
 ## Project Reference
 
 See: .planning/PROJECT.md (updated 2026-02-05)
 
 **Core Value:** Non-technical users can manage a complete marketing department in minutes, not hours.
-**Current Focus:** Phase 17 (Team Collaboration & Version History) — 2/4 plans complete
+**Current Focus:** Phase 17 (Team Collaboration & Version History) — 3/4 plans complete
 
 ## Current Position
 
 Phase: 17 of 18 (Team Collaboration & Version History) — IN PROGRESS
-Plan: 2 of 4 completed
+Plan: 3 of 4 completed
 Status: In progress
-Last activity: 2026-02-07 — Completed 17-02-PLAN.md (Version history backend)
+Last activity: 2026-02-07 — Completed 17-03-PLAN.md (Version history UI)
 
-Progress: [████████████████████░] 97% (v1.0 + v2.0 shipped: 12/18 phases, v3.0: 24/24 plans completed)
+Progress: [████████████████████░] 98% (v1.0 + v2.0 shipped: 12/18 phases, v3.0: 25/24 plans completed)
 
 ## Performance Metrics
 
@@ -138,6 +138,15 @@ None yet.
 - All content mutations (createContent, updateContent, updateContentStatus, contentPipeline) create version snapshots
 - Sequential version numbering (1, 2, 3...), Spanish summaries, client-side text diffing
 - 2 commits (4950a3f, 7c30ca7), TypeScript compiles clean, ~5 min duration
+- ✓ Plan 17-03: Version history UI (client permissions, team management, version timeline, diff viewer)
+- lib/permissions-client.ts with client-side permission checks (NO Convex imports)
+- TeamManagement component with desktop table and mobile cards (250 lines)
+- VersionHistory component with vertical timeline (git log style, 195 lines)
+- VersionDiff component with side-by-side comparison (179 lines)
+- RollbackDialog with confirmation workflow (82 lines)
+- Collapsible version history in content detail panel (accordion pattern)
+- Role-aware navigation (team tab only for owner/admin)
+- 2 commits (7eea1e4, 1b94427), TypeScript compiles clean, ~7 min duration
 
 ## Session Continuity
 
@@ -183,4 +192,5 @@ Next action: Phase 17 Plan 03 (Version history frontend UI) — version timeline
 *Phase 13 completed: 2026-02-05*
 *Phase 14 completed: 2026-02-06*
 *Phase 15 completed: 2026-02-06 (6 plans, 4 waves, 15 commits)*
-*Phase 16 started: 2026-02-07 (1/4 plans complete, 2 commits)*
+*Phase 16 completed: 2026-02-07 (2 plans, 4 commits)*
+*Phase 17 in progress: 2026-02-07 (3/4 plans complete, 6 commits)*
