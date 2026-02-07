@@ -2,23 +2,23 @@
 
 **Started:** 2026-01-30
 **Current Milestone:** v3.0 Intelligence & Scale
-**Status:** Phase 17 in progress — Version history UI complete
+**Status:** Phase 17 complete — ready for Phase 18
 
 ## Project Reference
 
 See: .planning/PROJECT.md (updated 2026-02-05)
 
 **Core Value:** Non-technical users can manage a complete marketing department in minutes, not hours.
-**Current Focus:** Phase 17 (Team Collaboration & Version History) — 3/4 plans complete
+**Current Focus:** Phase 17 complete — ready for Phase 18 (Automated Reports)
 
 ## Current Position
 
-Phase: 17 of 18 (Team Collaboration & Version History) — IN PROGRESS
-Plan: 3 of 4 completed
+Phase: 18 of 18 (Automated Reports) — IN PROGRESS
+Plan: 1 of 2 completed
 Status: In progress
-Last activity: 2026-02-07 — Completed 17-03-PLAN.md (Version history UI)
+Last activity: 2026-02-07 — Completed 18-01-PLAN.md (backend report generation)
 
-Progress: [████████████████████░] 98% (v1.0 + v2.0 shipped: 12/18 phases, v3.0: 25/24 plans completed)
+Progress: [████████████████████░] 99% (v1.0 + v2.0 shipped: 12/18 phases, v3.0: 26/27 plans completed)
 
 ## Performance Metrics
 
@@ -35,9 +35,9 @@ Progress: [████████████████████░] 98% 
 - Average duration: ~7.5 min/plan
 
 **v3.0 Velocity:**
-- Total plans completed: 24/24
-- Average duration: ~4.6 min/plan
-- Total execution time: ~111 min
+- Total plans completed: 26/27
+- Average duration: ~5.0 min/plan
+- Total execution time: ~133 min
 
 ## Accumulated Context
 
@@ -84,6 +84,10 @@ Recent decisions affecting current work:
 - **17-02: Sequential version numbering** — Version numbers computed by counting existing versions (1, 2, 3...) for simplicity and human readability
 - **17-02: Client-side text diffing** — Backend provides version snapshots + change flags; actual text diffing happens client-side for performance
 - **17-02: Rollback creates new version** — Rollback preserves audit trail by creating rollback snapshot before restoring content
+- **18-01: Runtime split for Node.js dependencies** — reports.ts (V8) for database ops, reportsActions.ts (Node.js) for Resend SDK; Convex requires Node APIs in "use node" files
+- **18-01: Dark theme email templates** — #18181b background with #6366f1 accent matches dashboard UI for brand consistency
+- **18-01: AI narrative as optional** — includeNarrative user setting (default: true) allows cost control for high-frequency users
+- **18-01: Graceful email failure** — Report stored even if email fails; user can view in UI
 
 ### Pending Todos
 
@@ -126,7 +130,7 @@ None yet.
 - Full Spanish localization: dropdowns, labels, buttons, dates, toasts in content page
 - 6 files created, 4 commits, TypeScript and Convex compile clean
 
-**Phase 17 (Team Collaboration & Version History) - IN PROGRESS:**
+**Phase 17 (Team Collaboration & Version History) - COMPLETE ✅:**
 - ✓ Plan 17-01: RBAC backend (6-role hierarchy, permission matrix, status transition guards)
 - convex/lib/permissions.ts created with RBAC helpers (178 lines)
 - All content mutations protected with role checks (9 mutations)
@@ -148,12 +152,26 @@ None yet.
 - Role-aware navigation (team tab only for owner/admin)
 - 2 commits (7eea1e4, 1b94427), TypeScript compiles clean, ~7 min duration
 
+**Phase 18 (Automated Reports) - IN PROGRESS:**
+- ✓ Plan 18-01: Backend report generation (AR-01, AR-02, AR-03)
+- reports and reportSettings tables added to schema (2 tables, 4 indexes)
+- convex/reports.ts created with queries/mutations (V8 runtime, 309 lines)
+- convex/reportsActions.ts created with actions (Node.js runtime, 503 lines)
+- Resend SDK installed (28 dependencies)
+- Metric aggregation: content, tokens, cost, success rate, engagement
+- Dark theme HTML email template (#18181b bg, #6366f1 accent)
+- AI narrative generation via Claude API (optional)
+- Graceful email failure handling
+- Weekly cron (Monday 8AM UTC) and monthly cron (1st 9AM UTC)
+- 2 commits (9fcf419, 4e042aa), TypeScript compiles clean, ~8.5 min duration
+- ⏳ Plan 18-02: Frontend UI for reports (AR-04) — PENDING
+
 ## Session Continuity
 
-Last session: 2026-02-07 19:40 UTC
-Stopped at: Completed 17-02-PLAN.md (Version history backend)
+Last session: 2026-02-07
+Stopped at: Phase 18 Plan 01 complete — backend report generation (2 commits)
 Resume file: None
-Next action: Phase 17 Plan 03 (Version history frontend UI) — version timeline, diff view, rollback modal
+Next action: Phase 18 Plan 02 — Frontend UI for reports
 
 ---
 
@@ -193,4 +211,5 @@ Next action: Phase 17 Plan 03 (Version history frontend UI) — version timeline
 *Phase 14 completed: 2026-02-06*
 *Phase 15 completed: 2026-02-06 (6 plans, 4 waves, 15 commits)*
 *Phase 16 completed: 2026-02-07 (2 plans, 4 commits)*
-*Phase 17 in progress: 2026-02-07 (3/4 plans complete, 6 commits)*
+*Phase 17 completed: 2026-02-07 (3 plans, 2 waves, 9 commits)*
+*Phase 18 in progress: Plan 18-01 completed 2026-02-07 (2 commits, ~8.5 min)*
