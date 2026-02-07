@@ -13,12 +13,12 @@ See: .planning/PROJECT.md (updated 2026-02-05)
 
 ## Current Position
 
-Phase: 15 of 18 (Multi-Platform Publishing) — COMPLETE ✅
-Plan: 6 of 6 completed
-Status: Phase complete
-Last activity: 2026-02-06 — Phase 15 completed (all 6 plans, 15 commits)
+Phase: 16 of 18 (Cross-Platform Features) — IN PROGRESS
+Plan: 1 of 4 completed
+Status: In progress
+Last activity: 2026-02-07 — Completed 16-01-PLAN.md
 
-Progress: [██████████████████░] 94% (v1.0 + v2.0 shipped: 12/18 phases, v3.0: 19/24 plans completed)
+Progress: [███████████████████░] 95% (v1.0 + v2.0 shipped: 12/18 phases, v3.0: 20/24 plans completed)
 
 ## Performance Metrics
 
@@ -35,9 +35,9 @@ Progress: [██████████████████░] 94% (v1.0 
 - Average duration: ~7.5 min/plan
 
 **v3.0 Velocity:**
-- Total plans completed: 19/24
+- Total plans completed: 20/24
 - Average duration: ~4.5 min/plan
-- Total execution time: ~95 min
+- Total execution time: ~100 min
 
 ## Accumulated Context
 
@@ -73,6 +73,9 @@ Recent decisions affecting current work:
 - **15-05: Instagram gradient branding** — from-[#833AB4] via-[#FD1D1D] to-[#FCAF45] used consistently across Instagram components
 - **15-05: Carousel URL management** — Dynamic array with add/remove buttons (max 10) for variable carousel sizes
 - **15-05: Facebook requirement always visible** — Collapsible accordion explaining Business API requirements (60-90d App Review timeline)
+- **16-01: Pure TypeScript shared adapter** — lib/contentAdapters.ts has NO Convex imports, importable by both backend and frontend
+- **16-01: Promise.allSettled for batch publish** — Parallel execution with independent error handling; one platform failure doesn't block others
+- **16-01: Adaptation for preview only** — Platform actions handle their own content; adapters are for frontend preview UI
 
 ### Pending Todos
 
@@ -108,12 +111,19 @@ None yet.
 - ✓ Verification passed: 5/5 success criteria, 12/12 requirements satisfied
 - ✓ All 9 commits clean, TypeScript compiles, Convex deploys
 
+**Phase 16 (Cross-Platform Features) - IN PROGRESS:**
+- ✓ Plan 16-01: Cross-platform backend (lib/contentAdapters.ts, batch publish action, unified history query)
+- 3 files created, 2 commits, Convex compiles clean
+- Pure TS content adapters for Twitter/LinkedIn/Instagram with platform-specific constraints
+- Promise.allSettled batch publishing with per-platform error handling
+- Unified history query merges all 3 platform logs with normalized format
+
 ## Session Continuity
 
-Last session: 2026-02-06
-Stopped at: Phase 15 complete (all 6 plans, 15 commits)
+Last session: 2026-02-07
+Stopped at: Completed 16-01-PLAN.md (Cross-Platform Backend)
 Resume file: None
-Next action: Plan Phase 16 (Cross-Platform Features) or Phase 17 (Team Collaboration)
+Next action: Plan 16-02 (Cross-Platform Frontend UI)
 
 ---
 
@@ -148,7 +158,8 @@ Next action: Plan Phase 16 (Cross-Platform Features) or Phase 17 (Team Collabora
 
 ---
 
-*State updated: 2026-02-06*
+*State updated: 2026-02-07*
 *Phase 13 completed: 2026-02-05*
 *Phase 14 completed: 2026-02-06*
 *Phase 15 completed: 2026-02-06 (6 plans, 4 waves, 15 commits)*
+*Phase 16 started: 2026-02-07 (1/4 plans complete, 2 commits)*
