@@ -3,30 +3,16 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@convex/_generated/api";
-import { motion } from "framer-motion";
-import { Database, X } from "lucide-react";
-import { QuickActions } from "@/components/dashboard/QuickActions";
-import { KpiCard, KpiCardSkeleton } from "@/components/dashboard/KpiCard";
-import { ChartsRow, ChartsRowSkeleton } from "@/components/dashboard/ChartsRow";
+import { Database, X, Plus, Coins, FileCheck, Timer } from "lucide-react";
+import Link from "next/link";
+import { HeroMetric, HeroMetricSkeleton, SecondaryMetric, SecondaryMetricSkeleton } from "@/components/dashboard/HeroMetric";
+import { ActivityChart, ActivityChartSkeleton } from "@/components/dashboard/ActivityChart";
 import { TopAgentsTable, TopAgentsTableSkeleton } from "@/components/dashboard/TopAgentsTable";
-import { AgentHealthBar } from "@/components/dashboard/AgentHealthBar";
+import { AgentStatusBar } from "@/components/dashboard/AgentStatusBar";
 import { ActivitySummary } from "@/components/dashboard/ActivitySummary";
 import { ContentPipeline } from "@/components/dashboard/ContentPipeline";
 import { translate } from "@/lib/language";
 import { useToast } from "@/components/ui/Toast";
-
-const sectionVariants = {
-  hidden: { opacity: 0, y: 8 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: {
-      delay: i * 0.04,
-      duration: 0.4,
-      ease: [0.25, 0.1, 0.25, 1] as [number, number, number, number],
-    },
-  }),
-};
 
 export default function DashboardPage() {
   const { success, error } = useToast();
@@ -146,7 +132,7 @@ export default function DashboardPage() {
   });
   const timeStr = currentTime.toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit" });
 
-  // Derive sparkline data from tasksByDay for KPI cards
+  // Derive sparkline data from tasksByDay for hero metrics
   const kpiSparkData = useMemo(() => {
     if (!analytics?.tasksByDay) return undefined;
     const entries = Object.entries(analytics.tasksByDay)
@@ -169,14 +155,13 @@ export default function DashboardPage() {
 
   const isLoading = !analytics;
 
-  // Format token count for display
+  // Format helpers
   const formatTokens = (v: number) => {
     if (v >= 1_000_000) return `${(v / 1_000_000).toFixed(1)}M`;
     if (v >= 1_000) return `${(v / 1_000).toFixed(1)}K`;
     return Math.round(v).toLocaleString();
   };
 
-  // Format duration in seconds
   const formatDuration = (v: number) => {
     const secs = v / 1000;
     if (secs < 60) return `${secs.toFixed(1)}s`;
@@ -184,17 +169,13 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 stagger-children">
       {/* Migration Banner */}
       {showMigrationBanner && (
-        <motion.div
-          initial={{ opacity: 0, y: -12 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-4"
-        >
+        <div className="rounded-xl border border-[var(--warning)]/20 bg-[var(--warning)]/5 p-4 animate-fade-in">
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-start gap-3 flex-1">
-              <Database className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+              <Database className="w-5 h-5 text-[var(--warning)] shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm font-medium text-[var(--text-primary)] mb-1">
                   {translate("auth_migracion_titulo")}
@@ -205,7 +186,7 @@ export default function DashboardPage() {
                 <button
                   onClick={handleMigration}
                   disabled={migrating}
-                  className="px-3 py-1.5 text-sm bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-black font-medium rounded-md transition-colors"
+                  className="px-3 py-1.5 text-sm bg-[var(--warning)] hover:brightness-110 disabled:opacity-50 text-black font-medium rounded-md transition-all"
                 >
                   {migrating ? "Migrando..." : translate("auth_migracion_boton")}
                 </button>
@@ -216,121 +197,127 @@ export default function DashboardPage() {
                 setShowMigrationBanner(false);
                 localStorage.setItem("amd_migration_dismissed", "true");
               }}
-              className="text-zinc-500 hover:text-white transition-colors"
+              className="text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
-        </motion.div>
+        </div>
       )}
 
-      {/* Section A: Header */}
-      <motion.div
-        custom={0}
-        variants={sectionVariants}
-        initial="hidden"
-        animate="visible"
-        className="space-y-3"
-      >
-        <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1">
+      {/* Section A: Minimal Header */}
+      <div className="flex items-baseline justify-between">
+        <div>
           <h1 className="text-base font-medium text-[var(--text-primary)]">
             {greeting}, {userName}
           </h1>
-          <p className="text-xs text-[var(--text-tertiary)] capitalize">
+          <p className="text-xs text-[var(--text-tertiary)] capitalize mt-0.5">
             {dateStr} &middot; {timeStr}
           </p>
         </div>
-        <QuickActions />
-      </motion.div>
+        <Link
+          href="/control-center"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white transition-colors"
+        >
+          <Plus className="h-3.5 w-3.5" />
+          Nueva Tarea
+        </Link>
+      </div>
 
-      {/* Section B: KPI Strip */}
-      <motion.div custom={1} variants={sectionVariants} initial="hidden" animate="visible">
+      {/* Section B: 3 Hero Metrics */}
+      <div>
         {isLoading ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-            {[...Array(6)].map((_, i) => <KpiCardSkeleton key={i} />)}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <HeroMetricSkeleton />
+            <HeroMetricSkeleton />
+            <HeroMetricSkeleton />
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-            <KpiCard
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <HeroMetric
               label="Ejecuciones"
               value={analytics.overview.totalExecutions}
               sparkData={kpiSparkData}
-              sparkColor="#6366f1"
+              sparkColor="#5B6AE8"
             />
-            <KpiCard
+            <HeroMetric
               label="Tasa Exito"
               value={analytics.overview.successRate}
               isPercentage
-              sparkColor="#22c55e"
+              sparkColor="#2FCC71"
             />
-            <KpiCard
-              label="Tokens"
-              value={analytics.overview.totalTokens}
-              formatter={formatTokens}
-              sparkColor="#06b6d4"
-            />
-            <KpiCard
+            <HeroMetric
               label="Costo"
               value={analytics.overview.totalCost}
               isCurrency
-              sparkColor="#f59e0b"
-            />
-            <KpiCard
-              label="Publicado"
-              value={analytics.overview.contentCreated}
-              sparkColor="#3b82f6"
-            />
-            <KpiCard
-              label="Duracion"
-              value={analytics.overview.avgDuration}
-              formatter={formatDuration}
-              sparkColor="#8b5cf6"
+              sparkColor="#F5A623"
             />
           </div>
         )}
-      </motion.div>
 
-      {/* Section C: Charts Row */}
-      <motion.div custom={2} variants={sectionVariants} initial="hidden" animate="visible">
-        {!analytics || !pipelineMetrics ? (
-          <ChartsRowSkeleton />
-        ) : (
-          <ChartsRow
-            tasksByDay={analytics.tasksByDay}
-            statusDistribution={pipelineMetrics.statusDistribution}
-            totalContent={pipelineMetrics.totalContent}
-          />
-        )}
-      </motion.div>
-
-      {/* Section D: Detail Grid */}
-      <motion.div custom={3} variants={sectionVariants} initial="hidden" animate="visible">
-        <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">
-          {/* Left: Top Agents Table */}
-          <div className="lg:col-span-4">
-            {!agentPerformance ? (
-              <TopAgentsTableSkeleton />
-            ) : (
-              <TopAgentsTable agents={topAgentsData} />
-            )}
-          </div>
-
-          {/* Mid: Content Pipeline */}
-          <div className="lg:col-span-3">
-            <ContentPipeline counts={contentCounts} contentItems={content} />
-          </div>
-
-          {/* Right: Activity Summary */}
-          <div className="lg:col-span-3">
-            <ActivitySummary activities={activity} />
-          </div>
+        {/* Secondary metrics strip */}
+        <div className="flex items-center gap-6 mt-4 flex-wrap">
+          {isLoading ? (
+            <>
+              <SecondaryMetricSkeleton />
+              <SecondaryMetricSkeleton />
+              <SecondaryMetricSkeleton />
+            </>
+          ) : (
+            <>
+              <SecondaryMetric
+                icon={<Coins className="h-3.5 w-3.5" />}
+                label="tokens"
+                value={analytics.overview.totalTokens}
+                formatter={formatTokens}
+              />
+              <SecondaryMetric
+                icon={<FileCheck className="h-3.5 w-3.5" />}
+                label="publicados"
+                value={analytics.overview.contentCreated}
+              />
+              <SecondaryMetric
+                icon={<Timer className="h-3.5 w-3.5" />}
+                label="duracion"
+                value={analytics.overview.avgDuration}
+                formatter={formatDuration}
+              />
+            </>
+          )}
         </div>
-      </motion.div>
+      </div>
 
-      {/* Section E: Agent Health Bar */}
-      <motion.div custom={4} variants={sectionVariants} initial="hidden" animate="visible">
-        <AgentHealthBar agentsByDepartment={controlStatus?.agentsByDepartment} />
-      </motion.div>
+      {/* Section C: Full-Width Activity Chart */}
+      <div>
+        {!analytics ? (
+          <ActivityChartSkeleton />
+        ) : (
+          <ActivityChart tasksByDay={analytics.tasksByDay} />
+        )}
+      </div>
+
+      {/* Section D: 60/40 Detail Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        {/* Left 60%: Top Agents */}
+        <div className="lg:col-span-3">
+          {!agentPerformance ? (
+            <TopAgentsTableSkeleton />
+          ) : (
+            <TopAgentsTable agents={topAgentsData} />
+          )}
+        </div>
+
+        {/* Right 40%: Pipeline + Activity */}
+        <div className="lg:col-span-2 space-y-6">
+          <ContentPipeline counts={contentCounts} contentItems={content} />
+          <ActivitySummary activities={activity} />
+        </div>
+      </div>
+
+      {/* Section E: Agent Status Bar */}
+      <div>
+        <AgentStatusBar agentsByDepartment={controlStatus?.agentsByDepartment} />
+      </div>
     </div>
   );
 }

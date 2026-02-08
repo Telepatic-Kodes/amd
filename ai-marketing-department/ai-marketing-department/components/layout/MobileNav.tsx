@@ -30,7 +30,7 @@ export function MobileNav() {
   };
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-[var(--border)] bg-[var(--surface)]">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-[var(--border)] bg-[var(--surface-0)]/80 backdrop-blur-xl">
       <div className="grid grid-cols-4 h-16">
         {mobileNavItems.map((item) => {
           const Icon = item.icon;
@@ -46,8 +46,8 @@ export function MobileNav() {
               className={cn(
                 "relative flex flex-col items-center justify-center gap-1 min-h-[44px] min-w-[44px] transition-colors",
                 isActive
-                  ? "text-emerald-400"
-                  : "text-zinc-500 active:bg-white/[0.03]"
+                  ? "text-[var(--accent)]"
+                  : "text-[var(--text-tertiary)] active:bg-white/[0.03]"
               )}
             >
               <div className="relative">
@@ -55,7 +55,7 @@ export function MobileNav() {
                 {badgeCount > 0 && (
                   <span className={cn(
                     "absolute -top-1 -right-1.5 h-3.5 w-3.5 flex items-center justify-center rounded-full text-[8px] font-bold text-white",
-                    item.badgeKey === "alerts" ? "bg-red-500" : "bg-amber-500"
+                    item.badgeKey === "alerts" ? "bg-[var(--error)]" : "bg-[var(--warning)]"
                   )}>
                     {badgeCount > 9 ? "9+" : badgeCount}
                   </span>

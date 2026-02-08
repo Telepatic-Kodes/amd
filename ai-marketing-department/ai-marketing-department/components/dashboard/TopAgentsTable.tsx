@@ -25,17 +25,16 @@ const departmentLabels: Record<string, string> = {
   ops: "Ops",
 };
 
-function formatDuration(ms: number): string {
-  if (ms < 1000) return `${Math.round(ms)}ms`;
-  const secs = ms / 1000;
-  if (secs < 60) return `${secs.toFixed(1)}s`;
-  return `${(secs / 60).toFixed(1)}m`;
+function rateColor(rate: number): string {
+  if (rate >= 95) return "bg-[var(--success)]";
+  if (rate >= 80) return "bg-[var(--warning)]";
+  return "bg-[var(--error)]";
 }
 
-function rateColor(rate: number): string {
-  if (rate >= 95) return "text-emerald-400";
-  if (rate >= 80) return "text-amber-400";
-  return "text-red-400";
+function rateTextColor(rate: number): string {
+  if (rate >= 95) return "text-[#2FCC71]";
+  if (rate >= 80) return "text-[#F5A623]";
+  return "text-[#E5484D]";
 }
 
 export function TopAgentsTable({ agents }: TopAgentsTableProps) {
@@ -47,7 +46,7 @@ export function TopAgentsTable({ agents }: TopAgentsTableProps) {
         <h3 className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)] font-medium">
           Top Agentes
         </h3>
-        <div className="rounded-lg border border-[var(--border)] bg-[var(--surface-raised)] flex items-center justify-center py-10">
+        <div className="rounded-xl bg-[var(--surface-1)] flex items-center justify-center py-10">
           <p className="text-sm text-[var(--text-tertiary)]">Sin ejecuciones</p>
         </div>
       </div>
@@ -59,13 +58,16 @@ export function TopAgentsTable({ agents }: TopAgentsTableProps) {
       <h3 className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)] font-medium">
         Top Agentes
       </h3>
-      <div className="rounded-lg border border-[var(--border)] bg-[var(--surface-raised)] overflow-hidden">
+      <div className="rounded-xl bg-[var(--surface-1)] overflow-hidden">
         {top5.map((agent, i) => {
-          const deptColor = chartColors.departments[agent.department as keyof typeof chartColors.departments] || "#71717a";
+          const deptColor = chartColors.departments[agent.department as keyof typeof chartColors.departments] || "#5c5c5e";
           return (
             <div
               key={agent.name}
-              className="flex items-center gap-3 px-4 py-3 border-b border-[var(--border)] last:border-b-0 hover:bg-white/[0.02] transition-colors"
+              className={cn(
+                "flex items-center gap-3 px-5 py-3.5 transition-colors hover:bg-white/[0.02]",
+                i < top5.length - 1 && "border-b border-white/[0.04]"
+              )}
             >
               {/* Rank */}
               <span className="text-xs tabular-nums text-[var(--text-tertiary)] w-4 text-right shrink-0">
@@ -74,7 +76,7 @@ export function TopAgentsTable({ agents }: TopAgentsTableProps) {
 
               {/* Department dot */}
               <span
-                className="shrink-0 h-2 w-2 rounded-full"
+                className="shrink-0 h-1.5 w-1.5 rounded-full"
                 style={{ backgroundColor: deptColor }}
               />
 
@@ -91,15 +93,18 @@ export function TopAgentsTable({ agents }: TopAgentsTableProps) {
                 {agent.totalExecutions}
               </span>
 
-              {/* Success rate */}
-              <span className={cn("text-xs tabular-nums font-medium shrink-0 w-12 text-right", rateColor(agent.successRate))}>
-                {agent.successRate.toFixed(0)}%
-              </span>
-
-              {/* Duration */}
-              <span className="text-[10px] tabular-nums text-[var(--text-tertiary)] shrink-0 w-12 text-right hidden sm:block">
-                {formatDuration(agent.avgDuration)}
-              </span>
+              {/* Mini progress bar + rate */}
+              <div className="shrink-0 w-20 flex items-center gap-2">
+                <div className="flex-1 h-1 rounded-full bg-[var(--surface-3)]">
+                  <div
+                    className={cn("h-full rounded-full transition-all", rateColor(agent.successRate))}
+                    style={{ width: `${Math.min(agent.successRate, 100)}%` }}
+                  />
+                </div>
+                <span className={cn("text-[10px] tabular-nums font-medium w-8 text-right", rateTextColor(agent.successRate))}>
+                  {agent.successRate.toFixed(0)}%
+                </span>
+              </div>
             </div>
           );
         })}
@@ -111,14 +116,17 @@ export function TopAgentsTable({ agents }: TopAgentsTableProps) {
 export function TopAgentsTableSkeleton() {
   return (
     <div className="space-y-3">
-      <div className="h-3 w-20 rounded bg-zinc-800 animate-pulse" />
-      <div className="rounded-lg border border-[var(--border)] bg-[var(--surface-raised)]">
+      <div className="h-3 w-20 rounded bg-[var(--surface-3)] animate-pulse" />
+      <div className="rounded-xl bg-[var(--surface-1)]">
         {[...Array(5)].map((_, i) => (
-          <div key={i} className="flex items-center gap-3 px-4 py-3 border-b border-[var(--border)] last:border-b-0">
-            <div className="h-4 w-4 rounded bg-zinc-800 animate-pulse" />
-            <div className="h-2 w-2 rounded-full bg-zinc-800 animate-pulse" />
-            <div className="flex-1 h-4 rounded bg-zinc-800 animate-pulse" />
-            <div className="h-4 w-8 rounded bg-zinc-800 animate-pulse" />
+          <div key={i} className={cn(
+            "flex items-center gap-3 px-5 py-3.5",
+            i < 4 && "border-b border-white/[0.04]"
+          )}>
+            <div className="h-4 w-4 rounded bg-[var(--surface-3)] animate-pulse" />
+            <div className="h-1.5 w-1.5 rounded-full bg-[var(--surface-3)] animate-pulse" />
+            <div className="flex-1 h-4 rounded bg-[var(--surface-3)] animate-pulse" />
+            <div className="h-4 w-8 rounded bg-[var(--surface-3)] animate-pulse" />
           </div>
         ))}
       </div>

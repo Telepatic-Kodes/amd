@@ -1,26 +1,45 @@
 @import "tailwindcss";
 
 :root {
-  --background: #000000;
-  --foreground: #ededed;
+  /* ── Surface system (4-tier depth) ── */
+  --surface-0: #0a0a0b;
+  --surface-1: #111113;
+  --surface-2: #1a1a1e;
+  --surface-3: #232328;
 
-  /* Command Center design tokens */
-  --accent: #10b981;
-  --accent-muted: #065f46;
-  --surface: #09090b;
-  --surface-raised: #18181b;
+  /* ── Text hierarchy ── */
+  --text-primary: #ededef;
+  --text-secondary: #8b8b8d;
+  --text-tertiary: #5c5c5e;
+
+  /* ── Accent: blue-violet ── */
+  --accent: #5B6AE8;
+  --accent-hover: #6E7BF2;
+  --accent-muted: rgba(91, 106, 232, 0.15);
+  --accent-subtle: rgba(91, 106, 232, 0.08);
+
+  /* ── Semantic ── */
+  --success: #2FCC71;
+  --warning: #F5A623;
+  --error: #E5484D;
+
+  /* ── Borders ── */
   --border: rgba(255, 255, 255, 0.06);
   --border-hover: rgba(255, 255, 255, 0.1);
-  --text-primary: #fafafa;
-  --text-secondary: #a1a1aa;
-  --text-tertiary: #71717a;
 
-  /* Spacing tokens */
+  /* ── Backward-compat aliases ── */
+  --background: var(--surface-0);
+  --foreground: var(--text-primary);
+  --surface: var(--surface-0);
+  --surface-raised: var(--surface-1);
+  --accent-muted-legacy: #065f46;
+
+  /* ── Spacing tokens ── */
   --spacing-section: 3rem;
   --spacing-card: 1.5rem;
   --spacing-element: 0.75rem;
 
-  /* Typography tokens */
+  /* ── Typography tokens ── */
   --font-size-hero: 3rem;
   --font-size-heading: 2.25rem;
   --font-size-subheading: 1.5rem;
@@ -218,3 +237,21 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
 }
+
+/* ── Dashboard fade-in animation (CSS-only, replaces Framer Motion wrappers) ── */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fade-in 0.45s ease-out both;
+}
+/* Stagger children: each direct child gets increasing delay */
+.stagger-children > * { animation: fade-in 0.45s ease-out both; }
+.stagger-children > *:nth-child(1) { animation-delay: 0s; }
+.stagger-children > *:nth-child(2) { animation-delay: 0.04s; }
+.stagger-children > *:nth-child(3) { animation-delay: 0.08s; }
+.stagger-children > *:nth-child(4) { animation-delay: 0.12s; }
+.stagger-children > *:nth-child(5) { animation-delay: 0.16s; }
+.stagger-children > *:nth-child(6) { animation-delay: 0.2s; }
+.stagger-children > *:nth-child(7) { animation-delay: 0.24s; }
