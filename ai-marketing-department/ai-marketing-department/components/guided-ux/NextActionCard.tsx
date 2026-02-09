@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@convex/_generated/api";
+import type { Doc } from "@convex/_generated/dataModel";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import {
@@ -68,16 +69,16 @@ export function NextActionCard() {
     if (!content || !campaigns || !agents) return null;
 
     const contentByStatus = content.reduce(
-      (acc: Record<string, number>, c: any) => {
+      (acc: Record<string, number>, c: Doc<"content">) => {
         acc[c.status] = (acc[c.status] || 0) + 1;
         return acc;
       },
-      {}
+      {} as Record<string, number>
     );
 
     // Find the most recent content creation
-    const sortedContent = [...content].sort(
-      (a: any, b: any) => (b.createdAt || 0) - (a.createdAt || 0)
+    const sortedContent = [...(content as Doc<"content">[])].sort(
+      (a, b) => (b.createdAt || 0) - (a.createdAt || 0)
     );
     const lastContentCreatedAt = sortedContent[0]?.createdAt;
 
@@ -88,12 +89,12 @@ export function NextActionCard() {
       reviewContent: contentByStatus["review"] || 0,
       approvedContent: contentByStatus["approved"] || 0,
       publishedContent: contentByStatus["published"] || 0,
-      activeCampaigns: campaigns.filter((c: any) => c.status === "active").length,
+      activeCampaigns: campaigns.filter((c: Doc<"campaigns">) => c.status === "active").length,
       totalCampaigns: campaigns.length,
-      feedsWithErrors: feeds?.filter((f: any) => f.status === "error").length || 0,
-      agentsInError: agents.filter((a: any) => a.status === "error").length,
+      feedsWithErrors: feeds?.filter((f: Doc<"feeds">) => f.status === "error").length || 0,
+      agentsInError: agents.filter((a: Doc<"agents">) => a.status === "error").length,
       totalAgents: agents.length,
-      activeAgents: agents.filter((a: any) => a.status === "active").length,
+      activeAgents: agents.filter((a: Doc<"agents">) => a.status === "active").length,
       lastContentCreatedAt,
     };
   }, [content, campaigns, agents, onboarding, feeds]);

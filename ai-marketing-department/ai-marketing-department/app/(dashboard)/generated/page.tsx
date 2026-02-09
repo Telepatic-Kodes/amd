@@ -38,8 +38,9 @@ import {
 import { useState, useMemo } from "react";
 import ReactMarkdown from "react-markdown";
 import { motion, AnimatePresence } from "framer-motion";
+import type { Doc } from "@convex/_generated/dataModel";
 
-const TASK_ICONS: Record<string, any> = {
+const TASK_ICONS: Record<string, React.ElementType> = {
   write_blog: FileText,
   create_linkedin_post: Linkedin,
   create_twitter_thread: Twitter,
@@ -372,7 +373,7 @@ function ReviewModal({
   task,
   onClose,
 }: {
-  task: any;
+  task: Doc<"tasks">;
   onClose: () => void;
 }) {
   const [viewMode, setViewMode] = useState<'preview' | 'raw'>('preview');
@@ -507,7 +508,7 @@ function ContentCard({
   task,
   onReview,
 }: {
-  task: any;
+  task: Doc<"tasks">;
   onReview: () => void;
 }) {
   const [isHovered, setIsHovered] = useState(false);
@@ -636,27 +637,27 @@ function ContentCard({
 
 export default function GeneratedContentPage() {
   const tasks = useQuery(api.functions.listTasks, { limit: 50 });
-  const [reviewingTask, setReviewingTask] = useState<any | null>(null);
+  const [reviewingTask, setReviewingTask] = useState<Doc<"tasks"> | null>(null);
   const [activeFilter, setActiveFilter] = useState("all");
 
   // Filter only completed tasks with output
-  const completedTasks = useMemo(() => {
+  const completedTasks = useMemo((): Doc<"tasks">[] => {
     if (!tasks) return [];
     return tasks.filter(
-      (t: any) => t.status === "completed" && t.output?.content
+      (t: Doc<"tasks">) => t.status === "completed" && t.output?.content
     );
   }, [tasks]);
 
   // Apply filter
   const filteredTasks = useMemo(() => {
     if (activeFilter === "all") return completedTasks;
-    return completedTasks.filter((t: any) => t.type === activeFilter);
+    return completedTasks.filter((t) => t.type === activeFilter);
   }, [completedTasks, activeFilter]);
 
   // Calculate content distribution for mini chart
   const contentDistribution = useMemo(() => {
     const counts: Record<string, number> = {};
-    completedTasks.forEach((t: any) => {
+    completedTasks.forEach((t) => {
       const type = t.type || 'default';
       counts[type] = (counts[type] || 0) + 1;
     });
@@ -679,7 +680,7 @@ export default function GeneratedContentPage() {
       ...tab,
       count: tab.id === "all"
         ? completedTasks.length
-        : completedTasks.filter((t: any) => t.type === tab.id).length,
+        : completedTasks.filter((t) => t.type === tab.id).length,
     }));
   }, [completedTasks]);
 
@@ -770,7 +771,7 @@ export default function GeneratedContentPage() {
             layout
             className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
           >
-            {filteredTasks.map((task: any) => (
+            {filteredTasks.map((task) => (
               <ContentCard
                 key={task._id}
                 task={task}

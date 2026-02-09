@@ -114,7 +114,7 @@ export function DonutChart({
                 fontSize: '12px',
                 paddingLeft: '20px',
               }}
-              formatter={(value, entry: any) => (
+              formatter={(value) => (
                 <span className="text-gray-500">{value}</span>
               )}
             />

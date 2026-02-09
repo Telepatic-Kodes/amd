@@ -72,6 +72,21 @@ export const getAnalyticsWithDateRange = query({
       }
     }
 
+    // Group executions by day for sparkline data
+    const executionsByDay: Record<string, { tokens: number; cost: number; count: number; successCount: number }> = {};
+    for (const exec of executions) {
+      const dateKey = new Date(exec.timestamp).toISOString().split("T")[0];
+      if (!executionsByDay[dateKey]) {
+        executionsByDay[dateKey] = { tokens: 0, cost: 0, count: 0, successCount: 0 };
+      }
+      executionsByDay[dateKey].tokens += exec.tokensUsed.total;
+      executionsByDay[dateKey].cost += exec.cost;
+      executionsByDay[dateKey].count += 1;
+      if (exec.status === "success") {
+        executionsByDay[dateKey].successCount += 1;
+      }
+    }
+
     // Group executions by agentId
     const agentStats: Record<
       string,
@@ -130,6 +145,7 @@ export const getAnalyticsWithDateRange = query({
         contentCreated,
       },
       tasksByDay,
+      executionsByDay,
       topAgents,
       recentExecutions,
     };

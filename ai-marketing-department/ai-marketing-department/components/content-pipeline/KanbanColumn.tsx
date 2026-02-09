@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Id } from "@convex/_generated/dataModel";
+import { Id, Doc } from "@convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
 import { translate } from "@/lib/language";
 import { ALLOWED_TRANSITIONS } from "@/lib/contentTypes";
@@ -10,7 +10,7 @@ import { KanbanCard } from "./KanbanCard";
 interface KanbanColumnProps {
   status: string;
   title: string;
-  items: any[];
+  items: Doc<"content">[];
   count: number;
   color: string;
   onDrop: (contentId: string, toStatus: string) => void;

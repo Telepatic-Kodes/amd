@@ -106,8 +106,9 @@ export function PublishToInstagramButton({
       }
       success("Publicado en Instagram", "Post publicado exitosamente");
       setShowPreview(false);
-    } catch (err: any) {
-      showError("Error al publicar", err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Error desconocido";
+      showError("Error al publicar", message);
     } finally {
       setIsPublishing(false);
     }

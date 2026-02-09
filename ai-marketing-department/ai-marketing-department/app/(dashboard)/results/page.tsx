@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@convex/_generated/api";
 import { motion } from "framer-motion";
@@ -9,94 +10,93 @@ import {
   Heart,
   TrendingUp,
   Download,
-  Calendar,
+  BarChart3,
 } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { SimpleCounter } from "@/components/ui/AnimatedCounter";
-import { TrendIndicator } from "@/components/ui/TrendIndicator";
 import { LineChart } from "@/components/charts/LineChart";
-import { translate } from "@/lib/language";
-
-// Generate mock chart data for last 7 days
-function generateChartData() {
-  const labels = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
-  const data = [];
-  for (let i = 0; i < labels.length; i++) {
-    data.push({
-      name: labels[i],
-      views: Math.floor(Math.random() * 5000) + 2000,
-      clicks: Math.floor(Math.random() * 800) + 200,
-      engagement: Math.floor(Math.random() * 400) + 50,
-    });
-  }
-  return data;
-}
-
-// Generate top performing content
-function generateTopContent() {
-  return [
-    {
-      id: "1",
-      title: "10 estrategias de marketing digital que funcionan",
-      type: "Blog Post",
-      views: 4234,
-      clicks: 342,
-      engagement: 89,
-    },
-    {
-      id: "2",
-      title: "Guía completa de SEO en 2025",
-      type: "Guide",
-      views: 3891,
-      clicks: 321,
-      engagement: 76,
-    },
-    {
-      id: "3",
-      title: "Las mejores herramientas de automatización",
-      type: "Comparison",
-      views: 3456,
-      clicks: 289,
-      engagement: 65,
-    },
-    {
-      id: "4",
-      title: "Cómo aumentar tu engagement en LinkedIn",
-      type: "Tips",
-      views: 2987,
-      clicks: 234,
-      engagement: 54,
-    },
-    {
-      id: "5",
-      title: "Tendencias de contenido para este año",
-      type: "Report",
-      views: 2654,
-      clicks: 198,
-      engagement: 42,
-    },
-  ];
-}
 
 export default function ResultsPage() {
+  // Date range: last 30 days for engagement data
+  const [dateRange] = useState(() => {
+    const endDate = Date.now();
+    const startDate = endDate - 30 * 24 * 60 * 60 * 1000;
+    return { startDate, endDate };
+  });
+
   const campaigns = useQuery(api.functions.listCampaigns, {});
   const content = useQuery(api.functions.listContent, {});
 
-  // Mock analytics data
-  const analytics = {
-    totalViews: 18622,
-    totalClicks: 1384,
-    totalEngagement: 326,
-    viewsTrend: 15.3,
-    clicksTrend: 8.2,
-    engagementTrend: 12.1,
-  };
+  const analyticsData = useQuery(api.analytics.getAnalyticsWithDateRange, {
+    startDate: dateRange.startDate,
+    endDate: dateRange.endDate,
+  });
 
-  const chartData = generateChartData();
-  const topContent = generateTopContent();
+  const contentPerformance = useQuery(api.analytics.getContentPerformance, {
+    startDate: dateRange.startDate,
+    endDate: dateRange.endDate,
+    sortBy: "engagement",
+  });
 
-  const isLoading = !campaigns || !content;
+  const isLoading = !campaigns || !content || !analyticsData || !contentPerformance;
+
+  // Compute engagement aggregates from real content performance data
+  const engagementStats = (() => {
+    if (!contentPerformance) return null;
+    let totalImpressions = 0;
+    let totalInteractions = 0;
+    let totalShares = 0;
+
+    for (const item of contentPerformance) {
+      if (item.engagement) {
+        totalImpressions += item.engagement.impressions;
+        totalInteractions += item.engagement.likes + item.engagement.comments;
+        totalShares += item.engagement.shares;
+      }
+    }
+
+    const ctr =
+      totalImpressions > 0
+        ? ((totalInteractions / totalImpressions) * 100).toFixed(1)
+        : "0.0";
+
+    return { totalImpressions, totalInteractions, totalShares, ctr };
+  })();
+
+  const hasEngagementData = engagementStats && engagementStats.totalImpressions > 0;
+
+  // Build chart data from real tasksByDay
+  const chartData = (() => {
+    if (!analyticsData) return [];
+    const { tasksByDay } = analyticsData;
+    return Object.entries(tasksByDay)
+      .sort(([a], [b]) => new Date(a).getTime() - new Date(b).getTime())
+      .slice(-7)
+      .map(([date, data]) => {
+        const d = new Date(date);
+        const dayName = d.toLocaleDateString("es-ES", { weekday: "short" });
+        return {
+          name: dayName.charAt(0).toUpperCase() + dayName.slice(1),
+          tareas: data.completed + data.failed + (data.total - data.completed - data.failed),
+        };
+      });
+  })();
+
+  // Top 5 content from real engagement data
+  const topContent = (() => {
+    if (!contentPerformance) return [];
+    return contentPerformance.slice(0, 5).map((item) => ({
+      id: item.contentId,
+      title: item.title,
+      type: item.type,
+      impressions: item.engagement?.impressions ?? 0,
+      interactions: item.engagement
+        ? item.engagement.likes + item.engagement.comments
+        : 0,
+      shares: item.engagement?.shares ?? 0,
+    }));
+  })();
 
   if (isLoading) {
     return (
@@ -125,14 +125,16 @@ export default function ResultsPage() {
             Tus Resultados
           </h1>
           <p className="text-gray-500 mt-2 md:mt-3 text-base md:text-lg">
-            Cómo está performando tu contenido en los últimos 7 días.
+            {hasEngagementData
+              ? "Como esta performando tu contenido en LinkedIn."
+              : "Sin datos — publica contenido en LinkedIn para ver metricas"}
           </p>
         </div>
       </div>
 
       {/* Main KPIs - 3 Big Numbers */}
       <div data-tour="results-page" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
-        {/* Vistas */}
+        {/* Impresiones */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -143,17 +145,22 @@ export default function ResultsPage() {
               <div className="p-3 rounded-lg bg-blue-50">
                 <Eye className="w-6 h-6 text-blue-600" />
               </div>
-              <TrendIndicator value={analytics.viewsTrend} size="sm" />
             </div>
             <p className="text-5xl font-bold text-gray-900 mb-2">
-              <SimpleCounter value={Math.round(analytics.totalViews / 1000)} />
-              <span className="text-3xl text-gray-400">K</span>
+              {engagementStats && engagementStats.totalImpressions >= 1000 ? (
+                <>
+                  <SimpleCounter value={Math.round(engagementStats.totalImpressions / 1000)} />
+                  <span className="text-3xl text-gray-400">K</span>
+                </>
+              ) : (
+                <SimpleCounter value={engagementStats?.totalImpressions ?? 0} />
+              )}
             </p>
-            <p className="text-base text-gray-500">Vistas totales</p>
+            <p className="text-base text-gray-500">Impresiones</p>
           </Card>
         </motion.div>
 
-        {/* Clicks */}
+        {/* Interacciones */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -164,16 +171,15 @@ export default function ResultsPage() {
               <div className="p-3 rounded-lg bg-green-50">
                 <MousePointerClick className="w-6 h-6 text-green-600" />
               </div>
-              <TrendIndicator value={analytics.clicksTrend} size="sm" />
             </div>
             <p className="text-5xl font-bold text-gray-900 mb-2">
-              <SimpleCounter value={analytics.totalClicks} />
+              <SimpleCounter value={engagementStats?.totalInteractions ?? 0} />
             </p>
-            <p className="text-base text-gray-500">Clicks</p>
+            <p className="text-base text-gray-500">Interacciones</p>
           </Card>
         </motion.div>
 
-        {/* Participación */}
+        {/* Compartidos */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -184,17 +190,16 @@ export default function ResultsPage() {
               <div className="p-3 rounded-lg bg-purple-50">
                 <Heart className="w-6 h-6 text-purple-600" />
               </div>
-              <TrendIndicator value={analytics.engagementTrend} size="sm" />
             </div>
             <p className="text-5xl font-bold text-gray-900 mb-2">
-              <SimpleCounter value={analytics.totalEngagement} />
+              <SimpleCounter value={engagementStats?.totalShares ?? 0} />
             </p>
-            <p className="text-base text-gray-500">Participación</p>
+            <p className="text-base text-gray-500">Compartidos</p>
           </Card>
         </motion.div>
       </div>
 
-      {/* Chart and Top Content */}
+      {/* Chart and Summary */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8">
         {/* Chart */}
         <motion.div
@@ -207,18 +212,27 @@ export default function ResultsPage() {
             <div className="flex items-center justify-between mb-4 md:mb-6">
               <h3 className="text-xl md:text-2xl font-semibold text-gray-900 flex items-center gap-3">
                 <TrendingUp className="w-5 h-5 md:w-6 md:h-6 text-blue-600" />
-                Tendencia (últimos 7 días)
+                Tendencia (ultimos 7 dias)
               </h3>
-              <Badge variant="default">Vistas</Badge>
+              <Badge variant="default">Tareas</Badge>
             </div>
             <div className="h-80">
-              <LineChart
-                data={chartData}
-                dataKey="views"
-                name="Vistas"
-                showGrid={true}
-                showTooltip={true}
-              />
+              {chartData.length > 0 ? (
+                <LineChart
+                  data={chartData}
+                  dataKey="tareas"
+                  name="Tareas"
+                  showGrid={true}
+                  showTooltip={true}
+                />
+              ) : (
+                <div className="flex items-center justify-center h-full text-gray-400">
+                  <div className="text-center">
+                    <BarChart3 className="w-10 h-10 mx-auto mb-2" />
+                    <p>Sin datos de tareas en este periodo</p>
+                  </div>
+                </div>
+              )}
             </div>
           </Card>
         </motion.div>
@@ -233,21 +247,21 @@ export default function ResultsPage() {
             <h3 className="text-xl md:text-2xl font-semibold text-gray-900 mb-4 md:mb-6">Resumen</h3>
             <div className="space-y-4">
               <div className="flex items-center justify-between pb-3 border-b border-gray-200">
-                <span className="text-gray-500">Campañas activas</span>
+                <span className="text-gray-500">Campanas activas</span>
                 <span className="text-2xl font-bold text-green-600">
-                  {campaigns?.filter((c: any) => c.status === "active").length || 0}
+                  {campaigns?.filter((c: { status: string }) => c.status === "active").length || 0}
                 </span>
               </div>
               <div className="flex items-center justify-between pb-3 border-b border-gray-200">
                 <span className="text-gray-500">Contenido publicado</span>
                 <span className="text-2xl font-bold text-blue-600">
-                  {content?.filter((c: any) => c.status === "published").length || 0}
+                  {content?.filter((c: { status: string }) => c.status === "published").length || 0}
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-gray-500">CTR promedio</span>
                 <span className="text-2xl font-bold text-purple-600">
-                  7.4%
+                  {engagementStats?.ctr ?? "0.0"}%
                 </span>
               </div>
             </div>
@@ -270,45 +284,52 @@ export default function ResultsPage() {
             </button>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Título</th>
-                  <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">Tipo</th>
-                  <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">Vistas</th>
-                  <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">Clicks</th>
-                  <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">Participación</th>
-                </tr>
-              </thead>
-              <tbody>
-                {topContent.map((item) => (
-                  <tr
-                    key={item.id}
-                    className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
-                  >
-                    <td className="py-4 px-4 text-sm text-gray-900">
-                      <div>
-                        <p className="font-medium">{item.title}</p>
-                      </div>
-                    </td>
-                    <td className="py-4 px-4 text-right text-sm">
-                      <Badge variant="default">{item.type}</Badge>
-                    </td>
-                    <td className="py-4 px-4 text-right text-sm font-medium text-blue-600">
-                      {item.views.toLocaleString()}
-                    </td>
-                    <td className="py-4 px-4 text-right text-sm font-medium text-green-600">
-                      {item.clicks}
-                    </td>
-                    <td className="py-4 px-4 text-right text-sm font-medium text-purple-600">
-                      {item.engagement}
-                    </td>
+          {topContent.length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-200">
+                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Titulo</th>
+                    <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">Tipo</th>
+                    <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">Impresiones</th>
+                    <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">Interacciones</th>
+                    <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">Compartidos</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {topContent.map((item) => (
+                    <tr
+                      key={item.id}
+                      className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
+                    >
+                      <td className="py-4 px-4 text-sm text-gray-900">
+                        <div>
+                          <p className="font-medium">{item.title}</p>
+                        </div>
+                      </td>
+                      <td className="py-4 px-4 text-right text-sm">
+                        <Badge variant="default">{item.type}</Badge>
+                      </td>
+                      <td className="py-4 px-4 text-right text-sm font-medium text-blue-600">
+                        {item.impressions.toLocaleString()}
+                      </td>
+                      <td className="py-4 px-4 text-right text-sm font-medium text-green-600">
+                        {item.interactions}
+                      </td>
+                      <td className="py-4 px-4 text-right text-sm font-medium text-purple-600">
+                        {item.shares}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="py-12 text-center text-gray-400">
+              <BarChart3 className="w-10 h-10 mx-auto mb-3" />
+              <p className="text-base">Sin datos — publica contenido en LinkedIn para ver metricas</p>
+            </div>
+          )}
         </Card>
       </motion.div>
 
@@ -322,7 +343,7 @@ export default function ResultsPage() {
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
               <h3 className="text-xl md:text-2xl font-semibold text-gray-900 mb-2">Necesitas un reporte detallado?</h3>
-              <p className="text-sm md:text-base text-gray-600">Descarga tu reporte completo de los últimos 30 días</p>
+              <p className="text-sm md:text-base text-gray-600">Descarga tu reporte completo de los ultimos 30 dias</p>
             </div>
             <button className="px-6 py-3 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors min-h-[44px] w-full md:w-auto">
               <Download className="w-4 h-4 inline mr-2" />

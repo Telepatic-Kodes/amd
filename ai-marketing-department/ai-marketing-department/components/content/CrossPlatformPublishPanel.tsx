@@ -129,8 +129,9 @@ export function CrossPlatformPublishPanel({
           "Revisa los errores arriba"
         );
       }
-    } catch (err: any) {
-      showError("Error al publicar", err.message || "Error desconocido");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Error desconocido";
+      showError("Error al publicar", message);
     } finally {
       setIsPublishing(false);
     }

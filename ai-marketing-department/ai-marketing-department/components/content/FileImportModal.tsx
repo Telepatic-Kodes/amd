@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 interface FileImportModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onImport: (content: { title: string; body: string; metadata: any }) => void;
+  onImport: (content: { title: string; body: string; metadata?: { wordCount?: number; readingTime?: number; sourceFile?: string } }) => void;
   defaultTitle?: string;
 }
 

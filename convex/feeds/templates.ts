@@ -4,65 +4,54 @@
  */
 
 export interface FeedTemplate {
-  url: string;
+  id: string;
   name: string;
   description: string;
+  icon: string;
   category: string;
+  feeds: string[];
 }
 
 export const FEED_TEMPLATES: FeedTemplate[] = [
   // Marketing & Advertising
   {
-    url: "https://blog.hubspot.com/marketing/rss.xml",
-    name: "HubSpot Marketing Blog",
-    description: "Marketing insights and best practices",
+    id: "marketing",
+    name: "Marketing & Publicidad",
+    description: "HubSpot, Content Marketing Institute, Neil Patel, Social Media Examiner",
+    icon: "📢",
     category: "marketing",
-  },
-  {
-    url: "https://contentmarketinginstitute.com/feed/",
-    name: "Content Marketing Institute",
-    description: "Content marketing strategies",
-    category: "marketing",
-  },
-  {
-    url: "https://neilpatel.com/feed/",
-    name: "Neil Patel Blog",
-    description: "Digital marketing and SEO",
-    category: "marketing",
-  },
-  {
-    url: "https://www.socialmediaexaminer.com/feed/",
-    name: "Social Media Examiner",
-    description: "Social media marketing tips",
-    category: "marketing",
+    feeds: [
+      "https://blog.hubspot.com/marketing/rss.xml",
+      "https://contentmarketinginstitute.com/feed/",
+      "https://neilpatel.com/feed/",
+      "https://www.socialmediaexaminer.com/feed/",
+    ],
   },
 
   // Technology
   {
-    url: "https://techcrunch.com/feed/",
-    name: "TechCrunch",
-    description: "Technology news and startups",
+    id: "technology",
+    name: "Tecnologia",
+    description: "TechCrunch, The Verge",
+    icon: "💻",
     category: "technology",
-  },
-  {
-    url: "https://www.theverge.com/rss/index.xml",
-    name: "The Verge",
-    description: "Technology and culture",
-    category: "technology",
+    feeds: [
+      "https://techcrunch.com/feed/",
+      "https://www.theverge.com/rss/index.xml",
+    ],
   },
 
   // Business
   {
-    url: "https://hbr.org/feed",
-    name: "Harvard Business Review",
-    description: "Business strategy and management",
+    id: "business",
+    name: "Negocios",
+    description: "Harvard Business Review, Entrepreneur",
+    icon: "💼",
     category: "business",
-  },
-  {
-    url: "https://www.entrepreneur.com/feeds/latest.rss",
-    name: "Entrepreneur",
-    description: "Entrepreneurship and business growth",
-    category: "business",
+    feeds: [
+      "https://hbr.org/feed",
+      "https://www.entrepreneur.com/feeds/latest.rss",
+    ],
   },
 ];
 

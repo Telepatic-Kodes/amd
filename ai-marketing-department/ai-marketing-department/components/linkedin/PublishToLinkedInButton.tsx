@@ -52,8 +52,9 @@ export function PublishToLinkedInButton({
       await publishToLinkedIn({ contentId });
       success(translate("linkedinPublished"), translate("linkedinPostSuccess"));
       setShowPreview(false);
-    } catch (err: any) {
-      showError(translate("linkedinPublishError"), err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Error desconocido";
+      showError(translate("linkedinPublishError"), message);
     } finally {
       setIsPublishing(false);
     }

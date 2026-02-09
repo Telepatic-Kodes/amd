@@ -25,8 +25,9 @@ export default function PipelinePage() {
     try {
       await publishContent({ id });
       success(translate("contentPublished"), "El contenido ha sido publicado");
-    } catch (err: any) {
-      showError("Error", err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Error desconocido";
+      showError("Error", message);
     }
   };
 
@@ -34,8 +35,9 @@ export default function PipelinePage() {
     try {
       await moveContent({ id, toStatus: "approved" });
       success(translate("unschedule"), "El contenido ha vuelto a estado aprobado");
-    } catch (err: any) {
-      showError("Error", err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Error desconocido";
+      showError("Error", message);
     }
   };
 

@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@convex/_generated/api";
+import type { Doc, Id } from "@convex/_generated/dataModel";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import {
@@ -121,7 +122,7 @@ function formatTypeName(type: string) {
 }
 
 // Status workflow actions component
-function StatusActions({ content, onStatusChange }: { content: any; onStatusChange: (status: string) => Promise<void> }) {
+function StatusActions({ content, onStatusChange }: { content: Doc<"content">; onStatusChange: (status: string) => Promise<void> }) {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleStatusChange = async (newStatus: string) => {
@@ -216,12 +217,12 @@ export default function ContentPage() {
   const [selectedContent, setSelectedContent] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
-  const [editingContent, setEditingContent] = useState<any | null>(null);
+  const [editingContent, setEditingContent] = useState<Doc<"content"> | null>(null);
   const [analysisContentId, setAnalysisContentId] = useState<string | null>(null);
   const [showGenerateModal, setShowGenerateModal] = useState(false);
   const [showVersionHistory, setShowVersionHistory] = useState(false);
-  const [diffVersions, setDiffVersions] = useState<{ versionAId: any; versionBId: any } | null>(null);
-  const [rollbackTarget, setRollbackTarget] = useState<{ versionId: any; versionNumber: number } | null>(null);
+  const [diffVersions, setDiffVersions] = useState<{ versionAId: Id<"contentVersions">; versionBId: Id<"contentVersions"> } | null>(null);
+  const [rollbackTarget, setRollbackTarget] = useState<{ versionId: Id<"contentVersions">; versionNumber: number } | null>(null);
 
   const content = useQuery(api.functions.listContent, {
     type: typeFilter || undefined,
@@ -718,7 +719,7 @@ export default function ContentPage() {
                         onStatusChange={async (status) => {
                           await updateContentStatus({
                             id: selectedContentData._id,
-                            status: status as any
+                            status: status as "draft" | "review" | "revision_needed" | "approved" | "scheduled" | "published" | "archived"
                           });
                         }}
                       />
@@ -944,7 +945,7 @@ export default function ContentPage() {
       <AnimatePresence>
         {analysisContentId && (
           <ContentAnalysisPanel
-            contentId={analysisContentId as any}
+            contentId={analysisContentId as Id<"content">}
             isOpen={!!analysisContentId}
             onClose={() => setAnalysisContentId(null)}
           />

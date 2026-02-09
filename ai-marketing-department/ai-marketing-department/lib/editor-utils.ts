@@ -163,8 +163,9 @@ export function downloadAsFile(html: string, filename: string = 'content.html'):
     }
 
     // Fallback for very old browsers (IE10+)
-    if ((navigator as any).msSaveBlob) {
-      (navigator as any).msSaveBlob(blob, filename);
+    const nav = navigator as Navigator & { msSaveBlob?: (blob: Blob, name: string) => boolean };
+    if (nav.msSaveBlob) {
+      nav.msSaveBlob(blob, filename);
       return;
     }
 

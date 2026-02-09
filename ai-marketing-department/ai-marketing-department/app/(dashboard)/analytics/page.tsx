@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@convex/_generated/api";
+import type { Id } from "@convex/_generated/dataModel";
 import { ReportHistory } from "@/components/reports/ReportHistory";
 import { ReportPreview } from "@/components/reports/ReportPreview";
 import {
@@ -77,7 +78,7 @@ export default function AnalyticsPage() {
   });
 
   // State for report preview
-  const [selectedReportId, setSelectedReportId] = useState<string | null>(null);
+  const [selectedReportId, setSelectedReportId] = useState<Id<"reports"> | null>(null);
 
   // Queries with date range
   const analytics = useQuery(api.analytics.getAnalyticsWithDateRange, {
@@ -123,7 +124,13 @@ export default function AnalyticsPage() {
     );
   }
 
-  const { overview, tasksByDay, topAgents, recentExecutions } = analytics;
+  // Query agent performance for cost distribution
+  const agentPerformance = useQuery(api.analytics.getAgentPerformanceSummary, {
+    startDate: dateRange.startDate,
+    endDate: dateRange.endDate,
+  });
+
+  const { overview, tasksByDay, executionsByDay, topAgents, recentExecutions } = analytics;
 
   // Prepare bar chart data from tasksByDay
   const barChartData = Object.entries(tasksByDay)
@@ -149,20 +156,58 @@ export default function AnalyticsPage() {
     color: seriesColors[i % seriesColors.length],
   }));
 
-  // Mock cost distribution by department (will be real data later)
-  const costDistribution = [
-    { name: 'Content', value: 35, color: chartColors.departments.content },
-    { name: 'Social', value: 25, color: chartColors.departments.social },
-    { name: 'DemandGen', value: 20, color: chartColors.departments.demandgen },
-    { name: 'SEO', value: 12, color: chartColors.departments.seo },
-    { name: 'Ops', value: 8, color: chartColors.departments.ops },
-  ];
+  // Build cost distribution by department from real agent performance data
+  const costDistribution = (() => {
+    if (!agentPerformance || agentPerformance.length === 0) return [];
+    const deptCosts: Record<string, number> = {};
+    for (const agent of agentPerformance) {
+      const dept = agent.department;
+      deptCosts[dept] = (deptCosts[dept] || 0) + agent.totalCost;
+    }
+    const deptColorMap: Record<string, string> = chartColors.departments;
+    const deptLabelMap: Record<string, string> = {
+      leadership: 'Leadership',
+      content: 'Content',
+      social: 'Social',
+      demandgen: 'DemandGen',
+      seo: 'SEO',
+      brand: 'Brand',
+      ops: 'Ops',
+    };
+    const totalCostAll = Object.values(deptCosts).reduce((s, v) => s + v, 0);
+    if (totalCostAll === 0) return [];
+    return Object.entries(deptCosts)
+      .map(([dept, cost]) => ({
+        name: deptLabelMap[dept] || dept,
+        value: Math.round((cost / totalCostAll) * 100),
+        color: deptColorMap[dept] || '#6b7280',
+      }))
+      .sort((a, b) => b.value - a.value);
+  })();
 
-  // Mock sparkline data for stats (placeholder until we have historical trend data)
-  const generateSparkline = (base: number) =>
-    Array.from({ length: 7 }, () => ({
-      value: Math.max(0, base * (0.7 + Math.random() * 0.6)),
-    }));
+  // Build sparkline data from real executionsByDay (last 7 days)
+  const last7Days = (() => {
+    const days: string[] = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(Date.now() - i * 24 * 60 * 60 * 1000);
+      days.push(d.toISOString().split("T")[0]);
+    }
+    return days;
+  })();
+
+  const sparklineExecutions = last7Days.map((day) => ({
+    value: executionsByDay[day]?.count ?? 0,
+  }));
+  const sparklineSuccessRate = last7Days.map((day) => {
+    const d = executionsByDay[day];
+    return { value: d && d.count > 0 ? (d.successCount / d.count) * 100 : 0 };
+  });
+  const sparklineTokens = last7Days.map((day) => ({
+    value: executionsByDay[day]?.tokens ?? 0,
+  }));
+  const sparklineCost = last7Days.map((day) => ({
+    value: executionsByDay[day]?.cost ?? 0,
+  }));
 
   return (
     <div className="space-y-6">
@@ -191,7 +236,7 @@ export default function AnalyticsPage() {
           title="Ejecuciones"
           value={overview.totalExecutions}
           badge={`${overview.totalExecutions} total`}
-          sparklineData={generateSparkline(overview.totalExecutions / 7)}
+          sparklineData={sparklineExecutions}
         />
         <MetricCard
           icon={CheckCircle2}
@@ -202,7 +247,7 @@ export default function AnalyticsPage() {
           isPercentage
           badge={`${overview.successRate.toFixed(1)}%`}
           badgeVariant="success"
-          sparklineData={generateSparkline(overview.successRate)}
+          sparklineData={sparklineSuccessRate}
         />
         <MetricCard
           icon={Activity}
@@ -212,7 +257,7 @@ export default function AnalyticsPage() {
           value={overview.totalTokens}
           formatter={formatNumber}
           badge={formatNumber(overview.totalTokens)}
-          sparklineData={generateSparkline(overview.totalTokens / 7)}
+          sparklineData={sparklineTokens}
         />
         <MetricCard
           icon={DollarSign}
@@ -223,7 +268,7 @@ export default function AnalyticsPage() {
           isCurrency
           badge={formatCurrency(overview.totalCost)}
           badgeVariant="warning"
-          sparklineData={generateSparkline(overview.totalCost / 7)}
+          sparklineData={sparklineCost}
         />
       </div>
 
@@ -381,17 +426,24 @@ export default function AnalyticsPage() {
             </h3>
           </CardHeader>
           <CardContent className="p-6 pt-0">
-            <DonutChart
-              data={costDistribution}
-              height={240}
-              innerRadius={50}
-              outerRadius={80}
-              showLegend
-              centerValue={`$${overview.totalCost.toFixed(2)}`}
-              centerLabel="Total"
-              valueFormatter={(v) => `${v}%`}
-              interactive
-            />
+            {costDistribution.length > 0 ? (
+              <DonutChart
+                data={costDistribution}
+                height={240}
+                innerRadius={50}
+                outerRadius={80}
+                showLegend
+                centerValue={`$${overview.totalCost.toFixed(2)}`}
+                centerLabel="Total"
+                valueFormatter={(v) => `${v}%`}
+                interactive
+              />
+            ) : (
+              <div className="flex flex-col items-center justify-center h-[240px] text-zinc-500 text-sm">
+                <DollarSign className="h-8 w-8 mb-2 text-zinc-600" />
+                <p>Sin datos de costos en este periodo</p>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -421,7 +473,7 @@ export default function AnalyticsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {recentExecutions.map((exec: any, i: number) => (
+                  {recentExecutions.map((exec, i) => (
                     <tr
                       key={i}
                       className="border-b border-zinc-800/50 last:border-0 hover:bg-zinc-900/30 transition-colors"
@@ -547,7 +599,7 @@ function MetricCard({
   sparklineData,
   trend,
 }: {
-  icon: any;
+  icon: React.ElementType;
   iconBg: string;
   iconColor: string;
   title: string;

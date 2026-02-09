@@ -2,12 +2,13 @@
 
 import { useQuery } from "convex/react";
 import { api } from "@convex/_generated/api";
+import type { Id } from "@convex/_generated/dataModel";
 import { FileText, CheckCircle, XCircle } from "lucide-react";
 import { LABELS } from "@/lib/language";
 import { Badge } from "@/components/ui/Badge";
 
 interface ReportHistoryProps {
-  onViewReport: (reportId: string) => void;
+  onViewReport: (reportId: Id<"reports">) => void;
 }
 
 export function ReportHistory({ onViewReport }: ReportHistoryProps) {

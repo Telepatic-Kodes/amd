@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, useAction } from "convex/react";
 import { api } from "@convex/_generated/api";
 import { motion, AnimatePresence } from "framer-motion";
@@ -137,6 +137,36 @@ export default function BrandPage() {
     }
   }, [profile, isEditing]);
 
+  // A. Load draft from localStorage on mount (only when no existing profile)
+  useEffect(() => {
+    if (profile === undefined) return; // query still loading
+    if (profile) return; // existing profile takes precedence
+    try {
+      const saved = localStorage.getItem("amd-brand-draft");
+      if (saved) {
+        setData(JSON.parse(saved));
+      }
+    } catch {
+      // ignore parse errors
+    }
+  }, [profile]);
+
+  // B. Auto-save draft to localStorage with 500ms debounce
+  const draftTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (!isEditing && profile) return; // only save in wizard/edit mode
+    draftTimerRef.current = setTimeout(() => {
+      try {
+        localStorage.setItem("amd-brand-draft", JSON.stringify(data));
+      } catch {
+        // ignore quota errors
+      }
+    }, 500);
+    return () => {
+      if (draftTimerRef.current) clearTimeout(draftTimerRef.current);
+    };
+  }, [data, isEditing, profile]);
+
   const hasCompletedProfile = profile && profile.status === "complete" && !isEditing;
 
   const canNext = () => {
@@ -198,10 +228,14 @@ export default function BrandPage() {
       await syncBrandToKB({ brandProfileId: profileId });
       setKbSyncing(false);
 
+      // C. Clear draft on successful save
+      localStorage.removeItem("amd-brand-draft");
+
       setIsEditing(false);
       success("Marca guardada", "Tu perfil de marca se ha sincronizado con la Knowledge Base.");
-    } catch (e: any) {
-      showError("Error", e.message || "No se pudo guardar el perfil de marca.");
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : "Error desconocido";
+      showError("Error", message || "No se pudo guardar el perfil de marca.");
     } finally {
       setSaving(false);
       setKbSyncing(false);
@@ -214,8 +248,9 @@ export default function BrandPage() {
     try {
       await syncBrandToKB({ brandProfileId: profile._id });
       success("KB sincronizada", "La Knowledge Base de marca se ha actualizado.");
-    } catch (e: any) {
-      showError("Error", e.message || "No se pudo sincronizar la KB.");
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : "Error desconocido";
+      showError("Error", message || "No se pudo sincronizar la KB.");
     } finally {
       setKbSyncing(false);
     }

@@ -63,8 +63,9 @@ export function InstagramConnectionCard({ convexSiteUrl }: InstagramConnectionCa
     try {
       await disconnect({ connectionId: connection._id });
       success("Instagram desconectado", "Cuenta desconectada");
-    } catch (err: any) {
-      showError("Error", err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Error desconocido";
+      showError("Error", message);
     } finally {
       setIsDisconnecting(false);
     }

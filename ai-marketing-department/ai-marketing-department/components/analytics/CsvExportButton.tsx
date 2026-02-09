@@ -7,6 +7,12 @@ import { Download, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { exportToCsv } from "@/lib/csv-export";
 
+declare global {
+  interface Window {
+    showToast?: (opts: { title: string; description: string; variant: string }) => void;
+  }
+}
+
 interface CsvExportButtonProps {
   startDate: number;
   endDate: number;
@@ -29,8 +35,8 @@ export function CsvExportButton({ startDate, endDate }: CsvExportButtonProps) {
       await exportToCsv(exportData);
 
       // Show success toast (if toast system exists)
-      if (typeof window !== "undefined" && (window as any).showToast) {
-        (window as any).showToast({
+      if (typeof window !== "undefined" && window.showToast) {
+        window.showToast({
           title: "Exito",
           description: "Datos exportados correctamente",
           variant: "success",
@@ -39,8 +45,8 @@ export function CsvExportButton({ startDate, endDate }: CsvExportButtonProps) {
     } catch (error) {
       console.error("Error exporting CSV:", error);
       // Show error toast (if toast system exists)
-      if (typeof window !== "undefined" && (window as any).showToast) {
-        (window as any).showToast({
+      if (typeof window !== "undefined" && window.showToast) {
+        window.showToast({
           title: "Error",
           description: "No se pudo exportar los datos",
           variant: "error",

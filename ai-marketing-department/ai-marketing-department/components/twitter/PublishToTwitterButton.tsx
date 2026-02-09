@@ -152,8 +152,9 @@ export function PublishToTwitterButton({
       await publishToTwitter({ contentId });
       success("Publicado en Twitter", "Contenido publicado exitosamente");
       setShowPreview(false);
-    } catch (err: any) {
-      showError("Error al publicar", err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Error desconocido";
+      showError("Error al publicar", message);
     } finally {
       setIsPublishing(false);
     }

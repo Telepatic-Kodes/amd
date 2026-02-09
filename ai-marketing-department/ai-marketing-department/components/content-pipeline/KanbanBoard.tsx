@@ -39,8 +39,9 @@ export function KanbanBoard({ columns, statusCounts }: KanbanBoardProps) {
     try {
       await moveContent({ id: contentId as Id<"content">, toStatus });
       success(translate("contentMoved"), `Estado cambiado a ${translateStatus(toStatus)}`);
-    } catch (err: any) {
-      showError(translate("invalidTransition"), err.message || "Error al mover contenido");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Error desconocido";
+      showError(translate("invalidTransition"), message || "Error al mover contenido");
     }
   }
 
@@ -71,8 +72,9 @@ export function KanbanBoard({ columns, statusCounts }: KanbanBoardProps) {
           success(translate("contentMoved"), "Contenido archivado");
           break;
       }
-    } catch (err: any) {
-      showError("Error", err.message || "Error al ejecutar acción");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Error desconocido";
+      showError("Error", message || "Error al ejecutar acción");
     }
   }
 
@@ -80,8 +82,9 @@ export function KanbanBoard({ columns, statusCounts }: KanbanBoardProps) {
     try {
       await scheduleContent({ id: contentId, scheduledFor });
       success(translate("contentScheduled"), "Contenido programado exitosamente");
-    } catch (err: any) {
-      showError("Error", err.message || "Error al programar contenido");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Error desconocido";
+      showError("Error", message || "Error al programar contenido");
     }
   }
 

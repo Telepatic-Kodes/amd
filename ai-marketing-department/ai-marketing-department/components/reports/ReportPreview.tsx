@@ -2,18 +2,18 @@
 
 import { useQuery } from "convex/react";
 import { api } from "@convex/_generated/api";
+import type { Id } from "@convex/_generated/dataModel";
 import { X, Download, Sparkles, FileText } from "lucide-react";
 import { LABELS } from "@/lib/language";
 import { Badge } from "@/components/ui/Badge";
 
 interface ReportPreviewProps {
-  reportId: string;
+  reportId: Id<"reports">;
   onClose: () => void;
 }
 
 export function ReportPreview({ reportId, onClose }: ReportPreviewProps) {
-  // Cast reportId to Convex ID type
-  const report = useQuery(api.reports.getReportById, { id: reportId as any });
+  const report = useQuery(api.reports.getReportById, { id: reportId });
 
   const handleDownload = () => {
     if (!report) return;

@@ -57,8 +57,9 @@ export function TwitterConnectionCard({ convexSiteUrl }: TwitterConnectionCardPr
     try {
       await disconnect({ connectionId: connection._id });
       success("Twitter desconectado", "Cuenta desconectada");
-    } catch (err: any) {
-      showError("Error", err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Error desconocido";
+      showError("Error", message);
     } finally {
       setIsDisconnecting(false);
     }

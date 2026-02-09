@@ -23,11 +23,12 @@ export function TeamManagement() {
     try {
       await updateUserRole({
         userId,
-        role: newRole as any,
+        role: newRole as "admin" | "editor" | "reviewer" | "publisher" | "viewer",
       });
       success(translate("roleUpdated"));
-    } catch (error: any) {
-      showError("Error", error.message || translate("roleUpdateError"));
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Error desconocido";
+      showError("Error", message || translate("roleUpdateError"));
     } finally {
       setLoadingUserId(null);
     }

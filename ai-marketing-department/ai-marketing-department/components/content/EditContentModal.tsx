@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useMutation } from "convex/react";
 import { api } from "@convex/_generated/api";
+import type { Doc } from "@convex/_generated/dataModel";
 import { X, Loader2, ChevronDown, Eye, Edit3, Upload } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "@/components/ui/Toast";
@@ -20,7 +21,7 @@ const TONES = [
 ];
 
 interface EditContentModalProps {
-  content: any;
+  content: Doc<"content">;
   isOpen: boolean;
   onClose: () => void;
   onSuccess?: () => void;
@@ -95,7 +96,14 @@ export function EditContentModal({
     setIsLoading(true);
 
     try {
-      const updates: any = {
+      const updates: {
+        id: Doc<"content">["_id"];
+        title?: string;
+        body?: string;
+        summary?: string;
+        seo?: { metaTitle: string; metaDescription: string; slug: string; canonicalUrl?: string };
+        metadata?: { targetKeywords: string[]; tone: string; targetAudience: string };
+      } = {
         id: content._id,
       };
 
@@ -176,7 +184,7 @@ export function EditContentModal({
   /**
    * Handle file import - update formData with imported content
    */
-  const handleFileImport = (imported: { title: string; body: string; metadata: any }) => {
+  const handleFileImport = (imported: { title: string; body: string; metadata?: { wordCount?: number; readingTime?: number; sourceFile?: string } }) => {
     setFormData((prev) => ({
       ...prev,
       title: imported.title,

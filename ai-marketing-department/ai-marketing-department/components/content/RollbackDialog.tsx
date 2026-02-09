@@ -37,8 +37,9 @@ export function RollbackDialog({
       );
       onSuccess();
       onClose();
-    } catch (error: any) {
-      showError("Error", error.message || "No se pudo revertir el contenido");
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Error desconocido";
+      showError("Error", message || "No se pudo revertir el contenido");
     } finally {
       setIsLoading(false);
     }

@@ -71,7 +71,7 @@ export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {
       const readingTime = Math.ceil(wordCount / 200); // 200 words/min
 
       await createContent({
-        type: type as any,
+        type: type as "blog" | "social_linkedin" | "social_twitter" | "social_instagram" | "social_tiktok" | "email" | "newsletter" | "ad_copy" | "landing_page" | "whitepaper" | "case_study" | "video_script",
         title: title.trim(),
         body: body.trim(),
         summary: summary.trim() || undefined,
@@ -79,7 +79,7 @@ export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {
           wordCount,
           readingTime,
         },
-        createdBy: "system" as any,
+        createdBy: "system",
       });
 
       success("Contenido creado", "Tu contenido ha sido agregado como borrador.");
@@ -101,7 +101,7 @@ export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {
   /**
    * Handle file import - populate form fields with imported content
    */
-  const handleFileImport = (imported: { title: string; body: string; metadata: any }) => {
+  const handleFileImport = (imported: { title: string; body: string; metadata?: { wordCount?: number; readingTime?: number; sourceFile?: string } }) => {
     setTitle(imported.title);
     setBody(imported.body);
 

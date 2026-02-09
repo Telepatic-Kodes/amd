@@ -954,6 +954,16 @@ export const updateSetting = mutation({
   },
 });
 
+export const resetAllSettings = mutation({
+  handler: async (ctx) => {
+    const allSettings = await ctx.db.query("settings").collect();
+    for (const setting of allSettings) {
+      await ctx.db.delete(setting._id);
+    }
+    return { deleted: allSettings.length };
+  },
+});
+
 // ===========================================
 // ANALYTICS QUERIES
 // ===========================================

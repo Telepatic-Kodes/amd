@@ -29,6 +29,7 @@ import { InstagramConnectionCard } from "@/components/instagram/InstagramConnect
 import { QuickModeToggle } from "@/components/guided-ux/QuickModeToggle";
 import { TeamManagement } from "@/components/team/TeamManagement";
 import { ReportSettings } from "@/components/reports/ReportSettings";
+import { useToast } from "@/components/ui/Toast";
 import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
@@ -49,13 +50,15 @@ export default function SettingsPage() {
   const [activeCategory, setActiveCategory] = useState("integrations");
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
 
+  const toast = useToast();
   const settings = useQuery(api.functions.listSettings);
   const currentUser = useQuery(api.users.getCurrentUser);
   const updateSetting = useMutation(api.functions.updateSetting);
   const upgradeAllAgents = useMutation(api.functions.upgradeAllAgentsModel);
+  const resetAllSettings = useMutation(api.functions.resetAllSettings);
 
   const completeStep = useMutation(api.guidance.completeSetupStep);
-  const [formState, setFormState] = useState<Record<string, any>>({});
+  const [formState, setFormState] = useState<Record<string, string | number | boolean>>({});
 
   // Filter categories based on user role
   const visibleCategories = SETTING_CATEGORIES.filter((category) => {
@@ -71,7 +74,7 @@ export default function SettingsPage() {
     completeStep({ step: "settingsReviewed" }).catch(() => {});
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleSave = async (key: string, value: any, description?: string) => {
+  const handleSave = async (key: string, value: string | number | boolean, description?: string) => {
     setSaveStatus("saving");
     try {
       await updateSetting({ key, value, description });
@@ -83,12 +86,12 @@ export default function SettingsPage() {
     }
   };
 
-  const getSetting = (key: string, defaultValue: any = "") => {
+  const getSetting = <T extends string | number | boolean>(key: string, defaultValue: T = "" as T): T => {
     const setting = settings?.find((s) => s.key === key);
-    return formState[key] ?? setting?.value ?? defaultValue;
+    return (formState[key] ?? setting?.value ?? defaultValue) as T;
   };
 
-  const updateFormState = (key: string, value: any) => {
+  const updateFormState = (key: string, value: string | number | boolean) => {
     setFormState((prev) => ({ ...prev, [key]: value }));
   };
 
@@ -833,14 +836,25 @@ export default function SettingsPage() {
                       Esta acción no se puede deshacer.
                     </p>
                     <button
-                      onClick={() => {
+                      onClick={async () => {
                         if (
                           window.confirm(
                             "¿Estás seguro de restablecer toda la configuración? Esto no se puede deshacer."
                           )
                         ) {
-                          // Would implement reset logic here
-                          alert("La funcionalidad de restablecimiento se implementará aquí");
+                          try {
+                            const result = await resetAllSettings();
+                            setFormState({});
+                            toast.success(
+                              "Configuración restablecida",
+                              `Se eliminaron ${result.deleted} configuraciones.`
+                            );
+                          } catch (err: unknown) {
+                            toast.error(
+                              "Error al restablecer",
+                              "No se pudo restablecer la configuración. Intenta de nuevo."
+                            );
+                          }
                         }
                       }}
                       className="px-4 py-2 rounded-lg bg-red-50 text-red-700 text-sm font-medium hover:bg-red-500/20 transition-colors border border-red-200"
