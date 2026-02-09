@@ -3,14 +3,15 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@convex/_generated/api";
-import { Database, X, Plus, Coins, FileCheck, Timer } from "lucide-react";
+import { Database, X, Plus } from "lucide-react";
 import Link from "next/link";
-import { HeroMetric, HeroMetricSkeleton, SecondaryMetric, SecondaryMetricSkeleton } from "@/components/dashboard/HeroMetric";
+import { HeroMetric, HeroMetricSkeleton } from "@/components/dashboard/HeroMetric";
 import { ActivityChart, ActivityChartSkeleton } from "@/components/dashboard/ActivityChart";
 import { TopAgentsTable, TopAgentsTableSkeleton } from "@/components/dashboard/TopAgentsTable";
 import { AgentStatusBar } from "@/components/dashboard/AgentStatusBar";
 import { ActivitySummary } from "@/components/dashboard/ActivitySummary";
 import { ContentPipeline } from "@/components/dashboard/ContentPipeline";
+import { NeedsAttention, NeedsAttentionSkeleton } from "@/components/dashboard/NeedsAttention";
 import { translate } from "@/lib/language";
 import { useToast } from "@/components/ui/Toast";
 
@@ -36,10 +37,11 @@ export default function DashboardPage() {
   const pipelineMetrics = useQuery(api.analytics.getContentPipelineMetrics, dateRange);
   const agentPerformance = useQuery(api.analytics.getAgentPerformanceSummary, dateRange);
 
-  // Existing queries — kept for components that need them
+  // Existing queries
   const controlStatus = useQuery(api.controlCenter.getControlCenterStatus);
   const activity = useQuery(api.controlCenter.getRecentActivity, {});
   const content = useQuery(api.functions.listContent, {});
+  const agents = useQuery(api.functions.listAgents, {});
 
   // Content counts for ContentPipeline
   const contentCounts = useMemo(() => {
@@ -51,6 +53,67 @@ export default function DashboardPage() {
       scheduled: content.filter((c: Record<string, unknown>) => c.status === "scheduled").length,
       published: content.filter((c: Record<string, unknown>) => c.status === "published").length,
     };
+  }, [content]);
+
+  // NeedsAttention data
+  const attentionData = useMemo(() => {
+    const agentErrors = agents
+      ? agents.filter((a: Record<string, unknown>) => a.status === "error").length
+      : 0;
+    const contentInReview = contentCounts?.review ?? 0;
+    const failedExecutions = analytics?.recentExecutions
+      ? analytics.recentExecutions.filter(
+          (e: { status: string; timestamp: number }) =>
+            (e.status === "failed" || e.status === "failure") &&
+            e.timestamp > Date.now() - 24 * 60 * 60 * 1000
+        ).length
+      : 0;
+    return { agentErrors, contentInReview, failedExecutions };
+  }, [agents, contentCounts, analytics]);
+
+  // Compute weekly trends from tasksByDay
+  const trends = useMemo(() => {
+    if (!analytics?.tasksByDay) return { executions: 0, successRate: 0, cost: 0 };
+
+    const entries = Object.entries(analytics.tasksByDay)
+      .sort(([a], [b]) => a.localeCompare(b));
+
+    const currentWeek = entries.slice(-7);
+    const previousWeek = entries.slice(-14, -7);
+
+    const sumTotal = (arr: typeof entries) => arr.reduce((s, [, d]) => s + d.total, 0);
+    const sumCompleted = (arr: typeof entries) => arr.reduce((s, [, d]) => s + d.completed, 0);
+
+    const currExec = sumTotal(currentWeek);
+    const prevExec = sumTotal(previousWeek);
+    const execTrend = prevExec > 0 ? ((currExec - prevExec) / prevExec) * 100 : 0;
+
+    const currSuccess = currExec > 0 ? (sumCompleted(currentWeek) / currExec) * 100 : 0;
+    const prevSuccess = prevExec > 0 ? (sumCompleted(previousWeek) / prevExec) * 100 : 0;
+    const successTrend = prevSuccess > 0 ? currSuccess - prevSuccess : 0;
+
+    // Cost trend: use total cost / 2 as approximation for period comparison
+    const costTrend = 0; // Cost per-day data not available in tasksByDay
+
+    return { executions: execTrend, successRate: successTrend, cost: costTrend };
+  }, [analytics?.tasksByDay]);
+
+  // Sparkline data for content card
+  const contentSparkData = useMemo(() => {
+    if (!content) return undefined;
+    // Group content by creation day (last 8 days)
+    const now = Date.now();
+    const days = Array.from({ length: 8 }, (_, i) => {
+      const d = new Date(now - (7 - i) * 24 * 60 * 60 * 1000);
+      return d.toISOString().split("T")[0];
+    });
+    return days.map((day) =>
+      content.filter((c: Record<string, unknown>) => {
+        const created = c._creationTime as number | undefined;
+        if (!created) return false;
+        return new Date(created).toISOString().split("T")[0] === day;
+      }).length
+    );
   }, [content]);
 
   // User sync effect
@@ -114,7 +177,7 @@ export default function DashboardPage() {
     }
   };
 
-  // Live clock — updates every minute
+  // Live clock
   const [currentTime, setCurrentTime] = useState(new Date());
   useEffect(() => {
     const interval = setInterval(() => setCurrentTime(new Date()), 60_000);
@@ -132,7 +195,7 @@ export default function DashboardPage() {
   });
   const timeStr = currentTime.toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit" });
 
-  // Derive sparkline data from tasksByDay for hero metrics
+  // Derive sparkline data from tasksByDay
   const kpiSparkData = useMemo(() => {
     if (!analytics?.tasksByDay) return undefined;
     const entries = Object.entries(analytics.tasksByDay)
@@ -141,7 +204,7 @@ export default function DashboardPage() {
     return entries.map(([, stats]) => stats.total);
   }, [analytics?.tasksByDay]);
 
-  // Top agents data for table
+  // Top agents data
   const topAgentsData = useMemo(() => {
     if (!agentPerformance) return [];
     return agentPerformance.map((a) => ({
@@ -155,169 +218,145 @@ export default function DashboardPage() {
 
   const isLoading = !analytics;
 
-  // Format helpers
-  const formatTokens = (v: number) => {
-    if (v >= 1_000_000) return `${(v / 1_000_000).toFixed(1)}M`;
-    if (v >= 1_000) return `${(v / 1_000).toFixed(1)}K`;
-    return Math.round(v).toLocaleString();
-  };
-
-  const formatDuration = (v: number) => {
-    const secs = v / 1000;
-    if (secs < 60) return `${secs.toFixed(1)}s`;
-    return `${(secs / 60).toFixed(1)}m`;
-  };
+  // Total content for 4th KPI card
+  const totalContent = content?.length ?? 0;
+  const publishedContent = contentCounts?.published ?? 0;
 
   return (
-    <div className="space-y-8 stagger-children">
-      {/* Migration Banner */}
+    <div className="space-y-6 stagger-children">
+      {/* Migration Banner — compact toast-like */}
       {showMigrationBanner && (
-        <div className="rounded-xl border border-[var(--warning)]/20 bg-[var(--warning)]/5 p-4 animate-fade-in">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex items-start gap-3 flex-1">
-              <Database className="w-5 h-5 text-[var(--warning)] shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-medium text-[var(--text-primary)] mb-1">
-                  {translate("auth_migracion_titulo")}
-                </p>
-                <p className="text-xs text-[var(--text-secondary)] mb-3">
-                  {translate("auth_migracion_descripcion")}
-                </p>
+        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 animate-fade-in">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3 flex-1">
+              <Database className="w-4 h-4 text-amber-600 shrink-0" />
+              <p className="text-xs text-gray-600">
+                {translate("auth_migracion_titulo")} —{" "}
                 <button
                   onClick={handleMigration}
                   disabled={migrating}
-                  className="px-3 py-1.5 text-sm bg-[var(--warning)] hover:brightness-110 disabled:opacity-50 text-black font-medium rounded-md transition-all"
+                  className="text-amber-600 hover:underline font-medium disabled:opacity-50"
                 >
                   {migrating ? "Migrando..." : translate("auth_migracion_boton")}
                 </button>
-              </div>
+              </p>
             </div>
             <button
               onClick={() => {
                 setShowMigrationBanner(false);
                 localStorage.setItem("amd_migration_dismissed", "true");
               }}
-              className="text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors"
+              className="text-gray-400 hover:text-gray-900 transition-colors"
             >
-              <X className="w-4 h-4" />
+              <X className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
       )}
 
-      {/* Section A: Minimal Header */}
+      {/* Header */}
       <div className="flex items-baseline justify-between">
         <div>
-          <h1 className="text-base font-medium text-[var(--text-primary)]">
+          <h1 className="text-base font-medium text-gray-900">
             {greeting}, {userName}
           </h1>
-          <p className="text-xs text-[var(--text-tertiary)] capitalize mt-0.5">
+          <p className="text-xs text-gray-400 capitalize mt-0.5">
             {dateStr} &middot; {timeStr}
           </p>
         </div>
         <Link
           href="/control-center"
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white transition-colors"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
         >
           <Plus className="h-3.5 w-3.5" />
           Nueva Tarea
         </Link>
       </div>
 
-      {/* Section B: 3 Hero Metrics */}
-      <div>
-        {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <HeroMetricSkeleton />
-            <HeroMetricSkeleton />
-            <HeroMetricSkeleton />
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <HeroMetric
-              label="Ejecuciones"
-              value={analytics.overview.totalExecutions}
-              sparkData={kpiSparkData}
-              sparkColor="#5B6AE8"
-            />
-            <HeroMetric
-              label="Tasa Exito"
-              value={analytics.overview.successRate}
-              isPercentage
-              sparkColor="#2FCC71"
-            />
-            <HeroMetric
-              label="Costo"
-              value={analytics.overview.totalCost}
-              isCurrency
-              sparkColor="#F5A623"
-            />
-          </div>
-        )}
+      {/* 4 KPI Cards */}
+      {isLoading ? (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <HeroMetricSkeleton />
+          <HeroMetricSkeleton />
+          <HeroMetricSkeleton />
+          <HeroMetricSkeleton />
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <HeroMetric
+            label="Ejecuciones"
+            value={analytics.overview.totalExecutions}
+            sparkData={kpiSparkData}
+            sparkColor="#2563eb"
+            trend={trends.executions}
+            href="/results"
+          />
+          <HeroMetric
+            label="Tasa Exito"
+            value={analytics.overview.successRate}
+            isPercentage
+            sparkColor="#16a34a"
+            trend={trends.successRate}
+          />
+          <HeroMetric
+            label="Costo"
+            value={analytics.overview.totalCost}
+            isCurrency
+            sparkColor="#d97706"
+            trend={trends.cost}
+          />
+          <HeroMetric
+            label="Contenido"
+            value={totalContent}
+            sparkData={contentSparkData}
+            sparkColor="#7c3aed"
+            formatter={(v) => `${Math.round(v)}`}
+            href="/content"
+          />
+        </div>
+      )}
 
-        {/* Secondary metrics strip */}
-        <div className="flex items-center gap-6 mt-4 flex-wrap">
-          {isLoading ? (
-            <>
-              <SecondaryMetricSkeleton />
-              <SecondaryMetricSkeleton />
-              <SecondaryMetricSkeleton />
-            </>
+      {/* Activity Chart (60%) + Needs Attention (40%) */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        <div className="lg:col-span-3">
+          {!analytics ? (
+            <ActivityChartSkeleton />
           ) : (
-            <>
-              <SecondaryMetric
-                icon={<Coins className="h-3.5 w-3.5" />}
-                label="tokens"
-                value={analytics.overview.totalTokens}
-                formatter={formatTokens}
-              />
-              <SecondaryMetric
-                icon={<FileCheck className="h-3.5 w-3.5" />}
-                label="publicados"
-                value={analytics.overview.contentCreated}
-              />
-              <SecondaryMetric
-                icon={<Timer className="h-3.5 w-3.5" />}
-                label="duracion"
-                value={analytics.overview.avgDuration}
-                formatter={formatDuration}
-              />
-            </>
+            <ActivityChart tasksByDay={analytics.tasksByDay} />
+          )}
+        </div>
+        <div className="lg:col-span-2">
+          {!agents && !analytics ? (
+            <NeedsAttentionSkeleton />
+          ) : (
+            <NeedsAttention
+              agentErrors={attentionData.agentErrors}
+              contentInReview={attentionData.contentInReview}
+              failedExecutions={attentionData.failedExecutions}
+            />
           )}
         </div>
       </div>
 
-      {/* Section C: Full-Width Activity Chart */}
-      <div>
-        {!analytics ? (
-          <ActivityChartSkeleton />
-        ) : (
-          <ActivityChart tasksByDay={analytics.tasksByDay} />
-        )}
-      </div>
-
-      {/* Section D: 60/40 Detail Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-        {/* Left 60%: Top Agents */}
-        <div className="lg:col-span-3">
+      {/* Detail Grid: Agents (1/3) + Pipeline (1/3) + Activity (1/3) */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div>
           {!agentPerformance ? (
             <TopAgentsTableSkeleton />
           ) : (
             <TopAgentsTable agents={topAgentsData} />
           )}
         </div>
-
-        {/* Right 40%: Pipeline + Activity */}
-        <div className="lg:col-span-2 space-y-6">
+        <div>
           <ContentPipeline counts={contentCounts} contentItems={content} />
+        </div>
+        <div>
           <ActivitySummary activities={activity} />
         </div>
       </div>
 
-      {/* Section E: Agent Status Bar */}
-      <div>
-        <AgentStatusBar agentsByDepartment={controlStatus?.agentsByDepartment} />
-      </div>
+      {/* Agent Status Bar */}
+      <AgentStatusBar agentsByDepartment={controlStatus?.agentsByDepartment} />
     </div>
   );
 }

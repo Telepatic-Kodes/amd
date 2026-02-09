@@ -150,19 +150,19 @@ export function CommandPalette() {
       />
 
       {/* Palette */}
-      <div className="relative w-full max-w-lg rounded-xl border border-[var(--border)] bg-zinc-900 shadow-2xl overflow-hidden">
+      <div className="relative w-full max-w-lg rounded-xl border border-[var(--border)] bg-gray-50 shadow-2xl overflow-hidden">
         {/* Search input */}
         <div className="flex items-center gap-3 border-b border-[var(--border)] px-4 py-3">
-          <Search className="h-4 w-4 text-zinc-500 shrink-0" />
+          <Search className="h-4 w-4 text-gray-400 shrink-0" />
           <input
             ref={inputRef}
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Buscar paginas, agentes, acciones..."
-            className="flex-1 bg-transparent text-sm text-[var(--text-primary)] placeholder:text-zinc-600 outline-none"
+            className="flex-1 bg-transparent text-sm text-[var(--text-primary)] placeholder:text-gray-400 outline-none"
           />
-          <kbd className="hidden sm:inline-flex text-[10px] text-zinc-600 border border-zinc-700 rounded px-1.5 py-0.5">
+          <kbd className="hidden sm:inline-flex text-[10px] text-gray-400 border border-gray-300 rounded px-1.5 py-0.5">
             ESC
           </kbd>
         </div>
@@ -170,13 +170,13 @@ export function CommandPalette() {
         {/* Results */}
         <div className="max-h-[300px] overflow-y-auto py-2">
           {filtered.length === 0 ? (
-            <div className="px-4 py-6 text-center text-sm text-zinc-500">
+            <div className="px-4 py-6 text-center text-sm text-gray-400">
               Sin resultados para &ldquo;{query}&rdquo;
             </div>
           ) : (
             Array.from(grouped.entries()).map(([section, sectionItems]) => (
               <div key={section}>
-                <div className="px-4 py-1.5 text-[10px] uppercase tracking-wider text-zinc-600 font-medium">
+                <div className="px-4 py-1.5 text-[10px] uppercase tracking-wider text-gray-400 font-medium">
                   {section}
                 </div>
                 {sectionItems.map((item) => {
@@ -194,13 +194,13 @@ export function CommandPalette() {
                         isSelected ? "bg-white/[0.06]" : "hover:bg-white/[0.03]"
                       )}
                     >
-                      <Icon className={cn("h-4 w-4 shrink-0", isSelected ? "text-emerald-400" : "text-zinc-500")} />
+                      <Icon className={cn("h-4 w-4 shrink-0", isSelected ? "text-emerald-400" : "text-gray-400")} />
                       <div className="min-w-0 flex-1">
-                        <span className={cn("text-sm", isSelected ? "text-white" : "text-zinc-300")}>
+                        <span className={cn("text-sm", isSelected ? "text-gray-900" : "text-gray-700")}>
                           {item.label}
                         </span>
                         {item.description && (
-                          <span className="text-xs text-zinc-600 ml-2">{item.description}</span>
+                          <span className="text-xs text-gray-400 ml-2">{item.description}</span>
                         )}
                       </div>
                     </button>
@@ -212,10 +212,10 @@ export function CommandPalette() {
         </div>
 
         {/* Footer hint */}
-        <div className="border-t border-[var(--border)] px-4 py-2 flex items-center gap-3 text-[10px] text-zinc-600">
-          <span><kbd className="border border-zinc-700 rounded px-1 py-0.5 mr-0.5">↑↓</kbd> navegar</span>
-          <span><kbd className="border border-zinc-700 rounded px-1 py-0.5 mr-0.5">↵</kbd> seleccionar</span>
-          <span><kbd className="border border-zinc-700 rounded px-1 py-0.5 mr-0.5">esc</kbd> cerrar</span>
+        <div className="border-t border-[var(--border)] px-4 py-2 flex items-center gap-3 text-[10px] text-gray-400">
+          <span><kbd className="border border-gray-300 rounded px-1 py-0.5 mr-0.5">↑↓</kbd> navegar</span>
+          <span><kbd className="border border-gray-300 rounded px-1 py-0.5 mr-0.5">↵</kbd> seleccionar</span>
+          <span><kbd className="border border-gray-300 rounded px-1 py-0.5 mr-0.5">esc</kbd> cerrar</span>
         </div>
       </div>
     </div>

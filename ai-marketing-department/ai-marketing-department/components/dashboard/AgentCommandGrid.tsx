@@ -1,17 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { AgentCard } from "./AgentCard";
+import { AgentSlideOver } from "./AgentSlideOver";
 import { cn } from "@/lib/utils";
 
 interface Agent {
   _id: string;
+  agentId?: string;
   name: string;
   department: string;
   status: "active" | "paused" | "error" | "maintenance";
   role?: string;
+  description?: string;
+  systemPrompt?: string;
+  config?: Record<string, unknown>;
 }
 
 interface AgentLastActivity {
@@ -21,10 +25,17 @@ interface AgentLastActivity {
 
 type ExecutionStatus = "success" | "failure" | "completed" | "failed" | "running" | "pending";
 
+interface ActivityItem {
+  description: string;
+  timestamp: number;
+  status: string;
+}
+
 interface AgentCommandGridProps {
   agentsByDepartment?: Record<string, Agent[]>;
   lastActivityByAgent?: Record<string, AgentLastActivity>;
   recentExecutionsByAgent?: Record<string, ExecutionStatus[]>;
+  activityByAgent?: Record<string, ActivityItem[]>;
 }
 
 const departmentLabels: Record<string, string> = {
@@ -42,13 +53,16 @@ function DepartmentCard({
   agents,
   lastActivityByAgent,
   recentExecutionsByAgent,
+  activityByAgent,
+  onSelectAgent,
 }: {
   dept: string;
   agents: Agent[];
   lastActivityByAgent?: Record<string, AgentLastActivity>;
   recentExecutionsByAgent?: Record<string, ExecutionStatus[]>;
+  activityByAgent?: Record<string, ActivityItem[]>;
+  onSelectAgent: (agent: Agent) => void;
 }) {
-  const router = useRouter();
   const [expanded, setExpanded] = useState(false);
 
   // Separate lead (director/cmo) from team
@@ -100,7 +114,7 @@ function DepartmentCard({
             lastAction={lastActivityByAgent?.[lead._id]?.description}
             lastActionTime={lastActivityByAgent?.[lead._id]?.timestamp}
             recentExecutions={recentExecutionsByAgent?.[lead._id]}
-            onClick={() => router.push("/agents")}
+            onClick={() => onSelectAgent(lead)}
           />
         </div>
       )}
@@ -120,7 +134,7 @@ function DepartmentCard({
                     lastAction={activity?.description}
                     lastActionTime={activity?.timestamp}
                     recentExecutions={recentExecutionsByAgent?.[agent._id]}
-                    onClick={() => router.push("/agents")}
+                    onClick={() => onSelectAgent(agent)}
                   />
                 );
               })}
@@ -149,7 +163,9 @@ function DepartmentCard({
   );
 }
 
-export function AgentCommandGrid({ agentsByDepartment, lastActivityByAgent, recentExecutionsByAgent }: AgentCommandGridProps) {
+export function AgentCommandGrid({ agentsByDepartment, lastActivityByAgent, recentExecutionsByAgent, activityByAgent }: AgentCommandGridProps) {
+  const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
+
   if (!agentsByDepartment) return <AgentCommandGridSkeleton />;
 
   const departments = Object.entries(agentsByDepartment);
@@ -167,9 +183,24 @@ export function AgentCommandGrid({ agentsByDepartment, lastActivityByAgent, rece
             agents={agents}
             lastActivityByAgent={lastActivityByAgent}
             recentExecutionsByAgent={recentExecutionsByAgent}
+            activityByAgent={activityByAgent}
+            onSelectAgent={setSelectedAgent}
           />
         ))}
       </div>
+
+      {/* Agent Slide-over */}
+      {selectedAgent && (
+        <AgentSlideOver
+          agent={{
+            ...selectedAgent,
+            agentId: selectedAgent.agentId || selectedAgent._id,
+          }}
+          recentActivity={activityByAgent?.[selectedAgent._id]}
+          recentExecutions={recentExecutionsByAgent?.[selectedAgent._id]}
+          onClose={() => setSelectedAgent(null)}
+        />
+      )}
     </div>
   );
 }
@@ -177,7 +208,7 @@ export function AgentCommandGrid({ agentsByDepartment, lastActivityByAgent, rece
 function AgentCommandGridSkeleton() {
   return (
     <div className="space-y-4">
-      <div className="h-4 w-48 rounded bg-zinc-800 animate-pulse" />
+      <div className="h-4 w-48 rounded bg-gray-100 animate-pulse" />
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
         {[...Array(6)].map((_, i) => (
           <div key={i} className="h-24 rounded-lg border border-[var(--border)] bg-[var(--surface-raised)] animate-pulse" />

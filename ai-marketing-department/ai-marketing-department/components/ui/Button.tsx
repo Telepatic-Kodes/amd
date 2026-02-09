@@ -13,19 +13,19 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         className={cn(
           // Base styles
-          "inline-flex items-center justify-center rounded-lg font-bold transition-all duration-200",
+          "inline-flex items-center justify-center rounded-lg font-medium transition-all duration-200",
           "disabled:opacity-50 disabled:pointer-events-none",
-          "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-black",
+          "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white",
 
           // Variants
           {
-            "bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:from-indigo-400 hover:to-purple-500 shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40 focus:ring-indigo-500":
+            "bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500":
               variant === "primary",
-            "bg-zinc-800 text-white hover:bg-zinc-700 focus:ring-zinc-500":
+            "bg-gray-100 text-gray-700 hover:bg-gray-200 focus:ring-gray-400":
               variant === "secondary",
-            "border-2 border-zinc-700 text-white hover:border-zinc-600 hover:bg-zinc-900 focus:ring-zinc-500":
+            "border border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-gray-400":
               variant === "outline",
-            "text-zinc-400 hover:text-white hover:bg-zinc-900 focus:ring-zinc-500":
+            "text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:ring-gray-400":
               variant === "ghost",
           },
 

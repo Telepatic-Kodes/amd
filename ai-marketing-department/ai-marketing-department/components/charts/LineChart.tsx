@@ -62,8 +62,8 @@ export function LineChartComponent({
   // If no data or no lines, return empty container
   if (!data || !lines || lines.length === 0) {
     return (
-      <div className={`${className} flex items-center justify-center bg-zinc-900/20 rounded-lg`} style={{ height }}>
-        <p className="text-zinc-500">No data available</p>
+      <div className={`${className} flex items-center justify-center bg-gray-50 rounded-lg`} style={{ height }}>
+        <p className="text-gray-400">No data available</p>
       </div>
     );
   }
@@ -120,7 +120,7 @@ export function LineChartComponent({
                 fontSize: '12px',
               }}
               formatter={(value) => (
-                <span className="text-zinc-400">{value}</span>
+                <span className="text-gray-500">{value}</span>
               )}
             />
           )}

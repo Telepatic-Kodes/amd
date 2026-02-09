@@ -187,7 +187,7 @@ export function PublishToTwitterButton({
   const tweets = splitIntoThread(contentBody);
   const isThread = tweets.length > 1;
   const totalChars = tweets.reduce((sum, tweet) => sum + tweet.length, 0);
-  const isRateLimited = connectionStatus?.dailyTweetCount && connectionStatus.dailyTweetCount >= 50;
+  const isRateLimited = (connectionStatus?.dailyTweetCount ?? 0) >= 50;
 
   return (
     <div className={cn("space-y-3", className)}>

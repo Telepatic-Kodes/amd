@@ -76,18 +76,18 @@ const CONTENT_STATUSES = [
 ];
 
 const typeColors: Record<string, string> = {
-  blog: "bg-blue-500/10 text-blue-400 border-blue-500/20",
-  social_linkedin: "bg-sky-500/10 text-sky-400 border-sky-500/20",
-  social_twitter: "bg-cyan-500/10 text-cyan-400 border-cyan-500/20",
-  social_instagram: "bg-pink-500/10 text-pink-400 border-pink-500/20",
-  social_tiktok: "bg-purple-500/10 text-purple-400 border-purple-500/20",
-  email: "bg-green-500/10 text-green-400 border-green-500/20",
-  newsletter: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-  ad_copy: "bg-orange-500/10 text-orange-400 border-orange-500/20",
-  landing_page: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
-  whitepaper: "bg-indigo-500/10 text-indigo-400 border-indigo-500/20",
-  case_study: "bg-violet-500/10 text-violet-400 border-violet-500/20",
-  video_script: "bg-red-500/10 text-red-400 border-red-500/20",
+  blog: "bg-blue-50 text-blue-700 border-blue-200",
+  social_linkedin: "bg-sky-50 text-sky-700 border-sky-200",
+  social_twitter: "bg-cyan-50 text-cyan-700 border-cyan-200",
+  social_instagram: "bg-pink-50 text-pink-700 border-pink-200",
+  social_tiktok: "bg-purple-50 text-purple-700 border-purple-200",
+  email: "bg-green-50 text-green-700 border-green-200",
+  newsletter: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  ad_copy: "bg-orange-50 text-orange-700 border-orange-200",
+  landing_page: "bg-yellow-50 text-yellow-700 border-yellow-200",
+  whitepaper: "bg-indigo-50 text-indigo-700 border-indigo-200",
+  case_study: "bg-violet-50 text-violet-700 border-violet-200",
+  video_script: "bg-red-50 text-red-700 border-red-200",
 };
 
 const typeIcons: Record<string, React.ElementType> = {
@@ -139,7 +139,7 @@ function StatusActions({ content, onStatusChange }: { content: any; onStatusChan
       <button
         onClick={() => handleStatusChange("review")}
         disabled={isLoading}
-        className="w-full px-3 py-1.5 rounded bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-white text-sm font-medium transition-colors flex items-center justify-center gap-2"
+        className="w-full px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-medium transition-colors flex items-center justify-center gap-2"
       >
         {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
         Enviar a Revisión
@@ -154,14 +154,14 @@ function StatusActions({ content, onStatusChange }: { content: any; onStatusChan
         <button
           onClick={() => handleStatusChange("revision_needed")}
           disabled={isLoading}
-          className="flex-1 px-3 py-1.5 rounded border border-zinc-700 hover:bg-zinc-800 disabled:opacity-50 text-zinc-300 text-sm font-medium transition-colors"
+          className="flex-1 px-3 py-1.5 rounded border border-gray-300 hover:bg-gray-50 disabled:opacity-50 text-gray-700 text-sm font-medium transition-colors"
         >
           Solicitar Cambios
         </button>
         <button
           onClick={() => handleStatusChange("approved")}
           disabled={isLoading}
-          className="flex-1 px-3 py-1.5 rounded bg-green-500 hover:bg-green-600 disabled:opacity-50 text-white text-sm font-medium transition-colors flex items-center justify-center gap-2"
+          className="flex-1 px-3 py-1.5 rounded bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white text-sm font-medium transition-colors flex items-center justify-center gap-2"
         >
           {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
           Aprobar
@@ -177,14 +177,14 @@ function StatusActions({ content, onStatusChange }: { content: any; onStatusChan
         <button
           onClick={() => handleStatusChange("scheduled")}
           disabled={isLoading}
-          className="flex-1 px-3 py-1.5 rounded border border-zinc-700 hover:bg-zinc-800 disabled:opacity-50 text-zinc-300 text-sm font-medium transition-colors"
+          className="flex-1 px-3 py-1.5 rounded border border-gray-300 hover:bg-gray-50 disabled:opacity-50 text-gray-700 text-sm font-medium transition-colors"
         >
           Programar
         </button>
         <button
           onClick={() => handleStatusChange("published")}
           disabled={isLoading}
-          className="flex-1 px-3 py-1.5 rounded bg-indigo-500 hover:bg-indigo-600 disabled:opacity-50 text-white text-sm font-medium transition-colors flex items-center justify-center gap-2"
+          className="flex-1 px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-medium transition-colors flex items-center justify-center gap-2"
         >
           {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
           Publicar Ahora
@@ -199,7 +199,7 @@ function StatusActions({ content, onStatusChange }: { content: any; onStatusChan
       <button
         onClick={() => handleStatusChange("archived")}
         disabled={isLoading}
-        className="w-full px-3 py-1.5 rounded border border-zinc-700 hover:bg-zinc-800 disabled:opacity-50 text-zinc-400 text-sm font-medium transition-colors"
+        className="w-full px-3 py-1.5 rounded border border-gray-300 hover:bg-gray-50 disabled:opacity-50 text-gray-500 text-sm font-medium transition-colors"
       >
         Archivar
       </button>
@@ -279,14 +279,14 @@ export default function ContentPage() {
     return (
       <div className="space-y-8">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-blue-500/10">
-            <FileText className="h-6 w-6 text-blue-400" />
+          <div className="p-2 rounded-xl bg-blue-50">
+            <FileText className="h-6 w-6 text-blue-600" />
           </div>
           <div>
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+            <h1 className="text-5xl font-bold text-gray-900">
               Content
             </h1>
-            <p className="text-zinc-400 mt-1 text-lg">
+            <p className="text-gray-500 mt-1 text-lg">
               Create, edit and publish content.
             </p>
           </div>
@@ -301,14 +301,14 @@ export default function ContentPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-blue-500/10">
-            <FileText className="h-6 w-6 text-blue-400" />
+          <div className="p-2 rounded-xl bg-blue-50">
+            <FileText className="h-6 w-6 text-blue-600" />
           </div>
           <div>
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+            <h1 className="text-5xl font-bold text-gray-900">
               Contenido
             </h1>
-            <p className="text-zinc-400 mt-1 text-lg">
+            <p className="text-gray-500 mt-1 text-lg">
               Gestiona tus {content.length} piezas de contenido.
             </p>
           </div>
@@ -316,14 +316,14 @@ export default function ContentPage() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowGenerateModal(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 transition-colors text-sm font-medium"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-50 text-purple-700 hover:bg-purple-100 transition-colors text-sm font-medium"
           >
             <Sparkles className="h-4 w-4" />
             Generar Contenido
           </button>
           <Link
             href="/content/pipeline"
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 transition-colors text-sm font-medium"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors text-sm font-medium"
           >
             <Columns3 className="h-4 w-4" />
             Vista Pipeline
@@ -338,20 +338,20 @@ export default function ContentPage() {
 
         {/* Search */}
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
           <input
             type="text"
             placeholder="Buscar contenido..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-lg border border-zinc-800 bg-zinc-950/50 py-2 pl-10 pr-4 text-sm text-white placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="w-full rounded-lg border border-gray-300 bg-white py-2 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </div>
 
         {/* Advanced Filters Toggle Button */}
         <button
           onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-          className="px-6 py-3 rounded-lg border border-zinc-800 bg-zinc-950/50 text-white hover:bg-zinc-900 transition-colors flex items-center gap-2"
+          className="px-6 py-3 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
         >
           <Filter className="h-4 w-4" />
           Filtros avanzados
@@ -359,14 +359,14 @@ export default function ContentPage() {
         </button>
 
         {/* View Mode Toggle */}
-        <div className="flex rounded-lg border border-zinc-800 overflow-hidden">
+        <div className="flex rounded-lg border border-gray-300 overflow-hidden">
           <button
             onClick={() => setViewMode("grid")}
             className={cn(
               "p-2 transition-colors",
               viewMode === "grid"
-                ? "bg-indigo-500/10 text-indigo-400"
-                : "text-zinc-400 hover:bg-zinc-800"
+                ? "bg-blue-50 text-blue-600"
+                : "text-gray-400 hover:bg-gray-100"
             )}
             title="Grid view"
           >
@@ -377,8 +377,8 @@ export default function ContentPage() {
             className={cn(
               "p-2 transition-colors",
               viewMode === "list"
-                ? "bg-indigo-500/10 text-indigo-400"
-                : "text-zinc-400 hover:bg-zinc-800"
+                ? "bg-blue-50 text-blue-600"
+                : "text-gray-400 hover:bg-gray-100"
             )}
             title="List view"
           >
@@ -397,14 +397,14 @@ export default function ContentPage() {
             transition={{ duration: 0.2 }}
             className="overflow-hidden"
           >
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center p-4 rounded-lg border border-zinc-800 bg-zinc-950/30">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center p-4 rounded-lg border border-gray-200 bg-white">
               {/* Type Filter */}
               <div className="relative flex-1">
-                <Filter className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+                <Filter className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                 <select
                   value={typeFilter}
                   onChange={(e) => setTypeFilter(e.target.value)}
-                  className="w-full appearance-none rounded-lg border border-zinc-800 bg-zinc-950/50 py-2 pl-10 pr-8 text-sm text-white focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  className="w-full appearance-none rounded-lg border border-gray-300 bg-white py-2 pl-10 pr-8 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                 >
                   {CONTENT_TYPES.map((type) => (
                     <option key={type.value} value={type.value}>
@@ -412,7 +412,7 @@ export default function ContentPage() {
                     </option>
                   ))}
                 </select>
-                <ChevronDown className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500 pointer-events-none" />
+                <ChevronDown className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 pointer-events-none" />
               </div>
 
               {/* Status Filter */}
@@ -420,7 +420,7 @@ export default function ContentPage() {
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="w-full appearance-none rounded-lg border border-zinc-800 bg-zinc-950/50 py-2 pl-4 pr-8 text-sm text-white focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  className="w-full appearance-none rounded-lg border border-gray-300 bg-white py-2 pl-4 pr-8 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                 >
                   {CONTENT_STATUSES.map((status) => (
                     <option key={status.value} value={status.value}>
@@ -428,7 +428,7 @@ export default function ContentPage() {
                     </option>
                   ))}
                 </select>
-                <ChevronDown className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500 pointer-events-none" />
+                <ChevronDown className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 pointer-events-none" />
               </div>
             </div>
           </motion.div>
@@ -489,7 +489,7 @@ export default function ContentPage() {
                         hover
                         className={cn(
                           "cursor-pointer transition-all h-full relative overflow-hidden",
-                          isSelected && "border-indigo-500 shadow-lg shadow-indigo-500/20"
+                          isSelected && "border-blue-500 ring-1 ring-blue-500"
                         )}
                       >
                         {/* Quick Actions on Hover */}
@@ -499,7 +499,7 @@ export default function ContentPage() {
                               e.stopPropagation();
                               copyToClipboard(item.body);
                             }}
-                            className="p-1.5 rounded-lg bg-zinc-900/90 backdrop-blur-sm hover:bg-zinc-800 text-zinc-400 hover:text-white transition-colors"
+                            className="p-1.5 rounded-lg bg-white/90 backdrop-blur-sm hover:bg-gray-100 text-gray-400 hover:text-gray-700 shadow-sm transition-colors"
                             title="Copy content"
                           >
                             <Copy className="h-3.5 w-3.5" />
@@ -509,7 +509,7 @@ export default function ContentPage() {
                               e.stopPropagation();
                               setSelectedContent(item.contentId);
                             }}
-                            className="p-1.5 rounded-lg bg-zinc-900/90 backdrop-blur-sm hover:bg-zinc-800 text-zinc-400 hover:text-white transition-colors"
+                            className="p-1.5 rounded-lg bg-white/90 backdrop-blur-sm hover:bg-gray-100 text-gray-400 hover:text-gray-700 shadow-sm transition-colors"
                             title="Preview"
                           >
                             <Eye className="h-3.5 w-3.5" />
@@ -519,7 +519,7 @@ export default function ContentPage() {
                               e.stopPropagation();
                               setEditingContent(item);
                             }}
-                            className="p-1.5 rounded-lg bg-zinc-900/90 backdrop-blur-sm hover:bg-zinc-800 text-zinc-400 hover:text-white transition-colors"
+                            className="p-1.5 rounded-lg bg-white/90 backdrop-blur-sm hover:bg-gray-100 text-gray-400 hover:text-gray-700 shadow-sm transition-colors"
                             title="Edit content"
                           >
                             <Edit2 className="h-3.5 w-3.5" />
@@ -538,7 +538,7 @@ export default function ContentPage() {
                             <div
                               className={cn(
                                 "flex h-10 w-10 items-center justify-center rounded-lg",
-                                typeColors[item.type] || "bg-zinc-500/10 text-zinc-400"
+                                typeColors[item.type] || "bg-gray-100 text-gray-500"
                               )}
                             >
                               <TypeIcon className="h-5 w-5" />
@@ -547,21 +547,21 @@ export default function ContentPage() {
                           </div>
 
                           {/* Title */}
-                          <h3 className="font-semibold text-white text-sm line-clamp-2 mb-2">
+                          <h3 className="font-semibold text-gray-900 text-sm line-clamp-2 mb-2">
                             {item.title}
                           </h3>
 
                           {/* Preview */}
-                          <p className="text-xs text-zinc-400 line-clamp-3 mb-3">
+                          <p className="text-xs text-gray-500 line-clamp-3 mb-3">
                             {item.summary || item.body.slice(0, 150)}
                           </p>
 
                           {/* Footer */}
-                          <div className="flex items-center justify-between pt-3 border-t border-zinc-800">
+                          <div className="flex items-center justify-between pt-3 border-t border-gray-100">
                             <Badge className={typeColors[item.type]}>
                               {formatTypeName(item.type)}
                             </Badge>
-                            <div className="flex items-center gap-1 text-xs text-zinc-500">
+                            <div className="flex items-center gap-1 text-xs text-gray-400">
                               <Calendar className="h-3 w-3" />
                               <span>{formatDate(item.createdAt)}</span>
                             </div>
@@ -595,7 +595,7 @@ export default function ContentPage() {
                         hover
                         className={cn(
                           "cursor-pointer transition-all",
-                          isSelected && "border-indigo-500 shadow-lg shadow-indigo-500/20"
+                          isSelected && "border-blue-500 ring-1 ring-blue-500"
                         )}
                       >
                         <div
@@ -608,18 +608,18 @@ export default function ContentPage() {
                             <div
                               className={cn(
                                 "flex h-10 w-10 items-center justify-center rounded-lg shrink-0",
-                                typeColors[item.type] || "bg-zinc-500/10 text-zinc-400"
+                                typeColors[item.type] || "bg-gray-100 text-gray-500"
                               )}
                             >
                               <TypeIcon className="h-5 w-5" />
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
-                                <h3 className="font-medium text-white text-sm truncate">
+                                <h3 className="font-medium text-gray-900 text-sm truncate">
                                   {item.title}
                                 </h3>
                               </div>
-                              <p className="text-xs text-zinc-500 truncate">
+                              <p className="text-xs text-gray-400 truncate">
                                 {item.summary || item.body.slice(0, 100)}
                               </p>
                             </div>
@@ -629,7 +629,7 @@ export default function ContentPage() {
                                   e.stopPropagation();
                                   copyToClipboard(item.body);
                                 }}
-                                className="p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white transition-colors"
+                                className="p-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-400 hover:text-gray-700 transition-colors"
                                 title="Copy"
                               >
                                 <Copy className="h-3.5 w-3.5" />
@@ -639,7 +639,7 @@ export default function ContentPage() {
                                   e.stopPropagation();
                                   setSelectedContent(item.contentId);
                                 }}
-                                className="p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white transition-colors"
+                                className="p-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-400 hover:text-gray-700 transition-colors"
                                 title="Preview"
                               >
                                 <Eye className="h-3.5 w-3.5" />
@@ -649,7 +649,7 @@ export default function ContentPage() {
                               {formatTypeName(item.type)}
                             </Badge>
                             <StatusBadge status={item.status} />
-                            <span className="text-xs text-zinc-500 shrink-0">
+                            <span className="text-xs text-gray-400 shrink-0">
                               {formatDate(item.createdAt)}
                             </span>
                           </div>
@@ -676,13 +676,13 @@ export default function ContentPage() {
               <Card className="sticky top-6">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-xl font-semibold text-white flex items-center gap-2">
-                      <Sparkles className="h-4 w-4 text-blue-400" />
+                    <h3 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+                      <Sparkles className="h-4 w-4 text-blue-600" />
                       Detalles del Contenido
                     </h3>
                     <button
                       onClick={() => setSelectedContent(null)}
-                      className="p-1.5 rounded-lg hover:bg-zinc-800 text-zinc-500 hover:text-white transition-colors"
+                      className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700 transition-colors"
                     >
                       <X className="h-4 w-4" />
                     </button>
@@ -691,8 +691,8 @@ export default function ContentPage() {
                   <div className="space-y-4">
                     {/* Title */}
                     <div>
-                      <p className="text-xs text-zinc-500 mb-1 uppercase tracking-wider">Título</p>
-                      <p className="text-white font-medium">
+                      <p className="text-xs text-gray-400 mb-1 uppercase tracking-wider">Título</p>
+                      <p className="text-gray-900 font-medium">
                         {selectedContentData.title}
                       </p>
                     </div>
@@ -700,19 +700,19 @@ export default function ContentPage() {
                     {/* Type & Status */}
                     <div className="flex gap-4">
                       <div>
-                        <p className="text-xs text-zinc-500 mb-1 uppercase tracking-wider">Tipo</p>
+                        <p className="text-xs text-gray-400 mb-1 uppercase tracking-wider">Tipo</p>
                         <Badge className={typeColors[selectedContentData.type]}>
                           {formatTypeName(selectedContentData.type)}
                         </Badge>
                       </div>
                       <div>
-                        <p className="text-xs text-zinc-500 mb-1 uppercase tracking-wider">Estado</p>
+                        <p className="text-xs text-gray-400 mb-1 uppercase tracking-wider">Estado</p>
                         <StatusBadge status={selectedContentData.status} />
                       </div>
                     </div>
 
                     {/* Status Actions */}
-                    <div className="pt-3 border-t border-zinc-800">
+                    <div className="pt-3 border-t border-gray-200">
                       <StatusActions
                         content={selectedContentData}
                         onStatusChange={async (status) => {
@@ -733,18 +733,18 @@ export default function ContentPage() {
                     />
 
                     {/* Version History (Collapsible) */}
-                    <div className="pt-3 border-t border-zinc-800">
+                    <div className="pt-3 border-t border-gray-200">
                       <button
                         onClick={() => setShowVersionHistory(!showVersionHistory)}
                         className="flex items-center justify-between w-full text-left"
                       >
                         <div className="flex items-center gap-2">
-                          <History className="h-4 w-4 text-zinc-400" />
-                          <p className="text-sm font-medium text-white">Historial de versiones</p>
+                          <History className="h-4 w-4 text-gray-400" />
+                          <p className="text-sm font-medium text-gray-900">Historial de versiones</p>
                         </div>
                         <ChevronDown
                           className={cn(
-                            "h-4 w-4 text-zinc-400 transition-transform",
+                            "h-4 w-4 text-gray-400 transition-transform",
                             showVersionHistory && "rotate-180"
                           )}
                         />
@@ -776,7 +776,7 @@ export default function ContentPage() {
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         onClick={() => setEditingContent(selectedContentData)}
-                        className="flex-1 px-4 py-2 rounded-lg bg-indigo-500 hover:bg-indigo-600 text-white font-medium transition-colors flex items-center justify-center gap-2"
+                        className="flex-1 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors flex items-center justify-center gap-2"
                       >
                         <Edit2 className="h-4 w-4" />
                         Editar
@@ -785,7 +785,7 @@ export default function ContentPage() {
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         onClick={() => setAnalysisContentId(selectedContentData._id)}
-                        className="px-4 py-2 rounded-lg bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 font-medium transition-colors flex items-center justify-center gap-2 border border-purple-500/20"
+                        className="px-4 py-2 rounded-lg bg-purple-50 hover:bg-purple-100 text-purple-700 font-medium transition-colors flex items-center justify-center gap-2 border border-purple-200"
                       >
                         <Sparkles className="h-4 w-4" />
                         Analizar
@@ -795,17 +795,17 @@ export default function ContentPage() {
                     {/* Preview with copy button */}
                     <div>
                       <div className="flex items-center justify-between mb-1">
-                        <p className="text-xs text-zinc-500 uppercase tracking-wider">Vista Previa</p>
+                        <p className="text-xs text-gray-400 uppercase tracking-wider">Vista Previa</p>
                         <button
                           onClick={() => copyToClipboard(selectedContentData.body)}
-                          className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-colors"
+                          className="text-xs text-blue-600 hover:text-blue-700 flex items-center gap-1 transition-colors"
                         >
                           <Copy className="h-3 w-3" />
                           Copiar todo
                         </button>
                       </div>
-                      <div className="rounded-lg bg-zinc-900/50 p-3 max-h-48 overflow-y-auto border border-zinc-800/50">
-                        <p className="text-zinc-300 text-sm whitespace-pre-wrap">
+                      <div className="rounded-lg bg-gray-50 p-3 max-h-48 overflow-y-auto border border-gray-200">
+                        <p className="text-gray-700 text-sm whitespace-pre-wrap">
                           {selectedContentData.body.slice(0, 500)}
                           {selectedContentData.body.length > 500 && "..."}
                         </p>
@@ -815,20 +815,20 @@ export default function ContentPage() {
                   {/* Metadata */}
                   {selectedContentData.metadata && (
                     <div>
-                      <p className="text-xs text-zinc-500 mb-1">Metadatos</p>
+                      <p className="text-xs text-gray-400 mb-1">Metadatos</p>
                       <div className="grid grid-cols-2 gap-2">
                         {selectedContentData.metadata.wordCount && (
-                          <div className="rounded-lg bg-zinc-900/50 p-2">
-                            <p className="text-xs text-zinc-500">Palabras</p>
-                            <p className="text-zinc-300 font-mono">
+                          <div className="rounded-lg bg-gray-50 p-2">
+                            <p className="text-xs text-gray-400">Palabras</p>
+                            <p className="text-gray-700 font-mono">
                               {selectedContentData.metadata.wordCount}
                             </p>
                           </div>
                         )}
                         {selectedContentData.metadata.readingTime && (
-                          <div className="rounded-lg bg-zinc-900/50 p-2">
-                            <p className="text-xs text-zinc-500">Lectura</p>
-                            <p className="text-zinc-300 font-mono">
+                          <div className="rounded-lg bg-gray-50 p-2">
+                            <p className="text-xs text-gray-400">Lectura</p>
+                            <p className="text-gray-700 font-mono">
                               {selectedContentData.metadata.readingTime} min
                             </p>
                           </div>
@@ -840,7 +840,7 @@ export default function ContentPage() {
                   {/* Keywords */}
                   {selectedContentData.metadata?.targetKeywords && (
                     <div>
-                      <p className="text-xs text-zinc-500 mb-1">Palabras Clave</p>
+                      <p className="text-xs text-gray-400 mb-1">Palabras Clave</p>
                       <div className="flex flex-wrap gap-1">
                         {selectedContentData.metadata.targetKeywords.map(
                           (keyword: string) => (
@@ -857,23 +857,23 @@ export default function ContentPage() {
                   {/* SEO */}
                   {selectedContentData.seo && (
                     <div>
-                      <p className="text-xs text-zinc-500 mb-1">SEO</p>
-                      <div className="rounded-lg bg-zinc-900/50 p-3 space-y-2">
+                      <p className="text-xs text-gray-400 mb-1">SEO</p>
+                      <div className="rounded-lg bg-gray-50 p-3 space-y-2">
                         <div>
-                          <p className="text-xs text-zinc-500">Meta Title</p>
-                          <p className="text-zinc-300 text-sm">
+                          <p className="text-xs text-gray-400">Meta Title</p>
+                          <p className="text-gray-700 text-sm">
                             {selectedContentData.seo.metaTitle}
                           </p>
                         </div>
                         <div>
-                          <p className="text-xs text-zinc-500">Meta Description</p>
-                          <p className="text-zinc-300 text-sm">
+                          <p className="text-xs text-gray-400">Meta Description</p>
+                          <p className="text-gray-700 text-sm">
                             {selectedContentData.seo.metaDescription}
                           </p>
                         </div>
                         <div>
-                          <p className="text-xs text-zinc-500">Slug</p>
-                          <p className="text-zinc-300 font-mono text-sm">
+                          <p className="text-xs text-gray-400">Slug</p>
+                          <p className="text-gray-700 font-mono text-sm">
                             /{selectedContentData.seo.slug}
                           </p>
                         </div>
@@ -884,12 +884,12 @@ export default function ContentPage() {
                   {/* Published URL */}
                   {selectedContentData.publishedUrl && (
                     <div>
-                      <p className="text-xs text-zinc-500 mb-1">URL Publicada</p>
+                      <p className="text-xs text-gray-400 mb-1">URL Publicada</p>
                       <a
                         href={selectedContentData.publishedUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-indigo-400 hover:text-indigo-300 text-sm flex items-center gap-1"
+                        className="text-blue-600 hover:text-blue-700 text-sm flex items-center gap-1"
                       >
                         <Eye className="h-3 w-3" />
                         Ver publicado
@@ -899,10 +899,10 @@ export default function ContentPage() {
 
                   {/* Dates */}
                   <div>
-                    <p className="text-xs text-zinc-500 mb-1 uppercase tracking-wider">Creado</p>
+                    <p className="text-xs text-gray-400 mb-1 uppercase tracking-wider">Creado</p>
                     <div className="flex items-center gap-2 text-sm">
-                      <Calendar className="h-4 w-4 text-zinc-500" />
-                      <span className="text-zinc-300">
+                      <Calendar className="h-4 w-4 text-gray-400" />
+                      <span className="text-gray-700">
                         {formatDate(selectedContentData.createdAt)}
                       </span>
                     </div>

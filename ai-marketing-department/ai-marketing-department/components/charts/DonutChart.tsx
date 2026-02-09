@@ -95,9 +95,9 @@ export function DonutChart({
                         className="w-3 h-3 rounded-full"
                         style={{ backgroundColor: item.color || seriesColors[data.indexOf(item) % seriesColors.length] }}
                       />
-                      <span className="text-white font-medium">{item.name}</span>
+                      <span className="text-gray-900 font-medium">{item.name}</span>
                     </div>
-                    <div className="mt-1 text-zinc-400 text-sm">
+                    <div className="mt-1 text-gray-500 text-sm">
                       {valueFormatter(item.value)} ({percent}%)
                     </div>
                   </div>
@@ -115,7 +115,7 @@ export function DonutChart({
                 paddingLeft: '20px',
               }}
               formatter={(value, entry: any) => (
-                <span className="text-zinc-400">{value}</span>
+                <span className="text-gray-500">{value}</span>
               )}
             />
           )}
@@ -131,7 +131,7 @@ export function DonutChart({
                 <tspan
                   x="50%"
                   dy={centerLabel ? "-0.5em" : "0"}
-                  className="fill-white text-2xl font-bold"
+                  className="fill-gray-900 text-2xl font-bold"
                 >
                   {centerValue}
                 </tspan>
@@ -140,7 +140,7 @@ export function DonutChart({
                 <tspan
                   x="50%"
                   dy={centerValue ? "1.5em" : "0"}
-                  className="fill-zinc-400 text-xs"
+                  className="fill-gray-500 text-xs"
                 >
                   {centerLabel}
                 </tspan>

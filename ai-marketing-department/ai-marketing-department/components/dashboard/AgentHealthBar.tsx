@@ -103,7 +103,7 @@ export function AgentHealthBar({ agentsByDepartment }: AgentHealthBarProps) {
 function AgentHealthBarSkeleton() {
   return (
     <div className="space-y-3">
-      <div className="h-3 w-28 rounded bg-zinc-800 animate-pulse" />
+      <div className="h-3 w-28 rounded bg-gray-100 animate-pulse" />
       <div className="flex items-center gap-2 flex-wrap">
         {[...Array(7)].map((_, i) => (
           <div key={i} className="h-9 w-28 rounded-lg border border-[var(--border)] bg-[var(--surface-raised)] animate-pulse" />

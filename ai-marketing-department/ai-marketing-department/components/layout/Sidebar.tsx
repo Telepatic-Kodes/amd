@@ -46,14 +46,12 @@ export function Sidebar() {
     return (
         <div
             data-tour="sidebar"
-            className="hidden md:flex h-screen w-56 flex-col fixed left-0 top-0 bg-[var(--surface-0)]"
+            className="hidden md:flex h-screen w-56 flex-col fixed left-0 top-0 bg-white border-r border-gray-200"
         >
             {/* Logo Header */}
             <div className="flex h-14 items-center justify-between px-5">
-                <Link href="/" className="flex items-center gap-2.5 font-semibold text-[var(--text-primary)]">
-                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[var(--accent-subtle)]">
-                        <Sparkles className="h-3.5 w-3.5 text-[var(--accent)]" />
-                    </div>
+                <Link href="/" className="flex items-center gap-2.5 font-semibold text-gray-900">
+                    <Sparkles className="h-4 w-4 text-blue-600" />
                     <span className="text-sm tracking-tight">AMD</span>
                 </Link>
                 <NotificationCenter />
@@ -71,32 +69,31 @@ export function Sidebar() {
                             key={item.href}
                             href={item.href}
                             className={cn(
-                                "flex items-center gap-3 rounded-lg px-3 py-2 text-[13px] font-medium transition-colors mb-0.5 group relative",
+                                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors mb-0.5 relative",
                                 isActive
-                                    ? "bg-[var(--accent-subtle)] text-[var(--text-primary)]"
-                                    : "text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] hover:bg-white/[0.03]"
+                                    ? "bg-blue-50 text-blue-600"
+                                    : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
                             )}
                             title={item.label}
                         >
+                            {isActive && (
+                                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-blue-600 rounded-r" />
+                            )}
                             <Icon className={cn(
-                                "h-4 w-4 flex-shrink-0 transition-colors",
-                                isActive ? "text-[var(--accent)]" : ""
+                                "h-4 w-4 flex-shrink-0",
+                                isActive ? "text-blue-600" : ""
                             )} />
                             <span className="flex-1">{item.name}</span>
                             {badgeCount > 0 && (
                                 <span className={cn(
                                     "text-[10px] font-semibold min-w-[18px] h-[18px] flex items-center justify-center rounded-full",
                                     item.badgeKey === "control"
-                                        ? "bg-[var(--error)]/20 text-[var(--error)]"
-                                        : "bg-[var(--warning)]/20 text-[var(--warning)]"
+                                        ? "bg-red-50 text-red-600"
+                                        : "bg-amber-50 text-amber-600"
                                 )}>
                                     {badgeCount}
                                 </span>
                             )}
-                            {/* Tooltip on hover */}
-                            <div className="absolute left-56 ml-2 px-2 py-1 bg-[var(--surface-3)] text-[var(--text-primary)] text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
-                                {item.label}
-                            </div>
                         </Link>
                     );
                 })}
@@ -104,14 +101,14 @@ export function Sidebar() {
 
             {/* Cmd+K hint */}
             <div className="px-4 py-2">
-                <div className="flex items-center justify-center gap-1.5 text-[10px] text-[var(--text-tertiary)]">
-                    <kbd className="border border-[var(--border)] rounded px-1.5 py-0.5 text-[var(--text-tertiary)]">⌘K</kbd>
+                <div className="flex items-center justify-center gap-1.5 text-[10px] text-gray-400">
+                    <kbd className="border border-gray-200 rounded px-1.5 py-0.5 text-gray-400 bg-gray-50">⌘K</kbd>
                     <span>Buscar</span>
                 </div>
             </div>
 
             {/* User Menu */}
-            <div className="border-t border-[var(--border)] p-3">
+            <div className="border-t border-gray-200 p-3">
                 <div className="flex items-center justify-center">
                     <UserMenu />
                 </div>

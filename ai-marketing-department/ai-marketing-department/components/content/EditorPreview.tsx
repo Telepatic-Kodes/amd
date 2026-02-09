@@ -21,6 +21,7 @@ interface EditorPreviewProps {
  */
 export function EditorPreview({ content, className }: EditorPreviewProps) {
   const editor = useEditor({
+    immediatelyRender: false,
     extensions: [
       StarterKit.configure({
         heading: {

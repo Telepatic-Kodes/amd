@@ -11,8 +11,8 @@ export function Card({ children, className, hover = false, ...props }: CardProps
   return (
     <div
       className={cn(
-        "rounded-lg border border-[var(--border)] bg-[var(--surface-raised)]",
-        hover && "transition-colors hover:border-[var(--border-hover)]",
+        "rounded-xl border border-gray-100 bg-white shadow-sm",
+        hover && "transition-shadow hover:shadow-md",
         className
       )}
       {...props}
@@ -29,7 +29,7 @@ interface CardHeaderProps {
 
 export function CardHeader({ children, className }: CardHeaderProps) {
   return (
-    <div className={cn("border-b border-[var(--border)] px-4 md:px-6 py-3 md:py-4", className)}>
+    <div className={cn("border-b border-gray-100 px-4 md:px-6 py-3 md:py-4", className)}>
       {children}
     </div>
   );
@@ -51,7 +51,7 @@ interface CardFooterProps {
 
 export function CardFooter({ children, className }: CardFooterProps) {
   return (
-    <div className={cn("border-t border-[var(--border)] px-4 md:px-6 py-3 md:py-4", className)}>
+    <div className={cn("border-t border-gray-100 px-4 md:px-6 py-3 md:py-4", className)}>
       {children}
     </div>
   );

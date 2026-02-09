@@ -122,8 +122,8 @@ export function ChartsRowSkeleton() {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
       {[0, 1].map((i) => (
         <div key={i} className="rounded-lg border border-[var(--border)] bg-[var(--surface-raised)] p-5">
-          <div className="h-3 w-32 rounded bg-zinc-800 animate-pulse mb-4" />
-          <div className="h-[220px] rounded bg-zinc-800/30 animate-pulse" />
+          <div className="h-3 w-32 rounded bg-gray-100 animate-pulse mb-4" />
+          <div className="h-[220px] rounded bg-gray-100/30 animate-pulse" />
         </div>
       ))}
     </div>

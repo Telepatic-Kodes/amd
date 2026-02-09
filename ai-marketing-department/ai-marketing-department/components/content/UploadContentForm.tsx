@@ -39,19 +39,19 @@ export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {
 
   const validateForm = (): boolean => {
     if (!title.trim()) {
-      setError("Title is required");
+      setError("El título es requerido");
       return false;
     }
     if (title.trim().length < 5) {
-      setError("Title must be at least 5 characters");
+      setError("El título debe tener al menos 5 caracteres");
       return false;
     }
     if (!body.trim()) {
-      setError("Content body is required");
+      setError("El contenido es requerido");
       return false;
     }
     if (body.trim().length < 50) {
-      setError("Content body must be at least 50 characters");
+      setError("El contenido debe tener al menos 50 caracteres");
       return false;
     }
     return true;
@@ -82,7 +82,7 @@ export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {
         createdBy: "system" as any,
       });
 
-      success("Content created!", "Your content has been added as a draft.");
+      success("Contenido creado", "Tu contenido ha sido agregado como borrador.");
       setTitle("");
       setBody("");
       setSummary("");
@@ -90,7 +90,7 @@ export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {
       setIsOpen(false);
       onSuccess?.();
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to create content";
+      const message = err instanceof Error ? err.message : "Error al crear contenido";
       setError(message);
       showError("Error", message);
     } finally {
@@ -127,7 +127,7 @@ export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {
             className="flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-500 hover:bg-indigo-600 text-white font-medium transition-colors"
           >
             <Plus className="h-4 w-4" />
-            Add Content
+            Agregar Contenido
           </motion.button>
         ) : (
           <motion.form
@@ -135,10 +135,10 @@ export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             onSubmit={handleSubmit}
-            className="p-4 rounded-lg border border-zinc-800 bg-zinc-950/50 space-y-4"
+            className="p-4 rounded-lg border border-gray-200 bg-white shadow-sm space-y-4"
           >
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-white font-medium">Create New Content</h3>
+              <h3 className="text-gray-900 font-medium">Crear Nuevo Contenido</h3>
               <div className="flex items-center gap-2">
                 <button
                   type="button"
@@ -155,7 +155,7 @@ export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {
                     setIsOpen(false);
                     setError(null);
                   }}
-                  className="p-1 rounded hover:bg-zinc-800 text-zinc-400"
+                  className="p-1 rounded hover:bg-gray-100 text-gray-400"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -163,7 +163,7 @@ export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {
             </div>
 
             {error && (
-              <div className="text-sm text-red-400 bg-red-500/10 rounded p-2">
+              <div className="text-sm text-red-600 bg-red-50 rounded p-2">
                 {error}
               </div>
             )}
@@ -171,11 +171,11 @@ export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {
             <div className="space-y-4">
               {/* Type */}
               <div>
-                <label className="block text-xs text-zinc-500 mb-1">Content Type *</label>
+                <label className="block text-xs text-gray-500 mb-1">Tipo de Contenido *</label>
                 <select
                   value={type}
                   onChange={(e) => setType(e.target.value)}
-                  className="w-full rounded-lg border border-zinc-800 bg-zinc-900 py-2 px-3 text-sm text-white focus:border-indigo-500 focus:outline-none"
+                  className="w-full rounded-lg border border-gray-300 bg-white py-2 px-3 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                   required
                 >
                   {CONTENT_TYPES.map((opt) => (
@@ -188,43 +188,43 @@ export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {
 
               {/* Title */}
               <div>
-                <label className="block text-xs text-zinc-500 mb-1">Title *</label>
+                <label className="block text-xs text-gray-500 mb-1">Título *</label>
                 <input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Enter content title"
+                  placeholder="Título del contenido"
                   required
-                  className="w-full rounded-lg border border-zinc-800 bg-zinc-900 py-2 px-3 text-sm text-white placeholder-zinc-500 focus:border-indigo-500 focus:outline-none"
+                  className="w-full rounded-lg border border-gray-300 bg-white py-2 px-3 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                 />
-                <p className="text-xs text-zinc-500 mt-1">{title.length} characters</p>
+                <p className="text-xs text-gray-500 mt-1">{title.length} caracteres</p>
               </div>
 
               {/* Body */}
               <div>
-                <label className="block text-xs text-zinc-500 mb-1">Content *</label>
+                <label className="block text-xs text-gray-500 mb-1">Contenido *</label>
                 <textarea
                   value={body}
                   onChange={(e) => setBody(e.target.value)}
-                  placeholder="Enter your content here... (minimum 50 characters)"
+                  placeholder="Escribe tu contenido aquí... (mínimo 50 caracteres)"
                   required
                   rows={8}
-                  className="w-full rounded-lg border border-zinc-800 bg-zinc-900 py-2 px-3 text-sm text-white placeholder-zinc-500 focus:border-indigo-500 focus:outline-none font-mono"
+                  className="w-full rounded-lg border border-gray-300 bg-white py-2 px-3 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 font-mono"
                 />
-                <p className="text-xs text-zinc-500 mt-1">
-                  {body.length} characters • {body.split(/\s+/).filter(w => w.length > 0).length} words
+                <p className="text-xs text-gray-500 mt-1">
+                  {body.length} caracteres • {body.split(/\s+/).filter(w => w.length > 0).length} palabras
                 </p>
               </div>
 
               {/* Summary */}
               <div>
-                <label className="block text-xs text-zinc-500 mb-1">Summary (Optional)</label>
+                <label className="block text-xs text-gray-500 mb-1">Resumen (Opcional)</label>
                 <textarea
                   value={summary}
                   onChange={(e) => setSummary(e.target.value)}
-                  placeholder="Brief summary of the content..."
+                  placeholder="Breve resumen del contenido..."
                   rows={3}
-                  className="w-full rounded-lg border border-zinc-800 bg-zinc-900 py-2 px-3 text-sm text-white placeholder-zinc-500 focus:border-indigo-500 focus:outline-none"
+                  className="w-full rounded-lg border border-gray-300 bg-white py-2 px-3 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -236,17 +236,17 @@ export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {
                   setIsOpen(false);
                   setError(null);
                 }}
-                className="flex-1 py-2 rounded-lg border border-zinc-800 text-zinc-400 hover:bg-zinc-800 transition-colors"
+                className="flex-1 py-2 rounded-lg border border-gray-300 text-gray-500 hover:bg-gray-50 transition-colors"
               >
-                Cancel
+                Cancelar
               </button>
               <button
                 type="submit"
                 disabled={isLoading}
-                className="flex-1 py-2 rounded-lg bg-indigo-500 hover:bg-indigo-600 text-white font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                className="flex-1 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
-                Create Content
+                Crear Contenido
               </button>
             </div>
           </motion.form>

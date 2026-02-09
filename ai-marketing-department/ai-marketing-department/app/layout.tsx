@@ -27,9 +27,9 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider appearance={{ cssLayerName: 'clerk' }}>
-      <html lang="es" className="dark">
+      <html lang="es">
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white`}
+          className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-gray-900`}
         >
           <ConvexClientProvider>
             {children}

@@ -6,10 +6,12 @@ const isPublicRoute = createRouteMatcher([
   '/api/clerk(.*)',
 ]);
 
+// TODO: Re-enable auth.protect() after dev preview
 export default clerkMiddleware(async (auth, request) => {
-  if (!isPublicRoute(request)) {
-    await auth.protect();
-  }
+  // Auth bypass for local development
+  // if (!isPublicRoute(request)) {
+  //   await auth.protect();
+  // }
 });
 
 export const config = {

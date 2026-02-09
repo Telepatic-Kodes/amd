@@ -1,36 +1,36 @@
-// Chart theme — refined dark mode with blue-violet accent
-// Matches the new 4-tier surface + accent token system
+// Chart theme — light & minimal with clean blue accent
+// Matches the new light surface + accent token system
 
 export const chartColors = {
   // Primary palette
-  primary: '#5B6AE8',    // accent blue-violet
-  secondary: '#8b5cf6',  // violet-500
-  tertiary: '#06b6d4',   // cyan-500
-  quaternary: '#2FCC71',  // success green
-  quinary: '#F5A623',    // warning amber
+  primary: '#2563eb',    // accent blue
+  secondary: '#7c3aed',  // violet-600
+  tertiary: '#0891b2',   // cyan-600
+  quaternary: '#16a34a',  // green-600
+  quinary: '#d97706',    // amber-600
 
   // Semantic
-  success: '#2FCC71',
-  warning: '#F5A623',
-  error: '#E5484D',
-  info: '#5B6AE8',
+  success: '#16a34a',
+  warning: '#d97706',
+  error: '#dc2626',
+  info: '#2563eb',
 
-  // Neutral
-  grid: '#1a1a1e',       // surface-2
-  axis: '#5c5c5e',       // text-tertiary
-  text: '#8b8b8d',       // text-secondary
-  textMuted: '#5c5c5e',  // text-tertiary
-  background: '#0a0a0b', // surface-0
+  // Neutral — light mode
+  grid: '#f3f4f6',       // gray-100
+  axis: '#9ca3af',       // gray-400
+  text: '#6b7280',       // gray-500
+  textMuted: '#9ca3af',  // gray-400
+  background: '#ffffff',
 
   // Department colors (kept vivid for differentiation)
   departments: {
     leadership: '#6366f1',   // indigo
     content: '#3b82f6',      // blue
     social: '#06b6d4',       // cyan
-    demandgen: '#F5A623',    // amber
-    seo: '#2FCC71',          // green
+    demandgen: '#d97706',    // amber
+    seo: '#16a34a',          // green
     brand: '#ec4899',        // pink
-    ops: '#8b5cf6',          // violet
+    ops: '#7c3aed',          // violet
   },
 } as const;
 
@@ -49,18 +49,18 @@ export const seriesColors = [
 export const gradients = {
   primary: {
     id: 'primaryGradient',
-    start: 'rgba(91, 106, 232, 0.3)',
-    end: 'rgba(91, 106, 232, 0)',
+    start: 'rgba(37, 99, 235, 0.2)',
+    end: 'rgba(37, 99, 235, 0)',
   },
   success: {
     id: 'successGradient',
-    start: 'rgba(47, 204, 113, 0.3)',
-    end: 'rgba(47, 204, 113, 0)',
+    start: 'rgba(22, 163, 74, 0.2)',
+    end: 'rgba(22, 163, 74, 0)',
   },
   info: {
     id: 'infoGradient',
-    start: 'rgba(91, 106, 232, 0.3)',
-    end: 'rgba(91, 106, 232, 0)',
+    start: 'rgba(37, 99, 235, 0.2)',
+    end: 'rgba(37, 99, 235, 0)',
   },
 } as const;
 
@@ -75,26 +75,26 @@ export const chartConfig = {
   activeDotRadius: 6,
 } as const;
 
-// Tooltip styling — updated to match new surfaces
+// Tooltip styling — light mode
 export const tooltipStyle = {
   contentStyle: {
-    backgroundColor: '#1a1a1e', // surface-2
-    border: '1px solid rgba(255, 255, 255, 0.08)',
+    backgroundColor: '#ffffff',
+    border: '1px solid #e5e7eb',
     borderRadius: '8px',
     padding: '8px 12px',
-    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
   },
   labelStyle: {
-    color: '#ededef', // text-primary
+    color: '#111827',
     fontWeight: 600,
     marginBottom: '4px',
   },
   itemStyle: {
-    color: '#8b8b8d', // text-secondary
+    color: '#6b7280',
     padding: '2px 0',
   },
   cursor: {
-    stroke: '#232328', // surface-3
+    stroke: '#e5e7eb',
     strokeWidth: 1,
     strokeDasharray: '4 4',
   },
