@@ -79,6 +79,7 @@ import type * as monitoring_index from "../monitoring/index.js";
 import type * as monitoring_mutations from "../monitoring/mutations.js";
 import type * as monitoring_queries from "../monitoring/queries.js";
 import type * as multiChannelGenerate from "../multiChannelGenerate.js";
+import type * as oauthHelpers from "../oauthHelpers.js";
 import type * as onboarding from "../onboarding.js";
 import type * as platformApprovals from "../platformApprovals.js";
 import type * as reports from "../reports.js";
@@ -171,6 +172,7 @@ declare const fullApi: ApiFromModules<{
   "monitoring/mutations": typeof monitoring_mutations;
   "monitoring/queries": typeof monitoring_queries;
   multiChannelGenerate: typeof multiChannelGenerate;
+  oauthHelpers: typeof oauthHelpers;
   onboarding: typeof onboarding;
   platformApprovals: typeof platformApprovals;
   reports: typeof reports;

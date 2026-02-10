@@ -1,6 +1,7 @@
 import { httpRouter } from "convex/server";
 import { httpAction } from "./_generated/server";
 import { internal } from "./_generated/api";
+import { getFrontendUrl } from "./oauthHelpers";
 
 const http = httpRouter();
 
@@ -15,7 +16,7 @@ http.route({
   method: "GET",
   handler: httpAction(async (ctx, request) => {
     const clientId = process.env.LINKEDIN_CLIENT_ID;
-    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+    const frontendUrl = getFrontendUrl();
 
     if (!clientId) {
       return new Response("LinkedIn credentials no configuradas", {
@@ -60,7 +61,7 @@ http.route({
   path: "/linkedin/callback",
   method: "GET",
   handler: httpAction(async (ctx, request) => {
-    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+    const frontendUrl = getFrontendUrl();
 
     const url = new URL(request.url);
     const code = url.searchParams.get("code");
@@ -130,7 +131,7 @@ http.route({
   method: "GET",
   handler: httpAction(async (ctx, request) => {
     const clientId = process.env.TWITTER_CLIENT_ID;
-    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+    const frontendUrl = getFrontendUrl();
 
     if (!clientId) {
       return new Response("Twitter credentials no configuradas", {
@@ -196,7 +197,7 @@ http.route({
   path: "/twitter/callback",
   method: "GET",
   handler: httpAction(async (ctx, request) => {
-    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+    const frontendUrl = getFrontendUrl();
 
     const url = new URL(request.url);
     const code = url.searchParams.get("code");
@@ -285,7 +286,7 @@ http.route({
   method: "GET",
   handler: httpAction(async (ctx, request) => {
     const appId = process.env.META_APP_ID;
-    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+    const frontendUrl = getFrontendUrl();
 
     if (!appId) {
       return new Response("Meta App ID no configurado", {
@@ -329,7 +330,7 @@ http.route({
   path: "/instagram/callback",
   method: "GET",
   handler: httpAction(async (ctx, request) => {
-    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+    const frontendUrl = getFrontendUrl();
 
     const url = new URL(request.url);
     const code = url.searchParams.get("code");
