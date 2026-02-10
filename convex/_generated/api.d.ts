@@ -25,6 +25,7 @@ import type * as controlCenter from "../controlCenter.js";
 import type * as crons from "../crons.js";
 import type * as crossPlatform_actions from "../crossPlatform/actions.js";
 import type * as crossPlatform_queries from "../crossPlatform/queries.js";
+import type * as dataExport from "../dataExport.js";
 import type * as enrichment_index from "../enrichment/index.js";
 import type * as enrichment_mutations from "../enrichment/mutations.js";
 import type * as enrichment_orchestration from "../enrichment/orchestration.js";
@@ -119,6 +120,7 @@ declare const fullApi: ApiFromModules<{
   crons: typeof crons;
   "crossPlatform/actions": typeof crossPlatform_actions;
   "crossPlatform/queries": typeof crossPlatform_queries;
+  dataExport: typeof dataExport;
   "enrichment/index": typeof enrichment_index;
   "enrichment/mutations": typeof enrichment_mutations;
   "enrichment/orchestration": typeof enrichment_orchestration;
