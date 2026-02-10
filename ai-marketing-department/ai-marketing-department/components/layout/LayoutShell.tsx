@@ -11,12 +11,17 @@ import { CommandPalette } from "@/components/dashboard/CommandPalette";
 import { ProductTour } from "@/components/ui/ProductTour";
 import { shouldShowTour } from "@/lib/tour-utils";
 import { OfflineBanner } from "@/components/ui/OfflineBanner";
+import { SessionTimeout } from "@/components/ui/SessionTimeout";
+import { useAuthSync } from "@/hooks/useAuthSync";
 
 export function LayoutShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   // DEV BYPASS: useConvexAuth requires ConvexProviderWithClerk
   // const { isLoading, isAuthenticated } = useConvexAuth();
   const isOnboarding = pathname.startsWith("/onboarding");
+
+  // Multi-tab logout sync
+  useAuthSync();
   const [showTour, setShowTour] = useState(() => {
     if (typeof window === "undefined" || isOnboarding) return false;
     return shouldShowTour();
@@ -60,6 +65,7 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
       </div>
       <MobileNav />
       <CommandPalette />
+      <SessionTimeout />
 
       {/* Product Tour - shows only for first-time users */}
       {showTour && (

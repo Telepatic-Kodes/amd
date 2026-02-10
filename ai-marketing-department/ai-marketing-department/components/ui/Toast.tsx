@@ -20,12 +20,21 @@ import { cn } from "@/lib/utils";
 // Toast types
 export type ToastType = "success" | "error" | "info" | "warning";
 
+interface ToastAction {
+  label: string;
+  onClick: () => void;
+}
+
 interface Toast {
   id: string;
   type: ToastType;
   title: string;
   description?: string;
   duration?: number;
+  /** If true, toast won't auto-dismiss */
+  persistent?: boolean;
+  /** Optional action button */
+  action?: ToastAction;
 }
 
 interface ToastContextValue {
@@ -33,7 +42,7 @@ interface ToastContextValue {
   addToast: (toast: Omit<Toast, "id">) => void;
   removeToast: (id: string) => void;
   success: (title: string, description?: string) => void;
-  error: (title: string, description?: string) => void;
+  error: (title: string, description?: string, action?: ToastAction) => void;
   info: (title: string, description?: string) => void;
   warning: (title: string, description?: string) => void;
 }
@@ -83,12 +92,14 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
     setToasts((prev) => [...prev, newToast]);
 
-    // Auto-remove after duration
-    const duration = toast.duration ?? 4000;
-    if (duration > 0) {
-      setTimeout(() => {
-        setToasts((prev) => prev.filter((t) => t.id !== id));
-      }, duration);
+    // Auto-remove after duration (unless persistent)
+    if (!toast.persistent) {
+      const duration = toast.duration ?? 4000;
+      if (duration > 0) {
+        setTimeout(() => {
+          setToasts((prev) => prev.filter((t) => t.id !== id));
+        }, duration);
+      }
     }
   }, []);
 
@@ -104,8 +115,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   );
 
   const error = useCallback(
-    (title: string, description?: string) => {
-      addToast({ type: "error", title, description });
+    (title: string, description?: string, action?: ToastAction) => {
+      addToast({ type: "error", title, description, persistent: true, action });
     },
     [addToast]
   );
@@ -143,7 +154,11 @@ function ToastContainer({
   onRemove: (id: string) => void;
 }) {
   return (
-    <div className="fixed bottom-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none">
+    <div
+      className="fixed bottom-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none"
+      aria-live="polite"
+      aria-label="Notificaciones"
+    >
       <AnimatePresence mode="popLayout">
         {toasts.map((toast) => (
           <ToastItem key={toast.id} toast={toast} onRemove={onRemove} />
@@ -170,6 +185,7 @@ function ToastItem({
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -10, scale: 0.95 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
+      role="alert"
       className={cn(
         "pointer-events-auto flex items-start gap-3 p-4 rounded-xl border backdrop-blur-sm shadow-lg max-w-sm",
         "bg-stone-100/95",
@@ -181,15 +197,27 @@ function ToastItem({
       </div>
 
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-white">{toast.title}</p>
+        <p className="text-sm font-medium text-stone-900">{toast.title}</p>
         {toast.description && (
-          <p className="text-xs text-stone-400 mt-0.5">{toast.description}</p>
+          <p className="text-xs text-stone-500 mt-0.5">{toast.description}</p>
+        )}
+        {toast.action && (
+          <button
+            onClick={() => {
+              toast.action!.onClick();
+              onRemove(toast.id);
+            }}
+            className="mt-2 text-xs font-semibold text-orange-600 hover:text-orange-700 transition-colors"
+          >
+            {toast.action.label}
+          </button>
         )}
       </div>
 
       <button
         onClick={() => onRemove(toast.id)}
         className="shrink-0 p-1 rounded-lg hover:bg-stone-200 text-stone-500 hover:text-stone-900 transition-colors"
+        aria-label="Cerrar notificación"
       >
         <X className="h-4 w-4" />
       </button>
