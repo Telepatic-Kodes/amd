@@ -12,8 +12,8 @@ export function SessionTimeout() {
   const router = useRouter();
   const [showWarning, setShowWarning] = useState(false);
   const [secondsLeft, setSecondsLeft] = useState(120);
-  const idleTimerRef = useRef<ReturnType<typeof setTimeout>>();
-  const countdownRef = useRef<ReturnType<typeof setInterval>>();
+  const idleTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const countdownRef = useRef<ReturnType<typeof setInterval>>(undefined);
 
   // Start idle timer without resetting state (safe to call from effect body)
   const startIdleTimer = useCallback(() => {

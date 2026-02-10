@@ -26,7 +26,7 @@ export const contentSchema = z.object({
     .string()
     .min(50, "El contenido debe tener al menos 50 caracteres"),
   type: z.enum(CONTENT_TYPES, {
-    errorMap: () => ({ message: "Selecciona un tipo de contenido válido" }),
+    error: "Selecciona un tipo de contenido válido",
   }),
   summary: z
     .string()
@@ -57,7 +57,7 @@ export const contentSchema = z.object({
       targetKeywords: z.string().optional(),
       tone: z
         .enum(["professional", "casual", "friendly", "technical"], {
-          errorMap: () => ({ message: "Selecciona un tono válido" }),
+          error: "Selecciona un tono válido",
         })
         .optional(),
       targetAudience: z.string().optional(),

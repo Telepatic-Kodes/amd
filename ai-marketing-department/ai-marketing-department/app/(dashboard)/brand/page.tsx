@@ -294,7 +294,7 @@ export default function BrandPage() {
       const a = partial.audience as { segments?: unknown[] };
       if (Array.isArray(a.segments) && a.segments.length > 0) {
         result.audience = {
-          segments: a.segments.map((s: Record<string, unknown>) => ({
+          segments: (a.segments as Record<string, unknown>[]).map((s) => ({
             name: String(s.name || ""),
             demographics: String(s.demographics || ""),
             painPoints: Array.isArray(s.painPoints) ? s.painPoints : [],
