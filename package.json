@@ -23,7 +23,8 @@
     "workflow:brand": "node scripts/workflow-brand.js",
     "workflow:full": "node scripts/workflow-full.js",
     "enrich": "tsx scripts/enrich-with-claude-code.ts",
-    "enrich:watch": "watch 'npm run enrich' convex/"
+    "enrich:watch": "watch 'npm run enrich' convex/",
+    "prepare": "husky"
   },
   "dependencies": {
     "@anthropic-ai/claude-code": "^2.1.19",
