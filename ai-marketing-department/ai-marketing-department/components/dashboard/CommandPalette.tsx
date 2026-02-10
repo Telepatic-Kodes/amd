@@ -142,18 +142,19 @@ export function CommandPalette() {
   let flatIndex = -1;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-[20vh]">
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-[20vh]" role="dialog" aria-label="Paleta de comandos" aria-modal="true">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/60"
         onClick={() => setOpen(false)}
+        aria-hidden="true"
       />
 
       {/* Palette */}
-      <div className="relative w-full max-w-lg rounded-xl border border-[var(--border)] bg-stone-50 shadow-2xl overflow-hidden">
+      <div className="relative w-full max-w-lg rounded-xl border border-[var(--border)] bg-stone-50 shadow-2xl overflow-hidden" role="combobox" aria-expanded="true" aria-haspopup="listbox">
         {/* Search input */}
         <div className="flex items-center gap-3 border-b border-[var(--border)] px-4 py-3">
-          <Search className="h-4 w-4 text-stone-400 shrink-0" />
+          <Search className="h-4 w-4 text-stone-400 shrink-0" aria-hidden="true" />
           <input
             ref={inputRef}
             type="text"
@@ -162,6 +163,8 @@ export function CommandPalette() {
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Buscar paginas, agentes, acciones..."
             className="flex-1 bg-transparent text-sm text-[var(--text-primary)] placeholder:text-stone-400 outline-none"
+            aria-label="Buscar comandos"
+            aria-autocomplete="list"
           />
           <kbd className="hidden sm:inline-flex text-[10px] text-stone-400 border border-stone-300 rounded px-1.5 py-0.5">
             ESC
@@ -169,7 +172,7 @@ export function CommandPalette() {
         </div>
 
         {/* Results */}
-        <div className="max-h-[300px] overflow-y-auto py-2">
+        <div className="max-h-[300px] overflow-y-auto py-2" role="listbox" aria-label="Resultados de búsqueda">
           {filtered.length === 0 ? (
             <div className="px-4 py-6 text-center text-sm text-stone-400">
               Sin resultados para &ldquo;{query}&rdquo;
@@ -188,6 +191,8 @@ export function CommandPalette() {
                   return (
                     <button
                       key={item.id}
+                      role="option"
+                      aria-selected={isSelected}
                       onClick={() => item.action()}
                       onMouseEnter={() => setSelectedIndex(currentIndex)}
                       className={cn(

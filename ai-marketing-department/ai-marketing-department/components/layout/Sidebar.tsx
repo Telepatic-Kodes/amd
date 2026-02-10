@@ -44,8 +44,9 @@ export function Sidebar() {
     };
 
     return (
-        <div
+        <nav
             data-tour="sidebar"
+            aria-label="Navegación principal"
             className="hidden md:flex h-screen w-56 flex-col fixed left-0 top-0 bg-[#1c1917] border-r border-[#44403c]"
         >
             {/* Logo Header */}
@@ -75,6 +76,8 @@ export function Sidebar() {
                                     : "text-stone-400 hover:text-stone-200 hover:bg-[#292524]"
                             )}
                             title={item.label}
+                            aria-label={item.label}
+                            aria-current={isActive ? "page" : undefined}
                         >
                             {isActive && (
                                 <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-orange-500 rounded-r" />
@@ -117,6 +120,6 @@ export function Sidebar() {
                     <UserMenu />
                 </div>
             </div>
-        </div>
+        </nav>
     );
 }

@@ -64,10 +64,14 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex flex-col min-h-screen bg-[var(--surface-0)]">
+      {/* Skip-to-content link for keyboard/screen reader users */}
+      <a href="#main-content" className="skip-to-content">
+        Saltar al contenido
+      </a>
       <OfflineBanner />
       <div className="flex flex-1">
         <Sidebar />
-        <main className="flex-1 ml-0 md:ml-56">
+        <main id="main-content" className="flex-1 ml-0 md:ml-56" role="main" aria-label="Contenido principal">
           <div className="container mx-auto p-4 md:p-8 pb-20 md:pb-8 max-w-7xl">{children}</div>
         </main>
       </div>
