@@ -7,7 +7,14 @@ const isPublicRoute = createRouteMatcher([
   '/api/clerk(.*)',
 ]);
 
+const DEV_AUTH_BYPASS =
+  process.env.NODE_ENV !== "production" &&
+  process.env.NEXT_PUBLIC_DEV_AUTH_BYPASS === "true";
+
 export default clerkMiddleware(async (auth, request) => {
+  // In dev mode with bypass enabled, skip auth to preview dashboard without Clerk
+  if (DEV_AUTH_BYPASS) return;
+
   // Protect all non-public routes — Clerk redirects unauthenticated users to sign-in
   if (!isPublicRoute(request)) {
     await auth.protect();
