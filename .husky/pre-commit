@@ -1,0 +1,1 @@
+cd ai-marketing-department/ai-marketing-department && npx lint-staged

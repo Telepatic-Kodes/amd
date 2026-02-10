@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-typecheck:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ai-marketing-department/ai-marketing-department
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: ai-marketing-department/ai-marketing-department/package-lock.json
+      - run: npm ci
+      - name: Lint
+        run: npm run lint
+      - name: Typecheck
+        run: npx tsc --noEmit
+      - name: Check for leaked secrets in NEXT_PUBLIC_ vars
+        run: |
+          # CICD-05: Fail if any NEXT_PUBLIC_ env var name contains KEY or SECRET
+          if grep -rn 'NEXT_PUBLIC_.*\(KEY\|SECRET\)' --include='*.ts' --include='*.tsx' --include='*.env*' . ../convex/ 2>/dev/null | grep -v node_modules | grep -v '.env.example' | grep -v '.env.local'; then
+            echo "ERROR: Found NEXT_PUBLIC_ variable containing KEY or SECRET - this would expose secrets to the client!"
+            exit 1
+          fi
+          echo "No leaked secrets detected in NEXT_PUBLIC_ variables"
+
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ai-marketing-department/ai-marketing-department
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: ai-marketing-department/ai-marketing-department/package-lock.json
+      - run: npm ci
+      - name: Test
+        run: npm test -- --run
