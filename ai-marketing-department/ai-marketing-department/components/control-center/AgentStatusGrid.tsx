@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronRight, Zap } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { translate } from "@/lib/language";
 
 interface Agent {
   _id: string;
+  agentId?: string;
   name: string;
   role: string;
   department: string;
@@ -22,6 +23,7 @@ interface AgentStatusGridProps {
     error: number;
     maintenance: number;
   };
+  onRunAgent?: (agent: Agent) => void;
 }
 
 const departmentNames: Record<string, string> = {
@@ -51,6 +53,7 @@ const statusPulse: Record<string, boolean> = {
 export function AgentStatusGrid({
   agentsByDepartment,
   statusCounts,
+  onRunAgent,
 }: AgentStatusGridProps) {
   const [selectedDepartment, setSelectedDepartment] = useState<string>("all");
   const [collapsedDepartments, setCollapsedDepartments] = useState<
@@ -91,8 +94,9 @@ export function AgentStatusGrid({
 
   const renderAgentCard = (agent: Agent) => {
     const shouldPulse = statusPulse[agent.status];
+    const isActive = agent.status === "active";
     return (
-      <Card key={agent._id} className="p-3 min-h-[72px] hover:border-stone-300 transition-colors">
+      <Card key={agent._id} className="p-3 min-h-[72px] hover:border-stone-300 transition-colors group">
         <div className="flex items-center gap-2 mb-2">
           <div
             className={`w-2 h-2 rounded-full ${statusColors[agent.status]} ${
@@ -106,8 +110,22 @@ export function AgentStatusGrid({
             {agent.role}
           </Badge>
         </div>
-        <div className="text-xs text-stone-500">
-          {departmentNames[agent.department] || agent.department}
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-stone-500">
+            {departmentNames[agent.department] || agent.department}
+          </span>
+          {isActive && onRunAgent && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onRunAgent(agent);
+              }}
+              className="opacity-0 group-hover:opacity-100 inline-flex items-center gap-1 px-2 py-1 text-[10px] font-medium text-orange-600 bg-orange-50 rounded-md hover:bg-orange-100 transition-all"
+            >
+              <Zap className="h-2.5 w-2.5" />
+              Ejecutar
+            </button>
+          )}
         </div>
       </Card>
     );

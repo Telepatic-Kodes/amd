@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@convex/_generated/api";
-import { Database, X, Plus } from "lucide-react";
+import { Database, X, Plus, Zap } from "lucide-react";
 import Link from "next/link";
 import { HeroMetric, HeroMetricSkeleton } from "@/components/dashboard/HeroMetric";
 import { ActivityChart, ActivityChartSkeleton } from "@/components/dashboard/ActivityChart";
@@ -34,7 +34,6 @@ export default function DashboardPage() {
   }), []);
 
   const analytics = useQuery(api.analytics.getAnalyticsWithDateRange, dateRange);
-  const pipelineMetrics = useQuery(api.analytics.getContentPipelineMetrics, dateRange);
   const agentPerformance = useQuery(api.analytics.getAgentPerformanceSummary, dateRange);
 
   // Existing queries
@@ -220,7 +219,6 @@ export default function DashboardPage() {
 
   // Total content for 4th KPI card
   const totalContent = content?.length ?? 0;
-  const publishedContent = contentCounts?.published ?? 0;
 
   return (
     <div className="space-y-6 stagger-children">
@@ -264,13 +262,22 @@ export default function DashboardPage() {
             {dateStr} &middot; {timeStr}
           </p>
         </div>
-        <Link
-          href="/control-center"
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-stone-300 text-stone-700 hover:bg-stone-50 transition-colors"
-        >
-          <Plus className="h-3.5 w-3.5" />
-          Nueva Tarea
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/control-center"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-orange-600 text-white hover:bg-orange-500 transition-colors"
+          >
+            <Zap className="h-3.5 w-3.5" />
+            Ejecutar Agente
+          </Link>
+          <Link
+            href="/control-center"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-stone-300 text-stone-700 hover:bg-stone-50 transition-colors"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            Nueva Tarea
+          </Link>
+        </div>
       </div>
 
       {/* 4 KPI Cards */}

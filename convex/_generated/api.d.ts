@@ -9,6 +9,7 @@
  */
 
 import type * as actions from "../actions.js";
+import type * as agentExecution from "../agentExecution.js";
 import type * as agentSdk from "../agentSdk.js";
 import type * as analysis_metrics from "../analysis/metrics.js";
 import type * as analytics from "../analytics.js";
@@ -53,6 +54,7 @@ import type * as feeds_utils_rateLimit from "../feeds/utils/rateLimit.js";
 import type * as feeds_utils_validation from "../feeds/utils/validation.js";
 import type * as functions from "../functions.js";
 import type * as guidance from "../guidance.js";
+import type * as handoffEngine from "../handoffEngine.js";
 import type * as http from "../http.js";
 import type * as instagram_actions from "../instagram/actions.js";
 import type * as instagram_internalQueries from "../instagram/internalQueries.js";
@@ -66,6 +68,7 @@ import type * as kb_processFile from "../kb/processFile.js";
 import type * as kb_queries from "../kb/queries.js";
 import type * as kb_scrapeUrl from "../kb/scrapeUrl.js";
 import type * as kb_uploadFile from "../kb/uploadFile.js";
+import type * as lib_agentHelpers from "../lib/agentHelpers.js";
 import type * as lib_auth from "../lib/auth.js";
 import type * as lib_permissions from "../lib/permissions.js";
 import type * as linkedin_actions from "../linkedin/actions.js";
@@ -104,6 +107,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   actions: typeof actions;
+  agentExecution: typeof agentExecution;
   agentSdk: typeof agentSdk;
   "analysis/metrics": typeof analysis_metrics;
   analytics: typeof analytics;
@@ -148,6 +152,7 @@ declare const fullApi: ApiFromModules<{
   "feeds/utils/validation": typeof feeds_utils_validation;
   functions: typeof functions;
   guidance: typeof guidance;
+  handoffEngine: typeof handoffEngine;
   http: typeof http;
   "instagram/actions": typeof instagram_actions;
   "instagram/internalQueries": typeof instagram_internalQueries;
@@ -161,6 +166,7 @@ declare const fullApi: ApiFromModules<{
   "kb/queries": typeof kb_queries;
   "kb/scrapeUrl": typeof kb_scrapeUrl;
   "kb/uploadFile": typeof kb_uploadFile;
+  "lib/agentHelpers": typeof lib_agentHelpers;
   "lib/auth": typeof lib_auth;
   "lib/permissions": typeof lib_permissions;
   "linkedin/actions": typeof linkedin_actions;

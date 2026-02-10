@@ -1,8 +1,12 @@
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { mutation, query, internalMutation } from "./_generated/server";
 import { requireAuth, getUserId } from "./lib/auth";
 import { getUserRole, canTransitionContent } from "./lib/permissions";
 import { createVersionSnapshot } from "./contentVersions";
+import {
+  TASK_TYPE_TO_CONTENT_TYPE,
+  isContentGenerativeTask,
+} from "./lib/agentHelpers";
 
 // ===========================================
 // ALLOWED TRANSITIONS MAP
@@ -530,5 +534,85 @@ export const publishContent = mutation({
     });
 
     return args.id;
+  },
+});
+
+// ===========================================
+// AUTO-SAVE GENERATED CONTENT (Phase 27)
+// ===========================================
+
+/**
+ * Extract a reasonable title from task input and output.
+ */
+function extractAutoTitle(
+  taskType: string,
+  input: Record<string, unknown>,
+  output: string
+): string {
+  if (input.title && typeof input.title === "string") return input.title;
+  if (input.topic && typeof input.topic === "string") {
+    const prefix: Record<string, string> = {
+      create_linkedin_post: "LinkedIn: ",
+      create_twitter_thread: "Twitter Thread: ",
+      create_instagram_post: "Instagram: ",
+      create_tiktok_script: "TikTok: ",
+    };
+    return (prefix[taskType] || "") + input.topic;
+  }
+
+  const headingMatch = output.match(/^#\s+(.+)$/m);
+  if (headingMatch) return headingMatch[1].slice(0, 100);
+
+  const firstLine = output.split("\n").find((line) => line.trim().length > 0);
+  if (firstLine) return firstLine.slice(0, 100);
+
+  return `Contenido generado - ${new Date().toLocaleDateString("es-CL")}`;
+}
+
+/**
+ * autoSaveGeneratedContent — Called after a content-generative task completes.
+ * Parses agent output and creates a draft content record in the pipeline.
+ */
+export const autoSaveGeneratedContent = internalMutation({
+  args: {
+    taskId: v.id("tasks"),
+    agentId: v.id("agents"),
+    taskType: v.string(),
+    output: v.string(),
+    input: v.any(),
+  },
+  handler: async (ctx, args) => {
+    if (!isContentGenerativeTask(args.taskType)) return;
+
+    const contentType = TASK_TYPE_TO_CONTENT_TYPE[args.taskType];
+    if (!contentType) return;
+
+    const title = extractAutoTitle(args.taskType, args.input, args.output);
+    const body = args.output;
+
+    const wordCount = body.split(/\s+/).filter((w: string) => w.length > 0).length;
+    const readingTime = Math.ceil(wordCount / 200);
+
+    const now = Date.now();
+    const contentId = `content_${now}_${Math.random().toString(36).substr(2, 9)}`;
+
+    await ctx.db.insert("content", {
+      contentId,
+      type: contentType as "blog" | "social_linkedin" | "social_twitter" | "social_instagram" | "social_tiktok",
+      title,
+      body,
+      metadata: {
+        wordCount,
+        readingTime,
+        targetKeywords: args.input.keyword ? [args.input.keyword] : undefined,
+        targetAudience: args.input.audience,
+        tone: args.input.tone,
+      },
+      status: "draft",
+      createdBy: args.agentId,
+      sourceTaskId: args.taskId,
+      createdAt: now,
+      updatedAt: now,
+    });
   },
 });

@@ -43,6 +43,7 @@ import { CrossPlatformPublishPanel } from "@/components/content/CrossPlatformPub
 import { UnifiedPublishHistory } from "@/components/content/UnifiedPublishHistory";
 import { AnalyzeButton } from "@/components/content/AnalyzeButton";
 import { ContentAnalysisPanel } from "@/components/content/ContentAnalysisPanel";
+import { AIGeneratedBadge } from "@/components/content/AIGeneratedBadge";
 
 const EditContentModal = dynamic(
   () => import("@/components/content/EditContentModal").then((m) => m.EditContentModal),
@@ -555,8 +556,9 @@ export default function ContentPage() {
                           </div>
 
                           {/* Title */}
-                          <h3 className="font-semibold text-stone-900 text-sm line-clamp-2 mb-2">
+                          <h3 className="font-semibold text-stone-900 text-sm line-clamp-2 mb-2 flex items-center gap-1.5">
                             {item.title}
+                            {item.sourceTaskId && <AIGeneratedBadge />}
                           </h3>
 
                           {/* Preview */}
@@ -626,6 +628,7 @@ export default function ContentPage() {
                                 <h3 className="font-medium text-stone-900 text-sm truncate">
                                   {item.title}
                                 </h3>
+                                {item.sourceTaskId && <AIGeneratedBadge />}
                               </div>
                               <p className="text-xs text-stone-400 truncate">
                                 {item.summary || item.body.slice(0, 100)}

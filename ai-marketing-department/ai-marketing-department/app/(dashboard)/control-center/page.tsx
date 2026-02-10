@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@convex/_generated/api";
 import { motion } from "framer-motion";
@@ -7,9 +8,21 @@ import { useEffect, useRef } from "react";
 import { MetricsSummary } from "@/components/control-center/MetricsSummary";
 import { AgentStatusGrid } from "@/components/control-center/AgentStatusGrid";
 import { ActivityFeed } from "@/components/control-center/ActivityFeed";
+import { ExecutionHistory } from "@/components/control-center/ExecutionHistory";
+import { HandoffChainView } from "@/components/control-center/HandoffChainView";
+import { RunAgentModal } from "@/components/control-center/RunAgentModal";
 import { useToast } from "@/components/ui/Toast";
 
+interface AgentForModal {
+  _id: string;
+  agentId: string;
+  name: string;
+  department: string;
+  role: string;
+}
+
 export default function ControlCenterPage() {
+  const [runningAgent, setRunningAgent] = useState<AgentForModal | null>(null);
   const status = useQuery(api.controlCenter.getControlCenterStatus);
   const metrics = useQuery(api.controlCenter.getControlCenterMetrics);
   const activity = useQuery(api.controlCenter.getRecentActivity, {});
@@ -93,6 +106,15 @@ export default function ControlCenterPage() {
             <AgentStatusGrid
               agentsByDepartment={status?.agentsByDepartment}
               statusCounts={status?.statusCounts}
+              onRunAgent={(agent) =>
+                setRunningAgent({
+                  _id: agent._id,
+                  agentId: agent.agentId || agent._id,
+                  name: agent.name,
+                  department: agent.department,
+                  role: agent.role,
+                })
+              }
             />
           </div>
 
@@ -102,6 +124,32 @@ export default function ControlCenterPage() {
           </div>
         </div>
       </motion.div>
+
+      {/* Handoff Chains (Phase 26) */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+      >
+        <HandoffChainView />
+      </motion.div>
+
+      {/* Execution History (Phase 25) */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+      >
+        <ExecutionHistory />
+      </motion.div>
+
+      {/* RunAgentModal */}
+      {runningAgent && (
+        <RunAgentModal
+          agent={runningAgent}
+          onClose={() => setRunningAgent(null)}
+        />
+      )}
     </div>
   );
 }
