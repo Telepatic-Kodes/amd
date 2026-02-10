@@ -78,6 +78,7 @@ export function BrandStepBasics({ data, onChange }: Props) {
           </label>
           <input
             type="url"
+            inputMode="url"
             value={data.website}
             onChange={(e) => onChange({ website: e.target.value })}
             placeholder="https://miempresa.com"

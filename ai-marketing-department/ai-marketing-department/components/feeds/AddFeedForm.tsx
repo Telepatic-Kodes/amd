@@ -89,6 +89,7 @@ export function AddFeedForm({ onSuccess }: { onSuccess?: () => void }) {
                 <label className="block text-xs text-stone-500 mb-1">Feed URL</label>
                 <input
                   type="url"
+                  inputMode="url"
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
                   placeholder="https://example.com/feed.xml"

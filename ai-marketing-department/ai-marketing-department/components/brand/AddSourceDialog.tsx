@@ -176,6 +176,7 @@ export function AddSourceDialog({ brandProfileId, isOpen, onClose }: Props) {
                 <label className="block text-xs text-stone-400 mb-1.5">URL</label>
                 <input
                   type="url"
+                  inputMode="url"
                   value={urlValue}
                   onChange={(e) => setUrlValue(e.target.value)}
                   placeholder="https://example.com/about"
@@ -201,6 +202,7 @@ export function AddSourceDialog({ brandProfileId, isOpen, onClose }: Props) {
                 <label className="block text-xs text-stone-400 mb-1.5">URL del Feed (RSS/Atom)</label>
                 <input
                   type="url"
+                  inputMode="url"
                   value={feedUrl}
                   onChange={(e) => setFeedUrl(e.target.value)}
                   placeholder="https://blog.example.com/feed.xml"

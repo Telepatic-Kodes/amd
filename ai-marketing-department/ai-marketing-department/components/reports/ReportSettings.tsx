@@ -146,6 +146,7 @@ export function ReportSettings() {
         </label>
         <input
           type="email"
+          inputMode="email"
           value={settings.recipientEmail || ""}
           onChange={(e) => handleEmailChange(e.target.value)}
           onBlur={(e) => handleEmailChange(e.target.value)}

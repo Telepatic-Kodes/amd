@@ -134,6 +134,7 @@ export function CTASection() {
                       />
                       <input
                         type="email"
+                        inputMode="email"
                         placeholder="Email corporativo"
                         required
                         value={formData.email}

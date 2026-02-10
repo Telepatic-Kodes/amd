@@ -252,6 +252,7 @@ export function CrossPlatformPublishPanel({
             </label>
             <input
               type="url"
+              inputMode="url"
               value={instagramImageUrl}
               onChange={(e) => setInstagramImageUrl(e.target.value)}
               placeholder="https://example.com/image.jpg"

@@ -290,6 +290,7 @@ export default function SettingsPage() {
                     <div className="flex gap-2">
                       <input
                         type="url"
+                        inputMode="url"
                         value={getSetting("webhook_url", "")}
                         onChange={(e) =>
                           updateFormState("webhook_url", e.target.value)
@@ -569,6 +570,7 @@ export default function SettingsPage() {
                     <div className="flex gap-2">
                       <input
                         type="number"
+                        inputMode="numeric"
                         min="256"
                         max="100000"
                         value={getSetting("default_max_tokens", 4096)}
@@ -603,6 +605,7 @@ export default function SettingsPage() {
                     <div className="flex gap-2">
                       <input
                         type="number"
+                        inputMode="numeric"
                         min="0"
                         max="10"
                         value={getSetting("default_max_retries", 3)}

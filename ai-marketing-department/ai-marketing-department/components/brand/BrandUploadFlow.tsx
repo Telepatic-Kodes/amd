@@ -211,6 +211,7 @@ export function BrandUploadFlow({ onExtracted, onBack, onSkip }: BrandUploadFlow
           <div className="flex gap-2">
             <input
               type="url"
+              inputMode="url"
               placeholder="https://tu-sitio-web.com"
               value={url}
               onChange={(e) => {

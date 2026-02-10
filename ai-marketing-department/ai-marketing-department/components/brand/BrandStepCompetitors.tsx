@@ -55,6 +55,7 @@ function CompetitorCard({
         <Globe className="w-3.5 h-3.5 text-stone-400 shrink-0" />
         <input
           type="url"
+          inputMode="url"
           value={competitor.url}
           onChange={(e) => onUpdate({ ...competitor, url: e.target.value })}
           placeholder="https://competidor.com"
@@ -151,6 +152,7 @@ export function BrandStepCompetitors({ data, onChange }: Props) {
           <div className="flex gap-2">
             <input
               type="url"
+              inputMode="url"
               value={refInput}
               onChange={(e) => setRefInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addReference())}

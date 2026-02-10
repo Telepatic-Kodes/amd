@@ -137,6 +137,7 @@ export default function FeedsPage() {
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-500" />
           <input
             type="text"
+            inputMode="search"
             placeholder="Search feeds..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}

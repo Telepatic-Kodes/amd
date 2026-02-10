@@ -157,6 +157,7 @@ export function CommandPalette() {
           <input
             ref={inputRef}
             type="text"
+            inputMode="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Buscar paginas, agentes, acciones..."
