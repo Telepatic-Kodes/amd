@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { usePathname } from "next/navigation";
 import { useMutation } from "convex/react";
 import { api } from "@convex/_generated/api";
@@ -12,7 +12,9 @@ import { ProductTour } from "@/components/ui/ProductTour";
 import { shouldShowTour } from "@/lib/tour-utils";
 import { OfflineBanner } from "@/components/ui/OfflineBanner";
 import { SessionTimeout } from "@/components/ui/SessionTimeout";
+import { KeyboardShortcutsHelp } from "@/components/ui/KeyboardShortcutsHelp";
 import { useAuthSync } from "@/hooks/useAuthSync";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 
 export function LayoutShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -22,6 +24,12 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
 
   // Multi-tab logout sync
   useAuthSync();
+
+  // Keyboard shortcuts help modal
+  const [showShortcutsHelp, setShowShortcutsHelp] = useState(false);
+  const toggleShortcutsHelp = useCallback(() => setShowShortcutsHelp((v) => !v), []);
+  useKeyboardShortcuts(toggleShortcutsHelp);
+
   const [showTour, setShowTour] = useState(() => {
     if (typeof window === "undefined" || isOnboarding) return false;
     return shouldShowTour();
@@ -66,6 +74,7 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
       <MobileNav />
       <CommandPalette />
       <SessionTimeout />
+      <KeyboardShortcutsHelp open={showShortcutsHelp} onClose={() => setShowShortcutsHelp(false)} />
 
       {/* Product Tour - shows only for first-time users */}
       {showTour && (

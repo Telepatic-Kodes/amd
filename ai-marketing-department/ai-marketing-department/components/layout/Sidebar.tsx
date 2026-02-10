@@ -99,11 +99,15 @@ export function Sidebar() {
                 })}
             </div>
 
-            {/* Cmd+K hint */}
-            <div className="px-4 py-2">
+            {/* Keyboard hints */}
+            <div className="px-4 py-2 space-y-1">
                 <div className="flex items-center justify-center gap-1.5 text-[10px] text-stone-500">
                     <kbd className="border border-[#44403c] rounded px-1.5 py-0.5 text-stone-500 bg-[#292524]">⌘K</kbd>
                     <span>Buscar</span>
+                </div>
+                <div className="flex items-center justify-center gap-1.5 text-[10px] text-stone-500">
+                    <kbd className="border border-[#44403c] rounded px-1.5 py-0.5 text-stone-500 bg-[#292524]">?</kbd>
+                    <span>Atajos</span>
                 </div>
             </div>
 
