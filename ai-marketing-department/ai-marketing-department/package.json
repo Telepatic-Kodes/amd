@@ -28,6 +28,7 @@
     "convex": "^1.31.6",
     "convex-helpers": "^0.1.111",
     "date-fns": "^4.1.0",
+    "dompurify": "^3.3.1",
     "framer-motion": "^12.29.2",
     "lucide-react": "^0.563.0",
     "mammoth": "^1.11.0",
@@ -38,13 +39,15 @@
     "react-markdown": "^10.1.0",
     "recharts": "^3.7.0",
     "remotion": "4.0.409",
-    "tailwind-merge": "^3.4.0"
+    "tailwind-merge": "^3.4.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
+    "@types/dompurify": "^3.0.5",
     "@types/node": "^20",
     "@types/pdf-parse": "^1.1.5",
     "@types/react": "^19",

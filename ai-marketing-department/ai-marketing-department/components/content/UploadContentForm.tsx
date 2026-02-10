@@ -7,6 +7,8 @@ import { Plus, X, Loader2, Upload } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "@/components/ui/Toast";
 import { FileImportModal } from "./FileImportModal";
+import { contentSchema, zodFieldErrors } from "@/lib/schemas";
+import { sanitizePlainText } from "@/lib/sanitize";
 
 const CONTENT_TYPES = [
   { value: "blog", label: "Blog" },
@@ -27,6 +29,7 @@ export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
   const [type, setType] = useState("blog");
@@ -37,31 +40,24 @@ export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {
   const { success, error: showError } = useToast();
   const createContent = useMutation(api.functions.createContent);
 
-  const validateForm = (): boolean => {
-    if (!title.trim()) {
-      setError("El título es requerido");
-      return false;
-    }
-    if (title.trim().length < 5) {
-      setError("El título debe tener al menos 5 caracteres");
-      return false;
-    }
-    if (!body.trim()) {
-      setError("El contenido es requerido");
-      return false;
-    }
-    if (body.trim().length < 50) {
-      setError("El contenido debe tener al menos 50 caracteres");
-      return false;
-    }
-    return true;
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setFieldErrors({});
 
-    if (!validateForm()) return;
+    const result = contentSchema.safeParse({
+      title: title.trim(),
+      body: body.trim(),
+      type,
+      summary: summary.trim() || undefined,
+    });
+
+    if (!result.success) {
+      const errors = zodFieldErrors(result.error);
+      setFieldErrors(errors);
+      setError(Object.values(errors)[0]);
+      return;
+    }
 
     setIsLoading(true);
 
@@ -72,9 +68,9 @@ export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {
 
       await createContent({
         type: type as "blog" | "social_linkedin" | "social_twitter" | "social_instagram" | "social_tiktok" | "email" | "newsletter" | "ad_copy" | "landing_page" | "whitepaper" | "case_study" | "video_script",
-        title: title.trim(),
+        title: sanitizePlainText(title.trim()),
         body: body.trim(),
-        summary: summary.trim() || undefined,
+        summary: summary.trim() ? sanitizePlainText(summary.trim()) : undefined,
         metadata: {
           wordCount,
           readingTime,
@@ -154,6 +150,7 @@ export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {
                   onClick={() => {
                     setIsOpen(false);
                     setError(null);
+                    setFieldErrors({});
                   }}
                   className="p-1 rounded hover:bg-stone-100 text-stone-400"
                 >
@@ -197,7 +194,13 @@ export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {
                   required
                   className="w-full rounded-lg border border-stone-300 bg-white py-2 px-3 text-sm text-stone-900 placeholder-stone-400 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
                 />
-                <p className="text-xs text-stone-500 mt-1">{title.length} caracteres</p>
+                <p className="text-xs mt-1">
+                  {fieldErrors["title"] ? (
+                    <span className="text-red-500">{fieldErrors["title"]}</span>
+                  ) : (
+                    <span className="text-stone-500">{title.length} caracteres</span>
+                  )}
+                </p>
               </div>
 
               {/* Body */}
@@ -211,8 +214,12 @@ export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {
                   rows={8}
                   className="w-full rounded-lg border border-stone-300 bg-white py-2 px-3 text-sm text-stone-900 placeholder-stone-400 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 font-mono"
                 />
-                <p className="text-xs text-stone-500 mt-1">
-                  {body.length} caracteres • {body.split(/\s+/).filter(w => w.length > 0).length} palabras
+                <p className="text-xs mt-1">
+                  {fieldErrors["body"] ? (
+                    <span className="text-red-500">{fieldErrors["body"]}</span>
+                  ) : (
+                    <span className="text-stone-500">{body.length} caracteres • {body.split(/\s+/).filter(w => w.length > 0).length} palabras</span>
+                  )}
                 </p>
               </div>
 
