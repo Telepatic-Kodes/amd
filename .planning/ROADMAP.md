@@ -41,13 +41,13 @@ Take AMD from "works in dev" to "ready for real paying clients" across 6 phases.
 4. Pushing to main triggers automated lint + typecheck + test + deploy (Convex then Vercel) via GitHub Actions
 5. `npm test` runs Vitest suite with critical path tests for brand onboarding, content creation, OAuth flows, and auth enforcement
 
-**Plans:** TBD
+**Plans:** 4 plans
 
 Plans:
-- [ ] 19-01: Vercel project + Convex production deployment + Clerk production instance + DNS + environment variables
-- [ ] 19-02: OAuth production apps (LinkedIn, Twitter, Instagram) + environment-variable-driven callback URLs + preview testing
-- [ ] 19-03: GitHub Actions CI/CD (lint + typecheck + test + deploy) + Husky pre-commit hooks + Dependabot
-- [ ] 19-04: Vitest + React Testing Library setup + critical path tests (brand, content, OAuth, auth enforcement)
+- [ ] 19-01-PLAN.md -- Vercel + Convex + Clerk production deployment, env var docs, startup validation
+- [ ] 19-02-PLAN.md -- OAuth production apps with environment-driven callback URLs
+- [ ] 19-03-PLAN.md -- GitHub Actions CI/CD, Husky pre-commit hooks, Dependabot
+- [ ] 19-04-PLAN.md -- Vitest + React Testing Library setup with critical path tests
 
 ---
 
@@ -180,7 +180,7 @@ Phases execute in numeric order: 19 > 20 > 21 > 22 > 23 > 24
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 19. Environment Setup & Infrastructure | 0/4 | Not started | - |
+| 19. Environment Setup & Infrastructure | 0/4 | Planning complete | - |
 | 20. Error Handling & Validation | 0/3 | Not started | - |
 | 21. Loading States & UX Polish | 0/2 | Not started | - |
 | 22. Performance Optimization | 0/2 | Not started | - |
