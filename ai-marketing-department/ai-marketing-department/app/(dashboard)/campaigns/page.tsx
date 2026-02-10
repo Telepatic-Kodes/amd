@@ -23,7 +23,7 @@ import { Card, CardContent } from "@/components/ui/Card";
 import { StatusBadge, Badge } from "@/components/ui/Badge";
 import { SimpleCounter } from "@/components/ui/AnimatedCounter";
 import { TrendIndicator } from "@/components/ui/TrendIndicator";
-import { EmptyState } from "@/components/ui/EmptyState";
+import { EmptyCampaigns, EmptySearchResults } from "@/components/ui/EmptyState";
 import { MiniDonut } from "@/components/charts/DonutChart";
 import { Sparkline } from "@/components/charts/Sparkline";
 import { chartColors } from "@/components/charts/theme";
@@ -408,23 +408,11 @@ export default function CampaignsPage() {
           selectedCampaign ? "lg:w-2/3" : "w-full"
         )}>
           {filteredCampaigns.length === 0 ? (
-            <EmptyState
-              icon={Rocket}
-              title="No campaigns found"
-              description={
-                campaigns.length === 0
-                  ? "Create your first campaign to get started"
-                  : "Try adjusting your filters or search query"
-              }
-              action={
-                campaigns.length === 0
-                  ? {
-                      label: "Create Campaign",
-                      onClick: () => console.log("Create campaign"),
-                    }
-                  : undefined
-              }
-            />
+            campaigns && campaigns.length === 0 ? (
+              <EmptyCampaigns />
+            ) : (
+              <EmptySearchResults />
+            )
           ) : (
             <div className="space-y-4">
               {filteredCampaigns.map((campaign, index) => {

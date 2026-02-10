@@ -464,7 +464,7 @@ export default function ContentPage() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
               >
-                <EmptyContent />
+                <EmptyContent onAction={() => setShowGenerateModal(true)} />
               </motion.div>
             ) : viewMode === "grid" ? (
               <motion.div

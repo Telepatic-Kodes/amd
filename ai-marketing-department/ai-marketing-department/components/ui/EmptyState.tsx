@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { LucideIcon, Inbox, FileText, Bot, BarChart3, Zap, Search } from "lucide-react";
+import { LucideIcon, Inbox, FileText, Bot, BarChart3, Zap, Search, Megaphone } from "lucide-react";
 
 interface EmptyStateProps {
   icon?: LucideIcon;
@@ -62,7 +62,7 @@ export function EmptyState({
       <div className="rounded-full bg-stone-200/50 p-4 mb-4">
         <Icon className={cn("text-stone-500", s.icon)} />
       </div>
-      <h3 className={cn("font-medium text-stone-300 mb-1", s.title)}>{title}</h3>
+      <h3 className={cn("font-medium text-stone-700 mb-1", s.title)}>{title}</h3>
       {description && (
         <p className={cn("text-stone-500 max-w-sm mb-4", s.description)}>
           {description}
@@ -81,7 +81,7 @@ export function EmptyState({
           {secondaryAction && (
             <button
               onClick={secondaryAction.onClick}
-              className="px-4 py-2 rounded-lg bg-stone-200 hover:bg-stone-100 text-stone-300 text-sm font-medium transition-colors"
+              className="px-4 py-2 rounded-lg bg-stone-200 hover:bg-stone-100 text-stone-600 text-sm font-medium transition-colors"
             >
               {secondaryAction.label}
             </button>
@@ -93,34 +93,49 @@ export function EmptyState({
 }
 
 // Pre-built empty states for common scenarios
-export function EmptyContent({ className }: { className?: string }) {
+export function EmptyContent({ className, onAction }: { className?: string; onAction?: () => void }) {
   return (
     <EmptyState
       icon={FileText}
-      title="No hay contenido"
-      description="El contenido generado aparecerá aquí una vez que los agentes completen sus tareas."
+      title="Crea tu primer contenido"
+      description="Tu biblioteca de contenido está vacía. Crea un artículo, post o newsletter para comenzar."
+      action={onAction ? { label: "Crear contenido", onClick: onAction } : undefined}
       className={className}
     />
   );
 }
 
-export function EmptyAgents({ className }: { className?: string }) {
+export function EmptyAgents({ className, onAction }: { className?: string; onAction?: () => void }) {
   return (
     <EmptyState
       icon={Bot}
-      title="Sin actividad de agentes"
-      description="Los agentes están inactivos. Ejecuta un workflow para ver la actividad."
+      title="Los 37 agentes están listos"
+      description="Tu equipo de marketing IA está configurado. Ejecuta un agente para ver los resultados."
+      action={onAction ? { label: "Ejecutar primer agente", onClick: onAction } : undefined}
       className={className}
     />
   );
 }
 
-export function EmptyAnalytics({ className }: { className?: string }) {
+export function EmptyAnalytics({ className, onAction }: { className?: string; onAction?: () => void }) {
   return (
     <EmptyState
       icon={BarChart3}
-      title="Sin datos de analytics"
-      description="Las métricas se mostrarán después de las primeras ejecuciones."
+      title="Publica contenido para ver estadísticas"
+      description="Las métricas de rendimiento aparecerán una vez que publiques contenido y ejecutes agentes."
+      action={onAction ? { label: "Ir a contenido", onClick: onAction } : undefined}
+      className={className}
+    />
+  );
+}
+
+export function EmptyCampaigns({ className, onAction }: { className?: string; onAction?: () => void }) {
+  return (
+    <EmptyState
+      icon={Megaphone}
+      title="Crea tu primera campaña"
+      description="Organiza tu marketing en campañas multicanal para medir el impacto de cada iniciativa."
+      action={onAction ? { label: "Crear campaña", onClick: onAction } : undefined}
       className={className}
     />
   );

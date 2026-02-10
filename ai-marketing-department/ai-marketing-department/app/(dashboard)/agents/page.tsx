@@ -24,7 +24,7 @@ import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/Card";
 import { StatusBadge, RoleBadge, Badge } from "@/components/ui/Badge";
 import { SkeletonGrid } from "@/components/ui/Skeleton";
-import { EmptyAgents } from "@/components/ui/EmptyState";
+import { EmptyAgents, EmptySearchResults } from "@/components/ui/EmptyState";
 
 const DEPARTMENTS = [
   { value: "", label: "All Departments" },
@@ -233,7 +233,11 @@ export default function AgentsPage() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
               >
-                <EmptyAgents />
+                {searchQuery || departmentFilter || statusFilter ? (
+                  <EmptySearchResults />
+                ) : (
+                  <EmptyAgents />
+                )}
               </motion.div>
             ) : (
               <motion.div
