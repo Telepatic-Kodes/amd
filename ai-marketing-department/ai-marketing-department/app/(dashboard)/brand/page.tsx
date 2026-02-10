@@ -20,6 +20,8 @@ import { BrandSuggestionsPanel } from "@/components/brand/BrandSuggestionsPanel"
 import { BrandSourcesList } from "@/components/brand/BrandSourcesList";
 import { AddSourceDialog } from "@/components/brand/AddSourceDialog";
 import { GenerateContentModal } from "@/components/content/GenerateContentModal";
+import { BrandOnboardingChoice } from "@/components/brand/BrandOnboardingChoice";
+import { BrandUploadFlow } from "@/components/brand/BrandUploadFlow";
 
 const TOTAL_STEPS = 6;
 
@@ -95,6 +97,8 @@ export default function BrandPage() {
   const [showAddSource, setShowAddSource] = useState(false);
   const [data, setData] = useState<BrandData>(DEFAULT_DATA);
   const [isEditing, setIsEditing] = useState(false);
+  const [onboardingMode, setOnboardingMode] = useState<"choice" | "upload" | "manual" | null>(null);
+  const [prefilled, setPrefilled] = useState(false);
 
   const maturity = useQuery(api.brandMaturity.computeBrandMaturity);
 
@@ -254,6 +258,89 @@ export default function BrandPage() {
     } finally {
       setKbSyncing(false);
     }
+  };
+
+  // Merge AI-extracted partial data into the default BrandData shape
+  const mergeBrandData = (base: BrandData, partial: Record<string, unknown>): BrandData => {
+    const result = { ...base };
+
+    // Simple string fields
+    const stringKeys = ["companyName", "industry", "website", "description"] as const;
+    for (const key of stringKeys) {
+      const val = partial[key];
+      if (typeof val === "string" && val.trim()) {
+        result[key] = val;
+      }
+    }
+
+    // Voice (nested object with string arrays)
+    if (partial.voice && typeof partial.voice === "object") {
+      const v = partial.voice as Record<string, unknown>;
+      const voiceKeys = ["tone", "personality", "dos", "donts"] as const;
+      for (const k of voiceKeys) {
+        if (Array.isArray(v[k]) && v[k].length > 0) {
+          result.voice = { ...result.voice, [k]: v[k] };
+        }
+      }
+    }
+
+    // Audience segments
+    if (partial.audience && typeof partial.audience === "object") {
+      const a = partial.audience as { segments?: unknown[] };
+      if (Array.isArray(a.segments) && a.segments.length > 0) {
+        result.audience = {
+          segments: a.segments.map((s: Record<string, unknown>) => ({
+            name: String(s.name || ""),
+            demographics: String(s.demographics || ""),
+            painPoints: Array.isArray(s.painPoints) ? s.painPoints : [],
+          })),
+        };
+      }
+    }
+
+    // Strategy
+    if (partial.strategy && typeof partial.strategy === "object") {
+      const s = partial.strategy as Record<string, unknown>;
+      if (Array.isArray(s.topics) && s.topics.length > 0) result.strategy.topics = s.topics;
+      if (Array.isArray(s.channels) && s.channels.length > 0) result.strategy.channels = s.channels;
+      if (typeof s.postingFrequency === "string" && s.postingFrequency) {
+        result.strategy = { ...result.strategy, postingFrequency: s.postingFrequency };
+      }
+    }
+
+    // Competitors
+    if (Array.isArray(partial.competitors) && partial.competitors.length > 0) {
+      result.competitors = (partial.competitors as Record<string, unknown>[]).map((c) => ({
+        name: String(c.name || ""),
+        url: String(c.url || ""),
+        notes: String(c.notes || ""),
+      }));
+    }
+
+    // References
+    if (Array.isArray(partial.references) && partial.references.length > 0) {
+      result.references = partial.references as string[];
+    }
+
+    // Visual
+    if (partial.visual && typeof partial.visual === "object") {
+      const vis = partial.visual as Record<string, unknown>;
+      const visKeys = ["primaryColor", "secondaryColor", "logoDescription", "styleNotes"] as const;
+      for (const k of visKeys) {
+        if (typeof vis[k] === "string" && (vis[k] as string).trim()) {
+          result.visual = { ...result.visual, [k]: vis[k] as string };
+        }
+      }
+    }
+
+    return result;
+  };
+
+  const handleExtracted = (partial: Record<string, unknown>) => {
+    setData((d) => mergeBrandData(d, partial));
+    setPrefilled(true);
+    setOnboardingMode("manual");
+    success("Información extraída", "Revisa y ajusta cada paso antes de guardar");
   };
 
   const variants = {
@@ -472,9 +559,39 @@ export default function BrandPage() {
     );
   }
 
+  // Smart Onboarding: show choice screen when no profile and not in manual mode
+  if (profile === null && onboardingMode !== "manual") {
+    if (onboardingMode === "upload") {
+      return (
+        <BrandUploadFlow
+          onExtracted={handleExtracted}
+          onBack={() => setOnboardingMode("choice")}
+          onSkip={() => setOnboardingMode("manual")}
+        />
+      );
+    }
+    // Default: choice screen
+    return (
+      <BrandOnboardingChoice
+        onUpload={() => setOnboardingMode("upload")}
+        onManual={() => setOnboardingMode("manual")}
+      />
+    );
+  }
+
   // Wizard mode
   return (
     <div className="min-h-[calc(100vh-4rem)] flex flex-col">
+      {/* Prefilled banner */}
+      {prefilled && (
+        <div className="mb-4 px-4 py-3 rounded-xl bg-orange-50 border border-orange-200 flex items-center gap-3">
+          <Sparkles className="w-4 h-4 text-orange-600 shrink-0" />
+          <p className="text-sm text-orange-800">
+            Hemos pre-llenado el formulario con la información extraída. Revisa y ajusta cada paso.
+          </p>
+        </div>
+      )}
+
       {/* Header with Progress */}
       <div className="pb-8">
         <div className="flex items-center gap-3 mb-6">
@@ -530,11 +647,17 @@ export default function BrandPage() {
       <div className="border-t border-stone-200 py-4 mt-auto">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <button
-            onClick={step === 0 && isEditing ? () => setIsEditing(false) : back}
-            disabled={step === 0 && !isEditing}
+            onClick={
+              step === 0 && isEditing
+                ? () => setIsEditing(false)
+                : step === 0 && !profile
+                  ? () => { setOnboardingMode("choice"); setPrefilled(false); }
+                  : back
+            }
+            disabled={step === 0 && !isEditing && !!profile}
             className={cn(
               "flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition",
-              step === 0 && !isEditing
+              step === 0 && !isEditing && !!profile
                 ? "text-stone-300 cursor-not-allowed"
                 : "text-stone-500 hover:text-stone-700 hover:bg-stone-50"
             )}
