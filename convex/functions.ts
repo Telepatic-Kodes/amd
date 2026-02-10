@@ -964,6 +964,38 @@ export const resetAllSettings = mutation({
   },
 });
 
+/**
+ * Nuclear reset: deletes ALL data from ALL tables.
+ * Used for fresh client onboarding.
+ */
+export const clearAllData = mutation({
+  handler: async (ctx) => {
+    const tables = [
+      "agents", "tasks", "executions", "handoffs", "content", "campaigns",
+      "keywords", "prompts", "metrics", "settings", "auditLog",
+      "feeds", "feedItems", "feedSyncLog", "alertDigests",
+      "onboarding", "knowledgeBases", "kbDocuments", "kbSections",
+      "linkedinConnections", "linkedinPublishLog", "linkedinEngagement",
+      "twitterConnections", "twitterPublishLog",
+      "instagramConnections", "instagramPublishLog",
+      "userGuidance", "contentVersions", "users",
+      "brandProfiles", "brandSources", "brandSuggestions",
+      "contentAnalyses", "kbAgentAccess", "reports", "reportSettings",
+      "topicSuggestions", "platformApprovals",
+    ] as const;
+
+    let total = 0;
+    for (const table of tables) {
+      const rows = await ctx.db.query(table).collect();
+      for (const row of rows) {
+        await ctx.db.delete(row._id);
+      }
+      total += rows.length;
+    }
+    return { deleted: total };
+  },
+});
+
 // ===========================================
 // ANALYTICS QUERIES
 // ===========================================

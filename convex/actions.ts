@@ -494,6 +494,38 @@ Reglas:
 - Cada tweet debe tener valor independiente
 - Último tweet con CTA y potencial para RT`;
 
+    case "create_instagram_post":
+      return `Crea un post de Instagram basado en:
+
+Tema: ${input.topic || input.title}
+Objetivo: ${input.objective || "engagement y alcance"}
+Tono: ${input.tone || "visual y atractivo"}
+
+${input.customInstructions ? `Instrucciones adicionales:\n${input.customInstructions}` : ""}
+
+El post debe incluir:
+- Caption atractivo con hook inicial
+- Emojis estratégicos (no excesivos)
+- Call to action claro (guardar, compartir, comentar)
+- Hashtags relevantes (10-15)
+- Sugerencia de tipo de visual (foto, carrusel, reel)`;
+
+    case "create_tiktok_script":
+      return `Crea un script de TikTok/Reels basado en:
+
+Tema: ${input.topic || input.title}
+Duración objetivo: ${input.duration || "30-60 segundos"}
+Estilo: ${input.style || "educativo y entretenido"}
+
+${input.customInstructions ? `Instrucciones adicionales:\n${input.customInstructions}` : ""}
+
+El script debe incluir:
+- Hook en los primeros 3 segundos (texto en pantalla + voz)
+- Estructura clara: Hook → Contexto → Valor → CTA
+- Indicaciones de edición [CORTE], [TEXTO EN PANTALLA], [MÚSICA]
+- Call to action final
+- Sugerencia de trending audio si aplica`;
+
     case "keyword_research":
       return `Realiza investigación de keywords para:
 

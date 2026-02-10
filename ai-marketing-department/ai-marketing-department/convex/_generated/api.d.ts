@@ -8,6 +8,8 @@
  * @module
  */
 
+import type * as feeds_mutations from "../feeds/mutations.js";
+import type * as feeds_templates from "../feeds/templates.js";
 import type * as onboarding from "../onboarding.js";
 
 import type {
@@ -17,6 +19,8 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  "feeds/mutations": typeof feeds_mutations;
+  "feeds/templates": typeof feeds_templates;
   onboarding: typeof onboarding;
 }>;
 

@@ -1051,6 +1051,59 @@ export default defineSchema({
     .index("by_status", ["status"]),
 
   // ===========================================
+  // TOPIC_SUGGESTIONS - Sugerencias de temas con probabilidad de éxito
+  // ===========================================
+  topicSuggestions: defineTable({
+    userId: v.optional(v.string()),
+    topic: v.string(),
+    description: v.string(),
+    successProbability: v.number(), // 0-100
+    scoreBreakdown: v.object({
+      brandAlignment: v.number(),      // 0-100
+      audienceRelevance: v.number(),   // 0-100
+      trendMomentum: v.number(),       // 0-100
+      historicalPerformance: v.number(), // 0-100
+    }),
+    suggestedChannels: v.array(v.string()),
+    trendSources: v.optional(v.array(v.string())),
+    status: v.union(
+      v.literal("active"),
+      v.literal("used"),
+      v.literal("dismissed")
+    ),
+    generatedAt: v.number(),
+    tokensUsed: v.optional(v.number()),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_status", ["status"])
+    .index("by_successProbability", ["successProbability"]),
+
+  // ===========================================
+  // PLATFORM_APPROVALS - Aprobación por plataforma individual
+  // ===========================================
+  platformApprovals: defineTable({
+    contentId: v.id("content"),
+    platform: v.union(
+      v.literal("linkedin"),
+      v.literal("twitter"),
+      v.literal("instagram")
+    ),
+    status: v.union(
+      v.literal("pending_review"),
+      v.literal("approved"),
+      v.literal("revision_needed")
+    ),
+    reviewedBy: v.optional(v.string()),
+    reviewNote: v.optional(v.string()),
+    reviewedAt: v.optional(v.number()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_contentId", ["contentId"])
+    .index("by_contentId_platform", ["contentId", "platform"])
+    .index("by_status", ["status"]),
+
+  // ===========================================
   // CONTENT_ANALYSES - Análisis de calidad de contenido
   // ===========================================
   contentAnalyses: defineTable({
