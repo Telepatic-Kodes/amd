@@ -1,1832 +1,1242 @@
-# Architecture Patterns for v2.0 UX/UI Excellence
+# Production Deployment Architecture
 
-**Domain:** Real-time AI Marketing Dashboard with Operational Features
-**Researched:** 2026-02-05
-**Confidence:** HIGH
+**Project:** AMD (AI Marketing Department)
+**Stack:** Next.js 16 + Convex + Clerk + OAuth (LinkedIn, Twitter, Instagram)
+**Researched:** 2026-02-09
+**Overall Confidence:** HIGH
+
+---
 
 ## Executive Summary
 
-This research documents the architecture integration points for adding v2.0 UX/UI Excellence features to the existing AI Marketing Department application. The system currently uses Convex (serverless real-time backend) + Next.js 16 App Router + React 19, with 37 AI agents and existing content management workflows.
+AMD is a Next.js 16 application with Convex serverless backend, Clerk authentication, and three OAuth integrations (LinkedIn, Twitter/X, Instagram). Currently running on development deployments only. This document provides the complete architecture for deploying to production on Vercel with proper environment separation (dev/staging/prod), OAuth callback URL management, and CI/CD automation.
 
-The four new feature categories require different architectural patterns:
-1. **Control Center** - Real-time subscription to agent/task state via Convex queries
-2. **Content Pipeline** - Extending existing content schema with workflow states
-3. **LinkedIn Integration** - OAuth flow + Convex actions for API calls
-4. **Guided UX** - Client-side state machine with backend persistence
-
-### Primary Recommendation
-
-Use Convex's reactive query system for all real-time features, implement OAuth via Convex actions (server-side security), and use a headless state machine (OnboardJS or custom) for guided UX with Convex mutations for persistence.
+**Key architectural decisions:**
+1. **Three-tier environment strategy:** Development (local + Convex dev), Staging (preview + Convex preview), Production (Vercel prod + Convex prod)
+2. **Separate Convex deployments per environment** using deploy keys
+3. **Separate Clerk instances** (Development vs Production) with domain configuration
+4. **Environment-specific OAuth apps** for each platform (LinkedIn, Twitter, Instagram)
+5. **GitHub Actions CI/CD** for automated deployments with environment gates
 
 ---
 
-## Existing Architecture Analysis
+## Current vs Target Architecture
 
-### Current System Components
+### Current State (Development Only)
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│  Frontend: Next.js 16 App Router + React 19 + Tailwind 4   │
-│  - useQuery(api.functions.*) for real-time data           │
-│  - useMutation(api.functions.*) for writes                │
-│  - Convex React client with automatic subscriptions       │
-└─────────────────────────────────────────────────────────────┘
-                            │
-                            ▼
-┌─────────────────────────────────────────────────────────────┐
-│  Convex Backend (Serverless + Real-time)                   │
-│  - Schema: 11+ tables (agents, tasks, content, etc.)      │
-│  - Queries: Read functions with automatic reactivity      │
-│  - Mutations: ACID transactions                           │
-│  - Actions: External API calls (Claude, etc.)             │
-└─────────────────────────────────────────────────────────────┘
-                            │
-                            ▼
-┌─────────────────────────────────────────────────────────────┐
-│  External Integrations                                      │
-│  - Claude API (via actions.ts)                             │
-│  - n8n workflows (orchestration)                           │
-└─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────┐
+│  LOCAL DEVELOPMENT                                      │
+├─────────────────────────────────────────────────────────┤
+│  Next.js Dev (localhost:3000)                          │
+│  └─> Convex Dev Deployment                             │
+│       └─> Clerk Development Instance                   │
+│            └─> OAuth Dev Apps (shared/localhost URLs)  │
+└─────────────────────────────────────────────────────────┘
 ```
 
-### Real-Time Data Flow (Existing)
+**Issues:**
+- No production deployment
+- Using Clerk development instance (500 user limit)
+- Using development OAuth apps (localhost callbacks)
+- No staging/preview environment
+- No CI/CD pipeline
+- Manual deployment process
 
-Based on code analysis and [Convex real-time patterns](https://www.convex.dev/realtime):
+### Target Architecture (Full Production Setup)
 
-**Query Subscription Pattern:**
-```typescript
-// Frontend component
-const agents = useQuery(api.functions.listAgents, { status: "active" });
-const tasks = useQuery(api.functions.listTasks, { agentId: selectedAgent });
-
-// Convex automatically:
-// 1. Executes query on backend
-// 2. Tracks dependencies (which documents were read)
-// 3. Subscribes component to changes
-// 4. Re-runs query when dependencies change
-// 5. Pushes updates to frontend (WebSocket)
 ```
-
-**Mutation Pattern:**
-```typescript
-// Frontend
-const updateStatus = useMutation(api.functions.updateTaskStatus);
-await updateStatus({ id: taskId, status: "running" });
-
-// Convex:
-// 1. Runs mutation as ACID transaction
-// 2. Detects which queries are affected
-// 3. Re-runs affected queries
-// 4. Pushes updates to all subscribed clients
-```
-
-This pattern is **already working** in the existing dashboard (see `app/page.tsx` - real-time campaign/content/agent counts).
-
-### Schema Extensions Needed
-
-Current schema has these relevant tables:
-- `agents` - 37 AI agents with status, config, department
-- `tasks` - Work queue with status tracking
-- `executions` - LLM call logs with tokens/cost
-- `content` - Generated content with workflow states
-- `handoffs` - Agent-to-agent transfers
-
-**New tables required:**
-```typescript
-// User progress tracking (Guided UX)
-onboardingProgress: {
-  userId: string,           // User identifier
-  currentStep: string,      // "add-first-agent" | "create-campaign" | etc.
-  completedSteps: string[], // Array of completed step IDs
-  skippedSteps: string[],   // User chose to skip
-  lastActiveAt: number,     // Timestamp for resume
-  metadata: any,            // Custom data per step
-}
-
-// LinkedIn integration (Phase 3)
-linkedInConnections: {
-  userId: string,
-  accessToken: string,      // Encrypted
-  refreshToken: string,     // Encrypted
-  expiresAt: number,
-  profile: {
-    id: string,
-    name: string,
-    profileUrl: string,
-  },
-  permissions: string[],    // Granted scopes
-  status: "active" | "revoked" | "expired",
-  connectedAt: number,
-}
-
-// LinkedIn post scheduling/publishing
-linkedInPosts: {
-  contentId: Id<"content">,      // Link to content table
-  linkedInConnectionId: Id<"linkedInConnections">,
-  status: "draft" | "scheduled" | "publishing" | "published" | "failed",
-  scheduledFor: number?,         // Timestamp
-  publishedAt: number?,
-  linkedInPostId: string?,       // LinkedIn's post ID
-  error: string?,
-  metrics: {                     // Post-publish analytics
-    impressions: number?,
-    reactions: number?,
-    comments: number?,
-    shares: number?,
-  },
-}
+┌────────────────────────────────────────────────────────────────────┐
+│  PRODUCTION ENVIRONMENT                                            │
+├────────────────────────────────────────────────────────────────────┤
+│  ┌──────────────────────────────────────────────────────────────┐ │
+│  │  Vercel Production (app.amd.com)                             │ │
+│  │  └─> Convex Production Deployment (prod-xxx.convex.cloud)   │ │
+│  │       └─> Clerk Production Instance (amd.clerk.accounts.dev) │ │
+│  │            └─> LinkedIn Prod OAuth App                       │ │
+│  │            └─> Twitter Prod OAuth App                        │ │
+│  │            └─> Instagram Prod OAuth App (Meta)               │ │
+│  └──────────────────────────────────────────────────────────────┘ │
+└────────────────────────────────────────────────────────────────────┘
+                              ↑
+                    GitHub Actions CI/CD
+                              ↑
+┌────────────────────────────────────────────────────────────────────┐
+│  STAGING ENVIRONMENT (Preview Deployments)                         │
+├────────────────────────────────────────────────────────────────────┤
+│  ┌──────────────────────────────────────────────────────────────┐ │
+│  │  Vercel Preview (pr-123.vercel.app)                         │ │
+│  │  └─> Convex Preview Deployment (preview-xxx.convex.cloud)   │ │
+│  │       └─> Clerk Development Instance (shared)                │ │
+│  │            └─> LinkedIn Staging OAuth App                    │ │
+│  │            └─> Twitter Staging OAuth App                     │ │
+│  │            └─> Instagram Staging OAuth App                   │ │
+│  └──────────────────────────────────────────────────────────────┘ │
+└────────────────────────────────────────────────────────────────────┘
+                              ↑
+                    GitHub PR Trigger
+                              ↑
+┌────────────────────────────────────────────────────────────────────┐
+│  DEVELOPMENT ENVIRONMENT                                           │
+├────────────────────────────────────────────────────────────────────┤
+│  ┌──────────────────────────────────────────────────────────────┐ │
+│  │  Local Dev (localhost:3000)                                  │ │
+│  │  └─> Convex Dev Deployment (dev-xxx.convex.cloud)           │ │
+│  │       └─> Clerk Development Instance                         │ │
+│  │            └─> OAuth Dev Apps (localhost:3000)               │ │
+│  └──────────────────────────────────────────────────────────────┘ │
+└────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Feature 1: Control Center (Operational Dashboard)
-
-### Requirements
-- Real-time agent status (active/paused/running)
-- Live task progress (queued → running → completed)
-- Token usage and cost tracking
-- Performance metrics (success rate, avg duration)
-
-### Architecture Pattern: Reactive Queries with Aggregation
-
-**Implementation:**
-
-```typescript
-// NEW: convex/controlCenter.ts
-import { query } from "./_generated/server";
-import { v } from "convex/values";
-
-export const getLiveAgentStatus = query({
-  handler: async (ctx) => {
-    const agents = await ctx.db.query("agents").collect();
-    const now = Date.now();
-    const oneHourAgo = now - 60 * 60 * 1000;
-
-    // Get recent executions for each agent
-    const agentStatus = await Promise.all(
-      agents.map(async (agent) => {
-        const recentExecutions = await ctx.db
-          .query("executions")
-          .withIndex("by_agent_timestamp", (q) =>
-            q.eq("agentId", agent._id).gte("timestamp", oneHourAgo)
-          )
-          .collect();
-
-        const runningTasks = await ctx.db
-          .query("tasks")
-          .withIndex("by_agent", (q) => q.eq("agentId", agent._id))
-          .filter((q) => q.eq(q.field("status"), "running"))
-          .collect();
-
-        return {
-          agent: {
-            id: agent._id,
-            name: agent.name,
-            department: agent.department,
-            status: agent.status,
-          },
-          metrics: {
-            executionsLastHour: recentExecutions.length,
-            tokensLastHour: recentExecutions.reduce(
-              (sum, e) => sum + e.tokensUsed.total,
-              0
-            ),
-            currentlyRunning: runningTasks.length,
-            avgDuration:
-              recentExecutions.length > 0
-                ? recentExecutions.reduce((sum, e) => sum + e.duration, 0) /
-                  recentExecutions.length
-                : 0,
-          },
-        };
-      })
-    );
-
-    return agentStatus;
-  },
-});
-
-export const getTaskQueue = query({
-  args: { limit: v.optional(v.number()) },
-  handler: async (ctx, { limit = 50 }) => {
-    const tasks = await ctx.db
-      .query("tasks")
-      .withIndex("by_status", (q) =>
-        q.eq("status", "pending").or(
-          q.eq("status", "queued"),
-          q.eq("status", "running")
-        )
-      )
-      .order("desc")
-      .take(limit);
-
-    // Enrich with agent info
-    return await Promise.all(
-      tasks.map(async (task) => {
-        const agent = await ctx.db.get(task.agentId);
-        return {
-          ...task,
-          agentName: agent?.name || "Unknown",
-          agentDepartment: agent?.department || "unknown",
-        };
-      })
-    );
-  },
-});
-```
-
-**Frontend Component:**
-
-```typescript
-// NEW: components/control-center/LiveAgentMonitor.tsx
-"use client";
-
-import { useQuery } from "convex/react";
-import { api } from "@convex/_generated/api";
-
-export function LiveAgentMonitor() {
-  // Real-time subscription - updates every time agent executes
-  const agentStatus = useQuery(api.controlCenter.getLiveAgentStatus);
-
-  if (!agentStatus) return <LoadingSkeleton />;
-
-  return (
-    <div className="grid grid-cols-3 gap-4">
-      {agentStatus.map((status) => (
-        <AgentCard key={status.agent.id} {...status} />
-      ))}
-    </div>
-  );
-}
-
-// Component re-renders automatically when:
-// - Agent status changes (active → paused)
-// - New execution completes (metrics update)
-// - Task starts/completes (currentlyRunning changes)
-```
-
-**Performance Optimization:**
-
-Per [Convex high-throughput patterns](https://stack.convex.dev/high-throughput-mutations-via-precise-queries), for dashboards with frequent updates:
-
-1. **Index optimization** - Already have `by_agent_timestamp` for efficient time-range queries
-2. **Limit result sets** - Use `.take(limit)` instead of `.collect()` when possible
-3. **Pagination** - For task queues, implement cursor-based pagination
-4. **Debounce UI** - Use React's `useDeferredValue` for non-critical updates
-
-**Integration Points:**
-- Query: `convex/controlCenter.ts` (new file)
-- Component: `app/(dashboard)/control-center/page.tsx` (new page)
-- Navigation: Add to `app/(dashboard)/layout.tsx` sidebar
-
----
-
-## Feature 2: Content Pipeline Extension
-
-### Requirements
-- Extend existing content workflow with additional states
-- Visual pipeline view (Kanban-style)
-- Drag-and-drop state transitions
-- Approval notifications
-
-### Architecture Pattern: Schema Extension + Optimistic Updates
-
-**Schema Changes:**
-
-```typescript
-// MODIFY: convex/schema.ts - content table
-content: defineTable({
-  // ... existing fields ...
-
-  // NEW workflow fields
-  workflowStage: v.union(
-    v.literal("ideation"),      // Brainstorming phase
-    v.literal("drafting"),      // AI writing
-    v.literal("editing"),       // Human review/edits
-    v.literal("approval"),      // Manager approval
-    v.literal("scheduling"),    // Ready to publish
-    v.literal("published"),     // Live
-    v.literal("archived")       // Completed/obsolete
-  ),
-
-  assignedTo: v.optional(v.string()),  // User/agent responsible
-  dueDate: v.optional(v.number()),     // Deadline timestamp
-  priority: v.union(
-    v.literal("low"),
-    v.literal("medium"),
-    v.literal("high"),
-    v.literal("urgent")
-  ),
-
-  // Approval workflow
-  approvals: v.optional(v.array(v.object({
-    userId: v.string(),
-    decision: v.union(v.literal("approved"), v.literal("rejected")),
-    comment: v.optional(v.string()),
-    timestamp: v.number(),
-  }))),
-
-  // Activity log
-  stateTransitions: v.array(v.object({
-    from: v.string(),
-    to: v.string(),
-    by: v.string(),  // userId or agentId
-    timestamp: v.number(),
-    reason: v.optional(v.string()),
-  })),
-})
-```
-
-**Mutations:**
-
-```typescript
-// NEW: convex/contentPipeline.ts
-export const moveContentStage = mutation({
-  args: {
-    contentId: v.id("content"),
-    toStage: v.string(),
-    reason: v.optional(v.string()),
-    userId: v.string(),
-  },
-  handler: async (ctx, args) => {
-    const content = await ctx.db.get(args.contentId);
-    if (!content) throw new Error("Content not found");
-
-    const fromStage = content.workflowStage || content.status;
-
-    // Validation: Check allowed transitions
-    const allowedTransitions: Record<string, string[]> = {
-      ideation: ["drafting", "archived"],
-      drafting: ["editing", "archived"],
-      editing: ["approval", "drafting"],  // Can send back
-      approval: ["scheduling", "editing"], // Can request changes
-      scheduling: ["published"],
-      published: ["archived"],
-    };
-
-    if (!allowedTransitions[fromStage]?.includes(args.toStage)) {
-      throw new Error(`Invalid transition: ${fromStage} → ${args.toStage}`);
-    }
-
-    // Update content
-    await ctx.db.patch(args.contentId, {
-      workflowStage: args.toStage as any,
-      updatedAt: Date.now(),
-      stateTransitions: [
-        ...(content.stateTransitions || []),
-        {
-          from: fromStage,
-          to: args.toStage,
-          by: args.userId,
-          timestamp: Date.now(),
-          reason: args.reason,
-        },
-      ],
-    });
-
-    // Notification logic (if needed)
-    // await ctx.runMutation(internal.notifications.sendApprovalRequest, ...)
-  },
-});
-
-export const getContentByStage = query({
-  args: { stage: v.string() },
-  handler: async (ctx, args) => {
-    return await ctx.db
-      .query("content")
-      .filter((q) => q.eq(q.field("workflowStage"), args.stage as any))
-      .order("desc")
-      .collect();
-  },
-});
-```
-
-**Frontend Pattern: Optimistic Updates**
-
-Per [Next.js 16 advanced patterns](https://medium.com/@beenakumawat002/next-js-app-router-advanced-patterns-for-2026-server-actions-ppr-streaming-edge-first-b76b1b3dcac7), use optimistic UI for drag-and-drop:
-
-```typescript
-// components/content-pipeline/KanbanBoard.tsx
-"use client";
-
-import { useMutation } from "convex/react";
-import { useOptimistic } from "react";
-
-export function KanbanBoard({ initialContent }: Props) {
-  const moveContent = useMutation(api.contentPipeline.moveContentStage);
-  const [optimisticContent, setOptimisticContent] = useOptimistic(
-    initialContent,
-    (state, { id, toStage }) => {
-      return state.map((item) =>
-        item._id === id ? { ...item, workflowStage: toStage } : item
-      );
-    }
-  );
-
-  const handleDrop = async (contentId, toStage) => {
-    // Immediate UI update
-    setOptimisticContent({ id: contentId, toStage });
-
-    // Backend sync
-    try {
-      await moveContent({ contentId, toStage, userId: "current-user" });
-    } catch (error) {
-      // Revert on failure
-      toast.error("Failed to move content");
-    }
-  };
-
-  return <KanbanView items={optimisticContent} onDrop={handleDrop} />;
-}
-```
-
-**Integration Points:**
-- Schema: Modify `convex/schema.ts` (content table)
-- Queries/Mutations: `convex/contentPipeline.ts` (new file)
-- Component: `app/(dashboard)/pipeline/page.tsx` (new page)
-- Drag-and-drop library: `@dnd-kit/core` (recommended for React 19)
-
----
-
-## Feature 3: LinkedIn Integration
-
-### Requirements
-- OAuth 2.0 authentication flow
-- Post publishing from content
-- Scheduled posting
-- Analytics tracking (impressions, engagement)
-
-### Architecture Pattern: OAuth via Convex Actions + Secure Token Storage
-
-Based on [LinkedIn OAuth best practices](https://learn.microsoft.com/en-us/linkedin/shared/authentication/authentication):
-
-**Security Principles:**
-1. **Never expose client secret in frontend** - Use Convex actions (server-side)
-2. **Exchange auth codes on backend** - Prevent token interception
-3. **Encrypt stored tokens** - Use environment variables for encryption keys
-4. **Validate state parameter** - Prevent CSRF attacks
-
-**Implementation:**
-
-```typescript
-// NEW: convex/linkedIn.ts (Actions)
-import { action } from "./_generated/server";
-import { v } from "convex/values";
-
-export const startOAuthFlow = action({
-  args: { userId: v.string() },
-  handler: async (ctx, args) => {
-    const clientId = process.env.LINKEDIN_CLIENT_ID;
-    const redirectUri = process.env.LINKEDIN_REDIRECT_URI;
-
-    // Generate CSRF state token
-    const state = generateSecureToken();
-
-    // Store state temporarily for validation
-    await ctx.runMutation(internal.linkedIn.storeOAuthState, {
-      userId: args.userId,
-      state,
-      expiresAt: Date.now() + 10 * 60 * 1000, // 10 min expiry
-    });
-
-    // Return authorization URL
-    const authUrl = new URL("https://www.linkedin.com/oauth/v2/authorization");
-    authUrl.searchParams.set("response_type", "code");
-    authUrl.searchParams.set("client_id", clientId);
-    authUrl.searchParams.set("redirect_uri", redirectUri);
-    authUrl.searchParams.set("state", state);
-    authUrl.searchParams.set("scope", "openid profile w_member_social");
-
-    return { authUrl: authUrl.toString() };
-  },
-});
-
-export const handleOAuthCallback = action({
-  args: {
-    code: v.string(),
-    state: v.string(),
-    userId: v.string(),
-  },
-  handler: async (ctx, args) => {
-    // 1. Validate state (CSRF protection)
-    const storedState = await ctx.runQuery(
-      internal.linkedIn.getOAuthState,
-      { userId: args.userId }
-    );
-
-    if (storedState?.state !== args.state) {
-      throw new Error("Invalid state - possible CSRF attack");
-    }
-    if (storedState.expiresAt < Date.now()) {
-      throw new Error("State expired");
-    }
-
-    // 2. Exchange code for access token (MUST be server-side)
-    const tokenResponse = await fetch(
-      "https://www.linkedin.com/oauth/v2/accessToken",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-          grant_type: "authorization_code",
-          code: args.code,
-          client_id: process.env.LINKEDIN_CLIENT_ID!,
-          client_secret: process.env.LINKEDIN_CLIENT_SECRET!, // Server-side only
-          redirect_uri: process.env.LINKEDIN_REDIRECT_URI!,
-        }),
-      }
-    );
-
-    if (!tokenResponse.ok) {
-      throw new Error("Failed to exchange code for token");
-    }
-
-    const { access_token, expires_in, refresh_token } = await tokenResponse.json();
-
-    // 3. Get LinkedIn profile
-    const profileResponse = await fetch("https://api.linkedin.com/v2/userinfo", {
-      headers: { Authorization: `Bearer ${access_token}` },
-    });
-    const profile = await profileResponse.json();
-
-    // 4. Encrypt and store tokens
-    const encryptedAccessToken = encrypt(access_token);
-    const encryptedRefreshToken = encrypt(refresh_token);
-
-    await ctx.runMutation(internal.linkedIn.storeConnection, {
-      userId: args.userId,
-      accessToken: encryptedAccessToken,
-      refreshToken: encryptedRefreshToken,
-      expiresAt: Date.now() + expires_in * 1000,
-      profile: {
-        id: profile.sub,
-        name: profile.name,
-        profileUrl: profile.profile,
-      },
-      permissions: ["openid", "profile", "w_member_social"],
-    });
-
-    return { success: true, profile };
-  },
-});
-
-export const publishToLinkedIn = action({
-  args: {
-    contentId: v.id("content"),
-    userId: v.string(),
-    scheduledFor: v.optional(v.number()),
-  },
-  handler: async (ctx, args) => {
-    // 1. Get content
-    const content = await ctx.runQuery(api.functions.getContent, {
-      contentId: args.contentId,
-    });
-
-    // 2. Get LinkedIn connection
-    const connection = await ctx.runQuery(
-      internal.linkedIn.getActiveConnection,
-      { userId: args.userId }
-    );
-
-    if (!connection || connection.expiresAt < Date.now()) {
-      throw new Error("LinkedIn connection expired - please re-authenticate");
-    }
-
-    const accessToken = decrypt(connection.accessToken);
-
-    // 3. If scheduled, store for later
-    if (args.scheduledFor && args.scheduledFor > Date.now()) {
-      await ctx.runMutation(internal.linkedIn.schedulePost, {
-        contentId: args.contentId,
-        connectionId: connection._id,
-        scheduledFor: args.scheduledFor,
-      });
-      return { scheduled: true };
-    }
-
-    // 4. Publish immediately
-    const postResponse = await fetch(
-      "https://api.linkedin.com/v2/ugcPosts",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-          "X-Restli-Protocol-Version": "2.0.0",
-        },
-        body: JSON.stringify({
-          author: `urn:li:person:${connection.profile.id}`,
-          lifecycleState: "PUBLISHED",
-          specificContent: {
-            "com.linkedin.ugc.ShareContent": {
-              shareCommentary: { text: content.body },
-              shareMediaCategory: "NONE",
-            },
-          },
-          visibility: { "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC" },
-        }),
-      }
-    );
-
-    if (!postResponse.ok) {
-      throw new Error("Failed to publish to LinkedIn");
-    }
-
-    const { id: linkedInPostId } = await postResponse.json();
-
-    // 5. Update content status
-    await ctx.runMutation(api.functions.updateContentStatus, {
-      id: args.contentId,
-      status: "published",
-      publishedUrl: `https://www.linkedin.com/feed/update/${linkedInPostId}`,
-    });
-
-    // 6. Log post for analytics
-    await ctx.runMutation(internal.linkedIn.logPublishedPost, {
-      contentId: args.contentId,
-      connectionId: connection._id,
-      linkedInPostId,
-    });
-
-    return { published: true, linkedInPostId };
-  },
-});
-```
-
-**Frontend Flow:**
-
-```typescript
-// app/(dashboard)/integrations/linkedin/page.tsx
-"use client";
-
-import { useAction, useQuery } from "convex/react";
-import { api } from "@convex/_generated/api";
-
-export default function LinkedInIntegrationPage() {
-  const startOAuth = useAction(api.linkedIn.startOAuthFlow);
-  const connection = useQuery(api.linkedIn.getActiveConnection, {
-    userId: "current-user",
-  });
-
-  const handleConnect = async () => {
-    const { authUrl } = await startOAuth({ userId: "current-user" });
-    // Redirect to LinkedIn OAuth page
-    window.location.href = authUrl;
-  };
-
-  if (connection) {
-    return <ConnectedState connection={connection} />;
-  }
-
-  return (
-    <button onClick={handleConnect}>
-      Connect LinkedIn Account
-    </button>
-  );
-}
-
-// app/(dashboard)/integrations/linkedin/callback/page.tsx
-export default function LinkedInCallbackPage({ searchParams }) {
-  const handleCallback = useAction(api.linkedIn.handleOAuthCallback);
-
-  useEffect(() => {
-    const { code, state } = searchParams;
-    if (code && state) {
-      handleCallback({ code, state, userId: "current-user" })
-        .then(() => router.push("/integrations/linkedin"))
-        .catch((error) => toast.error(error.message));
-    }
-  }, [searchParams]);
-
-  return <LoadingSpinner />;
-}
-```
-
-**Scheduled Publishing (Cron):**
-
-```typescript
-// NEW: convex/crons.ts addition
-import { cronJobs } from "convex/server";
-
-const crons = cronJobs();
-
-// Run every 5 minutes
-crons.interval(
-  "publish-scheduled-linkedin-posts",
-  { minutes: 5 },
-  internal.linkedIn.processScheduledPosts
-);
-
-// Implementation in linkedIn.ts
-export const processScheduledPosts = internalMutation({
-  handler: async (ctx) => {
-    const now = Date.now();
-    const due = await ctx.db
-      .query("linkedInPosts")
-      .filter((q) =>
-        q.and(
-          q.eq(q.field("status"), "scheduled"),
-          q.lte(q.field("scheduledFor"), now)
-        )
-      )
-      .collect();
-
-    for (const post of due) {
-      // Trigger publish action
-      await ctx.scheduler.runAfter(0, internal.linkedIn.publishPostById, {
-        postId: post._id,
-      });
-    }
-  },
-});
-```
-
-**Integration Points:**
-- Schema: Add `linkedInConnections` and `linkedInPosts` tables
-- Actions: `convex/linkedIn.ts` (new file)
-- OAuth callback route: `app/(dashboard)/integrations/linkedin/callback/page.tsx`
-- Publish UI: Button in content detail view
-- Environment vars: `.env.local` (LINKEDIN_CLIENT_ID, LINKEDIN_CLIENT_SECRET, LINKEDIN_REDIRECT_URI, ENCRYPTION_KEY)
-
----
-
-## Feature 4: Guided UX Onboarding
-
-### Requirements
-- Multi-step onboarding flow
-- Progress tracking per user
-- Conditional step visibility
-- Resume from last step
-- Skip/complete tracking
-
-### Architecture Pattern: Headless State Machine + Backend Persistence
-
-Based on [React onboarding patterns 2026](https://onboardjs.com/blog/5-best-react-onboarding-libraries-in-2025-compared):
-
-**Recommended Library:** OnboardJS (headless, TypeScript-first) or custom state machine
-
-**Schema:**
-
-```typescript
-// Already shown above - onboardingProgress table
-
-// Step definitions (could be in code or database)
-type OnboardingStep = {
-  id: string;
-  title: string;
-  description: string;
-  component: string; // Which React component to render
-  requiredFor?: string[]; // Steps that require this one
-  condition?: (user: User, context: Context) => boolean; // Show conditionally
-  skipable: boolean;
-  analytics: {
-    event: string; // "onboarding_step_viewed"
-    properties?: Record<string, any>;
-  };
-};
-```
-
-**Implementation (Custom State Machine):**
-
-```typescript
-// NEW: lib/onboarding/steps.ts
-export const ONBOARDING_STEPS: OnboardingStep[] = [
-  {
-    id: "welcome",
-    title: "Welcome to AI Marketing Department",
-    description: "Let's get you set up in 5 minutes",
-    component: "WelcomeStep",
-    skipable: false,
-    analytics: { event: "onboarding_started" },
-  },
-  {
-    id: "connect-integrations",
-    title: "Connect Your Tools",
-    description: "Link LinkedIn, Google Analytics, etc.",
-    component: "IntegrationsStep",
-    skipable: true,
-    analytics: { event: "onboarding_integrations_viewed" },
-  },
-  {
-    id: "create-first-agent",
-    title: "Create Your First Agent",
-    description: "Let AI write your first blog post",
-    component: "FirstAgentStep",
-    requiredFor: ["launch-campaign"],
-    skipable: false,
-    analytics: { event: "onboarding_agent_created" },
-  },
-  {
-    id: "launch-campaign",
-    title: "Launch Your Campaign",
-    description: "Deploy your content to channels",
-    component: "CampaignStep",
-    condition: (user, ctx) => ctx.hasContent && ctx.hasIntegrations,
-    skipable: false,
-    analytics: { event: "onboarding_campaign_launched" },
-  },
-  {
-    id: "complete",
-    title: "You're All Set!",
-    description: "Your AI marketing team is ready",
-    component: "CompleteStep",
-    skipable: false,
-    analytics: { event: "onboarding_completed" },
-  },
-];
-
-// State machine logic
-export class OnboardingStateMachine {
-  constructor(
-    private progress: OnboardingProgress,
-    private steps: OnboardingStep[]
-  ) {}
-
-  getCurrentStep(): OnboardingStep | null {
-    if (this.progress.currentStep === "complete") return null;
-    return this.steps.find((s) => s.id === this.progress.currentStep) || this.steps[0];
-  }
-
-  getAvailableSteps(context: Context): OnboardingStep[] {
-    return this.steps.filter((step) => {
-      // Already completed
-      if (this.progress.completedSteps.includes(step.id)) return false;
-
-      // Check conditions
-      if (step.condition && !step.condition(this.progress.userId, context)) {
-        return false;
-      }
-
-      // Check dependencies
-      if (step.requiredFor) {
-        const hasRequired = step.requiredFor.every((reqId) =>
-          this.progress.completedSteps.includes(reqId)
-        );
-        if (!hasRequired) return false;
-      }
-
-      return true;
-    });
-  }
-
-  async completeStep(stepId: string, updateProgress: Function) {
-    await updateProgress({
-      currentStep: this.getNextStep(stepId)?.id || "complete",
-      completedSteps: [...this.progress.completedSteps, stepId],
-      lastActiveAt: Date.now(),
-    });
-  }
-
-  async skipStep(stepId: string, updateProgress: Function) {
-    if (!this.steps.find((s) => s.id === stepId)?.skipable) {
-      throw new Error("Step cannot be skipped");
-    }
-    await updateProgress({
-      currentStep: this.getNextStep(stepId)?.id || "complete",
-      skippedSteps: [...this.progress.skippedSteps, stepId],
-      lastActiveAt: Date.now(),
-    });
-  }
-
-  private getNextStep(currentId: string): OnboardingStep | null {
-    const currentIndex = this.steps.findIndex((s) => s.id === currentId);
-    return this.steps[currentIndex + 1] || null;
-  }
-}
-```
-
-**Convex Integration:**
-
-```typescript
-// NEW: convex/onboarding.ts
-export const getProgress = query({
-  args: { userId: v.string() },
-  handler: async (ctx, args) => {
-    return await ctx.db
-      .query("onboardingProgress")
-      .withIndex("by_userId", (q) => q.eq("userId", args.userId))
-      .first();
-  },
-});
-
-export const initializeOnboarding = mutation({
-  args: { userId: v.string() },
-  handler: async (ctx, args) => {
-    const existing = await ctx.db
-      .query("onboardingProgress")
-      .withIndex("by_userId", (q) => q.eq("userId", args.userId))
-      .first();
-
-    if (existing) return existing;
-
-    return await ctx.db.insert("onboardingProgress", {
-      userId: args.userId,
-      currentStep: "welcome",
-      completedSteps: [],
-      skippedSteps: [],
-      lastActiveAt: Date.now(),
-      metadata: {},
-    });
-  },
-});
-
-export const updateProgress = mutation({
-  args: {
-    userId: v.string(),
-    currentStep: v.string(),
-    completedSteps: v.array(v.string()),
-    skippedSteps: v.array(v.string()),
-    metadata: v.optional(v.any()),
-  },
-  handler: async (ctx, args) => {
-    const progress = await ctx.db
-      .query("onboardingProgress")
-      .withIndex("by_userId", (q) => q.eq("userId", args.userId))
-      .first();
-
-    if (!progress) throw new Error("Progress not found");
-
-    await ctx.db.patch(progress._id, {
-      currentStep: args.currentStep,
-      completedSteps: args.completedSteps,
-      skippedSteps: args.skippedSteps,
-      lastActiveAt: Date.now(),
-      metadata: args.metadata,
-    });
-  },
-});
-
-export const trackStepAnalytics = mutation({
-  args: {
-    userId: v.string(),
-    stepId: v.string(),
-    event: v.string(),
-    properties: v.optional(v.any()),
-  },
-  handler: async (ctx, args) => {
-    // Log to audit trail or analytics service
-    await ctx.db.insert("auditLog", {
-      action: `onboarding.${args.event}`,
-      entityType: "onboarding",
-      entityId: args.stepId,
-      performedBy: "user",
-      performerId: args.userId,
-      metadata: args.properties,
-      timestamp: Date.now(),
-    });
-  },
-});
-```
-
-**Frontend Implementation:**
-
-```typescript
-// NEW: components/onboarding/OnboardingFlow.tsx
-"use client";
-
-import { useQuery, useMutation } from "convex/react";
-import { api } from "@convex/_generated/api";
-import { OnboardingStateMachine, ONBOARDING_STEPS } from "@/lib/onboarding/steps";
-
-export function OnboardingFlow({ userId }: { userId: string }) {
-  const progress = useQuery(api.onboarding.getProgress, { userId });
-  const updateProgress = useMutation(api.onboarding.updateProgress);
-  const trackAnalytics = useMutation(api.onboarding.trackStepAnalytics);
-
-  if (!progress) return <LoadingSpinner />;
-
-  const stateMachine = new OnboardingStateMachine(progress, ONBOARDING_STEPS);
-  const currentStep = stateMachine.getCurrentStep();
-
-  if (!currentStep) {
-    // Onboarding complete - redirect to dashboard
-    return <OnboardingComplete />;
-  }
-
-  const handleComplete = async () => {
-    await trackAnalytics({
-      userId,
-      stepId: currentStep.id,
-      event: "step_completed",
-      properties: { duration: performance.now() },
-    });
-
-    await stateMachine.completeStep(currentStep.id, (updates) =>
-      updateProgress({ userId, ...updates })
-    );
-  };
-
-  const handleSkip = async () => {
-    if (!currentStep.skipable) return;
-
-    await trackAnalytics({
-      userId,
-      stepId: currentStep.id,
-      event: "step_skipped",
-    });
-
-    await stateMachine.skipStep(currentStep.id, (updates) =>
-      updateProgress({ userId, ...updates })
-    );
-  };
-
-  return (
-    <div className="onboarding-container">
-      <ProgressBar
-        current={progress.completedSteps.length}
-        total={ONBOARDING_STEPS.length}
-      />
-
-      <StepContent
-        step={currentStep}
-        onComplete={handleComplete}
-        onSkip={currentStep.skipable ? handleSkip : undefined}
-      />
-    </div>
-  );
-}
-
-// Dynamic step components
-function StepContent({ step, onComplete, onSkip }) {
-  const StepComponent = stepComponents[step.component];
-  return <StepComponent onComplete={onComplete} onSkip={onSkip} />;
-}
-
-const stepComponents = {
-  WelcomeStep: () => <div>Welcome content...</div>,
-  IntegrationsStep: () => <div>Connect integrations...</div>,
-  FirstAgentStep: () => <div>Create agent...</div>,
-  // ...
-};
-```
-
-**Resume Logic:**
-
-```typescript
-// app/(onboarding)/page.tsx
-export default function OnboardingPage() {
-  const { user } = useAuth();
-  const initialize = useMutation(api.onboarding.initializeOnboarding);
-  const progress = useQuery(api.onboarding.getProgress, { userId: user.id });
-
-  useEffect(() => {
-    if (!progress) {
-      initialize({ userId: user.id });
-    }
-  }, [progress]);
-
-  // Show resume prompt if user returns after partial completion
-  if (progress && progress.completedSteps.length > 0) {
-    const minutesSinceActive = (Date.now() - progress.lastActiveAt) / 1000 / 60;
-
-    if (minutesSinceActive > 30) {
-      return (
-        <ResumePrompt
-          progress={progress}
-          onResume={() => setShowOnboarding(true)}
-          onRestart={async () => {
-            await initialize({ userId: user.id }); // Resets progress
-            setShowOnboarding(true);
-          }}
-        />
-      );
-    }
-  }
-
-  return <OnboardingFlow userId={user.id} />;
-}
-```
-
-**Integration Points:**
-- Schema: Add `onboardingProgress` table
-- Queries/Mutations: `convex/onboarding.ts` (new file)
-- State machine: `lib/onboarding/steps.ts` (new file)
-- Components: `components/onboarding/` (new directory)
-- Route: `app/(onboarding)/page.tsx` (new layout group)
-- Analytics: Track events via `auditLog` or external service
-
----
-
-## Data Flow Summary
-
-### Real-Time Flow (Control Center, Content Pipeline)
-
-```
-User Action (Frontend)
-    ↓
-useMutation(api.*.mutation)
-    ↓
-Convex Mutation (ACID transaction)
-    ↓
-Database Write
-    ↓
-Convex detects affected queries
-    ↓
-Re-run queries with changed data
-    ↓
-Push updates via WebSocket
-    ↓
-useQuery() hooks receive new data
-    ↓
-React re-renders components
-    ↓
-UI updates (< 100ms typically)
-```
-
-### OAuth Flow (LinkedIn)
-
-```
-User clicks "Connect LinkedIn"
-    ↓
-useAction(api.linkedIn.startOAuthFlow)
-    ↓
-Convex action generates state token
-    ↓
-Store state in DB (10 min expiry)
-    ↓
-Redirect to LinkedIn auth page
-    ↓
-User approves permissions
-    ↓
-LinkedIn redirects to /callback?code=X&state=Y
-    ↓
-useAction(api.linkedIn.handleOAuthCallback)
-    ↓
-Validate state (CSRF check)
-    ↓
-Exchange code for token (server-side)
-    ↓
-Encrypt and store tokens
-    ↓
-Redirect to connected state UI
-```
-
-### Onboarding Flow
-
-```
-User visits /onboarding
-    ↓
-useQuery(api.onboarding.getProgress)
-    ↓
-Initialize if not exists
-    ↓
-Load OnboardingStateMachine with progress
-    ↓
-Render current step component
-    ↓
-User completes action (e.g., creates agent)
-    ↓
-useMutation(api.onboarding.updateProgress)
-    ↓
-Update completedSteps, advance currentStep
-    ↓
-Track analytics event
-    ↓
-useQuery re-fetches updated progress
-    ↓
-State machine calculates next step
-    ↓
-Render next step (or completion screen)
-```
-
----
-
-## Build Order Recommendation
-
-Based on dependencies and complexity:
-
-### Phase 1: Foundation (Week 1)
-1. **Schema extensions** - Add new tables (onboardingProgress, linkedInConnections, etc.)
-2. **Control Center queries** - Basic real-time agent/task monitoring
-3. **Content Pipeline mutations** - Stage transitions with validation
-
-**Rationale:** These extend existing patterns (queries/mutations) with minimal new concepts. Gets real-time features visible quickly.
-
-### Phase 2: Integrations (Week 2)
-4. **LinkedIn OAuth flow** - Authentication infrastructure
-5. **LinkedIn publishing** - Single post publish (no scheduling yet)
-6. **Content Pipeline UI** - Kanban board with drag-and-drop
-
-**Rationale:** OAuth is isolated and can be built/tested independently. Pipeline UI benefits from having working mutations from Phase 1.
-
-### Phase 3: Advanced Features (Week 3)
-7. **LinkedIn scheduling** - Cron job + scheduled posts table
-8. **Onboarding state machine** - Step definitions + progress tracking
-9. **Onboarding UI** - Step components + flow controller
-
-**Rationale:** Scheduling builds on working OAuth. Onboarding is most complex (state machine + analytics) but benefits from learned patterns.
-
-### Phase 4: Polish (Week 4)
-10. **LinkedIn analytics** - Fetch post metrics from API
-11. **Control Center charts** - Visualizations for metrics
-12. **Onboarding analytics** - Drop-off tracking, A/B testing hooks
-
-**Rationale:** Analytics/polish work can iterate based on user feedback from earlier phases.
-
----
-
-## Common Pitfalls
-
-### Pitfall 1: Over-fetching in Real-Time Queries
-
-**What goes wrong:**
-Queries that fetch entire collections (`.collect()`) on every update cause performance issues as data grows.
-
-**Example:**
-```typescript
-// BAD - Fetches all tasks every time any task updates
-export const getAllTasks = query({
-  handler: async (ctx) => {
-    return await ctx.db.query("tasks").collect(); // 🔴 Scales poorly
-  },
-});
-```
-
-**Prevention:**
-- Use indexes with `.take(limit)` instead of `.collect()`
-- Filter to relevant subset (e.g., last 24 hours, specific agent)
-- Implement pagination for large lists
-
-```typescript
-// GOOD - Fetches only recent, limited results
-export const getRecentTasks = query({
-  handler: async (ctx) => {
-    const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
-    return await ctx.db
-      .query("tasks")
-      .withIndex("by_timestamp")
-      .filter((q) => q.gte(q.field("createdAt"), oneDayAgo))
-      .order("desc")
-      .take(50); // ✅ Limited result set
-  },
-});
-```
-
-**Detection:** Monitor Convex dashboard "Query Duration" metrics. Queries > 500ms indicate over-fetching.
-
----
-
-### Pitfall 2: Exposing OAuth Secrets in Frontend
-
-**What goes wrong:**
-Storing `LINKEDIN_CLIENT_SECRET` in frontend code or exchanging auth codes client-side exposes credentials to XSS attacks.
-
-**Why it happens:**
-Developers follow OAuth examples that use client-side libraries (designed for SPAs) instead of server-side flows.
-
-**Prevention:**
-✅ Always use Convex **actions** (server-side) for OAuth token exchange
-✅ Store secrets in `.env.local` (never commit to git)
-✅ Encrypt tokens before storing in database
-❌ Never call LinkedIn API with client secret from `useQuery` or client components
-
-**Example:**
-```typescript
-// 🔴 NEVER DO THIS
-"use client";
-const clientSecret = process.env.NEXT_PUBLIC_LINKEDIN_SECRET; // Exposed in bundle!
-
-// ✅ DO THIS
-// convex/actions.ts (server-side)
-const clientSecret = process.env.LINKEDIN_CLIENT_SECRET; // Safe, server-only
-```
-
----
-
-### Pitfall 3: Not Validating OAuth State Parameter
-
-**What goes wrong:**
-Attacker initiates OAuth flow with their LinkedIn account, then tricks user into completing it. User's app now connected to attacker's account.
-
-**How to avoid:**
-```typescript
-export const handleOAuthCallback = action({
-  handler: async (ctx, { code, state, userId }) => {
-    // ✅ CRITICAL: Validate state before proceeding
-    const storedState = await ctx.runQuery(internal.linkedIn.getOAuthState, {
-      userId,
-    });
-
-    if (storedState?.state !== state) {
-      throw new Error("Invalid state - possible CSRF attack");
-    }
-
-    // ... proceed with token exchange
-  },
-});
-```
-
----
-
-### Pitfall 4: Race Conditions in Optimistic Updates
-
-**What goes wrong:**
-User drags content from "Draft" → "Review", but mutation fails. UI shows content in "Review" but database still has "Draft". Subsequent actions operate on wrong state.
-
-**Prevention:**
-```typescript
-const handleDrop = async (contentId, toStage) => {
-  // Optimistic UI update
-  setOptimisticContent({ id: contentId, toStage });
-
-  try {
-    await moveContent({ contentId, toStage });
-  } catch (error) {
-    // ✅ CRITICAL: Revert optimistic update on failure
-    toast.error("Failed to move content");
-    // React 19's useOptimistic handles revert automatically
-  }
-};
-```
-
-Also use validation in mutations:
-```typescript
-export const moveContentStage = mutation({
-  handler: async (ctx, args) => {
-    // ✅ Validate allowed transitions
-    if (!isValidTransition(currentStage, targetStage)) {
-      throw new Error("Invalid transition");
-    }
-    // ... update
-  },
-});
-```
-
----
-
-### Pitfall 5: Not Handling Onboarding State Edge Cases
-
-**What goes wrong:**
-User completes 3/5 steps, closes browser, returns tomorrow. Onboarding restarts from step 1, frustrating user.
-
-**Or:** User skips optional step but later needs it. No way to re-enter skipped step.
-
-**Prevention:**
-```typescript
-// ✅ Resume from last step
-const progress = await ctx.db
-  .query("onboardingProgress")
-  .withIndex("by_userId", (q) => q.eq("userId", userId))
-  .first();
-
-if (progress && progress.currentStep !== "complete") {
-  // Resume from where they left off
-  return <OnboardingFlow startStep={progress.currentStep} />;
-}
-
-// ✅ Allow re-visiting skipped steps
-const handleRevisitStep = async (stepId) => {
-  await updateProgress({
-    skippedSteps: progress.skippedSteps.filter((s) => s !== stepId),
-    currentStep: stepId,
-  });
-};
-```
-
----
-
-### Pitfall 6: Forgetting LinkedIn Token Refresh
-
-**What goes wrong:**
-Access tokens expire after 60 days. User successfully connected LinkedIn, but 2 months later publishing fails silently with 401 errors.
-
-**Prevention:**
-```typescript
-export const refreshLinkedInToken = action({
-  handler: async (ctx, { connectionId }) => {
-    const connection = await ctx.runQuery(internal.linkedIn.getConnection, {
-      id: connectionId,
-    });
-
-    // ✅ Check if token expired or expiring soon (7 days buffer)
-    const sevenDaysFromNow = Date.now() + 7 * 24 * 60 * 60 * 1000;
-    if (connection.expiresAt < sevenDaysFromNow) {
-      const refreshToken = decrypt(connection.refreshToken);
-
-      const response = await fetch(
-        "https://www.linkedin.com/oauth/v2/accessToken",
-        {
-          method: "POST",
-          body: new URLSearchParams({
-            grant_type: "refresh_token",
-            refresh_token: refreshToken,
-            client_id: process.env.LINKEDIN_CLIENT_ID!,
-            client_secret: process.env.LINKEDIN_CLIENT_SECRET!,
-          }),
-        }
-      );
-
-      const { access_token, expires_in } = await response.json();
-
-      // Update stored tokens
-      await ctx.runMutation(internal.linkedIn.updateTokens, {
-        connectionId,
-        accessToken: encrypt(access_token),
-        expiresAt: Date.now() + expires_in * 1000,
-      });
-    }
-  },
-});
-
-// ✅ Run before every publish
-export const publishToLinkedIn = action({
-  handler: async (ctx, args) => {
-    // Refresh token if needed
-    await ctx.runAction(internal.linkedIn.refreshLinkedInToken, {
-      connectionId: args.connectionId,
-    });
-
-    // ... proceed with publish
-  },
-});
-```
-
----
-
-## Performance Optimization Strategies
-
-### 1. Index Optimization
-
-Ensure all queries have supporting indexes:
-
-```typescript
-// Schema design
-tasks: defineTable({
-  // ... fields
-})
-  .index("by_agent_status", ["agentId", "status"])  // ✅ Compound index
-  .index("by_timestamp", ["createdAt"])             // ✅ Time-range queries
-  .index("by_priority_status", ["priority", "status"]) // ✅ Dashboard filters
-```
-
-**Why:** Un-indexed queries scan entire table (O(n)). Indexed queries are O(log n).
-
-### 2. Pagination with Cursors
-
-For infinite scroll or large lists:
-
-```typescript
-export const getTasksPaginated = query({
-  args: {
-    cursor: v.optional(v.string()),
-    limit: v.number(),
-  },
-  handler: async (ctx, { cursor, limit }) => {
-    let q = ctx.db.query("tasks").order("desc");
-
-    if (cursor) {
-      q = q.filter((q) => q.lt(q.field("_creationTime"), Number(cursor)));
-    }
-
-    const tasks = await q.take(limit + 1);
-    const hasMore = tasks.length > limit;
-    const items = hasMore ? tasks.slice(0, -1) : tasks;
-    const nextCursor = hasMore
-      ? items[items.length - 1]._creationTime.toString()
-      : null;
-
-    return { items, nextCursor, hasMore };
-  },
-});
-```
-
-### 3. Debounce UI Updates
-
-For high-frequency updates (e.g., live token count):
-
-```typescript
-import { useDeferredValue } from "react";
-
-function TokenCounter() {
-  const stats = useQuery(api.controlCenter.getTokenStats);
-  const deferredStats = useDeferredValue(stats); // ✅ Smooth rendering
-
-  return <div>{deferredStats?.totalTokens}</div>;
-}
-```
-
-### 4. Selective Re-renders
-
-Memoize expensive components:
-
-```typescript
-const AgentCard = memo(function AgentCard({ agent }) {
-  // Only re-renders if agent prop changes
-  return <div>...</div>;
-});
-```
-
----
-
-## Environment Variables Required
-
-Add to `.env.local`:
-
-```env
-# Existing
-CONVEX_DEPLOYMENT=your-deployment
-NEXT_PUBLIC_CONVEX_URL=https://your-deployment.convex.cloud
+## Environment Separation Strategy
+
+### 1. Development Environment
+
+**Purpose:** Local development and testing
+
+**Infrastructure:**
+- **Frontend:** `localhost:3000` (Next.js dev server)
+- **Backend:** Convex dev deployment (one per developer)
+- **Auth:** Clerk Development Instance
+- **OAuth:** Development apps with `http://localhost:3000/...` callbacks
+
+**Configuration:**
+```bash
+# .env.local (local development only, not committed)
+CONVEX_DEPLOYMENT=dev:your-dev-deployment
+NEXT_PUBLIC_CONVEX_URL=https://your-dev-deployment.convex.cloud
+
+# Clerk Development
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
+CLERK_SECRET_KEY=sk_test_...
+CLERK_JWT_ISSUER_DOMAIN=https://your-clerk-dev.clerk.accounts.dev
+
+# OAuth Development Apps
+LINKEDIN_CLIENT_ID=dev_client_id
+LINKEDIN_CLIENT_SECRET=dev_client_secret
+TWITTER_CLIENT_ID=dev_client_id
+TWITTER_CLIENT_SECRET=dev_client_secret
+META_APP_ID=dev_app_id
+META_APP_SECRET=dev_app_secret
+
+# Frontend URL for OAuth redirects
+FRONTEND_URL=http://localhost:3000
+
+# Anthropic API (shared across environments)
 ANTHROPIC_API_KEY=sk-ant-...
-
-# NEW for v2.0
-# LinkedIn OAuth
-LINKEDIN_CLIENT_ID=your-linkedin-app-id
-LINKEDIN_CLIENT_SECRET=your-linkedin-secret
-LINKEDIN_REDIRECT_URI=https://yourdomain.com/integrations/linkedin/callback
-
-# Token encryption (generate with: openssl rand -base64 32)
-ENCRYPTION_KEY=your-32-byte-key
-
-# Analytics (optional)
-NEXT_PUBLIC_ANALYTICS_ID=your-analytics-id
-
-# Feature flags (optional)
-ENABLE_ONBOARDING=true
-ENABLE_LINKEDIN_INTEGRATION=true
 ```
 
----
-
-## Testing Strategy
-
-### Unit Tests (Convex Functions)
-
+**Convex Deployment:**
 ```bash
-# Install test framework
-npm install --save-dev @convex-dev/test vitest
-
-# Run tests
-npx vitest
+# Start local development with Convex dev
+npx convex dev
 ```
 
-```typescript
-// convex/linkedIn.test.ts
-import { describe, it, expect } from "vitest";
-import { convexTest } from "@convex-dev/test";
-import { api } from "./_generated/api";
+**OAuth Callback URLs (Development):**
+- LinkedIn: `http://localhost:3000/linkedin/callback`
+- Twitter: `http://localhost:3000/twitter/callback`
+- Instagram: `http://localhost:3000/instagram/callback`
 
-describe("LinkedIn OAuth", () => {
-  it("should validate state parameter", async () => {
-    const t = convexTest();
+### 2. Staging Environment (Preview Deployments)
 
-    // Store state
-    await t.mutation(api.linkedIn.storeOAuthState, {
-      userId: "user1",
-      state: "valid-state",
-    });
+**Purpose:** Test pull requests before merging to production
 
-    // Valid callback
-    await expect(
-      t.action(api.linkedIn.handleOAuthCallback, {
-        code: "auth-code",
-        state: "valid-state",
-        userId: "user1",
-      })
-    ).resolves.toBeDefined();
+**Infrastructure:**
+- **Frontend:** Vercel Preview Deployment (`amd-git-{branch}-{team}.vercel.app`)
+- **Backend:** Convex Preview Deployment (one per PR/branch)
+- **Auth:** Clerk Development Instance (shared with dev)
+- **OAuth:** Staging OAuth apps with Vercel preview URLs
 
-    // Invalid state (CSRF)
-    await expect(
-      t.action(api.linkedIn.handleOAuthCallback, {
-        code: "auth-code",
-        state: "invalid-state",
-        userId: "user1",
-      })
-    ).rejects.toThrow("Invalid state");
-  });
-});
-```
-
-### Integration Tests (E2E)
-
+**Configuration (Vercel Environment Variables - Preview scope):**
 ```bash
-# Install Playwright
-npm install --save-dev @playwright/test
+# Convex Preview (managed by Vercel integration)
+CONVEX_DEPLOY_KEY={staging_deploy_key}
+NEXT_PUBLIC_CONVEX_URL={auto-generated by Convex}
 
-# Run E2E tests
-npx playwright test
+# Clerk Development (same as dev)
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
+CLERK_SECRET_KEY=sk_test_...
+CLERK_JWT_ISSUER_DOMAIN=https://your-clerk-dev.clerk.accounts.dev
+
+# OAuth Staging Apps
+LINKEDIN_CLIENT_ID=staging_client_id
+LINKEDIN_CLIENT_SECRET=staging_client_secret
+TWITTER_CLIENT_ID=staging_client_id
+TWITTER_CLIENT_SECRET=staging_client_secret
+META_APP_ID=staging_app_id
+META_APP_SECRET=staging_app_secret
+
+# Frontend URL (Vercel auto-injects as VERCEL_URL)
+FRONTEND_URL=https://${VERCEL_URL}
+
+# Anthropic API
+ANTHROPIC_API_KEY=sk-ant-...
 ```
 
-```typescript
-// e2e/onboarding.spec.ts
-import { test, expect } from "@playwright/test";
+**Convex Preview Deployment:**
+- Automatically created by Vercel build process
+- Uses `CONVEX_DEPLOY_KEY` environment variable
+- Each Git branch gets its own Convex deployment
+- Separate data, functions, and cron jobs from production
 
-test("complete onboarding flow", async ({ page }) => {
-  await page.goto("/onboarding");
+**OAuth Callback URLs (Staging):**
+Must register multiple preview URLs in OAuth app settings:
+- LinkedIn: `https://amd-git-*.vercel.app/linkedin/callback`
+- Twitter: `https://amd-git-*.vercel.app/twitter/callback`
+- Instagram: `https://amd-git-*.vercel.app/instagram/callback`
 
-  // Step 1: Welcome
-  await expect(page.locator("h1")).toContainText("Welcome");
-  await page.click('button:has-text("Get Started")');
+**Note:** Some OAuth providers (LinkedIn, Meta) require explicit URL whitelisting. You may need to:
+1. Use a staging subdomain instead: `https://staging.amd.com/*`
+2. Or manually add each preview URL to OAuth app settings
+3. Or use separate staging OAuth apps per PR (not recommended)
 
-  // Step 2: Connect integrations (skip)
-  await page.click('button:has-text("Skip")');
+### 3. Production Environment
 
-  // Step 3: Create first agent
-  await page.fill('input[name="agentName"]', "Test Agent");
-  await page.click('button:has-text("Create")');
+**Purpose:** Live production application serving end users
 
-  // Verify progress saved
-  await page.reload();
-  await expect(page.locator(".progress-bar")).toHaveAttribute(
-    "data-progress",
-    "3"
-  );
-});
-```
+**Infrastructure:**
+- **Frontend:** Vercel Production (`app.amd.com` or custom domain)
+- **Backend:** Convex Production Deployment
+- **Auth:** Clerk Production Instance (with custom domain)
+- **OAuth:** Production OAuth apps with production domain
 
----
-
-## Deployment Considerations
-
-### Convex Deployment
-
+**Configuration (Vercel Environment Variables - Production scope):**
 ```bash
-# Deploy backend
+# Convex Production
+CONVEX_DEPLOY_KEY={production_deploy_key}
+NEXT_PUBLIC_CONVEX_URL=https://your-prod-deployment.convex.cloud
+
+# Clerk Production
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_...
+CLERK_SECRET_KEY=sk_live_...
+CLERK_JWT_ISSUER_DOMAIN=https://clerk.amd.com
+
+# OAuth Production Apps
+LINKEDIN_CLIENT_ID=prod_client_id
+LINKEDIN_CLIENT_SECRET=prod_client_secret
+TWITTER_CLIENT_ID=prod_client_id
+TWITTER_CLIENT_SECRET=prod_client_secret
+META_APP_ID=prod_app_id
+META_APP_SECRET=prod_app_secret
+
+# Frontend URL (production domain)
+FRONTEND_URL=https://app.amd.com
+
+# Anthropic API
+ANTHROPIC_API_KEY=sk-ant-...
+```
+
+**OAuth Callback URLs (Production):**
+- LinkedIn: `https://app.amd.com/linkedin/callback`
+- Twitter: `https://app.amd.com/twitter/callback`
+- Instagram: `https://app.amd.com/instagram/callback`
+
+**Convex Production Deployment:**
+```bash
+# Manual deploy (if not using CI/CD)
 npx convex deploy --prod
 
-# Run migrations (if schema changed)
-# Convex auto-migrates, but verify:
-npx convex dashboard
-# Check "Logs" for migration status
+# With CI/CD (GitHub Actions)
+CONVEX_DEPLOY_KEY={prod_key} npx convex deploy
 ```
 
-### Next.js Deployment (Vercel)
+---
+
+## Step-by-Step Deployment Guide
+
+### Phase 1: Convex Production Setup
+
+**Step 1.1: Create Production Deployment**
 
 ```bash
-# Deploy frontend
+# Option A: Via Convex Dashboard
+1. Go to https://dashboard.convex.dev
+2. Create new deployment (or promote existing)
+3. Name it "AMD Production"
+4. Note the deployment URL
+
+# Option B: Via CLI (if already initialized)
+npx convex deploy --prod
+```
+
+**Step 1.2: Generate Production Deploy Key**
+
+```bash
+# Via Convex Dashboard
+1. Go to Settings > Deploy Keys
+2. Create new deploy key
+3. Name: "GitHub Actions Production"
+4. Type: Production
+5. Copy the key (starts with prod:...)
+6. Store in GitHub Secrets as CONVEX_DEPLOY_KEY_PROD
+```
+
+**Step 1.3: Configure Production Environment Variables**
+
+```bash
+# Via Convex Dashboard or CLI
+npx convex env set ANTHROPIC_API_KEY "sk-ant-..." --prod
+npx convex env set LINKEDIN_CLIENT_ID "prod_client_id" --prod
+npx convex env set LINKEDIN_CLIENT_SECRET "prod_secret" --prod
+npx convex env set TWITTER_CLIENT_ID "prod_client_id" --prod
+npx convex env set TWITTER_CLIENT_SECRET "prod_secret" --prod
+npx convex env set META_APP_ID "prod_app_id" --prod
+npx convex env set META_APP_SECRET "prod_secret" --prod
+npx convex env set FRONTEND_URL "https://app.amd.com" --prod
+```
+
+**Step 1.4: Deploy Convex Functions to Production**
+
+```bash
+# Push functions to production
+npx convex deploy --prod
+
+# Verify deployment
+npx convex logs --prod
+```
+
+**Confidence:** HIGH - Convex deployment process is well-documented and battle-tested.
+
+### Phase 2: Clerk Production Instance Setup
+
+**Step 2.1: Create Production Instance**
+
+```bash
+1. Go to https://dashboard.clerk.com
+2. Create new application
+3. Name: "AMD Production"
+4. Select authentication methods:
+   - Email (for internal users)
+   - Google OAuth (optional)
+5. Note the Production API keys (pk_live_..., sk_live_...)
+```
+
+**Step 2.2: Configure Custom Domain (REQUIRED for Production)**
+
+```bash
+# In Clerk Dashboard > Domains
+1. Add custom domain: clerk.amd.com
+2. Add DNS records to your domain provider:
+   - CNAME: clerk.amd.com → clerk.accounts.dev
+3. Wait for DNS propagation (can take up to 48 hours)
+4. Verify domain in Clerk Dashboard
+```
+
+**Why custom domain is required:**
+- Clerk production uses first-party cookies (more secure)
+- Requires DNS CNAME record for session management
+- Development mode uses third-party cookies (less secure, not suitable for production)
+
+**Step 2.3: Update Environment Variables**
+
+```bash
+# Production keys (pk_live, sk_live)
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_...
+CLERK_SECRET_KEY=sk_live_...
+CLERK_JWT_ISSUER_DOMAIN=https://clerk.amd.com
+```
+
+**Step 2.4: Update Clerk Configuration in Convex**
+
+```typescript
+// convex/auth.config.ts (update for production)
+export default {
+  providers: [
+    {
+      domain: process.env.CLERK_JWT_ISSUER_DOMAIN!,
+      applicationID: "convex",
+    },
+  ],
+} satisfies AuthConfig;
+```
+
+**Confidence:** HIGH - Clerk production setup is well-documented. Main gotcha: DNS propagation time.
+
+### Phase 3: OAuth Production Apps Setup
+
+#### LinkedIn Production OAuth App
+
+**Step 3.1: Create LinkedIn App**
+
+```bash
+1. Go to https://www.linkedin.com/developers/apps
+2. Create new app
+3. Name: "AMD Production"
+4. Company: [Your LinkedIn Company Page]
+5. Privacy Policy URL: https://app.amd.com/privacy
+6. Logo: Upload AMD logo
+```
+
+**Step 3.2: Configure OAuth Settings**
+
+```bash
+# In LinkedIn App Settings > Auth
+1. Add Redirect URLs:
+   - https://app.amd.com/linkedin/callback
+   - https://{convex-deployment}.convex.site/linkedin/callback
+2. Request OAuth 2.0 scopes:
+   - openid
+   - profile
+   - email
+   - w_member_social (for posting)
+3. Copy Client ID and Client Secret
+```
+
+**Step 3.3: Verify App**
+
+```bash
+# LinkedIn requires app verification for production use
+1. Submit app for verification (can take 2-3 days)
+2. Provide:
+   - Use case description
+   - Screenshots of integration
+   - Privacy policy
+3. Wait for LinkedIn approval
+```
+
+#### Twitter/X Production OAuth App
+
+**Step 3.1: Create Twitter App**
+
+```bash
+1. Go to https://developer.twitter.com/en/portal/dashboard
+2. Create new project + app
+3. Name: "AMD Production"
+4. Environment: Production
+5. App permissions: Read and Write
+```
+
+**Step 3.2: Configure OAuth 2.0 Settings**
+
+```bash
+# In App Settings > User authentication settings
+1. Enable OAuth 2.0
+2. Type of App: Web App
+3. Callback URLs:
+   - https://app.amd.com/twitter/callback
+   - https://{convex-deployment}.convex.site/twitter/callback
+4. Website URL: https://app.amd.com
+5. Copy Client ID and Client Secret
+```
+
+**Step 3.3: Request Elevated Access (if needed)**
+
+```bash
+# For posting tweets, you may need Elevated access
+1. Apply for Elevated access in Developer Portal
+2. Explain use case (AI-generated social media content)
+3. Wait for Twitter approval (typically 1-2 days)
+```
+
+#### Instagram Production OAuth App (via Meta)
+
+**Step 3.1: Create Meta App**
+
+```bash
+1. Go to https://developers.facebook.com/apps
+2. Create new app
+3. Type: Business
+4. Name: "AMD Production"
+5. Contact email: [your email]
+```
+
+**Step 3.2: Add Instagram Product**
+
+```bash
+# In App Dashboard
+1. Add Product: Instagram Basic Display
+2. Configure Instagram Basic Display:
+   - Valid OAuth Redirect URIs:
+     * https://app.amd.com/instagram/callback
+     * https://{convex-deployment}.convex.site/instagram/callback
+   - Deauthorize Callback URL: https://app.amd.com/auth/deauthorize
+   - Data Deletion Request URL: https://app.amd.com/auth/delete
+```
+
+**Step 3.3: Request Advanced Access**
+
+```bash
+# Instagram requires app review for production features
+1. Add permissions:
+   - instagram_basic
+   - instagram_content_publish
+   - pages_show_list
+   - pages_read_engagement
+2. Submit for App Review (can take 1-2 weeks)
+3. Provide:
+   - Screencast of OAuth flow
+   - Privacy Policy URL
+   - Use case explanation
+```
+
+**Step 3.4: Move to Production Mode**
+
+```bash
+# In App Settings
+1. Switch from Development to Live mode
+2. Provide:
+   - Business verification
+   - Privacy Policy
+   - Terms of Service
+3. Copy Production App ID and App Secret
+```
+
+**Confidence:** MEDIUM - OAuth app approval processes can be unpredictable and slow (1-2 weeks for Meta).
+
+### Phase 4: Vercel Production Deployment
+
+**Step 4.1: Connect GitHub Repository**
+
+```bash
+1. Go to https://vercel.com/new
+2. Import Git Repository: amd
+3. Configure Project:
+   - Framework Preset: Next.js
+   - Root Directory: ./ai-marketing-department/ai-marketing-department
+   - Build Command: (override below)
+   - Output Directory: .next
+```
+
+**Step 4.2: Configure Build Settings**
+
+```bash
+# Override Build Command to deploy Convex first
+Build Command: npx convex deploy && npm run build
+
+# Why this order?
+# - Convex must deploy first to generate _generated files
+# - Next.js build imports from convex/_generated
+# - Running them sequentially ensures proper order
+```
+
+**Step 4.3: Configure Environment Variables**
+
+```bash
+# In Vercel Project Settings > Environment Variables
+
+# Production scope (only for production deployments)
+CONVEX_DEPLOY_KEY={prod_deploy_key} [Production]
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_... [Production]
+CLERK_SECRET_KEY=sk_live_... [Production]
+CLERK_JWT_ISSUER_DOMAIN=https://clerk.amd.com [Production]
+LINKEDIN_CLIENT_ID={prod_id} [Production]
+LINKEDIN_CLIENT_SECRET={prod_secret} [Production]
+TWITTER_CLIENT_ID={prod_id} [Production]
+TWITTER_CLIENT_SECRET={prod_secret} [Production]
+META_APP_ID={prod_id} [Production]
+META_APP_SECRET={prod_secret} [Production]
+FRONTEND_URL=https://app.amd.com [Production]
+ANTHROPIC_API_KEY=sk-ant-... [Production]
+
+# Preview scope (for all preview deployments)
+CONVEX_DEPLOY_KEY={staging_deploy_key} [Preview]
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_... [Preview]
+CLERK_SECRET_KEY=sk_test_... [Preview]
+CLERK_JWT_ISSUER_DOMAIN=https://your-clerk-dev.clerk.accounts.dev [Preview]
+LINKEDIN_CLIENT_ID={staging_id} [Preview]
+LINKEDIN_CLIENT_SECRET={staging_secret} [Preview]
+TWITTER_CLIENT_ID={staging_id} [Preview]
+TWITTER_CLIENT_SECRET={staging_secret} [Preview]
+META_APP_ID={staging_id} [Preview]
+META_APP_SECRET={staging_secret} [Preview]
+FRONTEND_URL=https://${VERCEL_URL} [Preview]
+ANTHROPIC_API_KEY=sk-ant-... [Preview]
+```
+
+**Step 4.4: Configure Custom Domain**
+
+```bash
+# In Vercel Project Settings > Domains
+1. Add domain: app.amd.com
+2. Add DNS records:
+   - CNAME: app.amd.com → cname.vercel-dns.com
+3. Wait for DNS propagation
+4. Verify domain in Vercel
+5. Enable automatic HTTPS
+```
+
+**Step 4.5: Deploy to Production**
+
+```bash
+# Option A: Via Vercel Dashboard
+1. Click "Deploy" button
+2. Wait for build to complete
+3. Visit https://app.amd.com
+
+# Option B: Via CLI
+npm install -g vercel
 vercel --prod
 
-# Or via Git integration (recommended)
-git push origin main  # Triggers auto-deploy
+# Option C: Via GitHub push to main
+git push origin main
+# Vercel auto-deploys main branch to production
 ```
 
-### Environment Variables
+**Confidence:** HIGH - Vercel deployment is straightforward with good documentation.
 
-Set in Vercel dashboard:
-- Settings → Environment Variables
-- Add all variables from `.env.local`
-- Ensure `LINKEDIN_CLIENT_SECRET` is marked as "Sensitive"
+### Phase 5: CI/CD Pipeline Setup (GitHub Actions)
 
-### OAuth Callback URL
+**Step 5.1: Create GitHub Secrets**
 
-Update LinkedIn App settings:
-- Go to [LinkedIn Developers](https://www.linkedin.com/developers/)
-- Your App → Auth → Redirect URLs
-- Add: `https://yourdomain.com/integrations/linkedin/callback`
+```bash
+# In GitHub Repo > Settings > Secrets and variables > Actions
+
+# Convex Deploy Keys
+CONVEX_DEPLOY_KEY_PROD={production_deploy_key}
+CONVEX_DEPLOY_KEY_STAGING={staging_deploy_key}
+
+# Vercel Tokens (for manual deployments if needed)
+VERCEL_TOKEN={vercel_token}
+VERCEL_ORG_ID={org_id}
+VERCEL_PROJECT_ID={project_id}
+```
+
+**Step 5.2: Create GitHub Actions Workflow**
+
+```yaml
+# .github/workflows/deploy.yml
+
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  # Job 1: Lint and Test
+  test:
+    name: Lint and Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: |
+            package-lock.json
+            ai-marketing-department/ai-marketing-department/package-lock.json
+
+      - name: Install backend dependencies
+        run: npm ci
+
+      - name: Install frontend dependencies
+        run: |
+          cd ai-marketing-department/ai-marketing-department
+          npm ci
+
+      - name: Lint backend
+        run: npm run lint
+
+      - name: Lint frontend
+        run: |
+          cd ai-marketing-department/ai-marketing-department
+          npm run lint
+
+      - name: Type check backend
+        run: npm run typecheck
+
+      - name: Type check frontend
+        run: |
+          cd ai-marketing-department/ai-marketing-department
+          npx tsc --noEmit
+
+  # Job 2: Deploy Convex (Production on main, Preview on PR)
+  deploy-convex:
+    name: Deploy Convex Backend
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Deploy to Convex Production (main branch)
+        if: github.ref == 'refs/heads/main'
+        env:
+          CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY_PROD }}
+        run: npx convex deploy --cmd 'echo "Production deployment"'
+
+      - name: Deploy to Convex Preview (PR)
+        if: github.event_name == 'pull_request'
+        env:
+          CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY_STAGING }}
+        run: npx convex deploy --cmd 'echo "Preview deployment"'
+
+  # Job 3: Deploy to Vercel (automatic via Vercel GitHub integration)
+  # Note: Vercel GitHub App handles this automatically
+  # This job is optional - only needed if you want custom control
+
+  notify:
+    name: Deployment Notification
+    runs-on: ubuntu-latest
+    needs: [test, deploy-convex]
+    if: always()
+    steps:
+      - name: Notify Success (Production)
+        if: github.ref == 'refs/heads/main' && needs.deploy-convex.result == 'success'
+        run: |
+          echo "✅ Production deployment successful"
+          # Add Slack/Discord notification here if needed
+
+      - name: Notify Success (Preview)
+        if: github.event_name == 'pull_request' && needs.deploy-convex.result == 'success'
+        run: |
+          echo "✅ Preview deployment successful"
+          # Add GitHub PR comment here if needed
+
+      - name: Notify Failure
+        if: needs.deploy-convex.result == 'failure'
+        run: |
+          echo "❌ Deployment failed"
+          # Add failure notification here
+```
+
+**Step 5.3: Configure Branch Protection Rules**
+
+```bash
+# In GitHub Repo > Settings > Branches > Branch protection rules
+
+# For main branch:
+1. Require pull request reviews before merging
+2. Require status checks to pass before merging:
+   - test
+   - deploy-convex
+3. Require branches to be up to date before merging
+4. Include administrators (optional)
+```
+
+**Step 5.4: Test CI/CD Pipeline**
+
+```bash
+# Create test PR
+git checkout -b test/ci-cd-pipeline
+git commit --allow-empty -m "test: CI/CD pipeline"
+git push origin test/ci-cd-pipeline
+
+# Create PR in GitHub
+# Verify:
+# 1. GitHub Actions runs test job
+# 2. Convex preview deployment created
+# 3. Vercel preview deployment created
+# 4. All checks pass
+
+# Merge to main
+# Verify:
+# 1. GitHub Actions runs test job
+# 2. Convex production deployment updated
+# 3. Vercel production deployment updated
+```
+
+**Confidence:** HIGH - GitHub Actions workflow is battle-tested pattern.
 
 ---
 
-## Monitoring & Observability
+## Environment Variable Management Matrix
 
-### Convex Dashboard Metrics
+| Variable | Development | Staging/Preview | Production | Where to Store |
+|----------|-------------|-----------------|------------|----------------|
+| `CONVEX_DEPLOYMENT` | `dev:your-deployment` | Auto-generated | `prod:deployment` | .env.local (dev), Vercel (prod) |
+| `NEXT_PUBLIC_CONVEX_URL` | Dev URL | Preview URL | Prod URL | Auto-generated by Convex |
+| `CONVEX_DEPLOY_KEY` | N/A | Staging key | Production key | GitHub Secrets |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | `pk_test_...` | `pk_test_...` | `pk_live_...` | Vercel Env Vars |
+| `CLERK_SECRET_KEY` | `sk_test_...` | `sk_test_...` | `sk_live_...` | Vercel Env Vars (sensitive) |
+| `CLERK_JWT_ISSUER_DOMAIN` | Dev domain | Dev domain | `clerk.amd.com` | Vercel Env Vars |
+| `LINKEDIN_CLIENT_ID` | Dev app | Staging app | Prod app | Vercel Env Vars |
+| `LINKEDIN_CLIENT_SECRET` | Dev secret | Staging secret | Prod secret | Vercel Env Vars (sensitive) |
+| `TWITTER_CLIENT_ID` | Dev app | Staging app | Prod app | Vercel Env Vars |
+| `TWITTER_CLIENT_SECRET` | Dev secret | Staging secret | Prod secret | Vercel Env Vars (sensitive) |
+| `META_APP_ID` | Dev app | Staging app | Prod app | Vercel Env Vars |
+| `META_APP_SECRET` | Dev secret | Staging secret | Prod secret | Vercel Env Vars (sensitive) |
+| `FRONTEND_URL` | `http://localhost:3000` | `https://${VERCEL_URL}` | `https://app.amd.com` | Vercel Env Vars |
+| `ANTHROPIC_API_KEY` | Same for all | Same for all | Same for all | Vercel Env Vars (sensitive) |
 
-Monitor at https://dashboard.convex.dev:
+**Security Notes:**
+1. NEVER commit `.env.local` to Git (already in `.gitignore`)
+2. Use Vercel's "Sensitive" flag for secrets (encrypted at rest)
+3. Rotate OAuth secrets if exposed
+4. Use separate API keys per environment for third-party services
 
-**Key metrics:**
-- Query duration (should be < 100ms p95)
-- Mutation throughput (writes/second)
-- Active subscriptions (WebSocket connections)
-- Database size and growth rate
+---
 
-**Alerts to set:**
-- Query duration > 500ms (investigate indexing)
-- Mutation errors > 1% (check validation logic)
-- Active subscriptions > 1000 (may need scaling)
+## OAuth Callback URL Management Strategy
 
-### Frontend Monitoring
+### Problem
 
-Use Vercel Analytics or custom solution:
+OAuth providers require exact callback URL matching. With 3 environments × 3 OAuth platforms = 9 different callback URLs to manage.
+
+### Solution: Environment-Specific OAuth Apps
+
+| Platform | Development | Staging | Production |
+|----------|-------------|---------|------------|
+| **LinkedIn** | Dev App (`localhost:3000`) | Staging App (`staging.amd.com`) | Prod App (`app.amd.com`) |
+| **Twitter** | Dev App (`localhost:3000`) | Staging App (`staging.amd.com`) | Prod App (`app.amd.com`) |
+| **Instagram** | Dev App (`localhost:3000`) | Staging App (`staging.amd.com`) | Prod App (`app.amd.com`) |
+
+### Callback URL Registration
+
+**Development URLs:**
+```
+http://localhost:3000/linkedin/callback
+http://localhost:3000/twitter/callback
+http://localhost:3000/instagram/callback
+```
+
+**Staging URLs (two options):**
+
+**Option A: Subdomain (Recommended)**
+```
+https://staging.amd.com/linkedin/callback
+https://staging.amd.com/twitter/callback
+https://staging.amd.com/instagram/callback
+```
+
+**Option B: Vercel Preview URLs (Less Reliable)**
+```
+https://amd-git-*.vercel.app/linkedin/callback
+https://amd-git-*.vercel.app/twitter/callback
+https://amd-git-*.vercel.app/instagram/callback
+```
+
+**Note:** Option A requires separate staging subdomain deployment. Option B requires wildcard support (not all OAuth providers allow this).
+
+**Production URLs:**
+```
+https://app.amd.com/linkedin/callback
+https://app.amd.com/twitter/callback
+https://app.amd.com/instagram/callback
+```
+
+### Convex HTTP Routes
+
+AMD uses Convex HTTP routes for OAuth callbacks. These also need separate URLs:
+
+**Development:**
+```
+https://dev-deployment.convex.site/linkedin/callback
+https://dev-deployment.convex.site/twitter/callback
+https://dev-deployment.convex.site/instagram/callback
+```
+
+**Staging:**
+```
+https://staging-deployment.convex.site/linkedin/callback
+https://staging-deployment.convex.site/twitter/callback
+https://staging-deployment.convex.site/instagram/callback
+```
+
+**Production:**
+```
+https://prod-deployment.convex.site/linkedin/callback
+https://prod-deployment.convex.site/twitter/callback
+https://prod-deployment.convex.site/instagram/callback
+```
+
+**Important:** Each OAuth app must register BOTH the Next.js frontend URL AND the Convex .site URL.
+
+### Dynamic Callback URL Construction
+
+AMD already implements dynamic callback URLs:
 
 ```typescript
-// lib/analytics.ts
-export function trackOnboardingStep(stepId: string, duration: number) {
-  if (typeof window !== "undefined") {
-    window.analytics?.track("onboarding_step_completed", {
-      step_id: stepId,
-      duration_ms: duration,
-    });
+// convex/http.ts (existing code)
+http.route({
+  path: "/linkedin/auth",
+  method: "GET",
+  handler: httpAction(async (ctx, request) => {
+    const url = new URL(request.url);
+    const redirectUri = `${url.origin}/linkedin/callback`;
+    // redirectUri will be: https://{convex-deployment}.convex.site/linkedin/callback
+    // ...
+  }),
+});
+```
+
+This pattern automatically uses the correct Convex deployment URL, so no code changes needed for multi-environment support.
+
+### OAuth Provider Configuration Checklist
+
+For each OAuth app (dev/staging/prod):
+
+**LinkedIn:**
+- [ ] Add Next.js callback URL
+- [ ] Add Convex .site callback URL
+- [ ] Verify scopes: `openid profile email w_member_social`
+- [ ] Submit for app review (production only)
+
+**Twitter:**
+- [ ] Add Next.js callback URL
+- [ ] Add Convex .site callback URL
+- [ ] Enable OAuth 2.0 with PKCE
+- [ ] Set permissions: Read and Write
+- [ ] Apply for Elevated access (production only)
+
+**Instagram (Meta):**
+- [ ] Add Next.js callback URL
+- [ ] Add Convex .site callback URL
+- [ ] Add Deauthorize callback URL
+- [ ] Add Data Deletion Request URL
+- [ ] Request permissions: `instagram_basic`, `instagram_content_publish`, `pages_show_list`, `pages_read_engagement`
+- [ ] Submit for App Review (production only)
+
+**Confidence:** MEDIUM - OAuth callback URL management is complex but well-understood. Main risk: app review delays.
+
+---
+
+## Deployment Dependency Graph
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  DEPLOYMENT ORDER (What Must Happen First)                      │
+└─────────────────────────────────────────────────────────────────┘
+
+1. CREATE PRODUCTION CONVEX DEPLOYMENT
+   ├─> Generate production deploy key
+   └─> Set environment variables in Convex
+
+2. CREATE PRODUCTION CLERK INSTANCE
+   ├─> Configure custom domain (clerk.amd.com)
+   ├─> Wait for DNS propagation (24-48 hours)
+   └─> Get production API keys (pk_live, sk_live)
+
+3. CREATE PRODUCTION OAUTH APPS
+   ├─> LinkedIn
+   │   ├─> Create app
+   │   ├─> Configure callback URLs
+   │   └─> Submit for verification (2-3 days)
+   ├─> Twitter
+   │   ├─> Create app
+   │   ├─> Enable OAuth 2.0
+   │   └─> Apply for Elevated access (1-2 days)
+   └─> Instagram (Meta)
+       ├─> Create Meta app
+       ├─> Add Instagram product
+       ├─> Submit for App Review (1-2 weeks)
+       └─> Switch to Live mode
+
+4. CONFIGURE VERCEL PROJECT
+   ├─> Connect GitHub repository
+   ├─> Set environment variables (Production + Preview scopes)
+   └─> Configure custom domain (app.amd.com)
+
+5. CONFIGURE GITHUB ACTIONS
+   ├─> Add secrets (CONVEX_DEPLOY_KEY_PROD, CONVEX_DEPLOY_KEY_STAGING)
+   ├─> Create workflow file (.github/workflows/deploy.yml)
+   └─> Set branch protection rules
+
+6. FIRST PRODUCTION DEPLOYMENT
+   ├─> Push to main branch
+   ├─> Verify Convex production deployment
+   ├─> Verify Vercel production deployment
+   └─> Test OAuth flows (LinkedIn, Twitter, Instagram)
+
+7. TEST PREVIEW DEPLOYMENTS
+   ├─> Create test PR
+   ├─> Verify Convex preview deployment created
+   ├─> Verify Vercel preview deployment created
+   └─> Test OAuth flows with staging apps
+```
+
+**Critical Path Items (Blockers):**
+1. **Clerk DNS propagation** (24-48 hours) - Must complete before production auth works
+2. **OAuth app reviews** (1-2 weeks for Meta) - Must complete before production OAuth works
+3. **Custom domain DNS** (1-48 hours) - Must complete before production domain works
+
+**Estimated Total Time to Production:** 2-3 weeks (mostly waiting for OAuth approvals)
+
+---
+
+## CI/CD Pipeline Architecture
+
+### Pipeline Stages
+
+```
+┌────────────────────────────────────────────────────────────────┐
+│  PULL REQUEST FLOW                                             │
+└────────────────────────────────────────────────────────────────┘
+
+PR Opened/Updated
+    ↓
+┌─────────────────┐
+│  1. Lint        │ → ESLint (backend + frontend)
+│  2. Type Check  │ → TypeScript (backend + frontend)
+│  3. Test        │ → Unit tests (if added)
+└─────────────────┘
+    ↓ (if passed)
+┌─────────────────┐
+│  4. Deploy      │ → Convex Preview Deployment (staging key)
+│     Convex      │ → Generates CONVEX_URL for preview
+└─────────────────┘
+    ↓
+┌─────────────────┐
+│  5. Deploy      │ → Vercel Preview Deployment (automatic)
+│     Vercel      │ → Uses preview CONVEX_URL + staging OAuth apps
+└─────────────────┘
+    ↓
+┌─────────────────┐
+│  6. Preview URL │ → Comment on PR with preview URLs
+│     Comment     │ → Frontend: https://amd-git-{branch}.vercel.app
+│                 │ → Backend: https://preview-{hash}.convex.cloud
+└─────────────────┘
+    ↓
+Manual Review + Approval
+    ↓
+Merge to main
+
+
+┌────────────────────────────────────────────────────────────────┐
+│  PRODUCTION DEPLOYMENT FLOW                                    │
+└────────────────────────────────────────────────────────────────┘
+
+Merge to main
+    ↓
+┌─────────────────┐
+│  1. Lint        │ → ESLint (backend + frontend)
+│  2. Type Check  │ → TypeScript (backend + frontend)
+│  3. Test        │ → Unit tests
+└─────────────────┘
+    ↓ (if passed)
+┌─────────────────┐
+│  4. Deploy      │ → Convex Production Deployment (prod key)
+│     Convex      │ → npx convex deploy --prod
+└─────────────────┘
+    ↓
+┌─────────────────┐
+│  5. Deploy      │ → Vercel Production Deployment (automatic)
+│     Vercel      │ → Uses prod CONVEX_URL + prod OAuth apps
+└─────────────────┘
+    ↓
+┌─────────────────┐
+│  6. Health      │ → Smoke tests (optional)
+│     Check       │ → Verify https://app.amd.com loads
+│                 │ → Verify Convex connection works
+└─────────────────┘
+    ↓
+┌─────────────────┐
+│  7. Notify      │ → Slack/Discord notification (optional)
+│                 │ → GitHub deployment status
+└─────────────────┘
+```
+
+### Pipeline Configuration
+
+**Triggers:**
+- Pull Request: `opened`, `synchronize`, `reopened`
+- Push to main: Production deployment
+
+**Jobs:**
+1. **test** (lint + type check) - ~2 minutes
+2. **deploy-convex** (backend deployment) - ~1 minute
+3. **deploy-vercel** (automatic via GitHub App) - ~3 minutes
+4. **notify** (optional) - ~10 seconds
+
+**Total Pipeline Time:**
+- Preview: ~6 minutes
+- Production: ~6 minutes
+
+**Parallelization:**
+- Lint and type check can run in parallel
+- Convex deployment must complete before Vercel build (generates types)
+
+**Failure Handling:**
+- If lint fails → Block deployment
+- If type check fails → Block deployment
+- If Convex deployment fails → Block Vercel deployment
+- If Vercel deployment fails → Rollback Convex? (needs discussion)
+
+**Confidence:** HIGH - GitHub Actions workflow is standard pattern for Convex + Vercel.
+
+---
+
+## Known Pitfalls and Gotchas
+
+### 1. Convex Type Generation Race Condition
+
+**Problem:** Next.js build imports from `convex/_generated`, but those files don't exist until Convex deploys.
+
+**Solution:** Use sequential build command:
+```bash
+npx convex deploy && npm run build
+```
+
+NOT:
+```bash
+npx convex deploy --cmd 'npm run build'
+```
+
+The `--cmd` flag runs the command DURING Convex deployment, which can cause race conditions.
+
+**Confidence:** HIGH - This is a documented issue with workaround.
+
+### 2. Clerk DNS Propagation Delay
+
+**Problem:** Custom domain for Clerk production requires DNS CNAME, which can take 24-48 hours to propagate.
+
+**Solution:**
+- Set up DNS early (Phase 2 of deployment)
+- Test with Clerk's temporary domain first
+- Use `dig clerk.amd.com` to verify DNS propagation
+
+**Confidence:** HIGH - Standard DNS behavior.
+
+### 3. OAuth Callback URL Exact Matching
+
+**Problem:** OAuth providers require exact URL matching. Even trailing slashes matter.
+
+**Solution:**
+- Register URLs without trailing slash: `https://app.amd.com/linkedin/callback`
+- Verify callback URLs match exactly in OAuth provider settings
+- Test each OAuth flow in staging before production
+
+**Confidence:** HIGH - Common OAuth gotcha.
+
+### 4. Meta App Review Delays
+
+**Problem:** Instagram OAuth requires Meta App Review, which can take 1-2 weeks and may be rejected.
+
+**Solution:**
+- Submit detailed use case explanation
+- Provide screencast of OAuth flow
+- Have privacy policy and terms of service ready
+- Be prepared to iterate on submission
+
+**Confidence:** MEDIUM - App review processes are unpredictable.
+
+### 5. Convex Preview Deployment Cleanup
+
+**Problem:** Preview deployments accumulate over time (one per PR), consuming resources.
+
+**Solution:**
+- Preview deployments auto-delete after 7 days of inactivity (Convex Pro)
+- Manually delete old previews in Convex Dashboard
+- Set up cleanup script in GitHub Actions (optional)
+
+**Confidence:** HIGH - Convex handles this automatically with Pro tier.
+
+### 6. Environment Variable Typos
+
+**Problem:** Typos in environment variable names cause silent failures (undefined values).
+
+**Solution:**
+- Use TypeScript to validate required env vars at build time:
+```typescript
+// lib/env.ts
+const requiredEnvVars = [
+  'NEXT_PUBLIC_CONVEX_URL',
+  'NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY',
+  'CLERK_SECRET_KEY',
+] as const;
+
+requiredEnvVars.forEach((key) => {
+  if (!process.env[key]) {
+    throw new Error(`Missing required environment variable: ${key}`);
   }
-}
-
-export function trackLinkedInPublish(contentId: string, success: boolean) {
-  window.analytics?.track("linkedin_publish", {
-    content_id: contentId,
-    success,
-  });
-}
+});
 ```
+
+**Confidence:** HIGH - Standard validation pattern.
+
+### 7. OAuth Token Expiration
+
+**Problem:** OAuth tokens expire, causing API calls to fail.
+
+**Solution (already implemented):**
+- LinkedIn: Refresh token support in `convex/linkedin/actions.ts`
+- Twitter: Access tokens last 2 hours, need refresh logic
+- Instagram: Long-lived tokens (60 days), need refresh before expiry
+
+**Action Required:** Add cron job to refresh tokens before expiration.
+
+**Confidence:** MEDIUM - Token refresh logic partially implemented.
 
 ---
 
-## Migration Path from Existing System
+## Recommended Deployment Order (Executive Summary)
 
-### Phase 1: Additive Changes (No Breaking Changes)
+### Week 1: Infrastructure Setup
 
-1. **Add new tables** - `onboardingProgress`, `linkedInConnections`, `linkedInPosts`
-2. **Add new query/mutation files** - `controlCenter.ts`, `linkedIn.ts`, `onboarding.ts`
-3. **Add new routes** - `/control-center`, `/pipeline`, `/onboarding`, `/integrations/linkedin`
+**Day 1-2: Convex + Clerk**
+1. Create Convex production deployment
+2. Generate production deploy keys
+3. Create Clerk production instance
+4. Configure Clerk custom domain (start DNS propagation)
 
-Existing dashboard continues working unchanged.
+**Day 3-5: OAuth Apps**
+1. Create production OAuth apps (LinkedIn, Twitter, Instagram)
+2. Configure callback URLs
+3. Submit for app reviews (start approval process)
 
-### Phase 2: Schema Extensions (Minor Breaking)
+**Weekend:** Wait for DNS propagation and OAuth approvals
 
-4. **Extend `content` table** - Add `workflowStage`, `assignedTo`, `stateTransitions`
-5. **Run data migration** - Populate new fields from existing `status` field:
+### Week 2: Deployment + Testing
 
-```typescript
-// convex/migrations/001_content_workflow.ts
-export const migrateContentWorkflow = internalMutation({
-  handler: async (ctx) => {
-    const allContent = await ctx.db.query("content").collect();
+**Day 1-2: Vercel Setup**
+1. Configure Vercel project
+2. Set all environment variables (production + preview scopes)
+3. Configure custom domain
+4. First production deployment (manual test)
 
-    for (const content of allContent) {
-      const workflowStage = mapStatusToStage(content.status);
-      await ctx.db.patch(content._id, {
-        workflowStage,
-        stateTransitions: [
-          {
-            from: "legacy",
-            to: workflowStage,
-            by: "system",
-            timestamp: Date.now(),
-            reason: "Migration from v1 status field",
-          },
-        ],
-      });
-    }
-  },
-});
+**Day 3-4: CI/CD Setup**
+1. Create GitHub Actions workflow
+2. Add GitHub secrets
+3. Test preview deployments with PRs
+4. Test production deployment via main branch
 
-function mapStatusToStage(status: string): string {
-  const mapping = {
-    draft: "drafting",
-    review: "approval",
-    approved: "scheduling",
-    published: "published",
-    archived: "archived",
-  };
-  return mapping[status] || "drafting";
-}
-```
+**Day 5: Verification**
+1. Run post-deployment checklist
+2. Test all OAuth flows
+3. Test content creation and publishing
+4. Monitor for errors
 
-### Phase 3: UI Transition (Gradual Rollout)
+### Week 3: Production Launch
 
-6. **Feature flags** - Enable new features per user:
+**Day 1-3:** Wait for OAuth approvals (if not yet approved)
 
-```typescript
-export const isFeatureEnabled = query({
-  args: {
-    userId: v.string(),
-    feature: v.string(),
-  },
-  handler: async (ctx, { userId, feature }) => {
-    const flags = await ctx.db
-      .query("settings")
-      .withIndex("by_key", (q) => q.eq("key", `feature_${feature}`))
-      .first();
+**Day 4:** Launch to production (if approvals complete)
 
-    if (flags?.value?.beta_users?.includes(userId)) return true;
-    if (flags?.value?.enabled_for_all) return true;
-    return false;
-  },
-});
-```
-
-7. **A/B testing** - Show new pipeline UI to 50% of users, track metrics
-8. **Full rollout** - Enable for all users after validation
+**Day 5:** Monitor production, fix any issues
 
 ---
 
 ## Sources
 
-### Official Documentation
-- [Convex Real-Time](https://www.convex.dev/realtime)
-- [Convex Best Practices](https://docs.convex.dev/understanding/best-practices/)
-- [Convex Mutations](https://docs.convex.dev/functions/mutation-functions)
-- [Next.js 16 Blog](https://nextjs.org/blog/next-16)
-- [LinkedIn OAuth 3-Legged Flow](https://learn.microsoft.com/en-us/linkedin/shared/authentication/authorization-code-flow)
-- [LinkedIn Authentication Overview](https://learn.microsoft.com/en-us/linkedin/shared/authentication/authentication)
+**Convex Documentation:**
+- [Deploying Your App to Production | Convex Developer Hub](https://docs.convex.dev/production)
+- [Using Convex with Vercel | Convex Developer Hub](https://docs.convex.dev/production/hosting/vercel)
+- [Preview Deployments | Convex Developer Hub](https://docs.convex.dev/production/hosting/preview-deployments)
+- [Environment Variables | Convex Developer Hub](https://docs.convex.dev/production/environment-variables)
 
-### Advanced Patterns (2026)
-- [Next.js Advanced Patterns for 2026](https://medium.com/@beenakumawat002/next-js-app-router-advanced-patterns-for-2026-server-actions-ppr-streaming-edge-first-b76b1b3dcac7)
-- [Convex Opinionated Guidelines](https://gist.github.com/srizvi/966e583693271d874bf65c2a95466339)
-- [High-Throughput Mutations via Precise Queries](https://stack.convex.dev/high-throughput-mutations-via-precise-queries)
+**Clerk Documentation:**
+- [Deploy your Clerk app to production - Deployment | Clerk Docs](https://clerk.com/docs/guides/development/deployment/production)
+- [Instances / Environments - Development | Clerk Docs](https://clerk.com/docs/guides/development/managing-environments)
+- [Deployments & Migrations: Set up a staging environment with Clerk](https://clerk.com/docs/deployments/set-up-staging)
+- [How to take your Clerk application to production](https://clerk.com/blog/how-to-take-your-clerk-app-to-prod)
 
-### Onboarding & UX
-- [OnboardJS React Guide](https://onboardjs.com/blog/react-onboarding-onboardjs-getting-started)
-- [5 Best React Onboarding Libraries (2026)](https://onboardjs.com/blog/5-best-react-onboarding-libraries-in-2025-compared)
-- [Implementing Effective Onboarding in React](https://radzion.com/blog/onboarding/)
+**Vercel Documentation:**
+- [Next.js on Vercel](https://vercel.com/docs/frameworks/full-stack/nextjs)
+- [Environments](https://vercel.com/docs/deployments/environments)
 
-### Security
-- [LinkedIn OAuth Security Best Practices](https://techdocs.akamai.com/identity-cloud/docs/the-linkedin-oauth-20-social-login-configuration-guide)
+**OAuth & CI/CD:**
+- [How To Deploy a Next.js App To Vercel With GitHub Actions](https://www.freecodecamp.org/news/deploy-to-vercel-with-github-actions/)
+- [Solving for Dynamic OAuth 2.0 Callbacks with Environment Handles | Release](https://release.com/blog/solving-for-dynamic-oauth-2-0-callbacks-with-environment-handles)
+- [How to Fix "Invalid Redirect URI" OAuth2 Errors](https://oneuptime.com/blog/post/2026-01-24-fix-invalid-redirect-uri-oauth2/view)
 
 ---
 
-## Summary
-
-This architecture leverages Convex's reactive query system for real-time features, implements OAuth securely via server-side actions, extends existing content schema with workflow states, and uses a headless state machine for guided onboarding. All patterns align with existing codebase conventions (Next.js 16 + React 19 + Convex) and require minimal breaking changes.
-
-**Confidence Assessment:**
-- Real-time patterns: HIGH (verified in existing codebase)
-- OAuth flow: HIGH (official LinkedIn docs + security best practices)
-- State machine: MEDIUM (pattern validated, library choice flexible)
-- Performance: HIGH (Convex docs + community guidelines)
+**End of Document**

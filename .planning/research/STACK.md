@@ -1,1032 +1,1002 @@
-# Technology Stack: v3.0 Additions
+# Technology Stack — Production Readiness
 
-**Project:** AMD (AI Marketing Department)
-**Researched:** 2026-02-05
-**Focus:** Stack additions for Analytics, Multi-Platform Publishing, and Multi-User Authentication
+**Project:** AI Marketing Department (AMD)
+**Researched:** 2026-02-09
+**Focus:** Production deployment, CI/CD, monitoring, performance, and testing infrastructure
 
 ---
 
 ## Executive Summary
 
-v3.0 adds three major capability areas to AMD. The recommended stack leverages:
+AMD is a Next.js 16 + Convex + Clerk marketing SaaS with 37 AI agents. Currently runs on localhost with `npm run dev`. This research identifies the minimal stack additions needed to make it production-ready for real paying users.
 
-1. **Clerk** for production-ready authentication with Convex (not Convex Auth which is still beta)
-2. **Native social platform APIs** accessed via Convex actions (no wrapper SDKs needed for most)
-3. **Recharts** for analytics visualization (already in use, needs expansion)
-4. **Convex Aggregate component** for efficient analytics data aggregation
+**Key Principle:** Add only what's essential. No over-engineering. Use free tiers where possible.
 
-**Key principle:** Minimize new dependencies. Use Convex actions for external API calls rather than adding client-side SDKs where possible.
+**Total Monthly Cost:** $0-20 (free tier until growth requires Vercel Pro)
 
 ---
 
-## Recommended Stack Additions
+## Current Stack (Do Not Change)
 
-### 1. Authentication: Clerk
-
-| Technology | Version | Purpose | Why This Choice |
-|------------|---------|---------|----------------|
-| `@clerk/nextjs` | `^6.37.1` | Multi-user authentication, user management, organizations | **Production-ready** with official Convex integration. Convex Auth is still beta. Free tier: 10,000 MAU + 100 organizations. |
-| `@clerk/backend` | `^1.x` | Server-side auth verification in Convex actions | Required for validating JWT tokens in Convex backend |
-
-**Why Clerk over alternatives:**
-
-- **Convex Auth (NOT recommended):** Still in beta as of Feb 2026. Documentation states "isn't complete and may change in backward-incompatible ways." Not suitable for production multi-user app.
-- **Auth.js/NextAuth (NOT recommended):** Requires Next.js server; adds state sync complexity between Next.js and Convex. Convex Auth solves this by running on Convex backend directly, but Convex Auth is beta.
-- **Clerk (RECOMMENDED):** Production-ready since 2023. Official Convex integration via `ConvexProviderWithClerk`. Handles user sync to Convex database automatically. Free tier sufficient for MVP (10K MAU, 100 orgs).
-
-**Integration approach:**
-- Frontend: Wrap app with `<ClerkProvider>` and `<ConvexProviderWithClerk>`
-- Backend: Use `ctx.auth.getUserIdentity()` in Convex queries/mutations
-- User data stored in Convex `users` table (auto-synced by Clerk webhook)
-
-**Pricing considerations:**
-- **Free tier:** 10,000 MAU, 100 organizations (5 members each)
-- **Pro tier:** $25/month + $0.02/MAU after 10K + $1/org after 100
-- **Organizations add-on:** $1/MAO (monthly active org), unlimited members per org
-- **Enhanced B2B add-on:** $100/month (custom roles, domain restrictions)
-
-For MVP with <10K users and <100 orgs, Clerk is free.
+| Component | Technology | Version | Purpose |
+|-----------|------------|---------|---------|
+| Frontend Framework | Next.js | 16.1.4 | React framework with Turbopack |
+| React | React | 19.2.3 | UI library |
+| Backend/Database | Convex | 1.31.6 | Real-time serverless backend |
+| Authentication | Clerk | 6.37.3 | Multi-user auth with RBAC |
+| Styling | Tailwind CSS | 4.x | Utility-first CSS |
+| Icons | Lucide React | 0.563.0 | Icon library |
+| Animation | Framer Motion | 12.29.2 | Animations |
+| Charts | Recharts | 3.7.0 | Data visualization |
+| Rich Text | TipTap | 3.18.0 | Content editor |
+| Language | TypeScript | 5.x | Type safety |
 
 ---
 
-### 2. Social Platform APIs
+## Production Additions — Deployment
 
-#### 2.1 Twitter/X API
+### Vercel (Recommended)
 
-| Technology | Version | Purpose | Why |
-|------------|---------|---------|-----|
-| `twitter-api-v2` | `^1.18.x` | Post tweets, threads, get analytics | Official community library, strongly typed TypeScript, OAuth 2.0 support |
+| Technology | Purpose | Cost | Why |
+|------------|---------|------|-----|
+| **Vercel** | Hosting & CDN | Free → $20/mo | Official Next.js platform, zero-config, automatic preview deployments, edge network, seamless Convex integration |
+| **Vercel CLI** | Deployment CLI | Free | Command-line deployment tool |
 
-**API Requirements:**
-- **Free tier:** 1,500 tweets/month write limit (sufficient for MVP testing)
-- **Basic tier:** $200/month → 50,000 tweets/month write, 15,000 read
-- **Pro tier:** $5,000/month → 300,000 tweets/month write, 1M read
-- **Authentication:** OAuth 2.0 (user-context) for publishing, OAuth 2.0 App-Only for analytics
+**Why Vercel:**
+- Zero-config deployment for Next.js 16
+- Automatic CDN edge caching
+- Preview deployments for every PR
+- Built-in environment variable management
+- Free tier sufficient for 100-500 users
+- Official platform (built by Vercel who built Next.js)
 
-**Implementation pattern:**
+**Free Tier:**
+- 100GB bandwidth/month
+- 100 build hours/month
+- Unlimited preview deployments
+- 1 concurrent build
+
+**Installation:**
+```bash
+# Install Vercel CLI globally
+npm install -g vercel
+
+# Link project (interactive)
+vercel link
+
+# Deploy to production
+vercel --prod
+```
+
+**Environment Variables Setup (Vercel Dashboard):**
+```bash
+# Production only
+CONVEX_DEPLOY_KEY=prod:xxx
+
+# Production + Preview
+NEXT_PUBLIC_CONVEX_URL=https://your-deployment.convex.cloud
+ANTHROPIC_API_KEY=sk-ant-xxx          # Mark as Sensitive
+CLERK_SECRET_KEY=sk_xxx                # Mark as Sensitive
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_xxx
+
+# Optional (if using Sentry)
+NEXT_PUBLIC_SENTRY_DSN=https://xxx
+SENTRY_AUTH_TOKEN=xxx                  # Mark as Sensitive, Production only
+```
+
+**Convex Deployment (Separate):**
+```bash
+# Deploy Convex backend separately
+npx convex deploy
+
+# Set Convex environment variables (Convex Dashboard or CLI)
+npx convex env set ANTHROPIC_API_KEY sk-ant-xxx
+```
+
+**Integration Points:**
+- Vercel detects Next.js 16 automatically
+- Build command: `next build` (automatic)
+- Output directory: `.next` (automatic)
+- Node.js version: 20.x (automatic)
+- Preview deployments created for every PR (automatic)
+
+**Sources:**
+- [Vercel Deployment Configuration (2026)](https://oneuptime.com/blog/post/2026-01-24-configure-vercel-deployment/view)
+- [Next.js 16 Production Checklist](https://nextjs.org/docs/app/guides/production-checklist)
+- [Convex + Vercel Integration](https://docs.convex.dev/production/hosting/vercel)
+
+---
+
+## Production Additions — CI/CD
+
+### GitHub Actions (Recommended)
+
+| Technology | Purpose | Cost | Why |
+|------------|---------|------|-----|
+| **GitHub Actions** | CI/CD automation | Free: 2,000 min/mo | Native GitHub integration, runs lint/test/build on every PR, blocks broken code from merging |
+
+**Why GitHub Actions:**
+- Built into GitHub (no external service)
+- Runs on every PR and push to main
+- Can enforce passing CI before merge
+- Integrates with Vercel preview deployments
+- Free tier sufficient (2,000 minutes/month)
+
+**Configuration:**
+
+Create `.github/workflows/ci.yml`:
+
+```yaml
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./ai-marketing-department/ai-marketing-department
+
+      - name: Run TypeScript check
+        run: npm run typecheck
+        working-directory: ./ai-marketing-department/ai-marketing-department
+
+      - name: Run ESLint
+        run: npm run lint
+        working-directory: ./ai-marketing-department/ai-marketing-department
+
+      - name: Run tests
+        run: npm test
+        working-directory: ./ai-marketing-department/ai-marketing-department
+
+      - name: Build Next.js app
+        run: npm run build
+        working-directory: ./ai-marketing-department/ai-marketing-department
+        env:
+          SKIP_ENV_VALIDATION: true
+```
+
+**What It Does:**
+1. Runs on every PR and push to main
+2. Type checks TypeScript code
+3. Lints with ESLint
+4. Runs tests (once added)
+5. Verifies Next.js builds successfully
+6. Blocks PR merge if any step fails
+
+**Integration with Vercel:**
+- Vercel deployments happen automatically (separate from CI)
+- Can add Convex schema validation: `npx convex deploy --dry-run --admin-key ${{ secrets.CONVEX_DEPLOY_KEY }}`
+
+**Sources:**
+- [GitHub Actions CI/CD for Next.js](https://arnab-k.medium.com/setting-up-ci-cd-pipelines-for-next-js-projects-354d500f7461)
+- [Next.js CI/CD Guide 2024](https://nextjsstarter.com/blog/nextjs-cicd-deployment-guide-2024/)
+
+---
+
+## Production Additions — Error Monitoring
+
+### Sentry (Recommended)
+
+| Technology | Purpose | Cost | Why |
+|------------|---------|------|-----|
+| **@sentry/nextjs** | Error tracking & performance | Free: 5K errors/mo, 10K transactions/mo | Industry standard, excellent Next.js 16 + React 19 support, source maps, release tracking, user context, performance monitoring |
+
+**Why Sentry:**
+- Industry-standard error monitoring
+- Official Next.js SDK (automatically instruments client + server)
+- React 19 error boundary support
+- Source map uploads (debug minified production code)
+- Performance monitoring (track slow API routes)
+- User context (see which user encountered error)
+- Free tier sufficient for MVP (5,000 errors/month)
+
+**Installation:**
+```bash
+cd ai-marketing-department/ai-marketing-department
+npx @sentry/wizard@latest -i nextjs
+```
+
+The wizard automatically:
+- Installs `@sentry/nextjs`
+- Creates `sentry.client.config.ts`
+- Creates `sentry.server.config.ts`
+- Creates `sentry.edge.config.ts`
+- Updates `next.config.ts` with Sentry integration
+- Configures source map uploads
+
+**Configuration:**
+
+The wizard creates these files, customize as needed:
+
 ```typescript
-// In Convex action (server-side)
-import { TwitterApi } from 'twitter-api-v2';
+// sentry.client.config.ts
+import * as Sentry from "@sentry/nextjs";
 
-export const publishTweet = action({
-  args: { text: v.string(), userId: v.id('users') },
-  handler: async (ctx, args) => {
-    const credentials = await getTwitterCredentials(ctx, args.userId);
-    const client = new TwitterApi(credentials);
-    const tweet = await client.v2.tweet(args.text);
-    // Store tweet ID in Convex for analytics tracking
-    await ctx.runMutation(internal.content.storeTweetId, {
-      contentId: args.contentId,
-      tweetId: tweet.data.id,
-    });
-  }
+Sentry.init({
+  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+
+  // Adjust sample rates for performance monitoring
+  tracesSampleRate: 0.1, // 10% of requests
+
+  // Session replay (captures user sessions on errors)
+  replaysOnErrorSampleRate: 1.0, // 100% of errors
+  replaysSessionSampleRate: 0.1, // 10% of normal sessions
+
+  integrations: [
+    Sentry.replayIntegration({
+      maskAllText: true,
+      blockAllMedia: true,
+    }),
+  ],
+
+  // Don't report errors in development
+  enabled: process.env.NODE_ENV === 'production',
 });
 ```
 
-**Why twitter-api-v2:**
-- Recommended by X Developer Platform official docs
-- Full TypeScript support (type-safe API calls)
-- Supports OAuth 2.0 (modern standard)
-- Active maintenance (latest update Jan 2026)
+**Environment Variables:**
+```bash
+# Add to Vercel (Sensitive)
+NEXT_PUBLIC_SENTRY_DSN=https://xxx@xxx.ingest.sentry.io/xxx
+SENTRY_AUTH_TOKEN=xxx  # For source map uploads
+SENTRY_ORG=your-org
+SENTRY_PROJECT=amd
+```
+
+**What Gets Tracked:**
+- **Frontend errors:** Unhandled exceptions, promise rejections, React component errors
+- **Backend errors:** Next.js API route errors, server-side rendering errors
+- **Performance:** Page load times, API route latency
+- **User context:** Email from Clerk, user ID
+- **Breadcrumbs:** User actions before error (clicks, navigation)
+- **Release tracking:** Git commit SHA for each deployment
+
+**Convex Error Monitoring:**
+
+Sentry for Convex requires Convex Pro plan. Alternative for MVP:
+
+1. **Use Convex built-in logs** (free):
+   - Dashboard → Logs page
+   - Full stack traces
+   - Filter by function/error type
+
+2. **Upgrade to Convex Pro** ($25/month) to enable Sentry integration:
+   - Dashboard → Deployment Settings → Integrations → Sentry
+   - Paste Sentry DSN
+   - Automatically tags errors with function name, type, runtime
+
+**Recommendation for MVP:** Use Sentry for Next.js errors, Convex logs for backend. Upgrade to Convex Pro + Sentry integration post-MVP.
+
+**Free Tier:**
+- 5,000 errors/month
+- 10,000 performance transactions/month
+- 50 session replays/month
+- 1 team member
+- 30-day retention
+
+**Sources:**
+- [Sentry Next.js Documentation](https://docs.sentry.io/platforms/javascript/guides/nextjs/)
+- [Convex Exception Reporting](https://docs.convex.dev/production/integrations/exception-reporting)
+- [Convex + Sentry Integration](https://sentry.io/integrations/convex/)
+- [Convex Observability](https://stack.convex.dev/observability-in-production)
 
 ---
 
-#### 2.2 Instagram Business API
+## Production Additions — Performance Monitoring
 
-| Technology | Version | Purpose | Why |
-|------------|---------|---------|-----|
-| `facebook-nodejs-business-sdk` | `^24.0.1` | Publish to Instagram, get analytics | Official Meta SDK, supports Instagram Graph API |
+### Vercel Analytics + Speed Insights (Recommended)
 
-**API Requirements:**
-- **Account type:** Instagram Business or Creator account only (linked to Facebook Page)
-- **Publishing limits:** 25 posts per 24-hour rolling window
-- **Supported formats:** JPEG images only (PNG not supported)
-- **Supported content types:** Feed posts, Reels (since 2022), Stories (since 2023)
+| Technology | Purpose | Cost | Why |
+|------------|---------|------|-----|
+| **@vercel/analytics** | User analytics | Free | Native Vercel integration, zero-config, privacy-friendly, no cookies |
+| **@vercel/speed-insights** | Core Web Vitals | Free | Real User Monitoring, Core Web Vitals tracking, Next.js optimized |
 
-**Publishing workflow:**
-1. Create media container: `POST /{ig-user-id}/media`
-2. Wait for `FINISHED` status
-3. Publish: `POST /{ig-user-id}/media_publish`
+**Why Vercel Analytics:**
+- Zero configuration (just add components)
+- Privacy-first (no cookies, GDPR compliant)
+- Free tier included with Vercel
+- Tracks real user metrics (not synthetic tests)
+- Dashboard included in Vercel UI
 
-**Implementation pattern:**
+**Installation:**
+```bash
+cd ai-marketing-department/ai-marketing-department
+npm install @vercel/analytics @vercel/speed-insights
+```
+
+**Integration:**
+```tsx
+// app/layout.tsx
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en">
+      <body>
+        {children}
+        <Analytics />
+        <SpeedInsights />
+      </body>
+    </html>
+  );
+}
+```
+
+**What It Tracks:**
+
+**Analytics:**
+- Page views
+- User sessions
+- Top pages
+- Traffic sources (referrers)
+- Real-time visitors
+- Geographic distribution
+
+**Speed Insights (Core Web Vitals):**
+- **LCP** (Largest Contentful Paint) - Target: < 2.5s
+- **INP** (Interaction to Next Paint) - Target: < 200ms *(replaced FID in 2024)*
+- **CLS** (Cumulative Layout Shift) - Target: < 0.1
+- **TTFB** (Time to First Byte)
+- **FCP** (First Contentful Paint)
+
+**Performance Optimization Already in Place:**
+- Next.js 16 uses Turbopack (2-5x faster builds)
+- Server Components reduce client-side JS
+- `next/image` optimizes images automatically
+- Static generation for marketing pages
+
+**Sources:**
+- [Vercel Analytics Documentation](https://vercel.com/docs/analytics)
+- [Core Web Vitals Optimization 2024](https://vercel.com/kb/guide/optimizing-core-web-vitals-in-2024)
+- [Next.js Performance Guide](https://nextjs.org/learn/seo/web-performance)
+- [Optimizing Next.js App Router 2025](https://makersden.io/blog/optimize-web-vitals-in-nextjs-2025)
+
+---
+
+## Production Additions — Testing Infrastructure
+
+### Vitest + React Testing Library (Recommended)
+
+| Technology | Version | Purpose | Cost | Why |
+|------------|---------|---------|------|-----|
+| **vitest** | ^2.2.0 | Test runner | Free | 10-20x faster than Jest, native ESM, TypeScript out-of-box, modern DX |
+| **@testing-library/react** | ^16.1.0 | Component testing | Free | Industry standard for React, works with React 19, user-centric testing |
+| **@vitejs/plugin-react** | ^4.3.4 | React support | Free | Required for React 19 + Vitest |
+| **jsdom** | ^25.0.1 | Browser environment | Free | DOM simulation for component tests |
+
+**Why Vitest over Jest:**
+- **10-20x faster** in watch mode
+- **Native ESM support** (Jest only has experimental ESM)
+- **Zero-config TypeScript** (no ts-jest needed)
+- **Hot Module Reloading** (tests reload instantly)
+- **Modern developer experience** (better error messages)
+- **Vite ecosystem** (Next.js 16 uses Vite-compatible Turbopack)
+
+**Installation:**
+```bash
+cd ai-marketing-department/ai-marketing-department
+npm install -D vitest @testing-library/react @testing-library/jest-dom @vitejs/plugin-react jsdom
+```
+
+**Configuration:**
+
+Create `vitest.config.ts`:
+
 ```typescript
-// In Convex action
-import { FacebookAdsApi, IGUser } from 'facebook-nodejs-business-sdk';
+import { defineConfig } from 'vitest/config';
+import react from '@vitejs/plugin-react';
+import path from 'path';
 
-export const publishInstagramPost = action({
-  args: {
-    imageUrl: v.string(),
-    caption: v.string(),
-    userId: v.id('users')
+export default defineConfig({
+  plugins: [react()],
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: ['./vitest.setup.ts'],
   },
-  handler: async (ctx, args) => {
-    const credentials = await getInstagramCredentials(ctx, args.userId);
-    const api = FacebookAdsApi.init(credentials.access_token);
-
-    // Create container
-    const container = await new IGUser(credentials.ig_user_id).createMedia({
-      image_url: args.imageUrl,
-      caption: args.caption,
-    });
-
-    // Wait for processing (poll status or use webhook)
-    // Then publish
-    const published = await new IGUser(credentials.ig_user_id).createMediaPublish({
-      creation_id: container.id,
-    });
-
-    await ctx.runMutation(internal.content.storeInstagramPostId, {
-      contentId: args.contentId,
-      igPostId: published.id,
-    });
-  }
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
 });
 ```
 
-**Why facebook-nodejs-business-sdk:**
-- Official Meta library (maintained by Facebook)
-- Supports Instagram Graph API v24.0+
-- Handles pagination, cursors, batch operations
-- Latest version (24.0.1) published Dec 2025
+Create `vitest.setup.ts`:
 
-**Limitations to communicate to users:**
-- JPEG only (no PNG, no GIF)
-- 25 posts/day hard limit
-- Business/Creator accounts only (not personal)
-- Requires Facebook Page connection
-
----
-
-#### 2.3 LinkedIn Analytics API
-
-| Technology | Version | Purpose | Why |
-|------------|---------|---------|-----|
-| `linkedin-api-js-client` | `^0.3.0` (beta) | Get post analytics, engagement metrics | Official LinkedIn library |
-| **Alternative:** Direct REST API calls | N/A | More stable than beta library | Avoid beta dependency |
-
-**API Capabilities (2026 updates):**
-- **Member Post Analytics API:** Free access to post-level engagement (impressions, reach, reactions, comments, reposts)
-- **Video Insights:** Watch time, total views, unique viewers
-- **Follower Growth:** Track follower count over time
-- **Aggregated Analytics:** Multi-post performance rollups
-
-**RECOMMENDATION: Use direct REST API calls instead of library**
-
-The official `linkedin-api-js-client` is still in beta (v0.3.0, last updated 3 years ago). For production stability, call LinkedIn REST API directly from Convex actions using `fetch`.
-
-**Implementation pattern:**
 ```typescript
-// In Convex action (NO additional library needed)
-export const getLinkedInPostAnalytics = action({
-  args: { postId: v.string(), userId: v.id('users') },
-  handler: async (ctx, args) => {
-    const credentials = await getLinkedInCredentials(ctx, args.userId);
+import '@testing-library/jest-dom';
+import { expect, afterEach } from 'vitest';
+import { cleanup } from '@testing-library/react';
 
-    // Direct REST API call
-    const response = await fetch(
-      `https://api.linkedin.com/rest/memberCreatorPostAnalytics?posts=${args.postId}`,
-      {
-        headers: {
-          'Authorization': `Bearer ${credentials.access_token}`,
-          'LinkedIn-Version': '202501', // Use current version
-          'X-Restli-Protocol-Version': '2.0.0',
-        }
-      }
-    );
-
-    const analytics = await response.json();
-
-    // Store in Convex for dashboard aggregation
-    await ctx.runMutation(internal.analytics.storeLinkedInMetrics, {
-      postId: args.postId,
-      impressions: analytics.impressions,
-      engagement: analytics.engagement,
-      reactions: analytics.reactions,
-    });
-  }
+// Cleanup after each test
+afterEach(() => {
+  cleanup();
 });
 ```
 
-**Why direct API over library:**
-- Official library is beta (unstable, 3 years since last update)
-- REST API is stable and well-documented
-- No additional dependency to maintain
-- Full control over API versioning
+**Add to package.json:**
+```json
+{
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage"
+  }
+}
+```
 
-**LinkedIn API integration points:**
-- Already have OAuth 2.0 working (v2.0 implementation)
-- Extend to request `r_organization_social_analytics` scope for analytics
-- Use existing token refresh logic
-
----
-
-### 3. Analytics & Visualization
-
-#### 3.1 Charting Library
-
-| Technology | Version | Purpose | Why |
-|------------|---------|---------|-----|
-| `recharts` | `^3.7.0` | Dashboard charts (line, bar, pie, area) | **Already in use.** React-native, composable, SVG-based. No change needed. |
-
-**Current usage:**
-- Already installed: `recharts@3.7.0`
-- Already used in `/analytics` page for trend charts
-- Component-based API matches React 19 patterns
-
-**Expand usage for v3.0:**
-- Line charts: Engagement trends over time (LinkedIn, Twitter, Instagram)
-- Bar charts: Post performance comparison (impressions, clicks)
-- Area charts: Token usage, cost trends
-- Pie charts: Content distribution by platform
-
-**Why NOT switch to alternatives:**
-- Chart.js: Requires wrapper for React, not React-native
-- Victory: Heavier bundle size, overkill for needs
-- ApexCharts: Commercial license considerations
-
-**Recharts strengths for AMD:**
-- Composable components (`<LineChart>`, `<Line>`, `<XAxis>`)
-- Built-in animations and interactions
-- TypeScript support
-- 200KB bundle size (reasonable)
-
-**No new dependency needed.** Expand existing Recharts usage.
-
----
-
-#### 3.2 Data Aggregation
-
-| Technology | Version | Purpose | Why |
-|------------|---------|---------|-----|
-| `@convex-dev/aggregate` | Latest | Efficient COUNT, SUM, MAX for analytics | Handles high-frequency updates without full table scans |
-
-**Why aggregation component:**
-- AMD has 37 agents generating tasks/executions constantly
-- Analytics queries like "total tokens used today" would scan entire table
-- Aggregate component maintains reactive counters/sums
-
-**Implementation pattern:**
+**Example Test:**
 ```typescript
-// In Convex schema
-import { Aggregate } from '@convex-dev/aggregate';
+// src/components/__tests__/Button.test.tsx
+import { render, screen } from '@testing-library/react';
+import { describe, it, expect } from 'vitest';
+import { Button } from '../Button';
 
-export const tokenUsageAggregate = new Aggregate(schema.executions, {
-  count: true, // Total executions
-  sum: ['tokensUsed', 'costUSD'], // Sum tokens and cost
-  groupBy: ['agentId', 'date'], // Daily per-agent rollups
-});
-
-// In query
-export const getDailyTokenUsage = query({
-  handler: async (ctx) => {
-    const today = new Date().toISOString().split('T')[0];
-    return await tokenUsageAggregate.getSum(ctx, {
-      groupBy: { date: today },
-      field: 'tokensUsed',
-    });
-  }
+describe('Button', () => {
+  it('renders button with text', () => {
+    render(<Button>Click me</Button>);
+    expect(screen.getByText('Click me')).toBeInTheDocument();
+  });
 });
 ```
 
-**Benefits:**
-- Reactive: UI auto-updates when new execution completes
-- Transactional: Aggregates update atomically with data
-- Performant: No full table scans, O(1) reads
+**Testing Strategy for MVP:**
+1. **Component tests:** UI components (buttons, forms, modals) - Priority: HIGH
+2. **Integration tests:** Page-level flows (create content, publish) - Priority: MEDIUM
+3. **E2E tests:** Skip for MVP (add Playwright post-MVP) - Priority: LOW
 
-**Use cases for v3.0:**
-1. **Internal metrics:** Token usage, costs, execution counts per agent/day
-2. **Social metrics:** Aggregate engagement across platforms (total impressions, reactions)
-3. **Content performance:** Top posts by engagement, conversion rates
+**Coverage Goals:**
+- MVP (Phase 1): 60% coverage
+- Post-MVP (Phase 2): 80% coverage
+- Focus on critical user flows first
 
----
-
-### 4. Supporting Libraries
-
-#### 4.1 Date Handling
-
-| Technology | Version | Purpose | Why |
-|------------|---------|---------|-----|
-| `date-fns` | `^4.1.0` | Date manipulation, formatting, timezones | **Already in use.** Lightweight (20KB), tree-shakeable. No change needed. |
-
-**Current usage:**
-- Already installed: `date-fns@4.1.0`
-- Used for formatting dates in UI
-
-**Expand for v3.0:**
-- Parse social platform timestamps (ISO 8601)
-- Calculate time ranges for analytics ("last 7 days", "last 30 days")
-- Format dates for chart axes (localized to Spanish)
-
-**No new dependency needed.**
+**Sources:**
+- [Vitest vs Jest Comparison](https://betterstack.com/community/guides/scaling-nodejs/vitest-vs-jest/)
+- [Vitest for Next.js Apps](https://www.wisp.blog/blog/vitest-vs-jest-which-should-i-use-for-my-nextjs-app)
+- [Testing in 2026: Full Stack Strategies](https://www.nucamp.co/blog/testing-in-2026-jest-react-testing-library-and-full-stack-testing-strategies)
 
 ---
 
-#### 4.2 Environment Variables & Secrets
+## Production Additions — Code Quality
 
-**Pattern: Convex environment variables (NO new library needed)**
+### ESLint + Prettier + Husky + lint-staged
 
-Social platform credentials must be stored securely. Convex provides environment variables for this.
+| Technology | Version | Purpose | Cost | Why |
+|------------|---------|---------|------|-----|
+| **eslint** | 9.x | TypeScript linting | Free | Already installed, catches bugs, enforces best practices |
+| **prettier** | ^3.4.2 | Code formatting | Free | Consistent code style, auto-format |
+| **husky** | ^9.2.0 | Git hooks | Free | Enforce quality before commit |
+| **lint-staged** | ^15.4.0 | Lint staged files | Free | Only lint changed files (fast) |
 
-**Setup:**
+**Why This Combo:**
+- ESLint catches logic errors and enforces best practices
+- Prettier handles formatting (no more style debates)
+- Husky runs checks before git commit (prevents broken commits)
+- lint-staged only checks changed files (fast feedback)
+
+**Installation:**
 ```bash
-npx convex env set TWITTER_API_KEY "..."
-npx convex env set TWITTER_API_SECRET "..."
-npx convex env set INSTAGRAM_ACCESS_TOKEN "..."
-npx convex env set LINKEDIN_ACCESS_TOKEN "..."
+cd ai-marketing-department/ai-marketing-department
+npm install -D prettier husky lint-staged
 ```
 
-**Access in actions:**
-```typescript
-export const publishTweet = action({
-  handler: async (ctx, args) => {
-    const apiKey = process.env.TWITTER_API_KEY;
-    const apiSecret = process.env.TWITTER_API_SECRET;
-    // Use credentials
+**Configuration:**
+
+Create `.prettierrc`:
+```json
+{
+  "semi": true,
+  "trailingComma": "es5",
+  "singleQuote": true,
+  "printWidth": 100,
+  "tabWidth": 2
+}
+```
+
+Create `.prettierignore`:
+```
+node_modules
+.next
+out
+build
+dist
+coverage
+.convex
+```
+
+Update `package.json`:
+```json
+{
+  "scripts": {
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepare": "husky install"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml}": [
+      "prettier --write"
+    ]
   }
-});
+}
 ```
 
-**Per-user tokens:**
-Store user-specific OAuth tokens in Convex database (encrypted at rest by Convex):
+**Setup Husky:**
+```bash
+npx husky install
+npx husky add .husky/pre-commit "npx lint-staged"
+```
+
+**What It Does:**
+- **Before every commit:** Automatically formats and lints staged files
+- **Fast:** Only checks changed files (not entire codebase)
+- **Blocks bad commits:** If linting fails, commit is rejected
+- **Consistent:** Entire team uses same formatting
+
+**ESLint Config (Already in place):**
+
+Next.js 16 uses flat config format (`eslint.config.mjs`):
 
 ```typescript
-// Schema addition
-export default defineSchema({
-  socialConnections: defineTable({
-    userId: v.id('users'),
-    platform: v.union(v.literal('twitter'), v.literal('instagram'), v.literal('linkedin')),
-    accessToken: v.string(), // Encrypted by Convex
-    refreshToken: v.optional(v.string()),
-    expiresAt: v.number(),
-  }).index('by_user_platform', ['userId', 'platform']),
+// eslint.config.mjs (already exists)
+import { dirname } from "path";
+import { fileURLToPath } from "url";
+import { FlatCompat } from "@eslint/eslintrc";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const compat = new FlatCompat({
+  baseDirectory: __dirname,
 });
+
+const eslintConfig = [
+  ...compat.extends("next/core-web-vitals", "next/typescript"),
+];
+
+export default eslintConfig;
 ```
+
+**Sources:**
+- [Prettier + ESLint Configuration (2026)](https://medium.com/@osmion/prettier-eslint-configuration-that-actually-works-without-the-headaches-a8506b710d21)
+- [Automating Code Quality with Husky (2026)](https://victorbruce82.medium.com/bulletproof-react-automating-code-quality-with-eslint-prettier-and-husky-2026-2f28b23cec99)
+- [ESLint v10.0.0 Release](https://eslint.org/blog/2026/02/eslint-v10.0.0-released/)
 
 ---
 
-## What NOT to Add
+## Production Additions — Security
 
-### ❌ Supabase / Firebase Auth
-**Why not:** Convex has native auth support via Clerk integration. Adding another auth provider creates state sync complexity.
+### Dependency Scanning: npm audit + Dependabot
 
-### ❌ Prisma / TypeORM
-**Why not:** Convex is the database. No ORM needed. Convex schema is TypeScript-native.
+| Technology | Purpose | Cost | Why |
+|------------|---------|------|-----|
+| **npm audit** | Vulnerability scanning | Free | Built into npm, scans dependencies for CVEs |
+| **Dependabot** | Automated security PRs | Free | Auto-creates PRs to fix vulnerabilities |
 
-### ❌ Redis / Upstash for rate limiting
-**Why not:** Social platform APIs have their own rate limits. Use Convex database to track rate limit state. For Next.js API routes (webhooks), rate limiting can be implemented with Convex queries if needed. Don't add Redis unless rate limiting becomes bottleneck.
+**Why This Combo:**
+- npm audit identifies vulnerable packages
+- Dependabot automatically proposes fixes via PRs
+- Combined approach: identify + remediate
+- GitHub-native (no external tool)
 
-### ❌ Bull / BullMQ for job queues
-**Why not:** Convex has scheduled functions (cron) and actions. No separate job queue needed.
+**Setup npm audit:**
 
-### ❌ Axios for HTTP requests
-**Why not:** Native `fetch` is sufficient for API calls in Convex actions. Modern Node.js (18+) has built-in `fetch`.
+Add to `package.json`:
+```json
+{
+  "scripts": {
+    "audit": "npm audit",
+    "audit:fix": "npm audit fix"
+  }
+}
+```
 
-### ❌ Socket.io for real-time
-**Why not:** Convex provides real-time subscriptions out of the box. No separate WebSocket layer needed.
+Add to GitHub Actions CI:
+```yaml
+- name: Audit dependencies
+  run: npm audit --audit-level=moderate
+  working-directory: ./ai-marketing-department/ai-marketing-department
+```
 
-### ❌ Lodash / Underscore
-**Why not:** Modern JavaScript/TypeScript has most utilities built-in (Array.map, Object.entries, etc.). Keep bundle small.
+**Setup Dependabot:**
+
+Create `.github/dependabot.yml`:
+
+```yaml
+version: 2
+updates:
+  # Frontend dependencies
+  - package-ecosystem: "npm"
+    directory: "/ai-marketing-department/ai-marketing-department"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    ignore:
+      # Ignore major version updates for stable packages
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "next"
+        update-types: ["version-update:semver-major"]
+
+  # Backend dependencies
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+```
+
+**What It Does:**
+- **npm audit:** Scans on every `npm install`, identifies vulnerabilities
+- **Dependabot:** Creates PRs every Monday for vulnerable packages
+- **Combined flow:** Audit identifies → Dependabot proposes → You review + merge
+
+**Security Best Practices:**
+- Run `npm audit` before every deployment
+- Review Dependabot PRs weekly
+- Prioritize high/critical vulnerabilities
+- Test thoroughly before merging dependency updates
+
+**Sources:**
+- [npm Audit Guide](https://blog.cyberdesserts.com/npm-security-vulnerabilities/)
+- [npm Audit Official Docs](https://docs.npmjs.com/auditing-package-dependencies-for-security-vulnerabilities/)
+- [Dependabot Documentation](https://docs.github.com/en/code-security/dependabot)
 
 ---
 
-## Integration Architecture
+## What NOT to Add (Avoid Over-Engineering)
 
-### Data Flow: Social Publishing
-
-```
-User clicks "Publish to Twitter"
-    ↓
-Next.js frontend calls Convex mutation
-    ↓
-Convex mutation validates content, checks permissions (Clerk auth)
-    ↓
-Convex mutation schedules action
-    ↓
-Convex action calls Twitter API (twitter-api-v2)
-    ↓
-Twitter API returns tweet ID
-    ↓
-Convex action stores tweet ID, updates content status
-    ↓
-Convex mutation triggers (reactive)
-    ↓
-Frontend UI updates automatically (Convex subscription)
-```
-
-**Key insight:** All external API calls happen in Convex actions (server-side). Frontend never directly calls Twitter/Instagram/LinkedIn APIs. This keeps API keys secure and enables retry logic.
+| Tool | Why Skip for MVP | Add When |
+|------|------------------|----------|
+| **Playwright E2E tests** | Slow setup, complex, team is small | Post-MVP when critical flows stabilize |
+| **Docker** | Vercel handles deployment, no need | If migrating off Vercel or self-hosting |
+| **Kubernetes** | Overkill for serverless Next.js + Convex | Never (stay serverless) |
+| **Redux** | React Context + Convex real-time sufficient | If state management becomes complex (50+ components) |
+| **@next/bundle-analyzer** | Not needed until bundle size problem | If bundle > 500KB |
+| **Lighthouse CI** | Manual audits sufficient for now | When Core Web Vitals < 90 consistently |
+| **Datadog** | Too expensive ($15/host/month) | If Sentry free tier insufficient (> 5K errors/month) |
+| **New Relic** | Overkill for MVP | If need APM beyond Sentry |
+| **Storybook** | Team small, not building design system | If building reusable component library |
+| **Cypress** | Superseded by Playwright, slower | Use Playwright if adding E2E tests |
 
 ---
 
-### Data Flow: Analytics Aggregation
+## Environment Variables Strategy
 
+### Vercel Environment Variables
+
+**Management:** Vercel Dashboard (not CLI for production)
+
+**Why Dashboard:**
+- All variables encrypted by default
+- "Sensitive" variables cannot be decrypted
+- UI makes it easy to set per-environment
+- Team members can't accidentally leak secrets
+
+**How to Set:**
+1. Go to Vercel project → Settings → Environment Variables
+2. Add variable name + value
+3. Select environments (Production, Preview, Development)
+4. Mark sensitive variables (API keys, secrets)
+
+**Critical Variables:**
 ```
-Convex action publishes post to LinkedIn
-    ↓
-Store post ID in Convex content table
-    ↓
-Scheduled cron (daily): Fetch analytics for all published posts
-    ↓
-Convex action calls LinkedIn Analytics API
-    ↓
-Parse engagement metrics (impressions, reactions, etc.)
-    ↓
-Store in analytics table with timestamp
-    ↓
-Aggregate component updates sums/counts
-    ↓
-Frontend query reads aggregated data (O(1) lookup)
-    ↓
-Recharts renders charts
+CONVEX_DEPLOY_KEY                          # Production only
+NEXT_PUBLIC_CONVEX_URL                     # Production + Preview
+ANTHROPIC_API_KEY                          # Sensitive, Production + Preview
+CLERK_SECRET_KEY                           # Sensitive, Production + Preview
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY          # Production + Preview
+NEXT_PUBLIC_SENTRY_DSN                     # Production + Preview
+SENTRY_AUTH_TOKEN                          # Sensitive, Production only
 ```
 
-**Key insight:** Use Convex scheduled functions (cron) to poll analytics APIs daily. Store raw metrics in `analytics` table, use Aggregate component for efficient rollups.
+### Convex Environment Variables
+
+**Management:** Convex Dashboard or CLI
+
+**How to Set:**
+```bash
+# Via CLI
+npx convex env set ANTHROPIC_API_KEY sk-ant-xxx
+
+# Via Dashboard
+# Dashboard → Deployment Settings → Environment Variables
+```
+
+**Constraints:**
+- Max 100 variables
+- Names: max 40 chars, letters/numbers/underscores only
+- Values: max 8KB
+- Different values for dev vs prod deployments
+
+**Critical Variables:**
+```
+ANTHROPIC_API_KEY=sk-ant-xxx
+META_ACCESS_TOKEN=xxx          # If using Instagram
+LINKEDIN_ACCESS_TOKEN=xxx       # If using LinkedIn
+```
+
+**Sources:**
+- [Vercel Environment Variables](https://vercel.com/docs/environment-variables)
+- [Vercel Sensitive Variables](https://vercel.com/docs/environment-variables/sensitive-environment-variables)
+- [Convex Environment Variables](https://docs.convex.dev/production/environment-variables)
 
 ---
 
-### Data Flow: Authentication
+## Deployment Workflow
 
-```
-User clicks "Sign up with Google"
-    ↓
-Clerk handles OAuth flow
-    ↓
-Clerk creates user in Clerk database
-    ↓
-Clerk webhook fires to Convex
-    ↓
-Convex mutation creates user in users table
-    ↓
-User data synced between Clerk ↔ Convex
-    ↓
-Frontend queries Convex with ctx.auth.getUserIdentity()
-    ↓
-Convex enforces permissions (user can only see their own data)
+### Development → Staging → Production
+
+**Development:**
+```bash
+# Local development
+npm run dev  # Next.js on localhost:3000
+npx convex dev  # Convex dev deployment
 ```
 
-**Key insight:** Clerk handles auth UI/UX. Convex stores user data for queries. Webhook keeps them in sync.
+**Staging (Preview Deployments):**
+```bash
+# Automatic on every PR
+git checkout -b feature/new-feature
+git push origin feature/new-feature
+# → GitHub Actions runs CI
+# → Vercel creates preview deployment
+# → Preview URL: https://amd-feature-new-feature-username.vercel.app
+```
+
+**Production:**
+```bash
+# Merge PR to main
+git checkout main
+git merge feature/new-feature
+git push origin main
+# → GitHub Actions runs CI
+# → Vercel deploys to production
+# → Production URL: https://amd.vercel.app (or custom domain)
+```
+
+**Convex Deployment:**
+```bash
+# Deploy Convex separately (after merging to main)
+npx convex deploy --prod
+
+# Or use Convex deploy key in CI
+# (Add CONVEX_DEPLOY_KEY to GitHub Secrets)
+```
+
+**Rollback:**
+```bash
+# Rollback Next.js (Vercel Dashboard)
+# Deployments → Previous deployment → Promote to Production
+
+# Rollback Convex (Dashboard)
+# Dashboard → Deployment History → Restore previous version
+```
+
+**Sources:**
+- [Vercel Git Integration](https://vercel.com/docs/git)
+- [Vercel Preview Deployments](https://vercel.com/docs/deployments/environments)
+- [Convex Production Deployment](https://docs.convex.dev/production)
 
 ---
 
-## Database Schema Additions
+## Summary: Production Stack Additions
 
-### New Tables for v3.0
+### Must-Have (Phase 1 - Pre-Launch)
 
-```typescript
-// convex/schema.ts additions
+| Category | Tool | Cost/Month | Priority |
+|----------|------|------------|----------|
+| **Deployment** | Vercel | $0 (free tier) | CRITICAL |
+| **CI/CD** | GitHub Actions | $0 (free tier) | CRITICAL |
+| **Error Monitoring** | Sentry | $0 (5K errors/mo) | CRITICAL |
+| **Performance** | Vercel Analytics + Speed Insights | $0 (free tier) | HIGH |
+| **Testing** | Vitest + React Testing Library | $0 | HIGH |
+| **Code Quality** | ESLint + Prettier + Husky | $0 | HIGH |
+| **Security** | npm audit + Dependabot | $0 | HIGH |
 
-export default defineSchema({
-  // Existing tables: agents, tasks, executions, content, handoffs...
+**Total Cost:** $0/month (stays free until growth)
 
-  // NEW: User management (synced from Clerk)
-  users: defineTable({
-    clerkId: v.string(), // Clerk user ID
-    email: v.string(),
-    name: v.string(),
-    role: v.union(v.literal('admin'), v.literal('editor'), v.literal('viewer')),
-    organizationId: v.optional(v.id('organizations')),
-    createdAt: v.number(),
-  })
-    .index('by_clerk_id', ['clerkId'])
-    .index('by_organization', ['organizationId']),
+### Nice-to-Have (Phase 2 - Post-Launch)
 
-  // NEW: Organizations (Clerk orgs)
-  organizations: defineTable({
-    clerkOrgId: v.string(),
-    name: v.string(),
-    plan: v.union(v.literal('free'), v.literal('pro'), v.literal('enterprise')),
-    createdAt: v.number(),
-  }).index('by_clerk_org_id', ['clerkOrgId']),
-
-  // NEW: Social platform connections (per-user OAuth tokens)
-  socialConnections: defineTable({
-    userId: v.id('users'),
-    platform: v.union(v.literal('twitter'), v.literal('instagram'), v.literal('linkedin')),
-    platformUserId: v.string(), // Twitter user ID, IG user ID, etc.
-    platformUsername: v.string(),
-    accessToken: v.string(), // Encrypted by Convex
-    refreshToken: v.optional(v.string()),
-    expiresAt: v.number(),
-    scopes: v.array(v.string()),
-    connectedAt: v.number(),
-  })
-    .index('by_user_platform', ['userId', 'platform'])
-    .index('by_expiration', ['expiresAt']),
-
-  // NEW: Social analytics (raw metrics from APIs)
-  socialAnalytics: defineTable({
-    contentId: v.id('content'),
-    platform: v.union(v.literal('twitter'), v.literal('instagram'), v.literal('linkedin')),
-    platformPostId: v.string(), // Tweet ID, IG post ID, LinkedIn URN
-    impressions: v.number(),
-    reach: v.optional(v.number()),
-    engagement: v.number(), // Total engagement (likes + comments + shares)
-    likes: v.number(),
-    comments: v.number(),
-    shares: v.number(),
-    clicks: v.optional(v.number()),
-    fetchedAt: v.number(), // When we fetched this data
-  })
-    .index('by_content', ['contentId'])
-    .index('by_platform_post', ['platform', 'platformPostId'])
-    .index('by_fetched_at', ['fetchedAt']),
-
-  // NEW: Internal analytics (agent activity, token usage)
-  internalAnalytics: defineTable({
-    date: v.string(), // YYYY-MM-DD
-    agentId: v.string(),
-    executionCount: v.number(),
-    tokensUsed: v.number(),
-    costUSD: v.number(),
-    successRate: v.number(), // 0.0 to 1.0
-    avgExecutionTime: v.number(), // milliseconds
-  })
-    .index('by_date', ['date'])
-    .index('by_agent_date', ['agentId', 'date']),
-
-  // EXISTING: Extend content table with new fields
-  content: defineTable({
-    // ... existing fields (type, title, body, status, metadata, seo, createdBy, createdAt) ...
-
-    // NEW FIELDS:
-    publishedPlatforms: v.optional(v.array(v.union(
-      v.literal('twitter'),
-      v.literal('instagram'),
-      v.literal('linkedin')
-    ))),
-    platformPostIds: v.optional(v.object({
-      twitter: v.optional(v.string()),
-      instagram: v.optional(v.string()),
-      linkedin: v.optional(v.string()),
-    })),
-    scheduledPublishAt: v.optional(v.number()), // Unix timestamp
-    lastAnalyticsFetch: v.optional(v.number()), // When we last fetched analytics
-  })
-    .index('by_scheduled_publish', ['scheduledPublishAt'])
-    .index('by_status', ['status']),
-});
-```
+| Category | Tool | When to Add |
+|----------|------|-------------|
+| E2E Testing | Playwright | When critical user flows stabilize |
+| Bundle Analysis | @next/bundle-analyzer | If bundle > 500KB |
+| Performance Budget | Lighthouse CI | If Core Web Vitals < 90 |
+| Convex + Sentry | Convex Pro + Sentry | If backend errors become frequent |
 
 ---
 
-## Installation Commands
+## Installation Checklist
 
-### New Dependencies to Install
+### 1. Backend (Convex)
 
 ```bash
-# Navigate to project root
 cd /home/tomas/Escritorio/AIAIAI_Consulting/projects/amd
 
-# Install backend dependencies (Convex)
-npm install @convex-dev/aggregate
+# Deploy to production
+npx convex deploy
 
-# Navigate to frontend
-cd ai-marketing-department/ai-marketing-department
-
-# Install Clerk for authentication
-npm install @clerk/nextjs@^6.37.1
-
-# Install social platform SDKs
-npm install twitter-api-v2@^1.18.0
-npm install facebook-nodejs-business-sdk@^24.0.1
-
-# NO need to install:
-# - recharts (already installed: 3.7.0)
-# - date-fns (already installed: 4.1.0)
-# - convex (already installed: 1.31.6)
+# Set environment variables (Convex Dashboard)
+# Dashboard → Deployment Settings → Environment Variables
+# - ANTHROPIC_API_KEY
+# - META_ACCESS_TOKEN (if using)
+# - LINKEDIN_ACCESS_TOKEN (if using)
 ```
 
-### Environment Variables Setup
+### 2. Frontend (Next.js)
 
 ```bash
-# In Convex dashboard or via CLI:
-npx convex env set CLERK_WEBHOOK_SECRET "whsec_..."
+cd ai-marketing-department/ai-marketing-department
 
-# Social platform API keys (app-level)
-npx convex env set TWITTER_API_KEY "..."
-npx convex env set TWITTER_API_SECRET "..."
-npx convex env set META_APP_ID "..."
-npx convex env set META_APP_SECRET "..."
+# 1. Error monitoring
+npx @sentry/wizard@latest -i nextjs
 
-# In Next.js frontend (.env.local)
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
-CLERK_SECRET_KEY=sk_test_...
-NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
-NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+# 2. Performance monitoring
+npm install @vercel/analytics @vercel/speed-insights
+
+# 3. Testing
+npm install -D vitest @testing-library/react @testing-library/jest-dom @vitejs/plugin-react jsdom
+
+# 4. Code quality
+npm install -D prettier husky lint-staged
+npx husky install
+npx husky add .husky/pre-commit "npx lint-staged"
+
+# 5. Verify build
+npm run build
 ```
 
----
+### 3. GitHub
 
-## Migration Path from Single-User to Multi-User
+```bash
+# Create CI workflow
+mkdir -p .github/workflows
+# Copy ci.yml from STACK.md recommendations
 
-### Phase 1: Add Authentication (Week 1)
+# Create Dependabot config
+# Copy dependabot.yml from STACK.md recommendations
 
-1. Install Clerk: `npm install @clerk/nextjs`
-2. Set up Clerk app in dashboard (clerk.com)
-3. Wrap Next.js app with `<ClerkProvider>`
-4. Add Clerk webhook to Convex for user sync
-5. Migrate existing content to have `createdBy: userId`
-
-**Backward compatibility:**
-- Existing content without `createdBy`: Assign to first admin user
-- Existing agents: Remain system-level (not user-specific)
-
-### Phase 2: Add Social Connections (Week 2)
-
-1. Create OAuth apps on Twitter, Meta, LinkedIn developer portals
-2. Install SDKs: `npm install twitter-api-v2 facebook-nodejs-business-sdk`
-3. Build OAuth flow UI (connect/disconnect buttons)
-4. Store tokens in `socialConnections` table
-5. Build publishing actions (one per platform)
-
-**Test with personal accounts first**, then invite beta users.
-
-### Phase 3: Add Analytics (Week 3-4)
-
-1. Install aggregation: `npm install @convex-dev/aggregate`
-2. Create `socialAnalytics` and `internalAnalytics` tables
-3. Build scheduled cron to fetch analytics daily
-4. Build aggregation queries (total impressions, top posts)
-5. Expand Recharts usage for multi-platform charts
-
-**Start with LinkedIn analytics** (already have OAuth), then Twitter, then Instagram.
-
----
-
-## Convex-Specific Patterns
-
-### Pattern 1: External API Calls in Actions
-
-**Rule:** All calls to Twitter, Instagram, LinkedIn APIs must happen in Convex actions, not mutations.
-
-**Why:** Actions can call external APIs (non-deterministic). Mutations cannot.
-
-```typescript
-// ❌ WRONG: Calling external API in mutation
-export const publishTweet = mutation({
-  handler: async (ctx, args) => {
-    const tweet = await twitterClient.post(...); // ERROR: mutation can't call external API
-  }
-});
-
-// ✅ CORRECT: Call external API in action
-export const publishTweet = action({
-  handler: async (ctx, args) => {
-    const tweet = await twitterClient.post(...); // OK
-    await ctx.runMutation(internal.content.storeTweetId, { id: tweet.id });
-  }
-});
+# Commit and push
+git add .
+git commit -m "feat: add production tooling (CI/CD, error monitoring, testing)"
+git push origin main
 ```
 
-### Pattern 2: Token Refresh in Actions
+### 4. Vercel
 
-OAuth tokens expire. Refresh them in actions before API calls.
+```bash
+# Install CLI
+npm install -g vercel
 
-```typescript
-export const publishTweet = action({
-  handler: async (ctx, args) => {
-    let connection = await getTwitterConnection(ctx, args.userId);
+# Link project
+vercel link
 
-    // Check if token expired
-    if (connection.expiresAt < Date.now()) {
-      // Refresh token
-      const refreshed = await twitterClient.refreshToken(connection.refreshToken);
-
-      // Update in database
-      await ctx.runMutation(internal.social.updateToken, {
-        connectionId: connection._id,
-        accessToken: refreshed.access_token,
-        expiresAt: Date.now() + refreshed.expires_in * 1000,
-      });
-
-      connection = refreshed;
-    }
-
-    // Now use fresh token
-    const tweet = await twitterClient.post(connection.accessToken, args.text);
-  }
-});
+# Deploy to production
+vercel --prod
 ```
 
-### Pattern 3: Rate Limit Tracking in Database
-
-Social platforms have rate limits. Track usage in Convex to avoid hitting limits.
-
-```typescript
-// Schema
-rateLimits: defineTable({
-  userId: v.id('users'),
-  platform: v.string(),
-  endpoint: v.string(), // e.g., "POST /tweets"
-  requestCount: v.number(),
-  windowStart: v.number(), // Unix timestamp
-  windowEnd: v.number(),
-}).index('by_user_platform_window', ['userId', 'platform', 'windowEnd']),
-
-// Before API call, check rate limit
-export const publishTweet = action({
-  handler: async (ctx, args) => {
-    const canPublish = await ctx.runQuery(internal.rateLimits.checkLimit, {
-      userId: args.userId,
-      platform: 'twitter',
-      endpoint: 'POST /tweets',
-      limit: 50, // Free tier: 50 tweets/day
-    });
-
-    if (!canPublish) {
-      throw new Error('Rate limit exceeded. Try again tomorrow.');
-    }
-
-    // Proceed with API call...
-  }
-});
-```
-
-### Pattern 4: Scheduled Analytics Fetching
-
-Use Convex cron to fetch analytics daily, not on-demand.
-
-```typescript
-// convex/crons.ts
-import { cronJobs } from 'convex/server';
-import { internal } from './_generated/api';
-
-const crons = cronJobs();
-
-crons.daily(
-  'fetch-linkedin-analytics',
-  { hourUTC: 6 }, // 6 AM UTC
-  internal.analytics.fetchAllLinkedInAnalytics
-);
-
-crons.daily(
-  'fetch-twitter-analytics',
-  { hourUTC: 7 },
-  internal.analytics.fetchAllTwitterAnalytics
-);
-
-export default crons;
-```
-
-**Why cron instead of real-time:**
-- Social APIs have rate limits (e.g., LinkedIn: 100 calls/day)
-- Analytics data doesn't need real-time updates
-- Reduces API costs
-
----
-
-## Performance Considerations
-
-### 1. Recharts Rendering with Large Datasets
-
-**Problem:** Rendering 10,000 data points causes lag.
-
-**Solution:** Aggregate data before passing to chart.
-
-```typescript
-// ❌ BAD: Pass all executions to chart
-const executions = useQuery(api.executions.list); // 10,000 rows
-<LineChart data={executions} />
-
-// ✅ GOOD: Aggregate by day first
-const dailyStats = useQuery(api.analytics.getDailyStats); // 30 rows
-<LineChart data={dailyStats} />
-```
-
-Use Convex Aggregate component for pre-aggregation.
-
-### 2. Social API Rate Limits
-
-| Platform | Free Tier Limit | Recommended Strategy |
-|----------|----------------|----------------------|
-| Twitter | 1,500 tweets/month | Batch analytics fetching (daily cron) |
-| Instagram | 25 posts/day | Show warning at 20 posts, block at 25 |
-| LinkedIn | 100 API calls/day | Fetch analytics for top 100 posts only |
-
-**Implementation:** Track usage in `rateLimits` table, show warnings in UI.
-
-### 3. Convex Action Timeouts
-
-Actions timeout after 10 minutes. For bulk operations (fetch analytics for 1000 posts), use pagination.
-
-```typescript
-export const fetchAllLinkedInAnalytics = action({
-  handler: async (ctx) => {
-    const posts = await ctx.runQuery(internal.content.getPublishedLinkedInPosts, {
-      limit: 100, // Process 100 at a time
-    });
-
-    for (const post of posts) {
-      await fetchLinkedInAnalyticsForPost(ctx, post);
-      // Store analytics incrementally
-    }
-
-    // If more posts exist, schedule another action
-    if (posts.length === 100) {
-      await ctx.scheduler.runAfter(0, internal.analytics.fetchAllLinkedInAnalytics);
-    }
-  }
-});
-```
-
----
-
-## Security Considerations
-
-### 1. OAuth Token Storage
-
-**Never store tokens in localStorage or client-side state.** Always store in Convex database (encrypted at rest).
-
-```typescript
-// ✅ CORRECT: Store in Convex
-await ctx.runMutation(internal.social.storeToken, {
-  userId: ctx.auth.getUserIdentity()!.subject,
-  platform: 'twitter',
-  accessToken: tokens.access_token, // Convex encrypts at rest
-});
-
-// ❌ WRONG: Store in localStorage
-localStorage.setItem('twitter_token', tokens.access_token); // NEVER do this
-```
-
-### 2. User Isolation
-
-**Enforce userId checks in all queries/mutations.**
-
-```typescript
-export const getMyContent = query({
-  handler: async (ctx) => {
-    const userId = ctx.auth.getUserIdentity()?.subject;
-    if (!userId) throw new Error('Unauthorized');
-
-    return await ctx.db
-      .query('content')
-      .withIndex('by_user', (q) => q.eq('createdBy', userId))
-      .collect();
-  }
-});
-```
-
-**Never allow:**
-```typescript
-// ❌ WRONG: Returns all users' content
-export const getAllContent = query({
-  handler: async (ctx) => {
-    return await ctx.db.query('content').collect();
-  }
-});
-```
-
-### 3. Webhook Verification
-
-**Verify all webhook signatures** (Clerk, Twitter, Instagram).
-
-```typescript
-// Example: Clerk webhook
-import { Webhook } from 'svix';
-
-export const clerkWebhook = httpAction(async (ctx, request) => {
-  const svix_id = request.headers.get('svix-id');
-  const svix_timestamp = request.headers.get('svix-timestamp');
-  const svix_signature = request.headers.get('svix-signature');
-
-  const webhook = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
-  const payload = await webhook.verify(await request.text(), {
-    'svix-id': svix_id,
-    'svix-timestamp': svix_timestamp,
-    'svix-signature': svix_signature,
-  });
-
-  // Process verified webhook
-});
-```
-
----
-
-## Testing Strategy
-
-### 1. Social API Mocking
-
-Use Twitter/Instagram/LinkedIn sandbox accounts for testing. **Do not use production accounts.**
-
-**Setup:**
-1. Twitter: Create developer account, use "Elevated" access for testing
-2. Instagram: Create test Instagram Business account via Meta Business Suite
-3. LinkedIn: Use personal account in "development mode" (not visible to public)
-
-### 2. Clerk Testing
-
-Clerk provides test mode with unlimited users. Use `pk_test_...` and `sk_test_...` keys.
-
-**Test scenarios:**
-- User signs up → User created in Convex
-- User connects Twitter → Token stored in `socialConnections`
-- User publishes tweet → Tweet posted, ID stored
-
-### 3. Analytics Accuracy
-
-**Validation:** Compare AMD analytics with platform-native analytics.
-
-- Fetch LinkedIn analytics via API
-- Manually check LinkedIn.com analytics page
-- Verify numbers match (allow 5% variance due to timing)
-
----
-
-## Rollback Plan
-
-If v3.0 stack additions fail, rollback is clean:
-
-### Clerk Rollback
-1. Remove `<ClerkProvider>` wrapper from `app/layout.tsx`
-2. Uninstall: `npm uninstall @clerk/nextjs`
-3. Remove `users` and `organizations` tables from schema
-4. Revert auth checks (`ctx.auth.getUserIdentity()`) to single-user mode
-
-**Impact:** App returns to single-user mode. No data loss (Convex tables persist).
-
-### Social API Rollback
-1. Remove social publishing actions from Convex
-2. Uninstall: `npm uninstall twitter-api-v2 facebook-nodejs-business-sdk`
-3. Remove `socialConnections` and `socialAnalytics` tables
-4. LinkedIn OAuth remains (already working in v2.0)
-
-**Impact:** Only LinkedIn publishing works. Twitter/Instagram removed.
-
-### Analytics Rollback
-1. Remove aggregation: `npm uninstall @convex-dev/aggregate`
-2. Remove analytics queries
-3. Revert to existing analytics page (basic metrics only)
-
-**Impact:** Dashboard shows basic metrics (executions, tokens). No social engagement data.
+**Then set environment variables in Vercel Dashboard:**
+1. Go to project → Settings → Environment Variables
+2. Add all variables (see "Environment Variables Strategy" section)
+3. Mark sensitive variables (API keys, secrets)
 
 ---
 
 ## Confidence Assessment
 
-| Area | Confidence | Justification |
-|------|------------|---------------|
-| **Clerk for Auth** | HIGH | Production-ready since 2023. Official Convex integration. Free tier sufficient for MVP. Alternative (Convex Auth) is beta. |
-| **twitter-api-v2** | HIGH | Official community library. Active maintenance (Jan 2026 update). Strongly typed. OAuth 2.0 support. |
-| **Instagram API** | MEDIUM | Official Meta SDK (v24.0.1). **BUT** complex publishing workflow (2-step process). JPEG-only limitation. 25 posts/day hard limit. |
-| **LinkedIn Analytics API** | MEDIUM | New API (2026 launch). Free access. **BUT** official library is beta. Recommend direct REST API calls instead. |
-| **Recharts** | HIGH | Already in use. Proven for AMD use case. No issues found. |
-| **Convex Aggregate** | HIGH | Official Convex component. Handles high-frequency updates efficiently. Reactive and transactional. |
+| Area | Confidence | Notes |
+|------|------------|-------|
+| **Deployment** | HIGH | Vercel is official Next.js platform, proven at scale, extensive docs |
+| **CI/CD** | HIGH | GitHub Actions is industry standard, many Next.js examples |
+| **Error Monitoring** | HIGH | Sentry Next.js SDK mature, React 19 support confirmed, Convex integration documented |
+| **Performance** | MEDIUM | Vercel Analytics well-documented, free tier limits not fully specified in 2026 docs |
+| **Testing** | HIGH | Vitest proven faster than Jest, strong TypeScript + React 19 support, growing community |
+| **Code Quality** | HIGH | ESLint + Prettier + Husky industry standard, well-established patterns |
+| **Security** | HIGH | npm audit + Dependabot built into GitHub, proven for dependency management |
 
-**Overall confidence:** HIGH for auth and Twitter. MEDIUM for Instagram/LinkedIn due to API complexity and beta libraries.
+**Overall Confidence:** HIGH for production readiness with this stack.
 
 ---
 
 ## Open Questions for Phase-Specific Research
 
-1. **Instagram Reels vs Feed Posts:** Which should MVP support first? Reels have higher engagement but more complex API.
-2. **LinkedIn organization pages vs personal profiles:** Should MVP support company page publishing? Requires different OAuth scopes.
-3. **Twitter threads vs single tweets:** Should v3.0 support thread publishing (multi-tweet sequences)? Adds complexity.
-4. **Analytics retention:** How long to keep raw analytics data in `socialAnalytics` table? 90 days? 1 year? Impacts database size.
-5. **Rate limit handling UX:** When user hits rate limit, should we queue posts for tomorrow or show error? Queue adds complexity.
+1. **Vercel Pro upgrade trigger:** At what monthly bandwidth (GB) should we upgrade from free to Pro?
+2. **Sentry alert thresholds:** What error rate should trigger alerts? (e.g., > 10 errors/hour)
+3. **Test coverage enforcement:** Should CI block merge if coverage drops below threshold?
+4. **Performance budget:** What Core Web Vitals scores should trigger alerts?
+5. **Dependabot merge strategy:** Auto-merge patch updates, manual review for minor/major?
 
-**Recommendation:** Start with simplest case (single tweet, LinkedIn personal profile, Instagram feed post). Add complexity in v3.1+.
+**Recommendation:** Start with defaults, adjust based on first month of production data.
 
 ---
 
 ## Sources
 
-**Authentication Research:**
-- [Convex & Clerk Integration](https://docs.convex.dev/auth/clerk)
-- [Clerk Pricing](https://clerk.com/pricing)
-- [Convex Auth Status (Beta)](https://docs.convex.dev/auth/convex-auth)
-- [Clerk vs Auth.js Comparison](https://stack.convex.dev/authentication-best-practices-convex-clerk-and-nextjs)
+### Deployment & Hosting
+- [Vercel Deployment Configuration (2026)](https://oneuptime.com/blog/post/2026-01-24-configure-vercel-deployment/view)
+- [Next.js 16 Release Features](https://www.infoq.com/news/2025/12/nextjs-16-release/)
+- [Next.js 16 Production Checklist](https://nextjs.org/docs/app/guides/production-checklist)
+- [Convex Production Deployment](https://docs.convex.dev/production)
+- [Convex + Vercel Integration](https://docs.convex.dev/production/hosting/vercel)
 
-**Twitter/X API Research:**
-- [X API Guide 2026](https://getlate.dev/blog/x-api)
-- [X API Pricing 2026](https://getlate.dev/blog/twitter-api-pricing)
-- [twitter-api-v2 Library](https://www.npmjs.com/package/twitter-api-v2)
-- [twitter-api-v2 GitHub](https://github.com/PLhery/node-twitter-api-v2)
+### CI/CD
+- [Setting Up CI/CD for Next.js](https://arnab-k.medium.com/setting-up-ci-cd-pipelines-for-next-js-projects-354d500f7461)
+- [Next.js CI/CD Deployment Guide](https://nextjsstarter.com/blog/nextjs-cicd-deployment-guide-2024/)
 
-**Instagram API Research:**
-- [Instagram Graph API Guide 2026](https://elfsight.com/blog/instagram-graph-api-complete-developer-guide-for-2026/)
-- [Instagram API Business Requirements](https://tagembed.com/blog/instagram-api/)
-- [facebook-nodejs-business-sdk](https://www.npmjs.com/package/facebook-nodejs-business-sdk)
-- [Instagram Content Publishing API](https://mattercall.com/instagram-graph-api)
+### Error Monitoring
+- [Convex Exception Reporting](https://docs.convex.dev/production/integrations/exception-reporting)
+- [Convex + Sentry Integration](https://sentry.io/integrations/convex/)
+- [Convex Observability](https://stack.convex.dev/observability-in-production)
 
-**LinkedIn API Research:**
-- [LinkedIn Member Post Analytics API](https://www.contentgrip.com/linkedin-new-post-analytics-api/)
-- [LinkedIn Analytics API Official Docs](https://learn.microsoft.com/en-us/linkedin/marketing/community-management/members/post-statistics)
-- [linkedin-api-js-client (Beta)](https://github.com/linkedin-developers/linkedin-api-js-client)
-- [LinkedIn API Clients Overview](https://learn.microsoft.com/en-us/linkedin/shared/development-resources/api-clients)
+### Authentication Security
+- [Clerk Production Deployment](https://clerk.com/docs/guides/development/deployment/production)
+- [Clerk Security Best Practices](https://clerk.com/docs/guides/secure/best-practices/fixation-protection)
+- [Convex + Clerk + Next.js Authentication](https://stack.convex.dev/authentication-best-practices-convex-clerk-and-nextjs)
 
-**Analytics & Charting Research:**
-- [Best React Chart Libraries 2025](https://blog.logrocket.com/best-react-chart-libraries-2025/)
-- [Recharts vs Chart.js vs Victory](https://npm-compare.com/chart.js,react-vis,recharts,victory-chart)
-- [Convex Aggregate Component](https://stack.convex.dev/efficient-count-sum-max-with-the-aggregate-component)
-- [Convex Aggregation Patterns](https://www.convex.dev/components/aggregate)
+### Performance
+- [Optimizing Core Web Vitals 2024](https://vercel.com/kb/guide/optimizing-core-web-vitals-in-2024)
+- [Next.js Web Performance](https://nextjs.org/learn/seo/web-performance)
+- [Improve Core Web Vitals Next.js](https://nextjs.org/learn/seo/improve)
+- [Optimize Core Web Vitals Next.js App Router 2025](https://makersden.io/blog/optimize-web-vitals-in-nextjs-2025)
 
-**Next.js & Integration Patterns:**
-- [Next.js 16 Route Handlers](https://strapi.io/blog/nextjs-16-route-handlers-explained-3-advanced-usecases)
-- [Rate Limiting Next.js API Routes](https://upstash.com/blog/nextjs-ratelimiting)
-- [@clerk/nextjs Latest Version](https://www.npmjs.com/package/@clerk/nextjs)
+### Testing
+- [Vitest vs Jest](https://betterstack.com/community/guides/scaling-nodejs/vitest-vs-jest/)
+- [Vitest vs Jest for Next.js](https://www.wisp.blog/blog/vitest-vs-jest-which-should-i-use-for-my-nextjs-app)
+- [Testing in 2026: Full Stack Strategies](https://www.nucamp.co/blog/testing-in-2026-jest-react-testing-library-and-full-stack-testing-strategies)
+- [Jest vs Vitest 2025](https://medium.com/@ruverd/jest-vs-vitest-which-test-runner-should-you-use-in-2025-5c85e4f2bda9)
+
+### Code Quality
+- [Prettier + ESLint Configuration (2026)](https://medium.com/@osmion/prettier-eslint-configuration-that-actually-works-without-the-headaches-a8506b710d21)
+- [Automating Code Quality with Husky (2026)](https://victorbruce82.medium.com/bulletproof-react-automating-code-quality-with-eslint-prettier-and-husky-2026-2f28b23cec99)
+- [ESLint v10.0.0 Release](https://eslint.org/blog/2026/02/eslint-v10.0.0-released/)
+- [Improving Code Quality in React](https://medium.com/globant/improving-code-quality-in-react-with-eslint-prettier-and-typescript-86635033d803)
+
+### Security
+- [npm Audit Tutorial](https://spectralops.io/blog/a-developers-tutorial-to-using-npm-audit-for-dependency-scanning/)
+- [npm Security Guide](https://blog.cyberdesserts.com/npm-security-vulnerabilities/)
+- [npm Audit Official Docs](https://docs.npmjs.com/auditing-package-dependencies-for-security-vulnerabilities/)
+- [Dependabot Troubleshooting](https://docs.github.com/en/code-security/dependabot/working-with-dependabot/troubleshooting-the-detection-of-vulnerable-dependencies)
+
+### Environment Variables
+- [Vercel Environment Variables](https://vercel.com/docs/environment-variables)
+- [Vercel Sensitive Environment Variables](https://vercel.com/docs/environment-variables/sensitive-environment-variables)
+- [Convex Environment Variables](https://docs.convex.dev/production/environment-variables)
+- [Convex CLI](https://docs.convex.dev/cli)
+
+### Deployment Workflow
+- [Vercel Preview Deployments](https://vercel.com/docs/deployments/environments)
+- [Deploying GitHub Projects with Vercel](https://vercel.com/docs/git/vercel-for-github)
+- [Vercel Git Integration](https://vercel.com/docs/git)
 
 ---
 
-*Research completed: 2026-02-05*
-*Confidence: HIGH (auth, Twitter, charting), MEDIUM (Instagram, LinkedIn)*
-*Ready for roadmap creation.*
+**Research completed:** 2026-02-09
+**Confidence:** HIGH (deployment, CI/CD, error monitoring, testing, code quality)
+**Ready for roadmap creation.**

@@ -1,853 +1,1944 @@
-# Feature Landscape: v3.0 Intelligence & Scale
+# Feature Landscape: Production Readiness for AMD SaaS
 
-**Domain:** Marketing Analytics, Multi-Platform Publishing, Team Collaboration
-**Researched:** 2026-02-05
-**Context:** Subsequent milestone adding analytics intelligence, multi-platform expansion (Twitter/X, Instagram), and team collaboration to existing single-user, LinkedIn-only AMD system
-**Confidence:** MEDIUM (WebSearch verified with multiple 2026 sources, cross-referenced with official platform documentation)
+**Domain:** Marketing SaaS (AI-powered content management) for non-technical Spanish-speaking users
+**Researched:** 2026-02-09
+**Context:** Subsequent milestone - making existing AMD system production-ready for paying customers
+**Current State:** ~223,000 LOC, 37 AI agents, full feature set, deploying to Vercel
+**Target:** Real paying clients in coming weeks
 
 ---
 
 ## Executive Summary
 
-This research examines best-in-class implementations of three feature categories for v3.0: **Analytics dashboards** combining internal metrics with social media engagement data, **multi-platform publishing** (compose once, publish to LinkedIn + Twitter/X + Instagram), and **team collaboration** with roles and permissions. These features address AMD's evolution from single-user publishing tool to multi-user marketing intelligence system.
+Production readiness is the critical gap between "works in development" and "ready for paying customers to trust with their money and business." For AMD—a sophisticated marketing SaaS with 37 AI agents targeting non-technical Spanish-speaking users—this means comprehensive error handling, polished loading states, graceful degradation, and enterprise-grade security hardening.
 
-**Key insight:** The 2026 landscape shows convergence around "unified data + adaptive formatting + role-based access" patterns. Best-in-class marketing SaaS tools don't force users to learn multiple interfaces—they provide a single source of truth for metrics, automatically adapt content for platform requirements, and implement simple role hierarchies that map to real team structures.
+**Key insight from research:** **80% of users abandon within the first week** if they don't reach activation quickly, and **47% of users expect pages to load in under 2 seconds**. Production readiness is not about adding features—it's about defensive UX, graceful failure handling, and building trust through polish that becomes invisible when present but glaringly obvious when absent.
 
-**Critical finding for non-technical users:** Simplification is achieved through **smart defaults + visual clarity**, not feature reduction. Top tools like Zoho Analytics and monday.com use natural language queries, drag-and-drop dashboard builders, and pre-built templates to make complex analytics accessible without dumbing down the data.
+**Critical finding for AMD:** The gap between development and production isn't about functionality (AMD has 37 agents and full content workflows) but about **trust and reliability**. Every unhandled error, every blank loading screen, every confusing 500 error message erodes trust faster than features build it.
+
+**Budget estimate:** 4-6 weeks for comprehensive production hardening if starting from working prototype.
 
 ---
 
 ## Table Stakes Features
 
-Features users expect. Missing = product feels incomplete or broken.
+Features users **expect** from a paid SaaS. Missing any of these makes the product feel unfinished, unprofessional, or untrustworthy. These are invisible when present, embarrassing when absent.
 
-### 1. Analytics Dashboard
+---
 
-| Feature | Why Expected | Complexity | Dependencies |
-|---------|--------------|------------|--------------|
-| **Unified metrics view** | Users expect single dashboard showing internal + social metrics together | Medium | Social media API integrations |
-| **Date range filtering** | Standard in all analytics tools; users need to compare time periods | Low | Date picker component |
-| **Engagement metrics** | Likes, comments, shares, impressions are table stakes for social analytics | Medium | LinkedIn/Twitter/Instagram Analytics APIs |
-| **Export to CSV/Excel** | Teams need to present data in meetings; export is expected | Low | CSV generation library |
-| **Responsive layout** | Mobile access for checking metrics on-the-go is expected | Medium | Existing responsive foundation |
-| **Real-time data updates** | Users expect "latest data" not stale snapshots (hourly minimum, daily acceptable) | Medium | Scheduled API polling + cache |
-| **Visual data presentation** | Charts and graphs expected; raw tables alone are insufficient | Low | Existing chart components |
-| **Performance comparison** | Compare post performance, time periods, or platforms is standard | Medium | Data aggregation logic |
+### 1. Comprehensive Error Handling
 
-**Sources:**
-- [Marketing Dashboards Guide 2026 (Improvado)](https://improvado.io/blog/12-best-marketing-dashboard-examples-and-templates)
-- [Dashboard Best Practices 2025 (Dataslayer)](https://www.dataslayer.ai/blog/marketing-dashboard-best-practices-2025)
-- [Marketing Analytics Dashboard Features (Cometly)](https://www.cometly.com/post/marketing-analytics-dashboard-features-comparison)
+**Why expected:** Errors will happen (API failures, network issues, invalid inputs). How AMD handles them determines whether users trust the product or churn.
 
-### 2. Multi-Platform Publishing
+**Complexity:** Medium
 
-| Feature | Why Expected | Complexity | Dependencies |
-|---------|--------------|------------|--------------|
-| **Single compose interface** | Users expect "write once" not separate forms per platform | Medium | Platform-specific adapters |
-| **Platform-specific previews** | Users need to see "what will this look like on LinkedIn vs Twitter" | Medium | Preview components per platform |
-| **Character count per platform** | LinkedIn 3000, Twitter 280 (free), Instagram 2200—users expect real-time count | Low | Character counter with platform rules |
-| **Image requirements validation** | Each platform has different size/format specs; validation prevents errors | Medium | Image processing + validation |
-| **Hashtag handling** | Instagram allows 30, Twitter 1-2 optimal, LinkedIn 3-5—platform-specific guidance | Low | Hashtag parser + recommendations |
-| **Cross-platform scheduling** | Schedule posts to multiple platforms simultaneously is expected | High | Job queue + multi-platform API integration |
-| **Error handling per platform** | If LinkedIn succeeds but Twitter fails, users need clear feedback | Medium | Platform-specific error states |
-| **Draft management** | Save drafts for multi-platform posts before publishing | Medium | Draft storage with platform selections |
+**What's required:**
 
-**Sources:**
-- [Top 15 Social Media Publishing Platforms 2026 (Social Champ)](https://www.socialchamp.com/blog/social-media-publishing-platforms/)
-- [Multi-Platform Social Media Tools 2026 (Influencer Marketing Hub)](https://influencermarketinghub.com/social-media-posting-scheduling-tools/multi-social-media-posting-tools/)
-- [Best Social Media Management Tools 2026 (Orlo)](https://orlo.tech/blog/the-best-social-media-management-platforms-2026/)
+| Error Type | Current Gap | Required Implementation |
+|-----------|-------------|------------------------|
+| **API errors** | Raw error objects shown to users | Map all error types to Spanish user-friendly messages |
+| **Network errors** | App crashes or hangs | Detect offline state, show retry option, queue actions |
+| **Validation errors** | Generic "error" message | Inline, specific feedback ("El título debe tener al menos 5 caracteres") |
+| **AI agent failures** | Task shows "failed" with no context | Explain why (rate limit, invalid input, service unavailable) |
+| **Component crashes** | White screen of death | React Error Boundaries with recovery options |
+| **Authentication errors** | Redirect loop | Clear session expired message with re-login CTA |
 
-### 3. Team Collaboration & Roles
+**Spanish-first consideration:** Error messages must be naturally translated, not machine-translated. Examples:
+- ❌ "Error 500: Internal Server Error"
+- ✅ "No pudimos completar esta acción. Por favor, intenta de nuevo en unos momentos."
 
-| Feature | Why Expected | Complexity | Dependencies |
-|---------|--------------|------------|--------------|
-| **Role-based access control** | Admin, Editor, Reviewer, Publisher roles are industry standard | High | User authentication system (Clerk/Auth.js) |
-| **User invitation system** | Invite team members via email with role assignment | Medium | Email service + invitation tokens |
-| **Permission boundaries** | Editors can create but not publish; Publishers can publish; Admins can do everything | Medium | Permission middleware |
-| **Activity audit log** | "Who changed what when" is table stakes for team accountability | Medium | Audit trail database schema |
-| **User profiles** | Name, email, role, avatar for attribution in workflows | Low | User profile schema |
-| **Content ownership** | Track "who created this" for accountability and filtering | Low | CreatedBy field on content |
-| **Team member list** | View all team members, their roles, and status (active/inactive) | Low | User listing query |
-| **Role change capability** | Admins need to promote/demote users as team evolves | Medium | Role update mutation with permission check |
+**Implementation approach:**
+```typescript
+// Global error handler in Convex actions
+try {
+  const result = await callClaudeAPI(prompt);
+  return { success: true, data: result };
+} catch (error) {
+  if (error.status === 429) {
+    return {
+      success: false,
+      error: "Hemos alcanzado el límite de solicitudes. Intenta en 1 minuto."
+    };
+  }
+  if (error.status === 500) {
+    return {
+      success: false,
+      error: "Hubo un problema temporal. Nuestro equipo ya fue notificado."
+    };
+  }
+  // Log to monitoring (Sentry)
+  logError(error, { context: "claude-api" });
+  return {
+    success: false,
+    error: "Algo salió mal. Por favor contacta a soporte si persiste."
+  };
+}
+```
 
-**Sources:**
-- [Content Approval Workflow Roles 2026 (Planable)](https://planable.io/blog/content-approval-workflow/)
-- [Marketing Approval Process 2026 (Planable)](https://planable.io/blog/marketing-approval-process/)
-- [Social Media Approval Workflow (Hootsuite)](https://blog.hootsuite.com/social-media-approval-workflow/)
+**Error boundaries for React:**
+```typescript
+// components/ErrorBoundary.tsx
+export class ErrorBoundary extends React.Component {
+  componentDidCatch(error: Error) {
+    logErrorToSentry(error);
+    this.setState({ hasError: true });
+  }
 
-### 4. Content Version History
-
-| Feature | Why Expected | Complexity | Dependencies |
-|---------|--------------|------------|--------------|
-| **Timestamped versions** | Users expect "when was this changed" with author attribution | Medium | Version history schema |
-| **Rollback capability** | "Undo last change" is table stakes for content systems | Medium | Content restoration logic |
-| **Visual diff** | See what changed between versions (added/removed text) | High | Text diff algorithm |
-| **Version browsing** | Navigate through version history (not just latest + previous) | Medium | Version listing UI |
-| **Restore from version** | One-click restore to previous version | Low | Copy version data to current |
-
-**Sources:**
-- [Document Audit Trail (Ideagen)](https://www.ideagen.com/solutions/quality/document-control-system/audit-trail-documentation)
-- [Audit Trail & History (Docupile)](https://www.docupile.com/audit-trail-and-history/)
-- [Audit Trail Documentation (PandaDoc)](https://www.pandadoc.com/features/report-and-track/audit-trail/)
-
-### 5. Automated Performance Reports
-
-| Feature | Why Expected | Complexity | Dependencies |
-|---------|--------------|------------|--------------|
-| **Scheduled report generation** | Weekly/monthly automated reports are standard in marketing tools | High | Cron jobs + report generation |
-| **Email delivery** | Reports delivered to inbox automatically; users don't log in to check | Medium | Email service integration |
-| **PDF/Excel export** | Stakeholder-friendly formats for sharing outside tool | Medium | PDF/Excel generation library |
-| **Customizable metrics** | Teams want to choose which metrics appear in reports | Medium | Report template configuration |
-| **Summary insights** | "Top performing post" and "Total reach increased 15%" auto-generated | Medium | Data aggregation + templating |
-| **Visual charts in reports** | Reports include charts, not just tables | Medium | Chart-to-image conversion |
+  render() {
+    if (this.state.hasError) {
+      return <ErrorFallback onReset={() => window.location.reload()} />;
+    }
+    return this.props.children;
+  }
+}
+```
 
 **Sources:**
-- [Automated Social Media Reporting (Whatagraph)](https://whatagraph.com/social-media-report-tool)
-- [Social Media Reporting Tool (AgencyAnalytics)](https://agencyanalytics.com/solutions/social-media-reporting)
-- [Social Media Analytics Tools 2026 (Sprout Social)](https://sproutsocial.com/insights/social-media-analytics-tools/)
+- [Error Message UX Best Practices](https://www.pencilandpaper.io/articles/ux-pattern-analysis-error-feedback)
+- [SaaS UX Design Guide 2026](https://www.designstudiouiux.com/blog/saas-ux-design-the-ultimate-guide/)
+- [UX Guidelines for Error Handling](https://www.userjourneys.com/blog/ux-guidelines-for-error-handling/)
+
+---
+
+### 2. Professional Loading States
+
+**Why expected:** AMD's AI agents can take 10-30 seconds to generate content. Users need to know the app is working, not frozen. Research shows **47% of users expect pages to load in under 2 seconds**.
+
+**Complexity:** Low-Medium
+
+**What's required:**
+
+| Context | Current State | Required Implementation |
+|---------|--------------|------------------------|
+| **Page transitions** | Blank white screen | Skeleton screens matching final layout |
+| **Agent execution** | Spinner with no context | Progress indicator with stage updates |
+| **Content generation** | No feedback for 30s | Streaming progress ("Analizando brief...", "Generando contenido...", "Optimizando SEO...") |
+| **Form submissions** | Button stays clickable | Disabled button with loading state |
+| **Data fetching** | Empty space or spinner | Skeleton placeholders (cards, tables) |
+| **Long operations** | Endless spinner | Estimated time remaining or progress bar |
+
+**Why skeleton screens over spinners:** Research shows skeleton screens **reduce perceived wait time** by creating the illusion of progressive loading. Used by YouTube, Facebook, LinkedIn for this reason.
+
+**Implementation for AMD:**
+```typescript
+// Agent execution with progress updates
+<AgentExecutionModal>
+  {status === "analyzing" && (
+    <ProgressStep
+      icon={<Search />}
+      label="Analizando tu brief..."
+      complete={false}
+    />
+  )}
+  {status === "generating" && (
+    <ProgressStep
+      icon={<Sparkles />}
+      label="Generando contenido con IA..."
+      complete={false}
+    />
+  )}
+  {status === "optimizing" && (
+    <ProgressStep
+      icon={<Target />}
+      label="Optimizando para SEO..."
+      complete={false}
+    />
+  )}
+</AgentExecutionModal>
+
+// Skeleton screens for content list
+{isLoading ? (
+  <div className="grid gap-4">
+    {[1, 2, 3].map(i => (
+      <Skeleton key={i} className="h-32 w-full" />
+    ))}
+  </div>
+) : (
+  <ContentList items={content} />
+)}
+```
+
+**Package recommendation:** `react-loading-skeleton` for consistent placeholders
+
+**Sources:**
+- [Best Practices for Loading States in Next.js](https://www.getfishtank.com/insights/best-practices-for-loading-states-in-nextjs)
+- [Skeleton Screens in React](https://www.smashingmagazine.com/2020/04/skeleton-screens-react/)
+- [React Loading Skeleton](https://www.npmjs.com/package/react-loading-skeleton)
+
+---
+
+### 3. Empty State Design
+
+**Why expected:** Every user starts with zero content, zero agents executed, zero campaigns. **80% of users abandon if they don't reach activation within the first week.** Empty states guide users to their first success.
+
+**Complexity:** Low-Medium
+
+**What's required for AMD:**
+
+| Page | Current State | Required Empty State |
+|------|--------------|---------------------|
+| `/content` (no content) | "No content found" text | Illustration + "Crea tu primer contenido" button + value proposition |
+| `/agents` (no executions) | Empty list | "Los 37 agentes están listos" + quick-start guide + "Ejecutar primer agente" |
+| `/campaigns` (no campaigns) | Blank page | "Crea tu primera campaña" + campaign wizard preview |
+| `/analytics` (no data) | Empty charts | "Publica contenido para ver estadísticas" + sample dashboard preview |
+| Agent execution history | "No tasks" | "Este agente aún no ha ejecutado tareas" + "Crear tarea" button |
+
+**Design principles:**
+1. **Visual appeal** - Illustration or icon, not just text
+2. **Contextual guidance** - Tell users exactly what to do next
+3. **Quick action** - Primary CTA to create first item
+4. **Show value** - Preview what they'll see once they have data
+
+**Example empty state component:**
+```typescript
+// components/EmptyState.tsx
+interface EmptyStateProps {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  action?: {
+    label: string;
+    onClick: () => void;
+  };
+  secondaryAction?: {
+    label: string;
+    href: string;
+  };
+}
+
+export function EmptyState({ icon, title, description, action, secondaryAction }: EmptyStateProps) {
+  return (
+    <div className="flex flex-col items-center justify-center py-12 text-center">
+      <div className="mb-4 text-muted-foreground">{icon}</div>
+      <h3 className="text-xl font-semibold mb-2">{title}</h3>
+      <p className="text-muted-foreground mb-6 max-w-md">{description}</p>
+      {action && (
+        <Button onClick={action.onClick}>{action.label}</Button>
+      )}
+      {secondaryAction && (
+        <Link href={secondaryAction.href} className="mt-4">
+          {secondaryAction.label}
+        </Link>
+      )}
+    </div>
+  );
+}
+```
+
+**AMD-specific empty states:**
+```typescript
+// /content page with no content
+<EmptyState
+  icon={<FileText size={48} />}
+  title="Aún no has creado contenido"
+  description="Usa nuestros 37 agentes de IA para generar contenido profesional en segundos. Empieza con un post de LinkedIn o un artículo de blog."
+  action={{
+    label: "Crear primer contenido",
+    onClick: () => setShowCreateModal(true)
+  }}
+  secondaryAction={{
+    label: "Ver guía de inicio rápido",
+    href: "/help/getting-started"
+  }}
+/>
+```
+
+**Sources:**
+- [Empty State in SaaS Applications](https://userpilot.com/blog/empty-state-saas/)
+- [Empty State UX Examples](https://www.pencilandpaper.io/articles/empty-states)
+- [90 SaaS Empty State Examples 2026](https://www.saasframe.io/categories/empty-state)
+
+---
+
+### 4. Form Validation & Input Sanitization
+
+**Why expected:** Security requirement and UX expectation. Prevents user mistakes, prevents malicious input, reduces support burden.
+
+**Complexity:** Medium
+
+**What's required for AMD:**
+
+| Form | Current Validation | Required Validation |
+|------|-------------------|---------------------|
+| **Content creation** | Client-side only (title min 5, body min 50) | + Server-side validation, + XSS sanitization, + Length limits |
+| **Agent task input** | No validation | + Input type validation, + Max length, + Required fields check |
+| **Brand upload** | Basic file type check | + File size limits, + Format validation, + Sanitize filenames |
+| **Team invitation** | Email format check | + Domain whitelist option, + Duplicate check, + Rate limiting |
+| **Settings** | No validation | + URL format validation, + Token format checks |
+
+**Security considerations for AMD:**
+1. **XSS prevention** - Escape all user-generated content before rendering
+2. **SQL injection** - Convex handles this, but validate input types
+3. **Rate limiting** - Prevent abuse of AI agent endpoints (expensive)
+4. **File uploads** - Validate file types, sizes, scan for malware
+
+**Implementation approach:**
+```typescript
+// Zod schema for content validation (shared client + server)
+import { z } from "zod";
+
+export const contentSchema = z.object({
+  type: z.enum(["blog", "social_linkedin", "social_twitter", ...]),
+  title: z.string()
+    .min(5, "El título debe tener al menos 5 caracteres")
+    .max(200, "El título no puede exceder 200 caracteres"),
+  body: z.string()
+    .min(50, "El contenido debe tener al menos 50 caracteres")
+    .max(50000, "El contenido no puede exceder 50,000 caracteres"),
+  metadata: z.object({
+    targetKeywords: z.string().optional(),
+    tone: z.enum(["professional", "casual", "friendly", "technical"]).optional(),
+  }).optional(),
+});
+
+// Server-side validation in Convex mutation
+export const createContent = mutation({
+  args: {
+    type: v.string(),
+    title: v.string(),
+    body: v.string(),
+    // ... other fields
+  },
+  handler: async (ctx, args) => {
+    // Validate with Zod
+    const result = contentSchema.safeParse(args);
+    if (!result.success) {
+      throw new ConvexError({
+        message: result.error.errors[0].message,
+        code: "VALIDATION_ERROR"
+      });
+    }
+
+    // Sanitize HTML in body
+    const sanitizedBody = sanitizeHtml(args.body, {
+      allowedTags: ["p", "br", "strong", "em", "ul", "li"],
+      allowedAttributes: {}
+    });
+
+    // Insert with sanitized data
+    return await ctx.db.insert("content", {
+      ...args,
+      body: sanitizedBody,
+    });
+  },
+});
+```
+
+**Rate limiting for agent execution:**
+```typescript
+// Convex action with rate limiting
+export const executeAgent = action({
+  args: { agentId: v.id("agents"), taskType: v.string(), input: v.any() },
+  handler: async (ctx, args) => {
+    const userId = await getUserId(ctx);
+
+    // Check rate limit (10 agent executions per hour)
+    const recentExecutions = await ctx.db
+      .query("executions")
+      .withIndex("by_user_created", q =>
+        q.eq("userId", userId).gt("createdAt", Date.now() - 3600000)
+      )
+      .collect();
+
+    if (recentExecutions.length >= 10) {
+      throw new ConvexError({
+        message: "Has alcanzado el límite de 10 ejecuciones por hora. Intenta en unos minutos.",
+        code: "RATE_LIMIT_EXCEEDED"
+      });
+    }
+
+    // Execute agent...
+  },
+});
+```
+
+---
+
+### 5. Toast Notifications & Feedback
+
+**Why expected:** Users need immediate confirmation that actions succeeded or failed. Every action should have feedback.
+
+**Complexity:** Low
+
+**What's required for AMD:**
+
+| Action | Current Feedback | Required Feedback |
+|--------|------------------|-------------------|
+| Content created | None | ✅ "Contenido creado exitosamente" (3s auto-dismiss) |
+| Content published | None | ✅ "Contenido publicado en LinkedIn" (5s with undo) |
+| Agent execution started | None | ℹ️ "Agente ejecutándose... esto puede tomar 30 segundos" |
+| Agent execution failed | None | ❌ "El agente falló: [motivo]. Intenta de nuevo." (manual dismiss) |
+| Settings saved | None | ✅ "Configuración guardada" |
+| Team member invited | None | ✅ "Invitación enviada a [email]" |
+| Error occurred | None | ❌ "Error: [mensaje específico]" (manual dismiss) |
+
+**Best practices:**
+- **Success toasts:** Auto-dismiss after 3-5 seconds
+- **Error toasts:** Require manual dismiss (user reads error)
+- **Info toasts:** Auto-dismiss after 5 seconds
+- **Max 1 toast at a time:** Queue additional toasts
+- **Include action buttons:** "Deshacer", "Ver detalles", "Reintentar"
+
+**Implementation with `sonner`:**
+```typescript
+import { toast } from "sonner";
+
+// Success
+toast.success("Contenido creado exitosamente", {
+  description: "Ya puedes verlo en la sección de Contenido",
+  duration: 3000,
+});
+
+// Error with action
+toast.error("No pudimos publicar en LinkedIn", {
+  description: error.message,
+  action: {
+    label: "Reintentar",
+    onClick: () => retryPublish(contentId),
+  },
+});
+
+// Info with loading
+const toastId = toast.loading("Generando contenido con IA...");
+// ... wait for completion
+toast.success("Contenido generado", { id: toastId });
+
+// Warning before destructive action
+toast.warning("¿Seguro que quieres eliminar este contenido?", {
+  action: {
+    label: "Eliminar",
+    onClick: () => deleteContent(id),
+  },
+  cancel: {
+    label: "Cancelar",
+    onClick: () => {},
+  },
+});
+```
+
+---
+
+### 6. Session Management & Timeouts
+
+**Why expected:** Security requirement for production SaaS. **NIST recommends 30-minute inactivity timeout** to protect user data.
+
+**Complexity:** Medium
+
+**What's required:**
+
+| Requirement | Implementation |
+|------------|----------------|
+| **Idle timeout** | 30 minutes of inactivity triggers warning |
+| **Warning modal** | 2-minute warning before auto-logout |
+| **Activity tracking** | Mouse, keyboard, scroll events reset timer |
+| **Auto-save** | Save drafts before session expires |
+| **Graceful logout** | Redirect to login with "Sesión expirada" message |
+| **Remember location** | Redirect back after re-authentication |
+| **Multi-tab sync** | Logout in one tab logs out all tabs |
+
+**Implementation approach:**
+```typescript
+// hooks/useSessionTimeout.ts
+export function useSessionTimeout() {
+  const [showWarning, setShowWarning] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout>();
+  const warningRef = useRef<NodeJS.Timeout>();
+
+  const IDLE_TIMEOUT = 30 * 60 * 1000; // 30 minutes
+  const WARNING_TIME = 2 * 60 * 1000; // 2 minutes before logout
+
+  const resetTimeout = useCallback(() => {
+    clearTimeout(timeoutRef.current);
+    clearTimeout(warningRef.current);
+    setShowWarning(false);
+
+    // Show warning 2 minutes before logout
+    warningRef.current = setTimeout(() => {
+      setShowWarning(true);
+    }, IDLE_TIMEOUT - WARNING_TIME);
+
+    // Logout after full timeout
+    timeoutRef.current = setTimeout(() => {
+      logout();
+    }, IDLE_TIMEOUT);
+  }, []);
+
+  useEffect(() => {
+    const events = ["mousedown", "keydown", "scroll", "touchstart"];
+    events.forEach(event => {
+      window.addEventListener(event, resetTimeout);
+    });
+
+    resetTimeout(); // Initialize
+
+    return () => {
+      events.forEach(event => {
+        window.removeEventListener(event, resetTimeout);
+      });
+    };
+  }, [resetTimeout]);
+
+  return { showWarning, extendSession: resetTimeout };
+}
+```
+
+**AMD-specific consideration:** Clerk handles authentication, but verify idle timeout is configured:
+```typescript
+// In Clerk settings, configure session timeout
+// Or implement custom idle detection as shown above
+```
+
+**Sources:**
+- [Secure Session Timeout Best Practices](https://ones.com/blog/implementing-secure-session-timeout-best-practices-code-examples/)
+- [OWASP Session Management](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html)
+- [NIST Session Guidelines](https://pages.nist.gov/800-63-4/sp800-63b/session/)
+
+---
+
+### 7. Performance Optimization
+
+**Why expected:** **47% of users expect pages to load in under 2 seconds. 40% abandon after 3 seconds.** Every 100ms delay cuts conversions by ~7%.
+
+**Complexity:** Medium-High
+
+**Current AMD performance unknowns:**
+- Current Lighthouse scores
+- Page load times (FCP, LCP, TTI)
+- Bundle size
+- API response times
+
+**What's required:**
+
+| Metric | Target | How to Achieve |
+|--------|--------|---------------|
+| **First Contentful Paint** | <1.8s | Code splitting, font optimization, critical CSS |
+| **Largest Contentful Paint** | <2.5s | Image optimization, lazy loading |
+| **Time to Interactive** | <3.5s | Reduce JavaScript, defer non-critical |
+| **Total Blocking Time** | <300ms | Split long tasks, use web workers |
+| **Cumulative Layout Shift** | <0.1 | Fixed dimensions for images, no layout shifts |
+| **Bundle size** | <200KB gzipped | Tree-shaking, code splitting, dynamic imports |
+
+**Implementation for AMD:**
+```typescript
+// 1. Code splitting with dynamic imports
+const AgentModal = dynamic(() => import("@/components/AgentModal"), {
+  loading: () => <Skeleton className="h-96" />,
+  ssr: false, // Don't load on server if not needed
+});
+
+// 2. Image optimization
+import Image from "next/image";
+<Image
+  src="/agents/cmo-avatar.png"
+  alt="CMO Agent"
+  width={64}
+  height={64}
+  loading="lazy"
+  placeholder="blur"
+/>
+
+// 3. Font optimization (already using next/font)
+import { Inter } from "next/font/google";
+const inter = Inter({ subsets: ["latin"], display: "swap" });
+
+// 4. API response caching
+export const getAgents = query({
+  args: {},
+  handler: async (ctx) => {
+    // Convex automatically caches, but ensure efficient queries
+    return await ctx.db.query("agents").collect();
+  },
+});
+
+// 5. Reduce bundle size
+// Check bundle analyzer
+npm run analyze
+// Remove unused dependencies
+npm prune
+```
+
+**Performance monitoring:**
+```bash
+# Run Lighthouse audit
+npx lighthouse http://localhost:3000 --view
+
+# Check bundle size
+npx @next/bundle-analyzer
+```
+
+**Sources:**
+- [SaaS Performance Benchmarking 2026](https://www.binadox.com/blog/saas-performance-benchmarking-industry-standards-for-speed-uptime-and-user-satisfaction/)
+- [Website Load Time Statistics 2026](https://www.hostinger.com/tutorials/website-load-time-statistics)
+- [Page Load Speed for SaaS Success](https://www.getmonetizely.com/articles/why-page-load-speed-matters-for-saas-success-measurement-impact-and-optimization)
+
+---
+
+### 8. Mobile Responsiveness (Verification)
+
+**Why expected:** 50%+ of traffic is mobile. Responsive design is table stakes in 2026.
+
+**Complexity:** Low (AMD already has responsive design, just verify)
+
+**Verification checklist:**
+
+| Component | Status | Fix If Broken |
+|-----------|--------|---------------|
+| Dashboard cards stack on mobile | ✅ TBD | `flex-col md:flex-row` |
+| Modals fit in viewport | ✅ TBD | `max-h-screen overflow-y-auto` |
+| Forms usable with touch keyboards | ✅ TBD | `type="email"`, `inputMode="numeric"` |
+| Navigation accessible | ✅ TBD | Mobile menu with hamburger |
+| Tables don't break layout | ✅ TBD | Horizontal scroll or card view on mobile |
+| Touch targets 44x44px minimum | ✅ TBD | Increase button padding |
+| No horizontal scrolling | ✅ TBD | `overflow-x-hidden`, responsive images |
+| Text readable without zoom | ✅ TBD | `text-base` minimum on mobile |
+
+**Test on:**
+- iPhone SE (375x667) - smallest modern iPhone
+- iPhone 14 Pro (393x852) - standard
+- iPad (768x1024) - tablet
+- Android (360x640) - common Android size
+
+---
+
+### 9. Accessibility Compliance (WCAG 2.2 AA)
+
+**Why expected:** Legal requirement in EU (since June 2025), U.S. public sector (April 2026). Ethical requirement for all users. Enterprise customers often require WCAG compliance.
+
+**Complexity:** Medium-High
+
+**What's required:**
+
+| Requirement | Implementation | Verification |
+|-------------|---------------|--------------|
+| **Keyboard navigation** | All interactive elements accessible via Tab, Enter, Escape | Manual testing |
+| **Screen reader support** | Semantic HTML, ARIA labels | Test with NVDA, JAWS, VoiceOver |
+| **Color contrast** | 4.5:1 for normal text, 3:1 for large text | Automated tools (axe-core) |
+| **Focus indicators** | Visible focus states on all interactive elements | Manual verification |
+| **Alt text** | Descriptive alt text for all images | Code review |
+| **Form labels** | Proper `<label>` associations for all inputs | Automated tools |
+| **Error identification** | Errors announced to screen readers | Test with screen reader |
+| **Heading hierarchy** | Proper h1-h6 structure (no skipping levels) | Automated tools |
+
+**AMD-specific accessibility concerns:**
+1. **Agent execution modals** - Announce progress to screen readers
+2. **Content status badges** - Use aria-label ("Estado: Borrador")
+3. **Chart visualizations** - Provide data table alternative
+4. **Real-time updates** - Announce new notifications with aria-live
+5. **Dynamic content** - Use aria-live regions for toast notifications
+
+**Implementation approach:**
+```typescript
+// Add aria labels to interactive elements
+<Button
+  onClick={executeAgent}
+  aria-label={`Ejecutar agente ${agent.name}`}
+  aria-describedby="agent-description"
+>
+  Ejecutar
+</Button>
+
+// Semantic HTML
+<nav aria-label="Navegación principal">
+  <ul>
+    <li><Link href="/dashboard">Dashboard</Link></li>
+    <li><Link href="/agents">Agentes</Link></li>
+  </ul>
+</nav>
+
+// Screen reader announcements
+<div
+  role="status"
+  aria-live="polite"
+  aria-atomic="true"
+  className="sr-only"
+>
+  {status === "running" && "Agente ejecutándose, por favor espera"}
+  {status === "completed" && "Agente completado exitosamente"}
+</div>
+
+// Form labels
+<Label htmlFor="content-title">Título del contenido</Label>
+<Input
+  id="content-title"
+  aria-required="true"
+  aria-invalid={errors.title ? "true" : "false"}
+  aria-describedby={errors.title ? "title-error" : undefined}
+/>
+{errors.title && (
+  <span id="title-error" role="alert" className="text-red-500">
+    {errors.title}
+  </span>
+)}
+```
+
+**Testing tools:**
+```bash
+# Install axe-core for automated testing
+npm install --save-dev @axe-core/react
+
+# Add to _app.tsx in development
+if (process.env.NODE_ENV !== 'production') {
+  const axe = require('@axe-core/react');
+  axe(React, ReactDOM, 1000);
+}
+
+# Manual testing
+# 1. Tab through entire app (keyboard only)
+# 2. Use screen reader (NVDA on Windows, VoiceOver on Mac)
+# 3. Run Lighthouse accessibility audit
+npx lighthouse http://localhost:3000 --only-categories=accessibility
+```
+
+**Sources:**
+- [WCAG 2.2 Level AA Requirements 2026](https://www.accessibility.works/blog/wcag-ada-website-compliance-standards-requirements/)
+- [WCAG for SaaS Owners Complete Guide 2026](https://medium.com/@mhdrahman/wcag-for-saas-owners-the-complete-guide-to-web-accessibility-compliance-in-2026-8eb794a9bcfa)
+- [SaaS Accessibility Legal Compliance](https://www.accessibility.works/blog/saas-cloud-software-ada-compliance-wcag-testing-auditing/)
+
+---
+
+### 10. Security Hardening
+
+**Why expected:** Production SaaS handles sensitive business data (brand assets, content, API keys). Security breaches destroy trust and business.
+
+**Complexity:** High
+
+**What's required for AMD:**
+
+| Security Layer | Current State | Required Implementation |
+|----------------|--------------|------------------------|
+| **HTTPS everywhere** | ✅ Vercel handles | Verify HSTS headers enabled |
+| **Content Security Policy** | ❓ Unknown | CSP headers to prevent XSS |
+| **Rate limiting** | ❓ Unknown | Prevent brute-force, DDoS, API abuse |
+| **Input sanitization** | Partial | Escape all user content, validate types |
+| **Environment variables** | ✅ .env.local | Verify no secrets in client bundle |
+| **Dependency scanning** | ❓ Unknown | Regular `npm audit`, automated scanning |
+| **API authentication** | ✅ Clerk | Verify JWT validation on all routes |
+| **CORS configuration** | ❓ Unknown | Whitelist allowed origins |
+| **SQL injection** | ✅ Convex handles | N/A (Convex is NoSQL) |
+| **XSS prevention** | ❓ Unknown | Escape user content, CSP headers |
+
+**Rate limiting recommendations for AMD:**
+```typescript
+// Convex rate limiting with Upstash Redis
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
+
+const ratelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(10, "1 h"), // 10 per hour
+});
+
+export const executeAgent = action({
+  args: { agentId: v.id("agents"), input: v.any() },
+  handler: async (ctx, args) => {
+    const userId = await getUserId(ctx);
+
+    // Check rate limit
+    const { success } = await ratelimit.limit(userId);
+    if (!success) {
+      throw new ConvexError({
+        message: "Has alcanzado el límite de ejecuciones por hora",
+        code: "RATE_LIMIT_EXCEEDED"
+      });
+    }
+
+    // Execute agent...
+  },
+});
+```
+
+**Content Security Policy:**
+```typescript
+// next.config.js
+const ContentSecurityPolicy = `
+  default-src 'self';
+  script-src 'self' 'unsafe-eval' 'unsafe-inline' *.vercel-scripts.com;
+  style-src 'self' 'unsafe-inline';
+  img-src 'self' data: blob: https:;
+  font-src 'self' data:;
+  connect-src 'self' *.convex.cloud *.anthropic.com;
+  frame-ancestors 'none';
+`;
+
+module.exports = {
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: ContentSecurityPolicy.replace(/\n/g, ''),
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin',
+          },
+        ],
+      },
+    ];
+  },
+};
+```
+
+**Dependency scanning:**
+```bash
+# Regular audits
+npm audit
+npm audit fix
+
+# Automated scanning (GitHub Actions)
+# .github/workflows/security.yml
+name: Security Audit
+on: [push, pull_request]
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: npm audit --audit-level=moderate
+```
+
+**Sources:**
+- [SaaS Security Best Practices 2026](https://www.nudgesecurity.com/post/saas-security-best-practices)
+- [9 SaaS Security Best Practices Checklist](https://www.reco.ai/learn/saas-security-best-practices)
+- [State of SaaS Security 2025-2026](https://cloudsecurityalliance.org/artifacts/state-of-saas-security-report-2025)
+
+---
+
+### 11. Production Monitoring & Error Tracking
+
+**Why expected:** You can't fix what you can't see. Production issues must be detected and resolved before users complain in reviews or churn.
+
+**Complexity:** Medium
+
+**What's required for AMD:**
+
+| Monitoring Type | Tool | What to Track |
+|----------------|------|---------------|
+| **Error tracking** | Sentry | Unhandled exceptions, API errors, agent failures |
+| **Performance monitoring** | Vercel Analytics | Core Web Vitals, page load times, API latency |
+| **Uptime monitoring** | Better Uptime or UptimeRobot | External availability check |
+| **User analytics** | PostHog or Mixpanel | Feature usage, onboarding completion, churn signals |
+| **AI agent analytics** | Custom (Convex) | Agent execution success rate, tokens used, costs |
+
+**Sentry implementation:**
+```bash
+npm install @sentry/nextjs
+npx @sentry/wizard@latest -i nextjs
+```
+
+```typescript
+// sentry.client.config.ts
+import * as Sentry from "@sentry/nextjs";
+
+Sentry.init({
+  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+  environment: process.env.NODE_ENV,
+  tracesSampleRate: 1.0, // 100% of transactions for performance monitoring
+
+  // Track agent execution as custom transactions
+  beforeSend(event, hint) {
+    // Add custom context for AMD
+    if (event.contexts?.agent) {
+      event.tags = {
+        ...event.tags,
+        agentId: event.contexts.agent.agentId,
+        department: event.contexts.agent.department,
+      };
+    }
+    return event;
+  },
+});
+```
+
+**Alerting thresholds for AMD:**
+```typescript
+// Alert configurations in Sentry
+{
+  "error_rate": {
+    threshold: "1%", // Alert if >1% of requests error
+    action: "Slack notification + email to dev team"
+  },
+  "agent_failure_rate": {
+    threshold: "5%", // Alert if >5% of agent executions fail
+    action: "Slack notification"
+  },
+  "page_load_time": {
+    threshold: "3s", // Alert if p95 >3 seconds
+    action: "Email to dev team"
+  },
+  "api_latency": {
+    threshold: "500ms", // Alert if API p95 >500ms
+    action: "Slack notification"
+  },
+  "downtime": {
+    threshold: "1min", // Alert if down for >1 minute
+    action: "PagerDuty page + SMS to on-call"
+  }
+}
+```
+
+**Custom agent analytics dashboard:**
+```typescript
+// Track agent execution metrics in Convex
+export const trackAgentExecution = internalMutation({
+  args: {
+    agentId: v.id("agents"),
+    executionId: v.id("executions"),
+    status: v.string(),
+    tokensUsed: v.number(),
+    cost: v.number(),
+    durationMs: v.number(),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.insert("agent_metrics", {
+      ...args,
+      timestamp: Date.now(),
+    });
+  },
+});
+
+// Query for analytics dashboard
+export const getAgentMetrics = query({
+  args: { timeframe: v.string() },
+  handler: async (ctx, args) => {
+    const startTime = getStartTime(args.timeframe);
+    const metrics = await ctx.db
+      .query("agent_metrics")
+      .filter(q => q.gte(q.field("timestamp"), startTime))
+      .collect();
+
+    return {
+      totalExecutions: metrics.length,
+      successRate: metrics.filter(m => m.status === "completed").length / metrics.length,
+      avgDuration: average(metrics.map(m => m.durationMs)),
+      totalCost: sum(metrics.map(m => m.cost)),
+      totalTokens: sum(metrics.map(m => m.tokensUsed)),
+    };
+  },
+});
+```
+
+**Sources:**
+- [Top 10 SaaS Monitoring Tools 2026](https://themantrix.com/en/blog/Top-10-Tools-for-Monitoring-SaaS-Availability-and-Uptime-in-2026)
+- [SaaS Monitoring Best Practices](https://www.dotcom-monitor.com/blog/saas-monitoring-best-practices/)
+- [11 Best Error Tracking Tools 2026](https://betterstack.com/community/comparisons/error-tracking-tools/)
+
+---
+
+### 12. Audit Logging
+
+**Why expected:** Enterprise customers **require** audit logs for compliance (SOC 2, GDPR). Many B2B buyers won't consider SaaS without it.
+
+**Complexity:** Medium-High
+
+**What's required for AMD:**
+
+| Event Type | What to Log | Retention |
+|-----------|-------------|-----------|
+| **Authentication** | Login attempts (success/failed), logout, session expired | 1 year |
+| **Content actions** | Created, edited, deleted, published, unpublished | 2 years |
+| **Agent executions** | Agent ID, task type, input, result, tokens used | 1 year |
+| **Team actions** | Member invited, removed, role changed | 2 years |
+| **Settings changes** | API keys updated, model changed, rate limits modified | 2 years |
+| **Brand data** | Brand uploaded, edited, deleted | 2 years |
+| **Billing events** | Subscription created, upgraded, downgraded, cancelled | 7 years (legal req) |
+
+**Implementation in Convex:**
+```typescript
+// schema.ts
+defineTable("audit_logs")
+  .index("by_user_timestamp", ["userId", "timestamp"])
+  .index("by_action", ["action"])
+  .index("by_resource", ["resourceType", "resourceId"]),
+
+// Audit log mutation
+export const createAuditLog = internalMutation({
+  args: {
+    userId: v.id("users"),
+    action: v.string(), // "content.created", "agent.executed", "user.invited"
+    resourceType: v.string(), // "content", "agent", "user"
+    resourceId: v.string(),
+    metadata: v.any(), // Additional context
+    ipAddress: v.optional(v.string()),
+    userAgent: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.insert("audit_logs", {
+      ...args,
+      timestamp: Date.now(),
+    });
+  },
+});
+
+// Wrap actions with audit logging
+export const createContent = mutation({
+  args: { /* ... */ },
+  handler: async (ctx, args) => {
+    const userId = await getUserId(ctx);
+
+    // Create content
+    const contentId = await ctx.db.insert("content", {
+      ...args,
+      createdBy: userId,
+    });
+
+    // Log action
+    await ctx.runMutation(internal.auditLog.createAuditLog, {
+      userId,
+      action: "content.created",
+      resourceType: "content",
+      resourceId: contentId,
+      metadata: { type: args.type, title: args.title },
+    });
+
+    return contentId;
+  },
+});
+```
+
+**Audit log UI:**
+```typescript
+// /settings/audit-logs page
+export default function AuditLogsPage() {
+  const logs = useQuery(api.auditLog.listAuditLogs, {
+    filters: { /* ... */ }
+  });
+
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Timestamp</TableHead>
+          <TableHead>User</TableHead>
+          <TableHead>Action</TableHead>
+          <TableHead>Resource</TableHead>
+          <TableHead>Details</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {logs?.map(log => (
+          <TableRow key={log._id}>
+            <TableCell>{formatDate(log.timestamp)}</TableCell>
+            <TableCell>{log.userName}</TableCell>
+            <TableCell>{log.action}</TableCell>
+            <TableCell>{log.resourceType}</TableCell>
+            <TableCell>
+              <Button variant="ghost" size="sm">
+                Ver detalles
+              </Button>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+}
+```
+
+**Export functionality (GDPR requirement):**
+```typescript
+export const exportAuditLogs = action({
+  args: {
+    userId: v.id("users"),
+    startDate: v.number(),
+    endDate: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const logs = await ctx.runQuery(internal.auditLog.getLogsForUser, args);
+
+    // Convert to CSV
+    const csv = convertToCSV(logs);
+
+    // Upload to secure storage (S3 or similar)
+    const downloadUrl = await uploadFile(csv, `audit-logs-${args.userId}.csv`);
+
+    // Send email with download link
+    await sendEmail({
+      to: user.email,
+      subject: "Tus registros de auditoría",
+      body: `Descarga tus registros aquí: ${downloadUrl} (expira en 7 días)`,
+    });
+
+    return { success: true };
+  },
+});
+```
+
+**Sources:**
+- [Enterprise Ready Audit Logging](https://www.enterpriseready.io/features/audit-log/)
+- [Audit Logs for SaaS Enterprise Customers](https://frontegg.com/blog/audit-logs-for-saas-enterprise-customers)
+- [SaaS Compliance Audit Trail](https://payproglobal.com/answers/what-is-saas-compliance-audit-trail/)
 
 ---
 
 ## Differentiators
 
-Features that set AMD apart. Not expected, but highly valued when present.
+Features that make AMD feel **polished and professional**. Not expected by all users, but significantly improve user perception, retention, and word-of-mouth. These are the "wow" moments that make users feel confident in their purchase decision.
 
-### 1. Analytics Differentiators
+---
 
-| Feature | Value Proposition | Complexity | Notes |
-|---------|-------------------|------------|-------|
-| **AI-powered insights** | "Your engagement dropped 20% this week because..." (not just data, but interpretation) | High | LLM analysis of metrics trends |
-| **Cross-platform comparison** | "LinkedIn posts get 3x more engagement than Twitter" with recommendations | Medium | Cross-platform analytics aggregation |
-| **Predictive analytics** | "Based on trends, you'll hit 10K followers by March" | High | ML forecasting model |
-| **Anomaly detection** | Automatic alerts when metrics deviate significantly from baseline | Medium | Statistical analysis + notifications |
-| **Custom KPI builder** | Define custom metrics (e.g., "Leads per post = Comments × 0.15") | High | Formula parser + calculator |
-| **Natural language queries** | "Show me top posts last month" instead of filters and dropdowns | High | NLP query parser |
-| **Benchmark comparisons** | Compare your metrics to industry averages | Medium | External benchmark data source |
-| **Content performance heatmap** | Visual calendar showing which days/times perform best | Medium | Heatmap visualization |
+### 1. Comprehensive Onboarding Flow
 
-**Why differentiating:** Standard analytics show data; AI-powered analytics provide **actionable recommendations**. Non-technical users need interpretation, not just numbers. AMD's existing 37-agent system is uniquely positioned to provide AI-driven insights that competitors can't match without similar infrastructure.
+**Why valuable:** Research shows **75% of users abandon products within a week without clear onboarding**. Effective onboarding reduces churn by 50%+. For AMD with 37 agents, onboarding is critical to prevent overwhelm.
 
-**AMD-specific advantage:** Leverage existing CMO Agent and Social Engagement Analyst to generate insights automatically, turning analytics from passive dashboard into active intelligence system.
+**Complexity:** Medium-High
 
-### 2. Multi-Platform Differentiators
+**What's required for AMD:**
 
-| Feature | Value Proposition | Complexity | Notes |
-|---------|-------------------|------------|-------|
-| **Smart content adaptation** | Auto-adjust tone/length/hashtags per platform with AI | High | LLM-powered content rewriting |
-| **Platform-specific recommendations** | "Add image for Instagram" or "Shorten for Twitter" suggestions | Medium | Rule engine + AI suggestions |
-| **Unified asset library** | Upload once, auto-resize/optimize for all platforms | Medium | Image processing pipeline |
-| **Cross-platform analytics** | Which platform drives most engagement for this content type? | Medium | Analytics aggregation |
-| **Optimal posting schedule** | AI recommends best time per platform based on historical data | High | Historical performance analysis + ML |
-| **Thread composer** | Twitter thread builder with preview and auto-numbering | Low | Thread management UI |
-| **Instagram carousel support** | Multi-image posts for Instagram with swipe preview | High | Instagram Carousel API |
-| **Hashtag performance tracking** | Which hashtags drive engagement per platform? | Medium | Hashtag analytics |
+**Step 1: Welcome & Goal Selection**
+```typescript
+<OnboardingStep step={1}>
+  <h2>¡Bienvenido a AMD!</h2>
+  <p>Tu departamento de marketing con 37 agentes de IA</p>
 
-**Why differentiating:** Basic tools publish to multiple platforms; smart tools **optimize content for each platform's unique audience and format**. AMD can use existing Social Media Manager agents (LinkedIn, Twitter creators) to provide platform-specific intelligence that generic tools lack.
+  <h3>¿Qué quieres lograr primero?</h3>
+  <GoalCards>
+    <GoalCard
+      icon={<Target />}
+      title="Crear contenido profesional"
+      description="Genera posts, artículos y campañas con IA"
+      onClick={() => setGoal("content")}
+    />
+    <GoalCard
+      icon={<TrendingUp />}
+      title="Analizar mi audiencia"
+      description="Descubre qué funciona mejor"
+      onClick={() => setGoal("analytics")}
+    />
+    <GoalCard
+      icon={<Users />}
+      title="Gestionar mi equipo"
+      description="Colabora con tu equipo de marketing"
+      onClick={() => setGoal("team")}
+    />
+  </GoalCards>
+</OnboardingStep>
+```
 
-**AMD-specific advantage:** 8 social media agents already understand platform best practices. Leverage this domain knowledge for recommendations that go beyond generic rules.
+**Step 2: Simplified Brand Setup**
+```typescript
+<OnboardingStep step={2}>
+  <h2>Cuéntanos sobre tu marca</h2>
+  <p>Esto ayuda a los agentes a crear contenido alineado con tu identidad</p>
 
-### 3. Team Collaboration Differentiators
+  <Form>
+    <Input
+      label="Nombre de tu empresa"
+      placeholder="ACME Corp"
+    />
+    <Textarea
+      label="¿Qué hace tu empresa?"
+      placeholder="Ayudamos a..."
+      rows={3}
+    />
+    <Select
+      label="Tono de tu marca"
+      options={["Profesional", "Casual", "Amigable", "Técnico"]}
+    />
+    <Button>Siguiente</Button>
+  </Form>
 
-| Feature | Value Proposition | Complexity | Notes |
-|---------|-------------------|------------|-------|
-| **Approval workflows** | Required approval from reviewer before publishing (configurable) | Medium | Approval state machine |
-| **Conditional approval rules** | "Budget posts need CFO approval" automatically routed | High | Rule configuration + routing logic |
-| **Team performance analytics** | "Sarah's posts get 2x engagement" to identify top performers | Medium | User attribution analytics |
-| **Comment threads on content** | Discuss changes inline without external tools | Medium | Comments schema + UI |
-| **@ mention notifications** | Tag team members for feedback with real-time alerts | Medium | Notification system |
-| **Team calendar view** | See who's publishing what when across team | Medium | Calendar visualization |
-| **Content assignment** | Assign content creation tasks to specific team members | Medium | Task assignment system |
-| **Role-based dashboard views** | Publishers see "ready to publish" queue; Reviewers see "needs review" | Medium | Role-based filtering |
+  <SkipLink onClick={skipToStep3}>
+    Completar más tarde →
+  </SkipLink>
+</OnboardingStep>
+```
 
-**Why differentiating:** Basic collaboration is "multiple users can log in"; advanced collaboration is **workflows that map to how teams actually work**. Most tools force linear approval; AMD can provide flexible routing using existing handoff system between agents.
+**Step 3: First Content Creation (Interactive)**
+```typescript
+<OnboardingStep step={3}>
+  <h2>Crea tu primer contenido</h2>
+  <p>Vamos a crear un post de LinkedIn juntos</p>
 
-**AMD-specific advantage:** AMD's existing agent handoff system (content-director → blog-writer → publisher) can be adapted for human team workflows, creating a hybrid human-AI collaboration model that's unique in the market.
+  <InteractiveDemo>
+    <AgentSelector
+      selected="social-001"
+      disabled
+      hint="Este agente se especializa en LinkedIn"
+    />
 
-### 4. Automated Reports Differentiators
+    <Input
+      label="¿Sobre qué quieres escribir?"
+      placeholder="Ej: Tendencias de IA en marketing"
+      value={topic}
+      onChange={setTopic}
+    />
 
-| Feature | Value Proposition | Complexity | Notes |
-|---------|-------------------|------------|-------|
-| **AI-generated narratives** | Reports include written summaries, not just charts | High | LLM report generation |
-| **Stakeholder-specific reports** | CEO gets high-level summary; Manager gets detailed metrics | Medium | Role-based report templates |
-| **Competitive benchmarking** | Include competitor performance in reports automatically | High | Competitor tracking system |
-| **Action recommendations** | "Try posting at 9am on Tuesdays" based on data | High | AI analysis + recommendations |
-| **Interactive reports** | Recipients can drill into metrics without logging in | High | Embedded interactive dashboards |
-| **Multi-language reports** | Generate reports in Spanish for AMD's target audience | Medium | Template translation |
-| **White-label reports** | Customize branding for agency use cases | Low | Template customization |
-| **Slack/Teams integration** | Reports delivered to team channels, not just email | Medium | Slack/Teams API integration |
+    <Button
+      onClick={generateFirstContent}
+      loading={isGenerating}
+    >
+      {isGenerating ? "Generando..." : "Generar contenido"}
+    </Button>
 
-**Why differentiating:** Standard reports are static PDFs; intelligent reports are **actionable and contextual**. AMD's 37-agent system can generate insights that would take humans hours to extract manually.
+    {content && (
+      <ContentPreview content={content}>
+        <SuccessMessage>
+          ¡Perfecto! Así de fácil es crear contenido con AMD.
+        </SuccessMessage>
+      </ContentPreview>
+    )}
+  </InteractiveDemo>
+</OnboardingStep>
+```
 
-**AMD-specific advantage:** Existing agents (SEO Manager, Engagement Analyst, Budget Pacing) already analyze data. Automated reports can synthesize their insights into comprehensive narratives without additional AI infrastructure.
+**Step 4: Success Moment**
+```typescript
+<OnboardingStep step={4}>
+  <SuccessAnimation>
+    <Confetti />
+    <CheckCircle size={64} className="text-green-500" />
+  </SuccessAnimation>
+
+  <h2>¡Listo! Ya puedes usar AMD</h2>
+  <p>Has desbloqueado tu departamento de marketing con IA</p>
+
+  <NextSteps>
+    <NextStepCard
+      title="Explora tus 37 agentes"
+      description="Cada uno se especializa en una tarea de marketing"
+      href="/agents"
+    />
+    <NextStepCard
+      title="Crea una campaña"
+      description="Coordina múltiples agentes para un objetivo"
+      href="/campaigns"
+    />
+    <NextStepCard
+      title="Invita a tu equipo"
+      description="Colabora con colegas en AMD"
+      href="/settings/team"
+    />
+  </NextSteps>
+
+  <Button onClick={completeOnboarding}>
+    Ir al Dashboard
+  </Button>
+</OnboardingStep>
+```
+
+**Progress tracking:**
+```typescript
+// Track onboarding completion
+export const updateOnboardingProgress = mutation({
+  args: {
+    userId: v.id("users"),
+    step: v.number(),
+    completed: v.boolean(),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.userId, {
+      onboarding: {
+        currentStep: args.step,
+        completed: args.completed,
+        completedAt: args.completed ? Date.now() : null,
+      },
+    });
+  },
+});
+
+// Show onboarding modal on first login
+useEffect(() => {
+  if (user && !user.onboarding?.completed) {
+    setShowOnboarding(true);
+  }
+}, [user]);
+```
+
+**Sources:**
+- [SaaS Onboarding Best Practices 2026](https://www.sales-hacking.com/en/post/best-practices-onboarding-saas)
+- [8 SaaS Companies Best Onboarding Experience](https://userpilot.com/blog/best-user-onboarding-experience/)
+- [SaaS Onboarding UX Best Practices](https://cieden.com/saas-onboarding-best-practices-and-common-mistakes-ux-upgrade-article-digest)
+
+---
+
+### 2. Contextual In-App Help
+
+**Why valuable:** Reduces support burden, empowers users to self-serve, improves satisfaction. Non-technical users need help understanding 37 agents.
+
+**Complexity:** Medium
+
+**What's required:**
+
+| Help Type | Implementation | Example |
+|-----------|---------------|---------|
+| **Help widget** | Floating button (bottom-right) | Intercom, Crisp, or custom |
+| **Contextual tooltips** | Hover/click on `?` icons | "Este agente se especializa en..." |
+| **Video tutorials** | Short (<2 min) feature explainers | Loom embedded videos |
+| **Search** | Cmd+K help search | "¿Cómo ejecuto un agente?" |
+| **Changelog** | "What's new" modal | Show new features on login |
+| **Agent descriptions** | Expanded info in agent cards | Full description + use cases |
+
+**Implementation:**
+```typescript
+// components/HelpWidget.tsx
+export function HelpWidget() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <Button
+        variant="outline"
+        size="icon"
+        className="fixed bottom-4 right-4 rounded-full"
+        onClick={() => setOpen(true)}
+      >
+        <HelpCircle />
+      </Button>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-2xl">
+          <Tabs defaultValue="search">
+            <TabsList>
+              <TabsTrigger value="search">Buscar ayuda</TabsTrigger>
+              <TabsTrigger value="videos">Videos</TabsTrigger>
+              <TabsTrigger value="guides">Guías</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="search">
+              <Input
+                placeholder="¿En qué necesitas ayuda?"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+              />
+              <HelpSearchResults query={searchQuery} />
+            </TabsContent>
+
+            <TabsContent value="videos">
+              <VideoLibrary />
+            </TabsContent>
+
+            <TabsContent value="guides">
+              <GuidesList />
+            </TabsContent>
+          </Tabs>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
+
+// Contextual tooltips
+import { Tooltip } from "@/components/ui/tooltip";
+
+<Tooltip content="El Content Director coordina la producción editorial y asigna tareas a los escritores.">
+  <HelpCircle className="h-4 w-4 text-muted-foreground" />
+</Tooltip>
+```
+
+**Content to create:**
+1. **Getting started guide** - "Primeros pasos con AMD"
+2. **Agent tutorials** - One page per department explaining agents
+3. **Content creation guide** - "Cómo crear tu primer contenido"
+4. **Campaign setup** - "Cómo coordinar agentes en una campaña"
+5. **Troubleshooting** - Common issues and solutions
+6. **Video library** - 2-minute Loom videos for key features
+
+**Sources:**
+- [SaaS Help Documentation Best Practices 2026](https://devdocs.work/saas-software-documentation-services)
+- [Top 10 Software Documentation Tools 2026](https://document360.com/blog/software-documentation-tools/)
+- [Building SaaS Documentation Knowledge Base](https://cyclr.com/blog/building-a-saas-documentation-knowledge-base)
+
+---
+
+### 3. Smart Defaults & Personalization
+
+**Why valuable:** Reduces cognitive load, makes product feel intuitive. AMD has many options—smart defaults prevent overwhelm.
+
+**Complexity:** Low-Medium
+
+**What's required:**
+
+| Context | Smart Default | Personalization |
+|---------|--------------|-----------------|
+| **Agent execution** | Remember last agent used | Suggest agents based on content type |
+| **Content tone** | Default to brand voice | Learn preferred tone over time |
+| **Social platforms** | Default to LinkedIn (primary) | Remember last selected platforms |
+| **Dashboard view** | Show most-used department | Customizable widget layout |
+| **Language** | Spanish (AMD target) | Remember preference |
+| **Theme** | Light mode | Dark/light toggle (remember) |
+| **Notifications** | Weekly email digest | Customize frequency |
+
+**Implementation:**
+```typescript
+// Store user preferences
+export const updateUserPreferences = mutation({
+  args: {
+    userId: v.id("users"),
+    preferences: v.object({
+      defaultAgent: v.optional(v.id("agents")),
+      defaultTone: v.optional(v.string()),
+      defaultPlatforms: v.optional(v.array(v.string())),
+      theme: v.optional(v.string()),
+      language: v.optional(v.string()),
+      emailDigest: v.optional(v.string()),
+    }),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.userId, {
+      preferences: args.preferences,
+    });
+  },
+});
+
+// Use smart defaults in forms
+const defaultAgent = user.preferences?.defaultAgent || "content-director";
+const defaultTone = user.preferences?.defaultTone || brand.tone || "professional";
+const defaultPlatforms = user.preferences?.defaultPlatforms || ["linkedin"];
+
+<Select
+  defaultValue={defaultAgent}
+  onValueChange={value => {
+    setSelectedAgent(value);
+    // Remember for next time
+    updatePreferences({ defaultAgent: value });
+  }}
+>
+  {agents.map(agent => (
+    <SelectItem key={agent._id} value={agent._id}>
+      {agent.name}
+    </SelectItem>
+  ))}
+</Select>
+```
+
+---
+
+### 4. Keyboard Shortcuts & Power User Features
+
+**Why valuable:** Makes power users efficient, builds product love and advocacy.
+
+**Complexity:** Low-Medium
+
+**What's required for AMD:**
+
+| Shortcut | Action | Context |
+|----------|--------|---------|
+| `Cmd/Ctrl + K` | Command palette | Global |
+| `N` | New content | /content page |
+| `E` | Execute selected agent | /agents page |
+| `S` | Save draft | Content editor |
+| `?` | Show shortcuts help | Global |
+| `/` | Focus search | Global |
+| `Esc` | Close modal/dialog | Global |
+| `Cmd/Ctrl + Enter` | Submit form | Forms |
+
+**Implementation:**
+```typescript
+// hooks/useKeyboardShortcuts.ts
+export function useKeyboardShortcuts() {
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Command palette
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        openCommandPalette();
+      }
+
+      // Show help
+      if (e.key === "?") {
+        e.preventDefault();
+        showKeyboardShortcuts();
+      }
+
+      // Focus search
+      if (e.key === "/") {
+        e.preventDefault();
+        focusSearch();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+}
+
+// Command palette component
+<CommandPalette>
+  <CommandInput placeholder="Buscar acciones, agentes, páginas..." />
+  <CommandList>
+    <CommandGroup heading="Acciones rápidas">
+      <CommandItem onSelect={createContent}>
+        <FileText className="mr-2" />
+        Crear contenido
+      </CommandItem>
+      <CommandItem onSelect={executeAgent}>
+        <Zap className="mr-2" />
+        Ejecutar agente
+      </CommandItem>
+    </CommandGroup>
+
+    <CommandGroup heading="Navegación">
+      <CommandItem onSelect={() => router.push("/dashboard")}>
+        <Home className="mr-2" />
+        Dashboard
+      </CommandItem>
+      <CommandItem onSelect={() => router.push("/agents")}>
+        <Users className="mr-2" />
+        Agentes
+      </CommandItem>
+    </CommandGroup>
+
+    <CommandGroup heading="Búsqueda">
+      {searchResults.map(result => (
+        <CommandItem key={result.id} onSelect={() => open(result)}>
+          {result.title}
+        </CommandItem>
+      ))}
+    </CommandGroup>
+  </CommandList>
+</CommandPalette>
+```
+
+---
+
+### 5. Data Export & Portability (GDPR Compliance)
+
+**Why valuable:** GDPR right to data portability (required for EU users). Builds trust—users own their data.
+
+**Complexity:** Medium
+
+**What's required:**
+
+| Export Type | Format | Includes |
+|-------------|--------|----------|
+| **User data** | JSON | Profile, preferences, settings |
+| **Content** | CSV + JSON | All posts, drafts, metadata |
+| **Agent executions** | CSV | Execution history, results |
+| **Analytics** | CSV | Engagement metrics over time |
+| **Audit logs** | CSV | Activity history |
+| **Brand assets** | ZIP | Logos, uploaded files |
+
+**Implementation:**
+```typescript
+export const exportUserData = action({
+  args: { userId: v.id("users") },
+  handler: async (ctx, args) => {
+    // Gather all user data
+    const user = await ctx.runQuery(internal.users.getUser, { id: args.userId });
+    const content = await ctx.runQuery(internal.content.listByUser, { userId: args.userId });
+    const executions = await ctx.runQuery(internal.executions.listByUser, { userId: args.userId });
+    const auditLogs = await ctx.runQuery(internal.auditLog.getLogsForUser, { userId: args.userId });
+
+    // Create export package
+    const exportData = {
+      user: {
+        profile: user,
+        preferences: user.preferences,
+        createdAt: user._creationTime,
+      },
+      content: content.map(c => ({
+        id: c._id,
+        type: c.type,
+        title: c.title,
+        body: c.body,
+        createdAt: c._creationTime,
+        status: c.status,
+      })),
+      executions: executions.map(e => ({
+        agent: e.agentId,
+        task: e.taskType,
+        status: e.status,
+        createdAt: e._creationTime,
+      })),
+      auditLogs: auditLogs,
+    };
+
+    // Upload to storage
+    const downloadUrl = await uploadToS3(
+      JSON.stringify(exportData, null, 2),
+      `export-${args.userId}-${Date.now()}.json`
+    );
+
+    // Send email
+    await sendEmail({
+      to: user.email,
+      subject: "Tu exportación de datos de AMD",
+      body: `
+        Tu exportación está lista para descargar:
+        ${downloadUrl}
+
+        Este enlace expira en 7 días.
+      `,
+    });
+
+    // Log export
+    await ctx.runMutation(internal.auditLog.createAuditLog, {
+      userId: args.userId,
+      action: "data.exported",
+      resourceType: "user",
+      resourceId: args.userId,
+      metadata: { format: "json", size: exportData.toString().length },
+    });
+
+    return { success: true };
+  },
+});
+
+// UI for export
+<Card>
+  <CardHeader>
+    <CardTitle>Exportar tus datos</CardTitle>
+    <CardDescription>
+      Descarga toda tu información de AMD (GDPR compliance)
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    <Button onClick={requestExport} loading={isExporting}>
+      {isExporting ? "Preparando exportación..." : "Exportar mis datos"}
+    </Button>
+    <p className="text-sm text-muted-foreground mt-2">
+      Recibirás un email con el enlace de descarga en unos minutos.
+    </p>
+  </CardContent>
+</Card>
+```
 
 ---
 
 ## Anti-Features
 
-Features to explicitly NOT build in v3.0. Common mistakes in this domain.
-
-| Anti-Feature | Why Avoid | What to Do Instead |
-|--------------|-----------|-------------------|
-| **Real-time collaborative editing (Google Docs style)** | High complexity (CRDT), rarely needed—content editing is not simultaneous like documents | Use edit locks + change notifications; defer to v4.0+ |
-| **TikTok / YouTube publishing** | Video requires transcoding, storage, complex APIs; scope creep for v3.0 | Focus on text+image platforms (LinkedIn, Twitter/X, Instagram); defer video to v4.0 |
-| **Custom role builder** | Users won't configure complex permission matrices; they want sensible defaults | Provide 4 pre-defined roles (Admin, Editor, Reviewer, Publisher) |
-| **Unlimited team members** | Small teams (5-20) are AMD's target; unlimited scale adds billing complexity | Cap at 20 users for v3.0; enterprise tiers later |
-| **Live dashboard updates (websockets)** | Overkill for analytics; hourly refresh is sufficient | Poll APIs every hour; real-time not needed for historical data |
-| **Advanced statistical analysis** | Non-technical users don't understand p-values or regression analysis | Provide simple trends (up/down arrows, percentages) |
-| **Custom analytics formulas UI** | Too complex for non-technical users; they want standard metrics | Pre-calculate common metrics; custom formulas deferred |
-| **Platform-specific post types** | LinkedIn polls, Twitter spaces, Instagram reels—too many edge cases | Support common denominator: text + single image + link |
-| **Automatic cross-posting** | Risky—users want control over what goes where | Require explicit platform selection for each post |
-| **Version history forever** | Storage costs and UI clutter for versions from 2 years ago | Keep last 30 versions or 90 days, whichever is more |
-| **Video analytics** | Complex to implement; most engagement is on text/image content | Track video views if platforms provide it, but don't prioritize |
-| **Sentiment analysis** | Unreliable for short social posts; users don't trust it | Show raw engagement metrics; defer sentiment to v4.0 with better AI |
-| **Everything-in-one-chart dashboards** | Information overload; users can't process 15 metrics simultaneously | Use multiple focused charts (engagement, reach, growth) instead |
-| **Perfect real-time API sync** | Social APIs have rate limits; perfect sync is impossible | Set expectations: "Data updated every hour" prominently displayed |
-| **Approval workflow builder** | Non-technical users won't configure complex routing | Provide 2 pre-built workflows: Simple (optional review) and Strict (required approval) |
-
-**Key insight from research:** The most common anti-pattern in marketing SaaS is **enterprise features targeting SMB users**. AMD's Spanish-speaking, non-technical audience needs **simplicity with intelligence**, not configurability. Features like custom roles, advanced analytics, and workflow builders add complexity without adding value for this user base.
+Features to **deliberately NOT build** for first production release. These are common mistakes, premature optimizations, or features that add complexity without proportional value for AMD's target market (non-technical Spanish-speaking users).
 
 ---
 
-## Feature Dependencies
+### 1. Real-Time Collaborative Editing (Google Docs Style)
 
-Visual representation of how v3.0 features build on each other:
+**Why avoid:** High complexity (CRDT, operational transforms, WebSockets). AMD is not a document editor—content creation is solo, not simultaneous.
 
-```
-EXISTING v2.0 FOUNDATION
-├── LinkedIn publishing (OAuth 2.0, post creation, preview)
-├── Content Pipeline (Kanban, drag&drop, scheduling)
-├── Control Center (37 agents, real-time monitoring)
-├── Guided UX (wizard, tooltips, next-action)
-├── Feed health monitoring
-└── 100% Spanish UI
+**What to do instead:**
+- Show "who's editing" indicator
+- Auto-save drafts every 30 seconds
+- Prevent overwrites with "last saved" timestamps
+- Simple lock: "Carlos está editando este contenido"
 
-NEW v3.0 FEATURES
-
-├── Analytics & Intelligence
-│   ├── Requires: LinkedIn Analytics API integration
-│   ├── Requires: Internal metrics database (posts, schedules, executions)
-│   ├── Enables: Data-driven decisions, performance tracking
-│   └── Feeds into: Automated reports, AI insights
-│
-├── Multi-Platform Publishing
-│   ├── Depends on: Existing content pipeline (Draft/Review/Approved states)
-│   ├── Requires: Twitter/X API integration (OAuth 2.0 + v2 API)
-│   ├── Requires: Instagram Graph API integration (Meta Business account)
-│   ├── Requires: Cross-platform image optimization
-│   └── Enables: Broader reach, platform comparison analytics
-│
-├── Team Collaboration
-│   ├── Requires: Multi-user authentication system (Clerk or Auth.js)
-│   ├── Requires: Permission middleware (role-based access)
-│   ├── Requires: User invitation system
-│   ├── Enables: Approval workflows, audit trails
-│   └── Feeds into: Team performance analytics, assignment system
-│
-├── Version History
-│   ├── Depends on: Existing content management schema
-│   ├── Requires: Version snapshot storage
-│   ├── Enables: Rollback, audit compliance, change tracking
-│   └── Feeds into: Audit log, team collaboration
-│
-└── Automated Reports
-    ├── Depends on: Analytics data collection
-    ├── Depends on: Team collaboration (user roles for targeted reports)
-    ├── Requires: Report generation engine
-    ├── Requires: Email delivery system
-    └── Enables: Stakeholder updates, performance summaries
-```
-
-**Critical path dependencies:**
-
-1. **Authentication MUST come first** — Multi-user auth is foundational for team collaboration, which feeds into version history (user attribution) and reports (role-based distribution)
-
-2. **Analytics requires platform integrations** — LinkedIn Analytics API must be integrated before meaningful dashboards can be built; Twitter/Instagram analytics follow
-
-3. **Multi-platform depends on content pipeline** — Existing Draft/Review/Approved states must work before expanding to new platforms
-
-4. **Reports come last** — Automated reports synthesize data from analytics, team collaboration, and multi-platform, so they depend on all other features being functional
+**When to reconsider:** When team plans (5+ concurrent users editing same content) become primary use case AND users explicitly request it.
 
 ---
 
-## MVP Recommendations
+### 2. Custom AI Model Selection
 
-For v3.0 milestone, prioritize features by user impact and technical dependencies.
+**Why avoid:** Non-technical users don't understand model differences (Sonnet vs Opus vs Haiku). Adds cognitive load without value.
 
-### Phase 1: Multi-User Authentication (Week 1-2)
+**What to do instead:**
+- Use Claude Sonnet 4 for all operations (balance of quality/speed/cost)
+- Optimize prompts instead of exposing model choice
+- Admin-only model override in settings (for cost optimization)
 
-**Table stakes only:**
-1. Clerk or Auth.js integration
-2. User invitation via email
-3. 4 pre-defined roles (Admin, Editor, Reviewer, Publisher)
-4. Basic permission middleware (who can access what)
-5. User profile pages (name, email, role, avatar)
-
-**Rationale:** Foundation for all collaboration features. Without multi-user auth, team collaboration is impossible. Get this right before building on top.
-
-**Defer to post-MVP:**
-- Custom roles (use pre-defined 4 roles)
-- SSO / SAML (enterprise feature)
-- Team analytics (who's most active)
-
-### Phase 2: Analytics Dashboard (Week 3-4)
-
-**Table stakes only:**
-1. LinkedIn Analytics API integration (engagement metrics)
-2. Unified dashboard showing internal + LinkedIn data
-3. Date range filtering (last 7/30/90 days)
-4. Basic charts (line charts for trends, bar charts for comparisons)
-5. CSV export
-6. Responsive layout
-
-**One differentiator:**
-- Cross-platform comparison (once Twitter/Instagram added)
-
-**Rationale:** Data visibility is immediate value. Users can start making data-driven decisions as soon as analytics dashboard launches.
-
-**Defer to post-MVP:**
-- AI-powered insights (complex)
-- Predictive analytics (ML required)
-- Custom KPI builder (too complex)
-- Natural language queries (NLP required)
-
-### Phase 3: Multi-Platform Publishing (Week 5-7)
-
-**Table stakes only:**
-1. Twitter/X API integration (OAuth 2.0 + v2 API)
-2. Instagram Graph API integration (Meta Business account)
-3. Single compose interface with platform selection checkboxes
-4. Platform-specific character count validation
-5. Image requirements validation
-6. Platform-specific previews
-7. Cross-platform scheduling
-
-**One differentiator:**
-- Smart content adaptation (AI shortens/adapts for Twitter character limits)
-
-**Rationale:** Multi-platform is the headline feature for v3.0. Expanding from LinkedIn-only to 3 platforms is significant user-facing value.
-
-**Defer to post-MVP:**
-- TikTok / YouTube (video complexity)
-- Instagram carousels (API complexity)
-- Thread composer (Twitter-specific edge case)
-- Platform-specific analytics (wait until Phase 2 LinkedIn analytics mature)
-
-### Phase 4: Team Collaboration Essentials (Week 8-9)
-
-**Table stakes only:**
-1. Content ownership (createdBy field)
-2. Activity audit log (who changed what when)
-3. Team member list with roles
-4. Role change capability (Admin can promote/demote)
-
-**One differentiator:**
-- Approval workflows (optional review before publishing)
-
-**Rationale:** With multi-user auth in place, team can now collaborate on content with accountability.
-
-**Defer to post-MVP:**
-- Conditional approval rules (complex routing)
-- Comment threads (additional complexity)
-- @ mention notifications (notification system)
-- Team performance analytics (advanced)
-
-### Phase 5: Version History (Week 10)
-
-**Table stakes only:**
-1. Timestamped versions on content edits
-2. Version browsing (list of versions)
-3. Rollback capability (restore from version)
-
-**Defer to post-MVP:**
-- Visual diff (text comparison complexity)
-- Version retention limits (keep last 30 versions)
-
-**Rationale:** Quick to implement on top of existing content schema. Provides immediate value for teams editing content collaboratively.
-
-### Phase 6: Automated Reports (Week 11-12)
-
-**Table stakes only:**
-1. Weekly report generation (cron job)
-2. Email delivery to Admin users
-3. PDF export with charts
-4. Summary metrics (total posts, total engagement, top post)
-
-**One differentiator:**
-- AI-generated narratives (use existing CMO Agent to write summary)
-
-**Rationale:** Caps off v3.0 with automation. Reports synthesize all data collected from analytics and multi-platform publishing.
-
-**Defer to post-MVP:**
-- Customizable metrics (pre-defined report template for v3.0)
-- Stakeholder-specific reports (role-based templates)
-- Interactive reports (static PDF is sufficient)
-- Slack/Teams integration (email first)
+**When to reconsider:** When power users request specific models for specific use cases (e.g., Haiku for speed, Opus for quality).
 
 ---
 
-## Complexity Analysis
+### 3. White-Label / Custom Branding
 
-| Feature Category | Low Complexity | Medium Complexity | High Complexity |
-|------------------|----------------|-------------------|-----------------|
-| **Analytics** | Date range filter, CSV export, basic charts | Unified dashboard, responsive layout, LinkedIn API integration | AI insights, predictive analytics, custom KPI builder |
-| **Multi-Platform** | Character count, image validation, platform previews | Single compose interface, Twitter/Instagram API integration | Smart content adaptation, carousel support, thread composer |
-| **Team Collaboration** | User profiles, team list, role display | Permission middleware, audit log, role changes | Approval workflows, conditional rules, @ mentions |
-| **Version History** | Timestamped versions, version browsing, rollback | Text diff algorithm | N/A |
-| **Automated Reports** | Email delivery, PDF export | Report generation, scheduled jobs, summary metrics | AI narratives, interactive reports, competitive benchmarking |
+**Why avoid:** Massive complexity for uncertain value. AMD's target is SMBs, not agencies reselling.
 
-**Time estimates:**
-- **Low complexity:** 1-3 days per feature
-- **Medium complexity:** 4-7 days per feature
-- **High complexity:** 2-3 weeks per feature
+**What to do instead:**
+- Strong AMD branding
+- Focus on customizing content/voice within product
+- Agency plan with co-branding (AMD + Agency logo)
 
-**Total effort estimate for v3.0 MVP (table stakes + 1 differentiator per category):**
-- Phase 1 (Auth): 2 weeks
-- Phase 2 (Analytics): 2 weeks
-- Phase 3 (Multi-Platform): 3 weeks
-- Phase 4 (Team Collaboration): 2 weeks
-- Phase 5 (Version History): 1 week
-- Phase 6 (Automated Reports): 2 weeks
-
-**Total: 12 weeks (3 months)**
+**When to reconsider:** When multiple enterprise agencies (>$10K/year) request it as a blocker.
 
 ---
 
-## UX Implications for Non-Technical Users
+### 4. Multi-Language UI (Beyond Spanish/English)
 
-AMD's target audience is Spanish-speaking, non-technical marketers. Each feature must pass the "simplicity test."
+**Why avoid:** Translation overhead for 37 agent descriptions, all UI text, error messages, help docs. Spanish-first is target market.
 
-### Analytics Dashboard
+**What to do instead:**
+- Perfect Spanish experience
+- English for international expansion
+- Other languages only after proven demand
 
-**Challenge:** Non-technical users don't understand "impressions vs reach" or "engagement rate calculations."
-
-**Solution:**
-- Use plain Spanish labels: "Personas alcanzadas" not "Reach"
-- Provide tooltip explanations: "¿Qué es esto?" icon with 1-sentence explanation
-- Use visual indicators: Green arrows (up), red arrows (down), not just numbers
-- Pre-calculate insights: "Tus posts de esta semana tuvieron 25% más engagement que la semana pasada"
-
-**Inspiration:** Zoho Analytics uses natural language queries and AI-powered assistant for non-technical users ([source](https://medium.com/@toritsejumoju/ui-ux-for-complex-data-how-to-simplify-analytics-for-non-technical-users-b427181423bc)).
-
-### Multi-Platform Publishing
-
-**Challenge:** Users don't know image requirements (1080x1080 Instagram, 1200x627 LinkedIn, etc.).
-
-**Solution:**
-- Auto-detect image size and show warning: "Esta imagen es muy pequeña para Instagram (mínimo 1080x1080)"
-- Auto-resize with preview: "Hemos ajustado tu imagen para Instagram. ¿Se ve bien?"
-- Platform icons with checkmarks: Visual indication of "ready to publish" per platform
-
-**Inspiration:** Buffer and Hootsuite provide platform-specific validation with clear visual feedback ([source](https://www.iconosquare.com/blog/6-best-practices-for-cross-posting-on-social-media)).
-
-### Team Collaboration
-
-**Challenge:** Users don't understand permission systems ("what can a Reviewer do?").
-
-**Solution:**
-- Plain language role descriptions in Spanish:
-  - **Admin:** "Puede hacer todo: crear, editar, aprobar, publicar, invitar usuarios"
-  - **Editor:** "Puede crear y editar contenido, pero NO publicar"
-  - **Reviewer:** "Puede revisar y aprobar contenido, pero NO crear"
-  - **Publisher:** "Puede publicar contenido aprobado"
-- Visual permission matrix: Checkmarks showing what each role can do
-- Onboarding wizard: "¿Qué rol tiene esta persona en tu equipo?" with examples
-
-**Inspiration:** Metricool provides predefined roles with clear descriptions ([source](https://metricool.com/content-approval-process/)).
-
-### Version History
-
-**Challenge:** Users don't know when to use version history ("why would I need this?").
-
-**Solution:**
-- Auto-save every edit with timestamp: "Guardado a las 14:32 por Carlos"
-- One-click restore: "Restaurar esta versión" button (no complex diff UI)
-- Recent versions prominently shown: Last 5 versions visible, older versions in "Ver más"
-
-**Inspiration:** Google Docs-style version history with simple restore ([source](https://www.docupile.com/audit-trail-and-history/)).
-
-### Automated Reports
-
-**Challenge:** Users don't know what metrics to include in reports.
-
-**Solution:**
-- Pre-built report template: "Reporte Semanal de Redes Sociales" with standard metrics
-- Plain language summaries: "Esta semana publicaste 8 posts que alcanzaron 3,450 personas"
-- Visual highlights: Top post with thumbnail and engagement count
-- No configuration required: Reports "just work" out of the box
-
-**Inspiration:** AgencyAnalytics and DashThis provide white-labeled, automated reports with minimal configuration ([source](https://whatagraph.com/social-media-report-tool)).
+**When to reconsider:** After 1000+ paying users request specific language, or entering new market (e.g., Brazil → Portuguese).
 
 ---
 
-## Platform-Specific Considerations
+### 5. Native Mobile Apps (iOS/Android)
 
-### LinkedIn API Integration
+**Why avoid:** Huge development burden. AMD's 37-agent dashboard doesn't translate well to mobile anyway. Responsive web app is sufficient.
 
-**Already implemented in v2.0.** Analytics API is the new addition.
+**What to do instead:**
+- Perfect mobile web experience
+- PWA for home screen install
+- Mobile-optimized agent execution
 
-**Key requirements:**
-- **Analytics API:** Requires Company Page admin access (not just personal profile)
-- **Metrics available:** Impressions, clicks, engagement, follower demographics
-- **Rate limits:** 100 requests per day for Analytics API
-- **Data freshness:** Up to 2-day delay on metrics (not real-time)
-
-**Source:** [LinkedIn Analytics API (Microsoft Learn)](https://www.socialmediatoday.com/news/linkedin-provides-analytics-data-members-third-party-platforms/752638/)
-
-### Twitter/X API Integration
-
-**New for v3.0.**
-
-**Key requirements:**
-- **OAuth 2.0:** Required for posting on behalf of users
-- **API v2:** Current standard (v1.1 deprecated)
-- **Character limit:** 280 for free accounts, 25K for Premium
-- **Image specs:** 1024x512 minimum, 5MB max, PNG/JPG/GIF
-- **Rate limits:** 50 tweets per day (free tier), 2,400 per day (Premium)
-- **Analytics:** Available via Twitter Analytics API (separate integration)
-
-**Complexity:** HIGH (OAuth flow + rate limit handling + character variations per tier)
-
-**Source:** [Social Media Image Sizes 2026 (Hootsuite)](https://blog.hootsuite.com/social-media-image-sizes-guide/)
-
-### Instagram Graph API Integration
-
-**New for v3.0.**
-
-**Key requirements:**
-- **Meta Business Account:** Required (personal Instagram not supported)
-- **Facebook Page connection:** Instagram must be linked to Facebook Page
-- **OAuth via Facebook:** Use Facebook Login for authentication
-- **Image specs:** 1080x1080 (square), 1080x1350 (portrait), 1080x1920 (story)
-- **Caption limit:** 2,200 characters
-- **Hashtags:** Up to 30 per post
-- **Rate limits:** 200 API calls per hour per user
-- **Analytics:** Insights API provides engagement, reach, impressions
-
-**Complexity:** HIGH (Meta Business setup friction, Facebook Page requirement)
-
-**Source:** [Instagram Analytics Dashboard Guide (Improvado)](https://improvado.io/blog/instagram-analytics-dashboard)
-
-### Cross-Platform Content Adaptation
-
-**Challenge:** Different platforms have different tone expectations.
-
-| Platform | Optimal Tone | Hashtags | Length | Images |
-|----------|--------------|----------|--------|--------|
-| **LinkedIn** | Professional, thought leadership | 3-5 relevant | 150-300 words optimal | 1200x627 (link preview) |
-| **Twitter/X** | Conversational, concise | 1-2 max | 280 chars (or thread) | 1200x675 (16:9) |
-| **Instagram** | Visual storytelling, casual | 20-30 max | 125 chars (above fold) | 1080x1080 (square) |
-
-**AMD differentiator opportunity:** Use existing Social Media agents (linkedin-001, twitter-002) to auto-adapt content tone per platform with AI.
-
-**Source:** [Cross-Platform Content Strategy (Social Rails)](https://socialrails.com/blog/cross-posting-social-media)
+**When to reconsider:** When mobile-specific features are critical (push notifications for agent completion, camera integration for brand assets) and can't be done with PWA.
 
 ---
 
-## User Expectations by Feature
+### 6. Video Content Generation
 
-Based on 2026 research, what users expect from each feature category:
+**Why avoid:** AMD agents are text-focused. Video requires transcoding, storage, complex APIs. Scope creep.
 
-### Analytics Dashboard Expectations
+**What to do instead:**
+- Support video script generation (already have YouTube Scriptwriter agent)
+- Allow video file uploads for content library
+- Integrate with external video tools (Descript, Loom)
 
-**Must have:**
-- "How are my posts performing?" (engagement metrics)
-- "Is my audience growing?" (follower growth chart)
-- "Which posts did best?" (top performers)
-- "Can I export this for my boss?" (CSV/PDF export)
-
-**Nice to have:**
-- "Why did engagement drop?" (AI-powered insights)
-- "When should I post?" (optimal timing recommendations)
-- "How do I compare to competitors?" (benchmarking)
-
-**Don't care about:**
-- Statistical significance tests (too technical)
-- Raw API responses (want processed insights)
-- Granular time series (hourly data)—daily/weekly is sufficient
-
-### Multi-Platform Publishing Expectations
-
-**Must have:**
-- "Write once, publish everywhere" (single compose interface)
-- "Will this fit on Twitter?" (character count validation)
-- "Does this image work?" (size/format validation)
-- "What will this look like on Instagram?" (platform previews)
-- "Schedule to all platforms at once" (cross-platform scheduling)
-
-**Nice to have:**
-- "Make this shorter for Twitter" (AI content adaptation)
-- "Suggest hashtags for Instagram" (smart recommendations)
-- "What's the best time to post on LinkedIn?" (platform-specific timing)
-
-**Don't care about:**
-- API rate limits (handle silently or show simple "try again later")
-- Platform technical details (authentication flows should be invisible)
-
-### Team Collaboration Expectations
-
-**Must have:**
-- "Who can do what?" (clear role descriptions)
-- "Who created this post?" (content ownership)
-- "Who changed this?" (audit log)
-- "Can I stop this from publishing?" (approval workflow)
-
-**Nice to have:**
-- "Tag someone for feedback" (@ mentions)
-- "Discuss changes inline" (comment threads)
-- "See team calendar" (who's publishing when)
-
-**Don't care about:**
-- Complex permission matrices (simple roles sufficient)
-- Org charts (not needed for small teams)
-- Time tracking (productivity monitoring overkill)
-
-### Automated Reports Expectations
-
-**Must have:**
-- "Weekly summary in my inbox" (scheduled delivery)
-- "Show my boss the numbers" (PDF export)
-- "What were the highlights?" (top performers)
-- "Did we improve?" (comparison to previous period)
-
-**Nice to have:**
-- "Write the summary for me" (AI-generated narrative)
-- "Send different reports to different people" (role-based distribution)
-- "Include competitor data" (competitive benchmarking)
-
-**Don't care about:**
-- Custom report builders (templates are fine)
-- Real-time reports (weekly/monthly cadence is standard)
-- Interactive dashboards (static PDF is easier to share)
+**When to reconsider:** When video becomes primary content type for majority of users (unlikely for B2B marketing).
 
 ---
 
-## Competitive Intelligence
+### 7. Blockchain / Web3 Integration
 
-What best-in-class products do in each category:
+**Why avoid:** Target market (non-technical marketers) doesn't care. Adds complexity without value.
 
-### Analytics Benchmarks
+**What to do instead:** Accept traditional payments (credit card via Stripe).
 
-**Hootsuite:**
-- Unified dashboard for all connected platforms
-- Customizable widgets (drag-and-drop)
-- Automated reports with white-label branding
-- Team performance analytics
-
-**Sprout Social:**
-- Cross-network performance comparison
-- Competitive benchmarking
-- Audience demographics
-- Optimal send time recommendations
-
-**Key takeaway:** Leaders provide **unified view + automated insights**, not just raw data. AMD's advantage is AI agents that can generate narrative insights, not just charts.
-
-### Multi-Platform Benchmarks
-
-**Buffer:**
-- Single compose interface for all platforms
-- Image auto-optimization
-- Platform-specific best practices tips
-- Browser extension for quick sharing
-
-**Planable:**
-- Visual content calendar
-- Real-time collaboration
-- Multi-level approval workflows
-- Shareable previews (no login required)
-
-**Key takeaway:** Best tools make cross-platform publishing **effortless through smart defaults and validation**, not configuration. AMD should auto-handle platform differences, not expose them to users.
-
-### Team Collaboration Benchmarks
-
-**monday.com:**
-- Visual work operating system
-- Customizable workflows
-- Team dashboards showing progress
-- Integration with Google Workspace
-
-**EngageBay:**
-- All-in-one CRM + marketing suite
-- Role-based access with 4-5 pre-defined roles
-- Activity timeline for accountability
-- Affordable pricing for small teams
-
-**Key takeaway:** Small team collaboration tools focus on **simplicity over configurability**. Pre-built workflows and roles work better than custom builders for non-technical users.
+**When to reconsider:** Never, unless target market shifts to crypto-native audience.
 
 ---
 
-## Research Confidence Assessment
+### 8. Advanced Analytics (ML-Powered Predictions)
+
+**Why avoid:** Requires significant data volume to be accurate. Early users won't have enough data for predictions to be meaningful.
+
+**What to do instead:**
+- Show clear, actionable analytics on what happened
+- Basic trend lines (up/down arrows)
+- AI-generated insights from existing data (not predictions)
+
+**When to reconsider:** After 6+ months of user data, when patterns are clear and predictions would be valuable.
+
+---
+
+### 9. Custom Agent Builder (No-Code Agent Creation)
+
+**Why avoid:** AMD's 37 agents are carefully designed. Custom agent creation requires prompt engineering skills (not target audience).
+
+**What to do instead:**
+- Perfect existing 37 agents
+- Add new pre-built agents based on user feedback
+- Allow agent configuration (tone, focus areas) not creation
+
+**When to reconsider:** When advanced users specifically request custom agents AND have prompt engineering skills.
+
+---
+
+### 10. Self-Hosting Option
+
+**Why avoid:** Support nightmare, security risk, reduces product value (cloud features won't work offline).
+
+**What to do instead:** SaaS-only. Focus on making cloud experience fast, secure, reliable.
+
+**When to reconsider:** When large enterprise customers with strict data residency requirements (rare for marketing tool) request it.
+
+---
+
+## Production Launch Roadmap
+
+Based on research, here's the recommended phase structure for making AMD production-ready:
+
+---
+
+### Phase 1: Foundation (Week 1-2)
+
+**Focus:** Error handling, validation, basic security
+
+| Task | Priority | Effort |
+|------|----------|--------|
+| Global error handler (API, network, component) | P0 | 3 days |
+| Spanish error messages dictionary | P0 | 1 day |
+| React Error Boundaries | P0 | 1 day |
+| Form validation (Zod schemas) | P0 | 2 days |
+| Input sanitization (XSS prevention) | P0 | 1 day |
+| Toast notification system (sonner) | P0 | 1 day |
+| Session timeout detection | P1 | 2 days |
+
+**Success metric:** Zero unhandled exceptions reaching users
+
+---
+
+### Phase 2: User Experience (Week 3)
+
+**Focus:** Loading states, empty states, feedback
+
+| Task | Priority | Effort |
+|------|----------|--------|
+| Skeleton screens for all pages | P0 | 2 days |
+| Agent execution progress indicators | P0 | 2 days |
+| Empty state designs for all pages | P0 | 2 days |
+| Loading states for all buttons/forms | P1 | 1 day |
+
+**Success metric:** No blank screens during loading, all actions have feedback
+
+---
+
+### Phase 3: Performance (Week 4)
+
+**Focus:** Optimize load times, bundle size
+
+| Task | Priority | Effort |
+|------|----------|--------|
+| Lighthouse audit baseline | P0 | 1 day |
+| Code splitting (dynamic imports) | P0 | 2 days |
+| Image optimization (Next.js Image) | P0 | 1 day |
+| Bundle size analysis and reduction | P1 | 2 days |
+| API response caching | P1 | 1 day |
+
+**Success metric:** Lighthouse score >90, LCP <2.5s
+
+---
+
+### Phase 4: Security & Compliance (Week 5)
+
+**Focus:** Hardening, monitoring, audit logs
+
+| Task | Priority | Effort |
+|------|----------|--------|
+| Rate limiting (Upstash Redis) | P0 | 2 days |
+| CSP headers | P0 | 1 day |
+| Dependency audit and updates | P0 | 1 day |
+| Sentry error tracking setup | P0 | 1 day |
+| Audit log implementation | P1 | 2 days |
+| Data export functionality (GDPR) | P1 | 2 days |
+
+**Success metric:** No critical vulnerabilities, error tracking active
+
+---
+
+### Phase 5: Polish (Week 6)
+
+**Focus:** Onboarding, help, accessibility
+
+| Task | Priority | Effort |
+|------|----------|--------|
+| Onboarding flow (4 steps) | P0 | 3 days |
+| Help widget with search | P1 | 2 days |
+| Accessibility audit (WCAG) | P1 | 2 days |
+| Keyboard shortcuts | P2 | 1 day |
+| Mobile responsiveness verification | P1 | 1 day |
+
+**Success metric:** >60% onboarding completion, WCAG 2.2 AA passing
+
+---
+
+### Phase 6: Pre-Launch Verification (Week 7)
+
+**Focus:** Testing, monitoring, documentation
+
+| Task | Priority | Effort |
+|------|----------|--------|
+| End-to-end testing (critical flows) | P0 | 2 days |
+| Load testing (simulate 100 concurrent users) | P0 | 1 day |
+| Monitoring dashboard setup | P0 | 1 day |
+| Support documentation | P0 | 2 days |
+| Launch checklist review | P0 | 1 day |
+
+**Success metric:** All critical flows working, monitoring active, docs complete
+
+---
+
+## Success Metrics for Production Readiness
+
+How to measure if production readiness efforts are working:
+
+### Error Rates
+- ✅ Error rate <0.5% of requests
+- ✅ Zero unhandled exceptions reaching users
+- ✅ Error recovery rate >80% (users can continue after error)
+- ✅ Mean Time to Resolution (MTTR) <4 hours
+
+### Performance
+- ✅ Core Web Vitals passing (LCP <2.5s, FID <100ms, CLS <0.1)
+- ✅ 95th percentile page load <3s
+- ✅ API response time p95 <500ms
+- ✅ Lighthouse score >90
+
+### User Experience
+- ✅ Onboarding completion rate >60%
+- ✅ Time to first value <5 minutes
+- ✅ Feature adoption rate >40% for core features
+- ✅ Zero blank loading screens
+
+### Security & Compliance
+- ✅ WCAG 2.2 AA automated tests passing 100%
+- ✅ Zero critical/high vulnerabilities
+- ✅ Audit logs capturing all required events
+- ✅ Data export working (GDPR compliance)
+
+### Stability
+- ✅ Uptime >99.5%
+- ✅ Zero critical bugs in production >24 hours
+- ✅ Agent execution success rate >95%
+- ✅ Zero data loss incidents
+
+---
+
+## Confidence Assessment
 
 | Category | Confidence | Reasoning |
 |----------|-----------|-----------|
-| **Analytics patterns** | HIGH | Multiple authoritative sources (Improvado, Sprout Social, Dataslayer) agree on standard metrics and dashboard design |
-| **Multi-platform publishing** | MEDIUM | API requirements verified with official docs, but implementation complexity estimates based on general experience |
-| **Team collaboration** | HIGH | Standard patterns (roles, permissions, audit logs) consistent across 10+ tools researched |
-| **Platform API specifics** | MEDIUM | LinkedIn verified from Microsoft Learn (HIGH); Twitter/Instagram from aggregator sources (MEDIUM) |
-| **UX for non-technical users** | MEDIUM | WebSearch findings + UX pattern libraries, but not validated with AMD's specific Spanish-speaking audience |
-| **Complexity estimates** | LOW | Based on general web dev experience, not AMD-specific codebase analysis |
-
-**Gaps to address:**
-
-1. **Authentication system choice:** Research assumes Clerk or Auth.js; needs architecture decision before Phase 1
-2. **Job queue infrastructure:** Automated reports and scheduled posts require background jobs; unclear if Convex supports this or needs external service
-3. **Email delivery service:** Reports need email; requires choice of SendGrid, Mailgun, or similar
-4. **Meta Business account setup:** Instagram publishing requires Facebook Business Manager; friction point for non-technical users needs UX solution
+| **Error handling patterns** | HIGH | Industry best practices well-documented, multiple authoritative sources |
+| **Loading/empty states** | HIGH | Standard UX patterns, verified with research |
+| **Performance targets** | HIGH | Core Web Vitals are industry standard, benchmarks clear |
+| **Security hardening** | MEDIUM | Best practices known, but AMD-specific implementation needs verification |
+| **Accessibility** | MEDIUM | WCAG requirements clear, but manual testing needed for 70% of issues |
+| **Monitoring setup** | HIGH | Sentry + Vercel Analytics are proven solutions |
+| **Effort estimates** | MEDIUM | Based on typical web app complexity, not AMD codebase analysis |
+| **AMD-specific needs** | MEDIUM | Research is general SaaS, needs validation with AMD's 37-agent architecture |
 
 ---
 
-## Sources
+## Gaps to Address
 
-### Primary (HIGH confidence)
+**Before starting implementation:**
 
-**Analytics:**
-- [Marketing Dashboards Guide 2026 (Improvado)](https://improvado.io/blog/12-best-marketing-dashboard-examples-and-templates)
-- [Dashboard Best Practices 2025 (Dataslayer)](https://www.dataslayer.ai/blog/marketing-dashboard-best-practices-2025)
-- [Social Media Analytics Tools 2026 (Sprout Social)](https://sproutsocial.com/insights/social-media-analytics-tools/)
-
-**Multi-Platform:**
-- [Social Media Image Sizes 2026 (Hootsuite)](https://blog.hootsuite.com/social-media-image-sizes-guide/)
-- [Cross-Platform Content Strategy (Social Rails)](https://socialrails.com/blog/cross-posting-social-media)
-- [Multi-Platform Tools 2026 (Influencer Marketing Hub)](https://influencermarketinghub.com/social-media-posting-scheduling-tools/multi-social-media-posting-tools/)
-
-**Team Collaboration:**
-- [Content Approval Workflow (Planable)](https://planable.io/blog/content-approval-workflow/)
-- [Social Media Approval Process (Hootsuite)](https://blog.hootsuite.com/social-media-approval-workflow/)
-- [Marketing Approval Process 2026 (Planable)](https://planable.io/blog/marketing-approval-process/)
-
-**Automated Reports:**
-- [Automated Social Media Reporting (Whatagraph)](https://whatagraph.com/social-media-report-tool)
-- [Social Media Reporting (AgencyAnalytics)](https://agencyanalytics.com/solutions/social-media-reporting)
-- [Social Media Analytics & Reporting Tools (Statusbrew)](https://statusbrew.com/insights/social-media-analytics-tools)
-
-**Platform APIs:**
-- [LinkedIn Analytics Data (Social Media Today)](https://www.socialmediatoday.com/news/linkedin-provides-analytics-data-members-third-party-platforms/752638/)
-- [Instagram Analytics Dashboard (Improvado)](https://improvado.io/blog/instagram-analytics-dashboard)
-
-### Secondary (MEDIUM confidence)
-
-**UX for Non-Technical Users:**
-- [Simplify Analytics for Non-Technical Users (Medium)](https://medium.com/@toritsejumoju/ui-ux-for-complex-data-how-to-simplify-analytics-for-non-technical-users-b427181423bc)
-- [Marketing Analytics Tools 2026 (Cometly)](https://www.cometly.com/post/analytics-tools-for-marketing-teams)
-
-**Team Collaboration:**
-- [Marketing Team Collaboration Tools 2026 (Cometly)](https://www.cometly.com/post/marketing-team-collaboration-tools)
-- [Team Collaboration Software 2026 (Join Secret)](https://www.joinsecret.com/blog/what-are-the-simplest-collaboration-software-for-teams-in-2026)
-
-**Audit Trails:**
-- [Document Audit Trail (Ideagen)](https://www.ideagen.com/solutions/quality/document-control-system/audit-trail-documentation)
-- [Audit Trail & History (Docupile)](https://www.docupile.com/audit-trail-and-history/)
-
-### Tertiary (LOW confidence, flagged for validation)
-
-- Single blog posts without corroboration
-- Vendor marketing materials (may be biased)
-- Generic "best tools" lists without specific feature details
+1. **Lighthouse baseline** - Run current performance audit to understand starting point
+2. **Error tracking** - What errors are currently happening in dev/staging?
+3. **Convex rate limiting** - Does Convex have built-in rate limiting or need external service?
+4. **Clerk session config** - Verify current idle timeout settings
+5. **Bundle size** - Current bundle size and opportunities for reduction
+6. **User testing** - Validate onboarding flow with 5-10 beta users
 
 ---
 
-## Next Steps for Roadmap Creation
+## Key Takeaway for AMD
 
-Based on this feature landscape research, recommend the following for v3.0 roadmap structure:
+**Production readiness is not feature development—it's defensive UX and trust-building.** The goal is to never surprise users negatively, always provide clear feedback, and handle every edge case gracefully.
 
-### Suggested Phase Ordering
+The difference between "works in dev" and "ready for paying customers":
+- **Dev:** Happy path works, 37 agents generate content
+- **Production:** Every path works OR fails gracefully with clear recovery, users trust the system with their business
 
-**Phase 1: Multi-User Authentication (2 weeks)**
-- **Why first:** Foundation for all team features; nothing else works without it
-- **Addresses:** User login, roles, permissions, invitations
-- **Risk:** Medium—Clerk/Auth.js decision + integration complexity
+AMD's 37-agent complexity makes production readiness even more critical—every agent execution is a potential failure point that needs handling. But AMD's AI intelligence is also an advantage: agents can generate helpful error messages, onboarding guidance, and contextual help.
 
-**Phase 2: Analytics Dashboard (2 weeks)**
-- **Why second:** Immediate user value; can work in parallel with Phase 3
-- **Addresses:** LinkedIn Analytics API, unified dashboard, basic charts
-- **Risk:** Low—LinkedIn API is documented, chart libraries exist
-
-**Phase 3: Multi-Platform Publishing (3 weeks)**
-- **Why third:** Builds on existing content pipeline; can work in parallel with Phase 2
-- **Addresses:** Twitter/X, Instagram integration, cross-platform scheduling
-- **Risk:** HIGH—Multiple OAuth flows, platform-specific quirks, image processing
-
-**Phase 4: Team Collaboration Essentials (2 weeks)**
-- **Why fourth:** Requires Phase 1 (auth) to be complete
-- **Addresses:** Content ownership, audit log, approval workflows
-- **Risk:** Medium—Approval state machine complexity
-
-**Phase 5: Version History (1 week)**
-- **Why fifth:** Quick win on top of existing content schema
-- **Addresses:** Timestamped versions, rollback capability
-- **Risk:** Low—Standard CMS feature
-
-**Phase 6: Automated Reports (2 weeks)**
-- **Why last:** Synthesizes data from all previous phases
-- **Addresses:** Scheduled report generation, email delivery, AI narratives
-- **Risk:** Medium—Cron jobs, email service, report templates
-
-**Total timeline: 12 weeks (3 months)**
-
-### Research Flags for Phases
-
-| Phase | Likely Needs Deeper Research | Reason |
-|-------|------------------------------|--------|
-| **Phase 1** | YES | Auth provider decision (Clerk vs Auth.js), permission architecture |
-| **Phase 2** | NO | Standard analytics patterns, well-documented APIs |
-| **Phase 3** | YES | Twitter/X API v2 specifics, Instagram Meta Business setup, image optimization library |
-| **Phase 4** | NO | Standard approval workflow patterns |
-| **Phase 5** | NO | Version history is well-understood CMS feature |
-| **Phase 6** | YES | Email service selection, report generation library, cron job setup in Convex |
-
-### Critical Path Dependencies
-
-1. **Phase 1 (Auth) MUST complete before Phase 4 (Collaboration)** — Can't attribute content to users without user accounts
-2. **Phase 2 (Analytics) can run in parallel with Phase 3 (Multi-Platform)** — Independent features
-3. **Phase 6 (Reports) depends on Phase 2 (Analytics)** — Can't generate reports without data collection
-4. **Phase 5 (Version History) can happen anytime after Phase 1** — Only needs user attribution from auth system
-
-### Recommended Parallelization
-
-To reduce total timeline from 12 weeks to ~10 weeks:
-
-- **Weeks 1-2:** Phase 1 (Auth) — Sequential, blocking
-- **Weeks 3-5:** Phase 2 (Analytics) + Phase 3 (Multi-Platform) — Parallel work
-- **Weeks 6-7:** Phase 4 (Collaboration) — Sequential after Phase 1
-- **Week 8:** Phase 5 (Version History) — Can overlap with Phase 4 end
-- **Weeks 9-10:** Phase 6 (Reports) — Sequential after Phase 2
-
-**Optimized timeline: 10 weeks (2.5 months)**
+**Budget:** 6-7 weeks for comprehensive production hardening.
+**Confidence:** HIGH that these features are necessary, MEDIUM on exact implementation for AMD's architecture.
 
 ---
 
-## Metadata
+## Sources Summary
 
-**Research date:** 2026-02-05
-**Valid until:** 2026-04-05 (60 days—social platform APIs change frequently)
-**Recommended refresh triggers:**
-- LinkedIn/Twitter/Instagram API changes (monitor developer changelogs)
-- New analytics dashboard patterns (monthly check of Improvado, Sprout Social blogs)
-- User feedback contradicts assumptions
+**Primary (HIGH confidence):**
+- Error handling: [Pencil & Paper UX](https://www.pencilandpaper.io/articles/ux-pattern-analysis-error-feedback), [SaaS UX Design Guide](https://www.designstudiouiux.com/blog/saas-ux-design-the-ultimate-guide/)
+- Loading states: [Fishtank Best Practices](https://www.getfishtank.com/insights/best-practices-for-loading-states-in-nextjs), [Smashing Magazine](https://www.smashingmagazine.com/2020/04/skeleton-screens-react/)
+- Empty states: [Userpilot](https://userpilot.com/blog/empty-state-saas/), [SaaSFrame](https://www.saasframe.io/categories/empty-state)
+- Performance: [Binadox Benchmarking](https://www.binadox.com/blog/saas-performance-benchmarking-industry-standards-for-speed-uptime-and-user-satisfaction/), [Hostinger Stats](https://www.hostinger.com/tutorials/website-load-time-statistics)
+- Security: [Nudge Security](https://www.nudgesecurity.com/post/saas-security-best-practices), [CSA State of SaaS Security](https://cloudsecurityalliance.org/artifacts/state-of-saas-security-report-2025)
+- Accessibility: [WCAG Guide 2026](https://www.accessibility.works/blog/wcag-ada-website-compliance-standards-requirements/), [Medium Guide](https://medium.com/@mhdrahman/wcag-for-saas-owners-the-complete-guide-to-web-accessibility-compliance-in-2026-8eb794a9bcfa)
+- Monitoring: [Mantrix Tools](https://themantrix.com/en/blog/Top-10-Tools-for-Monitoring-SaaS-Availability-and-Uptime-in-2026), [Better Stack](https://betterstack.com/community/comparisons/error-tracking-tools/)
+- Onboarding: [Sales Hacking](https://www.sales-hacking.com/en/post/best-practices-onboarding-saas), [Userpilot](https://userpilot.com/blog/best-user-onboarding-experience/)
 
-**Total sources consulted:** 40+ web sources across 10 search queries
-**Time spent researching:** ~3 hours across analytics, multi-platform, collaboration, version history, and automated reports domains
-**Confidence level:** MEDIUM overall (HIGH for collaboration patterns, MEDIUM for API specifics, LOW for complexity estimates)
+**Secondary (MEDIUM confidence):**
+- Session management: [OWASP](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html), [NIST](https://pages.nist.gov/800-63-4/sp800-63b/session/)
+- Audit logging: [Enterprise Ready](https://www.enterpriseready.io/features/audit-log/), [Frontegg](https://frontegg.com/blog/audit-logs-for-saas-enterprise-customers)
 
 ---
 
-## AMD-Specific Advantages (Competitive Positioning)
-
-AMD's unique 37-agent architecture provides differentiation opportunities that generic tools can't match:
-
-### 1. AI-Powered Analytics Insights
-**Generic tools:** Show charts and raw data
-**AMD advantage:** CMO Agent + Engagement Analyst can generate narrative insights ("Your engagement dropped because you stopped posting on Tuesdays, which historically perform 40% better")
-
-### 2. Smart Content Adaptation
-**Generic tools:** Manual rewrite for each platform
-**AMD advantage:** LinkedIn Creator + Twitter Creator agents already understand platform best practices; can auto-adapt content tone and format
-
-### 3. Automated Report Narratives
-**Generic tools:** Static charts in PDF
-**AMD advantage:** Existing agents (SEO Manager, Budget Pacing, Engagement Analyst) can write comprehensive narratives that synthesize cross-functional insights
-
-### 4. Hybrid Human-AI Workflows
-**Generic tools:** Either manual workflows OR full automation
-**AMD advantage:** Handoff system between agents can be adapted for human approval points, creating flexible hybrid workflows
-
-**Positioning:** AMD isn't just a publishing tool with AI features—it's an **AI Marketing Department with human oversight**. v3.0 brings humans into the loop without losing the AI intelligence advantage.
+**Research date:** 2026-02-09
+**Valid until:** 2026-04-09 (60 days)
+**Total sources:** 30+ across 13 search queries
+**Research confidence:** HIGH overall (MEDIUM for AMD-specific implementation)

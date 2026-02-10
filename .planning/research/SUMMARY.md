@@ -1,345 +1,683 @@
-# Project Research Summary
+# v4.0 Production Readiness Research Summary
 
-**Project:** AMD v3.0 - Multi-User Analytics & Multi-Platform Expansion
-**Domain:** Marketing SaaS - Analytics Dashboards, Social Media Publishing, Team Collaboration
-**Researched:** 2026-02-05
+**Project:** AI Marketing Department (AMD) v4.0
+**Domain:** Marketing SaaS with 37 AI agents — Production deployment and hardening
+**Researched:** 2026-02-09
 **Confidence:** HIGH
+
+---
 
 ## Executive Summary
 
-AMD v3.0 is a transformative milestone that converts a single-user LinkedIn-only marketing tool into a multi-user marketing intelligence platform with cross-platform publishing (LinkedIn, Twitter/X, Instagram) and analytics capabilities. The research reveals three critical insights:
+AMD is a sophisticated marketing SaaS with 37 AI agents, ~223,000 lines of TypeScript/React code, and full features for content creation, social media management, and analytics. The system works perfectly in development but needs comprehensive production hardening across five critical dimensions: **deployment infrastructure** (Vercel + Convex + Clerk production instances), **CI/CD automation** (GitHub Actions), **error resilience** (Sentry monitoring + graceful degradation), **performance optimization** (Core Web Vitals), and **UX polish** (loading states, empty states, onboarding).
 
-**First, authentication retrofit is the highest-risk component.** Adding multi-user auth to an existing system with 37 pre-configured agents and extensive content requires careful data migration to avoid the "orphaned data black hole" where existing records become invisible or leak across users. The solution is a system user pattern plus defense-in-depth authorization in every Convex query.
+**The recommended approach:** Deploy production infrastructure first (Vercel, Clerk production instance, OAuth apps), then layer on defensive UX patterns (error handling, validation, loading states), followed by performance optimization and security hardening. The critical insight is that **80% of production readiness is about handling failure gracefully** — every unhandled error, every blank loading screen, every confusing 500 message erodes user trust faster than features build it.
 
-**Second, the recommended stack minimizes new dependencies.** Use Clerk (not beta Convex Auth) for production-ready authentication with free tier (10K MAU, 100 orgs). Access social APIs directly via Convex actions using native SDKs (twitter-api-v2, facebook-nodejs-business-sdk) rather than wrapper services. Leverage existing Recharts for visualization and add Convex Aggregate component for efficient analytics rollups.
+**Key risks and mitigation:**
+1. **OAuth app approval delays** (1-2 weeks for Instagram/Meta) — mitigate by starting approvals early, having staging fallbacks
+2. **Environment variable configuration errors** (mismatched Clerk keys, leaked secrets) — mitigate with startup validation and comprehensive .env.example documentation
+3. **Rate limit exhaustion** (Claude API, Resend email) — mitigate with exponential backoff, queue systems, and tier upgrades before launch
+4. **Serverless function timeouts** (AI workflows >60s) — mitigate with background job queues (Inngest) and async polling patterns
 
-**Third, multi-platform publishing introduces compounding complexity.** Each platform has different OAuth refresh patterns (LinkedIn 365d, Instagram 60d, Twitter variable), API rate limits (Instagram 200/hr, Twitter tiered pricing $200-$5K/month), and content constraints. Instagram requires Facebook Business account + 60-90 day App Review. Twitter Free tier is write-only (no analytics), forcing Basic tier ($200/mo) minimum. These constraints make phased rollout critical: start with LinkedIn analytics (already authenticated), add Twitter (manageable with caching), defer Instagram until App Review completes.
+**Production readiness timeline:** 6-7 weeks from working prototype to launch-ready, with 2-3 weeks blocked on external approvals (OAuth, DNS propagation).
+
+---
 
 ## Key Findings
 
-### Recommended Stack
+### Recommended Production Stack
 
-**Authentication:** Clerk provides production-ready multi-user auth with official Convex integration. Convex Auth is still beta as of Feb 2026 and unsuitable for production multi-user systems. Clerk's free tier (10,000 MAU, 100 organizations) is sufficient for MVP, and ConvexProviderWithClerk handles automatic user sync to Convex database.
+AMD's development stack (Next.js 16, Convex, Clerk) is production-ready but requires **operational additions** for reliability, monitoring, and deployment automation. The recommended additions total **$0-20/month** (all free tiers until significant scale).
 
-**Social Platform APIs:** Access APIs directly via Convex actions (server-side) to keep credentials secure:
-- **Twitter/X:** twitter-api-v2 library (official community SDK, OAuth 2.0, actively maintained)
-- **Instagram:** facebook-nodejs-business-sdk (official Meta SDK v24.0.1)
-- **LinkedIn:** Direct REST API calls (official library is beta, use fetch for stability)
+**Core technologies (do not change):**
+- **Next.js 16 + React 19** — Already implemented, Turbopack significantly faster than Webpack
+- **Convex** — Serverless backend with real-time sync, handles production at scale
+- **Clerk** — Multi-user auth, requires separate production instance with custom domain
+- **Tailwind 4 + shadcn/ui** — Styling complete, no changes needed
 
-**Analytics Infrastructure:** Expand existing Recharts usage (already at 3.7.0) for charts. Add @convex-dev/aggregate for efficient COUNT/SUM/MAX operations on high-frequency data (37 agents generating tasks/executions constantly). Use stale-while-revalidate caching pattern to balance data freshness with API quota limits.
+**Production additions (deploy infrastructure):**
+- **Vercel** (free tier → $20/mo) — Official Next.js platform, automatic preview deployments, edge CDN, zero-config for Next.js 16
+- **GitHub Actions** (free: 2,000 min/mo) — CI/CD pipeline running lint/test/build on every PR, blocks broken code from production
+- **Sentry** (free: 5K errors/mo) — Industry-standard error tracking with Next.js SDK, React 19 error boundaries, source maps for debugging minified code
+- **Vercel Analytics + Speed Insights** (free) — Real user monitoring for Core Web Vitals, privacy-first (no cookies)
 
-**Core technologies:**
-- Clerk (@clerk/nextjs ^6.37.1) — Multi-user auth with Convex sync, production-ready alternative to beta Convex Auth
-- twitter-api-v2 (^1.18.x) — Official TypeScript SDK for Twitter API v2 with OAuth 2.0 support
-- facebook-nodejs-business-sdk (^24.0.1) — Official Meta SDK for Instagram Graph API publishing
-- @convex-dev/aggregate (latest) — Reactive aggregations for analytics (tokens, costs, engagement metrics)
-- Recharts (3.7.0) — Already in use, extend for multi-platform analytics dashboards
+**Production additions (code quality & testing):**
+- **Vitest** (free) — Test runner 10-20x faster than Jest, native ESM/TypeScript support, better DX than Jest for modern apps
+- **React Testing Library** (free) — Industry standard for component testing, React 19 compatible
+- **ESLint + Prettier + Husky** (free) — Already installed, add pre-commit hooks to enforce quality
+- **npm audit + Dependabot** (free) — Automated dependency vulnerability scanning and PRs
 
-**What NOT to add:** Redis (Convex handles state), Prisma/TypeORM (Convex is database), Axios (native fetch), Socket.io (Convex has real-time), Lodash (modern JS sufficient).
+**Why Vercel over alternatives:**
+- Zero-config deployment for Next.js 16 (official platform)
+- Automatic preview deployments for every PR (staging environments)
+- Built-in environment variable management with "Sensitive" flag encryption
+- Free tier sufficient for 100-500 users (100GB bandwidth, unlimited preview deployments)
+- Seamless Convex integration (deploy Convex → deploy Vercel in sequence)
 
-### Expected Features
+**Why Sentry over alternatives:**
+- Official Next.js SDK with automatic instrumentation (client + server)
+- React 19 error boundary support
+- Source map uploads for debugging production code
+- User context integration (see which user encountered error)
+- Free tier sufficient for MVP (5,000 errors/month, 10,000 performance transactions/month)
 
-**Must have (table stakes):**
-- **Unified analytics dashboard** — Single view combining internal metrics (tokens, costs, agents) with social engagement (LinkedIn, Twitter, Instagram). Date range filtering, CSV export, responsive layout are baseline expectations. Without this, AMD feels like disconnected tools.
-- **Multi-platform publishing** — Single compose interface with platform selection checkboxes, character count validation per platform (LinkedIn 3000, Twitter 280, Instagram 2200), platform-specific image validation (JPEG only for Instagram, size requirements), and error handling per platform (if LinkedIn succeeds but Twitter fails, show clear feedback).
-- **Role-based access control** — 4 pre-defined roles (Admin, Editor, Reviewer, Publisher) with clear permission boundaries. Activity audit log tracking "who changed what when" is table stakes for team accountability. Custom role builders are anti-features for non-technical users.
-- **Version history** — Timestamped versions with rollback capability. Users expect content edit tracking, especially in collaborative environments. Keep last 30 versions or 90 days to avoid storage bloat.
-- **Automated reports** — Weekly/monthly reports emailed automatically with PDF export. Stakeholder-friendly formats for sharing outside tool. Summary insights auto-generated (e.g., "Top performing post: X with Y engagement").
+**Why Vitest over Jest:**
+- 10-20x faster in watch mode (hot module reloading)
+- Native ESM support (Jest only experimental)
+- Zero-config TypeScript (no ts-jest needed)
+- Better error messages and modern DX
+- Next.js 16 uses Vite-compatible Turbopack, so Vitest integrates naturally
 
-**Should have (competitive):**
-- **AI-powered analytics insights** — AMD's 37-agent system enables unique competitive advantage: use CMO Agent + Engagement Analyst to generate narrative insights like "Your engagement dropped 20% because you stopped posting on Tuesdays, which historically perform 40% better." Generic tools show charts; AMD provides actionable recommendations.
-- **Smart content adaptation** — Auto-adjust tone/length/hashtags per platform with AI. LinkedIn Creator + Twitter Creator agents already understand platform best practices; leverage this for recommendations that go beyond generic rules (e.g., "Shorten for Twitter 280 char limit" → actual AI rewrite).
-- **Approval workflows** — Simple (optional review) and Strict (required approval before publish) pre-built workflows. Avoid complex workflow builders; non-technical users need sensible defaults, not configurability.
-- **AI-generated report narratives** — Existing agents (SEO Manager, Budget Pacing, Engagement Analyst) can synthesize cross-functional insights into comprehensive written summaries without additional AI infrastructure.
+**Total monthly cost:** $0 (stays free until growth requires Vercel Pro)
 
-**Defer (v2+):**
-- **TikTok/YouTube publishing** — Video requires transcoding, storage, complex APIs; scope creep for v3.0. Focus on text+image platforms first.
-- **Real-time collaborative editing** — Google Docs-style simultaneous editing requires CRDT complexity, rarely needed; use edit locks + change notifications instead.
-- **Custom analytics formulas** — Non-technical users don't build complex KPIs; provide pre-calculated standard metrics.
-- **Advanced statistical analysis** — p-values and regression analysis are too technical; provide simple trends (up/down arrows, percentages).
-- **Unlimited team members** — Small teams (5-20) are target; cap at 20 users for v3.0, enterprise tiers later.
+**Confidence:** HIGH — All recommendations verified with official documentation and battle-tested at scale.
+
+---
+
+### Expected Production Features
+
+Production readiness for AMD is not about new features but about **defensive UX** and **graceful failure handling**. The gap between "works in development" and "ready for paying customers" is trust-building through polish that becomes invisible when present but glaringly obvious when absent.
+
+#### Must Have (Table Stakes)
+
+**1. Comprehensive Error Handling** (Complexity: Medium)
+Users expect clear, actionable error messages in Spanish, not raw error objects or white screens of death. Research shows **47% of users abandon apps with confusing error messages**.
+
+- **API errors:** Map all error types to Spanish user-friendly messages ("No pudimos completar esta acción. Intenta de nuevo en unos momentos.")
+- **Network errors:** Detect offline state, show retry option, queue actions for later
+- **Validation errors:** Inline, specific feedback ("El título debe tener al menos 5 caracteres")
+- **AI agent failures:** Explain why (rate limit, invalid input, service unavailable) instead of generic "error"
+- **Component crashes:** React Error Boundaries with recovery options (reload button)
+- **Authentication errors:** Clear session expired message with re-login CTA
+
+**2. Professional Loading States** (Complexity: Low-Medium)
+AMD's AI agents can take 10-30 seconds to generate content. **47% of users expect pages to load in under 2 seconds** — skeleton screens reduce perceived wait time.
+
+- **Page transitions:** Skeleton screens matching final layout (no blank white screens)
+- **Agent execution:** Progress indicator with stage updates ("Analizando brief...", "Generando contenido...", "Optimizando SEO...")
+- **Content generation:** Streaming progress for long operations
+- **Form submissions:** Disabled button with loading state (prevent double-submit)
+- **Data fetching:** Skeleton placeholders for cards, tables, lists
+
+**3. Empty State Design** (Complexity: Low-Medium)
+Every user starts with zero content. **80% of users abandon if they don't reach activation within the first week.** Empty states guide users to their first success.
+
+- **Content library empty:** Illustration + "Crea tu primer contenido" button + value proposition
+- **Agents page (no executions):** "Los 37 agentes están listos" + quick-start guide
+- **Campaigns page (no campaigns):** "Crea tu primera campaña" + campaign wizard preview
+- **Analytics (no data):** "Publica contenido para ver estadísticas" + sample dashboard preview
+
+**4. Form Validation & Input Sanitization** (Complexity: Medium)
+Security requirement and UX expectation. Prevents user mistakes, prevents malicious input, reduces support burden.
+
+- **Client-side validation:** Immediate feedback with Zod schemas (title min 5, body min 50)
+- **Server-side validation:** Enforce same rules on Convex mutations (never trust client)
+- **XSS sanitization:** Escape all user-generated content before rendering (use `sanitize-html`)
+- **Rate limiting:** Prevent abuse of AI agent endpoints (expensive) — 10 executions per hour per user
+
+**5. Toast Notifications & Feedback** (Complexity: Low)
+Every action needs immediate confirmation that it succeeded or failed. Use `sonner` library for consistent toast UX.
+
+- **Success toasts:** Auto-dismiss after 3-5 seconds ("Contenido creado exitosamente")
+- **Error toasts:** Require manual dismiss (user reads error)
+- **Action buttons:** "Deshacer", "Ver detalles", "Reintentar"
+- **Max 1 toast at a time:** Queue additional toasts
+
+**6. Session Management & Timeouts** (Complexity: Medium)
+NIST recommends **30-minute inactivity timeout** for security. Clerk handles authentication but verify idle timeout is configured.
+
+- **Idle timeout:** 30 minutes of inactivity triggers warning
+- **Warning modal:** 2-minute warning before auto-logout
+- **Activity tracking:** Mouse, keyboard, scroll events reset timer
+- **Auto-save:** Save drafts before session expires
+- **Multi-tab sync:** Logout in one tab logs out all tabs
+
+**7. Performance Optimization** (Complexity: Medium-High)
+**47% of users expect pages to load in under 2 seconds. 40% abandon after 3 seconds.** Every 100ms delay cuts conversions by ~7%.
+
+- **Core Web Vitals targets:** FCP <1.8s, LCP <2.5s, TTI <3.5s, TBT <300ms, CLS <0.1
+- **Code splitting:** Dynamic imports for heavy components (agent modals)
+- **Image optimization:** Use `next/image` with lazy loading, blur placeholder
+- **Bundle size:** <200KB gzipped (currently unknown — needs measurement)
+
+**8. Mobile Responsiveness** (Complexity: Low — verify existing)
+50%+ of traffic is mobile. AMD already has responsive design, just verify it works.
+
+- **Viewport testing:** iPhone SE (375x667), iPhone 14 (393x852), iPad (768x1024)
+- **Touch targets:** 44x44px minimum for all interactive elements
+- **Forms:** Proper keyboard types (`type="email"`, `inputMode="numeric"`)
+- **No horizontal scrolling:** `overflow-x-hidden`, responsive images
+
+**9. Accessibility Compliance (WCAG 2.2 AA)** (Complexity: Medium-High)
+Legal requirement in EU (since June 2025), U.S. public sector (April 2026). Enterprise customers often require WCAG compliance.
+
+- **Keyboard navigation:** All interactive elements accessible via Tab, Enter, Escape
+- **Screen reader support:** Semantic HTML, ARIA labels, aria-live regions for dynamic content
+- **Color contrast:** 4.5:1 for normal text, 3:1 for large text
+- **Focus indicators:** Visible focus states on all interactive elements
+- **Agent execution modals:** Announce progress to screen readers ("Agente ejecutándose, por favor espera")
+
+**10. Security Hardening** (Complexity: High)
+Production SaaS handles sensitive business data (brand assets, content, API keys). Security breaches destroy trust and business.
+
+- **HTTPS everywhere:** Vercel handles this, verify HSTS headers enabled
+- **Content Security Policy:** CSP headers to prevent XSS
+- **Rate limiting:** Prevent brute-force, DDoS, API abuse (use Upstash Redis)
+- **Input sanitization:** Escape all user content, validate types
+- **Dependency scanning:** Regular `npm audit`, automated scanning with Dependabot
+
+**11. Production Monitoring & Error Tracking** (Complexity: Medium)
+You can't fix what you can't see. Production issues must be detected and resolved before users complain.
+
+- **Error tracking:** Sentry for unhandled exceptions, API errors, agent failures
+- **Performance monitoring:** Vercel Analytics for Core Web Vitals, page load times, API latency
+- **AI agent analytics:** Custom dashboard tracking agent execution success rate, tokens used, costs
+- **Alerting thresholds:** Error rate >1% → Slack notification, Agent failure rate >5% → email
+
+**12. Audit Logging** (Complexity: Medium-High)
+Enterprise customers **require** audit logs for compliance (SOC 2, GDPR). Many B2B buyers won't consider SaaS without it.
+
+- **Authentication events:** Login attempts, logout, session expired (1 year retention)
+- **Content actions:** Created, edited, deleted, published (2 years retention)
+- **Agent executions:** Agent ID, task type, input, result, tokens used (1 year retention)
+- **Export functionality:** GDPR right to data portability (CSV export)
+
+#### Should Have (Differentiators)
+
+**1. Comprehensive Onboarding Flow** (Complexity: Medium-High)
+Research shows **75% of users abandon products within a week without clear onboarding**. Effective onboarding reduces churn by 50%+. For AMD with 37 agents, onboarding is critical to prevent overwhelm.
+
+- **Step 1: Welcome & Goal Selection** — "¿Qué quieres lograr primero?" (crear contenido, analizar audiencia, gestionar equipo)
+- **Step 2: Simplified Brand Setup** — Name, description, tone (professional/casual/friendly/technical)
+- **Step 3: First Content Creation (Interactive)** — Generate first LinkedIn post with guided walkthrough
+- **Step 4: Success Moment** — Confetti animation + "¡Listo! Ya puedes usar AMD" + next steps
+
+**2. Contextual In-App Help** (Complexity: Medium)
+Reduces support burden, empowers users to self-serve. Non-technical users need help understanding 37 agents.
+
+- **Help widget:** Floating button (bottom-right) with search, videos, guides
+- **Contextual tooltips:** Hover/click on `?` icons ("Este agente se especializa en...")
+- **Video tutorials:** Short (<2 min) Loom videos for key features
+- **Cmd+K help search:** "¿Cómo ejecuto un agente?"
+
+**3. Smart Defaults & Personalization** (Complexity: Low-Medium)
+Reduces cognitive load, makes product feel intuitive. AMD has many options — smart defaults prevent overwhelm.
+
+- **Agent execution:** Remember last agent used, suggest agents based on content type
+- **Content tone:** Default to brand voice, learn preferred tone over time
+- **Dashboard view:** Show most-used department, customizable widget layout
+
+**4. Keyboard Shortcuts & Power User Features** (Complexity: Low-Medium)
+Makes power users efficient, builds product love and advocacy.
+
+- **Cmd/Ctrl + K:** Command palette (global)
+- **N:** New content (on /content page)
+- **E:** Execute selected agent (on /agents page)
+- **?:** Show shortcuts help (global)
+
+**5. Data Export & Portability (GDPR)** (Complexity: Medium)
+GDPR right to data portability (required for EU users). Builds trust — users own their data.
+
+- **User data export:** JSON (profile, preferences, settings)
+- **Content export:** CSV + JSON (all posts, drafts, metadata)
+- **Agent executions export:** CSV (execution history, results)
+- **7-day download link:** Email with secure S3 URL
+
+#### Defer to v2+ (Anti-Features)
+
+**1. Real-Time Collaborative Editing** — High complexity (CRDT, WebSockets), AMD is not a document editor
+**2. Custom AI Model Selection** — Non-technical users don't understand model differences (Sonnet vs Opus)
+**3. White-Label / Custom Branding** — Massive complexity, target market is SMBs not agencies
+**4. Multi-Language UI (Beyond Spanish/English)** — Translation overhead for 37 agent descriptions
+**5. Native Mobile Apps** — Huge development burden, responsive web app sufficient
+**6. Video Content Generation** — AMD agents are text-focused, scope creep
+**7. Advanced Analytics (ML-Powered Predictions)** — Requires significant data volume to be accurate
+**8. Custom Agent Builder** — Target audience lacks prompt engineering skills
+
+---
 
 ### Architecture Approach
 
-**Reactive queries with server-side security.** Convex's real-time query system already powers AMD's dashboard (37 agents, task monitoring). Extend this pattern for multi-user auth by implementing defense-in-depth: middleware checks session (first line), page components verify auth (second line), Convex functions enforce ownership (third line). Never rely on middleware alone due to CVE-2025-29927 (Next.js <15.2.3 bypass vulnerability).
-
-**OAuth via Convex actions with secure token storage.** All social API calls must happen server-side in Convex actions to keep client secrets secure. Store OAuth tokens encrypted in Convex database with refresh metadata (expiresAt, refreshableUntil, lastRefreshed). Implement proactive refresh cron (every 6 hours) to prevent silent publishing failures when tokens expire.
-
-**Stale-while-revalidate caching for analytics.** Social APIs have rate limits (Instagram 200/hr, LinkedIn ~500-1000/day, Twitter 15K reads/month on Basic tier). Implement dynamic TTL based on post age: hot content (<24hrs) = 5min cache, warm (1-7 days) = 1hr cache, cold (>7 days) = 24hr cache. Background cron refreshes hot metrics every 15 minutes to keep dashboard current without exhausting quotas.
+AMD uses a **three-tier environment strategy** (Development, Staging, Production) with separate deployments for Convex backend, Clerk authentication, and OAuth integrations. The architecture ensures **environment isolation** with no shared resources between dev/staging/prod.
 
 **Major components:**
-1. **Authentication Layer (Clerk)** — Wraps app with ClerkProvider + ConvexProviderWithClerk, handles OAuth flow, syncs users to Convex via webhook, provides ctx.auth.getUserIdentity() in backend
-2. **Social Publishing Engine (Convex actions)** — OAuth token management, platform-specific adapters (LinkedIn/Twitter/Instagram), rate limit coordination, scheduled publishing cron
-3. **Analytics Aggregation (Convex Aggregate)** — Reactive COUNT/SUM/MAX for internal metrics (tokens, costs), multi-platform engagement rollups, efficient O(1) reads without table scans
-4. **Content Pipeline Extension** — Extend existing Draft/Review/Approved states with multi-platform targeting, platform-specific validation, cross-platform scheduling
-5. **Guided UX State Machine** — Headless onboarding flow with Convex persistence, conditional step visibility, resume capability, analytics tracking
+
+1. **Frontend (Next.js 16 on Vercel)**
+   - Development: `localhost:3000`
+   - Staging: Vercel Preview Deployments (`amd-git-{branch}.vercel.app`)
+   - Production: Custom domain (`app.amd.com`)
+   - Responsibility: UI rendering, client-side routing, server components
+
+2. **Backend (Convex Serverless)**
+   - Development: Convex dev deployment (`dev-xxx.convex.cloud`)
+   - Staging: Convex preview deployment (one per PR branch)
+   - Production: Convex production deployment (`prod-xxx.convex.cloud`)
+   - Responsibility: Real-time database, queries/mutations, AI agent execution
+
+3. **Authentication (Clerk)**
+   - Development: Clerk Development Instance (`pk_test_...`)
+   - Staging: Shared Development Instance (same as dev)
+   - Production: Clerk Production Instance (`pk_live_...`) with custom domain (`clerk.amd.com`)
+   - Responsibility: User authentication, session management, JWT validation
+
+4. **OAuth Providers (LinkedIn, Twitter, Instagram)**
+   - Development: OAuth dev apps with `http://localhost:3000` callbacks
+   - Staging: OAuth staging apps with `https://staging.amd.com` callbacks
+   - Production: OAuth production apps with `https://app.amd.com` callbacks
+   - Responsibility: Social platform integrations, content publishing
+
+5. **CI/CD Pipeline (GitHub Actions)**
+   - Trigger: Pull request (staging), push to main (production)
+   - Jobs: Lint → Type check → Test → Deploy Convex → Deploy Vercel
+   - Responsibility: Automated quality checks, deployment orchestration
+
+**Key architectural patterns:**
+- **Environment-specific OAuth apps:** Prevents localhost redirects in production
+- **Sequential deployment:** Deploy Convex first (generates types) → then Next.js build
+- **Preview deployments per PR:** Every branch gets isolated Convex + Vercel deployment
+- **Separate Clerk instances:** Development (`pk_test_`) vs Production (`pk_live_`) with different domain restrictions
+
+**Deployment dependency graph:**
+1. Create Convex production deployment → Generate deploy key
+2. Create Clerk production instance → Configure custom domain (24-48 hour DNS propagation)
+3. Create OAuth production apps → Submit for approval (1-2 weeks for Instagram/Meta)
+4. Configure Vercel project → Set environment variables (production + preview scopes)
+5. Setup GitHub Actions → Test CI/CD pipeline with preview deployments
+6. First production deployment → Verify OAuth flows work end-to-end
+
+**Critical path blockers:** Clerk DNS propagation (24-48 hours), OAuth app approvals (1-2 weeks for Meta), custom domain DNS (1-48 hours).
+
+**Estimated total time to production:** 2-3 weeks (mostly waiting for external approvals).
+
+---
 
 ### Critical Pitfalls
 
-1. **Data Ownership Black Hole (CRITICAL)** — Adding auth to existing system with 37 agents and content creates "orphaned data" where existing records have no userId. Prevention: Create system user during first auth setup, backfill all existing data to system user, implement requireAuth() + requireOwnership() helpers in every Convex query/mutation. Use migration-safe filters that handle undefined userId gracefully.
+Based on comprehensive production deployment research, these are the **top 5 most dangerous pitfalls** that will break AMD in production (ordered by severity):
 
-2. **OAuth Token Refresh Hell (CRITICAL)** — Each platform has different expiry (LinkedIn 365d, Instagram 60d, Twitter variable). Silent publishing failures occur when tokens expire without refresh. Prevention: Design token schema with refresh metadata (expiresAt, refreshableUntil, lastRefreshed, refreshFailures), implement proactive cron (every 6 hours) to refresh expiring tokens, notify users after 3 failed refresh attempts, encrypt tokens at rest with AES-256-GCM.
+**1. Clerk API Keys in Wrong Environment (CRITICAL)**
+**What breaks:** Production keys (`pk_live_`, `sk_live_`) only work with configured production domains. Using development keys in production causes complete authentication failure — no users can sign in.
 
-3. **Instagram Business API Gatekeeping (HIGH)** — Requires Facebook Business account, Instagram Business/Creator account linked to Facebook Page, App Review with 60-90 day approval process. Starting development without understanding requirements leads to 2-3 month delays. Prevention: Start App Review process Week 1 of v3.0, implement Instagram-specific validations (account type check, Facebook Page linkage, permission verification), build fallback manual workflow for users during approval wait.
+**How to avoid:**
+- Use Vercel environment variables interface, never copy `.env.local`
+- Create separate Clerk applications for dev/staging/prod
+- Implement startup validation: throw error if production uses `pk_test_` keys
+- Document key format requirements in `.env.example`
 
-4. **Twitter API Pricing Cliff (HIGH)** — Free tier is write-only (no analytics). Basic tier ($200/mo) provides read access but 15K reads/month is insufficient for polling analytics dashboards. Pro tier ($5,000/mo) is cost-prohibitive. Prevention: Clarify feature scope early (Free = demo only), implement aggressive caching (5min TTL for hot content), track API usage with quota dashboard, provide Twitter-free option for budget-constrained users.
+**2. OAuth Callback URLs Point to Localhost (CRITICAL)**
+**What breaks:** LinkedIn, Twitter, Instagram OAuth configured with `http://localhost:3000/api/auth/callback/*` in production. After users authenticate, they're redirected to localhost → "connection refused" errors.
 
-5. **Analytics Data Freshness vs Cost (HIGH)** — Real-time polling exhausts API quotas (Instagram 200/hr, LinkedIn ~500/day, Twitter 15K/month). Excessive caching makes dashboard stale. Prevention: Implement tiered caching (hot/warm/cold), stale-while-revalidate pattern (return cached + background refresh), batch refresh cron for recent posts, API quota monitoring dashboard.
+**How to avoid:**
+- Register production HTTPS redirect URIs in all OAuth provider dashboards
+- Use environment variables for callback URLs: `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/callback/linkedin`
+- Test OAuth flow on Vercel preview deployments before production
+- Create OAuth app setup checklist documenting all three providers
+
+**3. Convex Deployment URL Not Set in Next.js (CRITICAL)**
+**What breaks:** Next.js app uses development Convex deployment URL in production. All database queries fail, real-time subscriptions never connect, app shows infinite loading spinners.
+
+**How to avoid:**
+- Run `npx convex deploy --prod` to create production deployment
+- Set `NEXT_PUBLIC_CONVEX_URL` in Vercel to production Convex URL (not dev URL)
+- Verify environment variable is set for "Production" scope in Vercel (not just "Preview")
+- Document deployment URLs in `.env.example` with comments
+
+**4. Environment Variables with NEXT_PUBLIC_ Leak Secrets (CRITICAL)**
+**What breaks:** Developer prefixes API keys with `NEXT_PUBLIC_` thinking it's a naming convention. Next.js bakes these into client JavaScript bundle → secrets exposed in page source.
+
+**How to avoid:**
+- **NEVER** prefix secrets with `NEXT_PUBLIC_` (no `NEXT_PUBLIC_ANTHROPIC_API_KEY`, `NEXT_PUBLIC_RESEND_API_KEY`)
+- Only use `NEXT_PUBLIC_` for truly public values (app URL, Clerk publishable key, Convex URL)
+- Use Server Actions or API routes for sensitive operations
+- Add CI check: fail build if `NEXT_PUBLIC_.*KEY` or `NEXT_PUBLIC_.*SECRET` detected in .env
+
+**5. Claude API Rate Limits Hit in Production (HIGH)**
+**What breaks:** 37 AI agents making Claude API calls with no rate limiting. During production traffic spikes, app hits Anthropic rate limits (Tier 1: 50 RPM), causing 429 errors → all AI features break simultaneously.
+
+**How to avoid:**
+- Implement exponential backoff with jitter for all Claude API calls
+- Use queue system (Inngest, BullMQ) for background agent execution with concurrency limits
+- Upgrade to Tier 4 before launch ($400 deposit → 4000 RPM vs Tier 1's 50 RPM)
+- Monitor rate limit usage and alert when approaching limits
+- Implement graceful degradation (show cached result or "AI temporarily unavailable")
+
+**Additional high-priority pitfalls:**
+- **Convex Schema Changes Without Migration (CRITICAL):** Changing field types or adding required fields breaks production data → use two-deploy pattern (optional first, migrate data, then required)
+- **Clerk Webhook Signature Verification Disabled (CRITICAL):** Attackers can forge webhook payloads to inject admin accounts → always verify with Svix library
+- **Resend Email Rate Limits Exceeded (HIGH):** 2 requests/second default → use queue with rate limiting, request increase before launch
+- **Vercel Serverless Function Timeouts (HIGH):** Hobby plan: 10s, Pro: 60s timeout → use background jobs for long AI workflows, configure `maxDuration` for routes
+
+---
 
 ## Implications for Roadmap
 
-Based on research, suggested phase structure:
+Based on research, suggested **6-phase structure** for v4.0 Production Readiness:
 
-### Phase 1: Multi-User Authentication Foundation (2 weeks)
-**Rationale:** Blocking dependency for all team features. Must establish user isolation, permission boundaries, and data ownership before building on top. Authentication retrofit is highest-risk component (data migration complexity) so tackle early when codebase changes are easiest to manage.
+### Phase 1: Environment Setup & Infrastructure (Week 1-2)
 
-**Delivers:** Clerk integration, user/organization schemas, invitation system, 4 pre-defined roles (Admin/Editor/Reviewer/Publisher), permission middleware, system user for pre-existing data, migration script to backfill userId on all existing agents/content/tasks.
+**Rationale:** Nothing works in production without correct environment configuration. This is the foundation layer that unblocks all other work. Must happen first because deployment infrastructure (Vercel, Clerk, OAuth apps) has external dependencies with multi-day wait times (DNS propagation, OAuth approvals).
 
-**Addresses (from FEATURES.md):**
-- Role-based access control (table stakes)
-- User invitation system (table stakes)
-- User profiles (table stakes)
+**Delivers:**
+- Vercel project configured with production + preview environments
+- Clerk production instance with custom domain (`clerk.amd.com`)
+- OAuth production apps for LinkedIn, Twitter, Instagram (submitted for approval)
+- Convex production deployment with deploy keys
+- GitHub Actions CI/CD pipeline (lint → test → deploy)
+- Environment variable matrix documented and validated
 
-**Avoids (from PITFALLS.md):**
-- Data ownership black hole (orphaned data)
-- Next.js middleware bypass (CVE-2025-29927) via defense-in-depth
-- Convex authorization without RLS (requireAuth in every handler)
+**Addresses features:**
+- Environment variable security (prevents secret leaks)
+- OAuth callback URL management (prevents localhost redirects)
+- CI/CD automation (GitHub Actions)
 
-**Research flags:** YES — Clerk vs Auth.js decision requires architecture deep-dive in phase planning. Convex user sync patterns need validation.
+**Avoids pitfalls:**
+- #1 (Clerk API keys in wrong environment)
+- #2 (OAuth callback URLs point to localhost)
+- #3 (Convex deployment URL not set)
+- #4 (NEXT_PUBLIC_ secret leaks)
+- #15 (Instagram OAuth HTTPS requirement)
 
----
+**Blockers:**
+- Clerk DNS propagation (24-48 hours)
+- OAuth app approvals (1-2 weeks for Instagram/Meta)
+- Custom domain DNS (1-48 hours)
 
-### Phase 2: LinkedIn Analytics Integration (2 weeks)
-**Rationale:** LinkedIn OAuth already working in v2.0, so extending to Analytics API is lower risk than new platform integrations. Delivers immediate user value (data visibility) and establishes analytics patterns for Twitter/Instagram later. Can work in parallel with Phase 3 multi-platform publishing.
-
-**Delivers:** LinkedIn Analytics API integration, unified dashboard showing internal metrics (tokens, costs, agents) + LinkedIn engagement (impressions, reactions, comments), date range filtering, CSV export, basic Recharts expansion (line charts for trends, bar charts for comparisons).
-
-**Uses (from STACK.md):**
-- Recharts 3.7.0 (already installed, expand usage)
-- Convex Aggregate component (COUNT/SUM for analytics)
-- Stale-while-revalidate caching pattern
-
-**Addresses (from FEATURES.md):**
-- Unified analytics dashboard (table stakes)
-- Date range filtering (table stakes)
-- Engagement metrics (table stakes)
-- Export to CSV (table stakes)
-
-**Avoids (from PITFALLS.md):**
-- Analytics data freshness vs cost trap (5min cache TTL for hot content)
-- LinkedIn rate limit headers ignored (parse X-RateLimit-Remaining)
-
-**Research flags:** NO — Standard analytics patterns, well-documented LinkedIn API.
+**Estimated duration:** 2 weeks (mostly waiting for external approvals)
 
 ---
 
-### Phase 3: Multi-Platform Publishing (Twitter + Instagram) (3 weeks)
-**Rationale:** Headline feature for v3.0. Expands AMD from LinkedIn-only to 3 platforms. Twitter integration is straightforward (twitter-api-v2 SDK, OAuth 2.0). Instagram is complex (Facebook Business requirement, App Review 60-90 days) but can be developed in parallel. Can work in parallel with Phase 2 analytics.
+### Phase 2: Error Handling & Validation (Week 3)
 
-**Delivers:** Twitter OAuth + publishing, Instagram OAuth + publishing (pending App Review), single compose interface with platform selection, character count validation per platform, image requirements validation (JPEG-only for Instagram), platform-specific previews, cross-platform scheduling, error handling per platform.
+**Rationale:** After infrastructure is deployed, the next critical layer is **defensive UX** — preventing errors from reaching users and handling failures gracefully. This comes before features because every unhandled error destroys user trust faster than features build it.
 
-**Uses (from STACK.md):**
-- twitter-api-v2 (^1.18.x) for Twitter publishing
-- facebook-nodejs-business-sdk (^24.0.1) for Instagram publishing
-- Convex actions for server-side OAuth + API calls
-- Convex cron for scheduled publishing (every 5 min check)
+**Delivers:**
+- Global error handler (API, network, component crashes)
+- Spanish error messages dictionary (user-friendly translations)
+- React Error Boundaries with recovery options
+- Form validation (Zod schemas client + server)
+- Input sanitization (XSS prevention with `sanitize-html`)
+- Toast notification system (`sonner` integration)
+- Session timeout detection (30-minute idle timeout)
 
-**Implements (from ARCHITECTURE.md):**
-- OAuth via Convex actions with secure token storage
-- Platform-specific content adapters
-- Rate limit coordination (Instagram 200/hr, Twitter tiered)
+**Addresses features:**
+- Comprehensive error handling (table stakes)
+- Form validation & input sanitization (table stakes)
+- Toast notifications & feedback (table stakes)
+- Session management & timeouts (table stakes)
 
-**Addresses (from FEATURES.md):**
-- Single compose interface (table stakes)
-- Platform-specific previews (table stakes)
-- Character count per platform (table stakes)
-- Image requirements validation (table stakes)
-- Cross-platform scheduling (table stakes)
+**Avoids pitfalls:**
+- No specific pitfall, but prevents 80% of production issues
+- Implements foundation for monitoring (Phase 5)
 
-**Avoids (from PITFALLS.md):**
-- OAuth token refresh hell (proactive cron every 6 hours)
-- Instagram Business API gatekeeping (start App Review Week 1)
-- Twitter API pricing cliff (clarify $200/mo minimum for analytics)
-- Multi-platform content format mismatch (validate before publish)
-
-**Research flags:** YES — Twitter API v2 specifics, Instagram Meta Business setup, image optimization library. Platform-specific quirks need validation during phase planning.
+**Estimated duration:** 1 week
 
 ---
 
-### Phase 4: Team Collaboration Essentials (2 weeks)
-**Rationale:** Requires Phase 1 (auth) to be complete. With users and roles established, now add collaboration workflows. Builds on existing content schema with ownership tracking and approval states.
+### Phase 3: Loading States & UX Polish (Week 4)
 
-**Delivers:** Content ownership (createdBy field), activity audit log (who changed what when), team member list with roles, role change capability (Admin promote/demote), approval workflows (Simple: optional review, Strict: required approval before publish).
+**Rationale:** After error handling prevents negative experiences, add positive feedback loops. Loading states and empty states guide users through success paths and reduce perceived wait time for AI operations (10-30 seconds).
 
-**Uses (from STACK.md):**
-- Convex mutations with permission checks
-- Clerk user management
+**Delivers:**
+- Skeleton screens for all pages (no blank white screens)
+- Agent execution progress indicators ("Analizando brief...", "Generando contenido...")
+- Empty state designs for all pages (content, agents, campaigns, analytics)
+- Loading states for all buttons/forms (prevent double-submit)
+- Professional animations (Framer Motion integration)
 
-**Implements (from ARCHITECTURE.md):**
-- Content Pipeline Extension (Draft → Review → Approved → Published states)
-- Permission middleware (role-based access)
+**Addresses features:**
+- Professional loading states (table stakes)
+- Empty state design (table stakes)
 
-**Addresses (from FEATURES.md):**
-- Content ownership (table stakes)
-- Activity audit log (table stakes)
-- Team member list (table stakes)
-- Role change capability (table stakes)
-- Approval workflows (differentiator)
+**Avoids pitfalls:**
+- No specific pitfall, but improves user retention
+- Addresses research finding: 80% of users abandon without clear activation path
 
-**Avoids (from PITFALLS.md):**
-- Role creep in RBAC (start with 4 minimal roles, use permission flags not new roles)
-
-**Research flags:** NO — Standard approval workflow patterns.
+**Estimated duration:** 1 week
 
 ---
 
-### Phase 5: Version History (1 week)
-**Rationale:** Quick win on top of existing content schema. Provides immediate team collaboration value. Can happen after Phase 1 (needs user attribution) but independent of other features.
+### Phase 4: Performance Optimization (Week 5)
 
-**Delivers:** Timestamped versions on content edits, version browsing (list of versions), rollback capability (restore from version), keep last 30 versions or 90 days retention.
+**Rationale:** After UX polish, optimize for speed. Research shows **47% of users expect pages to load in <2 seconds, 40% abandon after 3 seconds**. Every 100ms delay cuts conversions by ~7%.
 
-**Addresses (from FEATURES.md):**
-- Timestamped versions (table stakes)
-- Rollback capability (table stakes)
-- Version browsing (table stakes)
+**Delivers:**
+- Lighthouse audit baseline (measure current performance)
+- Code splitting (dynamic imports for heavy components)
+- Image optimization (`next/image` with lazy loading)
+- Bundle size analysis and reduction (<200KB gzipped target)
+- API response caching (Convex queries)
+- Core Web Vitals targets: LCP <2.5s, FCP <1.8s, TTI <3.5s
 
-**Avoids (from PITFALLS.md):**
-- Onboarding state edge cases (resume from last step, allow re-visiting skipped steps)
+**Addresses features:**
+- Performance optimization (table stakes)
+- Mobile responsiveness verification (table stakes)
 
-**Research flags:** NO — Version history is well-understood CMS feature.
+**Avoids pitfalls:**
+- No specific pitfall, but improves conversion rates
+- Implements Vercel Analytics + Speed Insights for monitoring
+
+**Estimated duration:** 1 week
 
 ---
 
-### Phase 6: Automated Reports (2 weeks)
-**Rationale:** Caps off v3.0 with automation. Synthesizes data from Phase 2 (analytics) and Phase 3 (multi-platform). Requires analytics data collection to be functional first.
+### Phase 5: Security & Monitoring (Week 6)
 
-**Delivers:** Weekly report generation (cron job), email delivery to Admin users, PDF export with charts, summary metrics (total posts, total engagement, top post), AI-generated narratives (use existing CMO Agent to write summary).
+**Rationale:** After performance optimization, layer on security hardening and production monitoring. This phase implements observability needed to detect and resolve issues before users complain.
 
-**Uses (from STACK.md):**
-- Convex cron jobs (scheduled report generation)
-- Email service integration (SendGrid, Mailgun, or similar)
-- Recharts for chart-to-image conversion in PDFs
+**Delivers:**
+- Rate limiting (Upstash Redis for API abuse prevention)
+- CSP headers (Content Security Policy for XSS prevention)
+- Dependency audit and updates (`npm audit`, Dependabot)
+- Sentry error tracking setup (Next.js SDK + React 19 error boundaries)
+- Audit log implementation (authentication, content, agent executions)
+- Data export functionality (GDPR compliance)
+- AI agent analytics dashboard (success rate, tokens, costs)
 
-**Implements (from ARCHITECTURE.md):**
-- Scheduled analytics fetching (cron pattern)
-- Report generation engine
+**Addresses features:**
+- Security hardening (table stakes)
+- Production monitoring & error tracking (table stakes)
+- Audit logging (table stakes for enterprise)
+- Data export & portability (should have for GDPR)
 
-**Addresses (from FEATURES.md):**
-- Scheduled report generation (table stakes)
-- Email delivery (table stakes)
-- PDF export (table stakes)
-- Summary insights (table stakes)
-- AI-generated narratives (differentiator)
+**Avoids pitfalls:**
+- #6 (Clerk webhook signature verification disabled)
+- #7 (Claude API rate limits hit in production)
+- #8 (Resend email rate limits exceeded)
+- Implements foundation for alerting
 
-**Avoids (from PITFALLS.md):**
-- Social media webhook reliability (implement queue + idempotency)
+**Estimated duration:** 1 week
 
-**Research flags:** YES — Email service selection, report generation library (PDF with charts), cron job setup in Convex need deeper research during phase planning.
+---
+
+### Phase 6: Onboarding & Polish (Week 7)
+
+**Rationale:** Final polish layer before launch. Onboarding is **critical** for AMD with 37 agents — 75% of users abandon without clear onboarding. This phase focuses on reducing time-to-first-value and building product love.
+
+**Delivers:**
+- Onboarding flow (4 steps: Welcome → Brand setup → First content → Success)
+- Help widget with search (contextual tooltips, video tutorials)
+- Accessibility audit (WCAG 2.2 AA compliance)
+- Keyboard shortcuts (Cmd+K command palette, power user features)
+- Mobile responsiveness verification (iPhone, iPad, Android viewports)
+- Smart defaults & personalization (remember last agent, default tone)
+
+**Addresses features:**
+- Comprehensive onboarding flow (differentiator)
+- Contextual in-app help (differentiator)
+- Accessibility compliance (table stakes for enterprise)
+- Keyboard shortcuts (differentiator for power users)
+- Smart defaults (differentiator)
+
+**Avoids pitfalls:**
+- Addresses research finding: 75% abandon without onboarding
+- Improves activation rate and reduces churn
+
+**Estimated duration:** 1 week
 
 ---
 
 ### Phase Ordering Rationale
 
-**Sequential dependencies:**
-- Phase 1 (Auth) MUST complete before Phase 4 (Collaboration) — can't attribute content to users without user accounts
-- Phase 6 (Reports) depends on Phase 2 (Analytics) — can't generate reports without data collection
+**Why this order:**
+1. **Infrastructure first (Phase 1)** — Nothing deploys without Vercel, Clerk, OAuth configured. External dependencies (DNS, approvals) have multi-day wait times → start early.
+2. **Error handling before features (Phase 2)** — Prevents 80% of production issues, builds foundation for monitoring. Defensive UX more important than additive features.
+3. **UX polish before performance (Phase 3)** — Users need feedback during loading (skeleton screens, progress indicators) before we optimize load times.
+4. **Performance before security (Phase 4)** — Speed affects all users, security affects specific attack vectors. Optimize experience first.
+5. **Security + monitoring together (Phase 5)** — Monitoring detects security issues, so implement together. Audit logs and rate limiting are security + compliance requirements.
+6. **Onboarding last (Phase 6)** — Polished onboarding only works if underlying app is reliable. Don't onboard users to broken experience.
 
-**Parallelizable work:**
-- Phase 2 (Analytics) + Phase 3 (Multi-Platform) can run in parallel — independent features, different platform APIs
-- Phase 5 (Version History) can overlap with Phase 4 end — only needs user attribution from Phase 1
+**Dependencies discovered:**
+- Clerk custom domain (Phase 1) must complete before production auth works
+- OAuth app approvals (Phase 1) must complete before production OAuth works
+- Error boundaries (Phase 2) required for Sentry integration (Phase 5)
+- Sentry setup (Phase 5) required for alerting on rate limits
 
-**Risk mitigation through ordering:**
-- Auth first (highest risk, hardest to retrofit later)
-- LinkedIn analytics second (builds on working OAuth, establishes patterns)
-- Multi-platform third (complex but can leverage analytics patterns)
-- Collaboration fourth (depends on users existing)
-- Version history fifth (quick win, low complexity)
-- Reports last (synthesizes all previous work)
+**How this avoids pitfalls:**
+- Phase 1 addresses all CRITICAL environment configuration pitfalls (#1-4)
+- Phase 2 implements validation to prevent bad data from reaching production
+- Phase 5 implements rate limiting and monitoring to detect/prevent API limit issues (#7-8)
+- Sequential deployment (Convex → Vercel) prevents type generation race conditions
 
-**Optimized timeline:** 10 weeks (2.5 months) if Phase 2 and Phase 3 run in parallel (weeks 3-5). Sequential would be 12 weeks.
+---
 
 ### Research Flags
 
-**Phases likely needing deeper research during planning:**
-- **Phase 1 (Auth):** Clerk vs Auth.js decision needs architecture evaluation, Convex user sync webhook patterns, permission architecture design, data migration script validation
-- **Phase 3 (Multi-Platform):** Twitter API v2 specifics (rate limits per tier, OAuth refresh flow), Instagram Meta Business setup friction points, image optimization library selection (sharp vs jimp), platform-specific error handling edge cases
-- **Phase 6 (Reports):** Email service selection (SendGrid vs Mailgun vs AWS SES), PDF generation library with charts (puppeteer vs pdfkit), Convex cron job scheduling patterns
+**Phases needing deeper research during planning:**
+- **Phase 4 (Performance):** Bundle size analysis needed to identify optimization opportunities. Current bundle size unknown.
+- **Phase 5 (Security):** Rate limiting strategy needs API usage projections (37 agents × avg requests/min × concurrent users).
+- **Phase 6 (Accessibility):** WCAG 2.2 AA manual testing needs screen reader verification (NVDA, JAWS, VoiceOver).
 
 **Phases with standard patterns (skip research-phase):**
-- **Phase 2 (Analytics):** Standard analytics dashboard patterns, well-documented LinkedIn Analytics API
-- **Phase 4 (Collaboration):** Standard approval workflow state machines, established RBAC patterns
-- **Phase 5 (Version History):** Well-understood CMS version tracking patterns
+- **Phase 1 (Infrastructure):** Well-documented Vercel + Convex + Clerk deployment patterns, official docs comprehensive.
+- **Phase 2 (Error Handling):** Industry-standard patterns (React Error Boundaries, Zod validation, toast notifications).
+- **Phase 3 (Loading States):** Established UX patterns (skeleton screens, progress indicators) with proven libraries.
+
+---
 
 ## Confidence Assessment
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Stack | HIGH | Clerk verified with official Convex docs, social SDKs cross-referenced with platform official guides, analytics libraries evaluated from community consensus |
-| Features | HIGH | Table stakes validated across 10+ marketing SaaS tools (Hootsuite, Sprout Social, Buffer, Planable), differentiators aligned with AMD's unique 37-agent advantage |
-| Architecture | HIGH | Convex real-time patterns verified in existing AMD codebase, OAuth security best practices from official LinkedIn/Meta/Twitter docs, caching strategies from 2025-2026 guides |
-| Pitfalls | HIGH | CVE-2025-29927 verified in security database, Instagram App Review timeline confirmed with 2026 developer guides, Twitter pricing validated with official X API docs, data migration risks cross-referenced with multi-tenant isolation guides |
+| **Stack (deployment)** | HIGH | Vercel is official Next.js platform, proven at scale. Convex production docs comprehensive. Clerk production deployment well-documented. |
+| **Stack (monitoring)** | HIGH | Sentry Next.js SDK mature, React 19 support confirmed. Vercel Analytics well-documented. |
+| **Stack (testing)** | HIGH | Vitest proven faster than Jest, strong TypeScript + React 19 support, growing community. |
+| **Features (table stakes)** | HIGH | Error handling, loading states, validation are industry best practices with multiple authoritative sources. |
+| **Features (differentiators)** | MEDIUM | Onboarding patterns well-researched but AMD-specific implementation needs user testing. |
+| **Architecture (environment strategy)** | HIGH | Three-tier strategy is standard practice, Convex preview deployments documented, Clerk multi-instance well-supported. |
+| **Architecture (OAuth callbacks)** | MEDIUM | Provider docs comprehensive but dated in some cases. Instagram/Meta approval process unpredictable (1-2 weeks). |
+| **Pitfalls (environment config)** | HIGH | All CRITICAL pitfalls verified with official documentation (Clerk, Convex, Next.js). |
+| **Pitfalls (rate limiting)** | HIGH | Claude API rate limits officially documented, Resend limits confirmed in docs. |
+| **Pitfalls (schema migrations)** | HIGH | Convex migration patterns well-documented in Stack articles and official docs. |
 
-**Overall confidence:** HIGH
+**Overall confidence:** HIGH for production readiness with this roadmap. MEDIUM for exact implementation details (bundle size, rate limit thresholds, WCAG manual testing).
+
+---
 
 ### Gaps to Address
 
-**Instagram App Review timeline uncertainty:** 60-90 day estimate is community consensus, not official SLA. Actual approval time may vary. Mitigation: Start App Review Week 1, build manual workflow fallback, set user expectations that Instagram publishing requires approval wait.
+**Before starting Phase 1 (Infrastructure):**
+1. **OAuth app approval timeline:** Instagram/Meta approval can take 1-2 weeks and may be rejected. Start submissions early, have contingency plan if rejected (defer Instagram to v4.1).
+2. **Custom domain ownership:** Verify control of DNS for `app.amd.com` and `clerk.amd.com` subdomains before starting Clerk production setup.
 
-**Twitter API quota variations:** Basic tier read limits documented as "15,000 tweets/month" but real-world usage patterns unclear (does fetching tweet metrics count as 1 call per tweet or multiple?). Mitigation: Implement aggressive caching (5min TTL), monitor quota usage in production, adjust TTL based on actual burn rate.
+**Before starting Phase 4 (Performance):**
+1. **Lighthouse baseline:** Run current performance audit to understand starting point (unknown bundle size, current Core Web Vitals).
+2. **Bundle size analysis:** Use `@next/bundle-analyzer` to identify optimization opportunities (currently unknown which components are heavy).
 
-**Convex Aggregate component production readiness:** Official Convex component but limited production case studies found. Mitigation: Prototype aggregation queries early in Phase 2, validate performance with realistic data volumes (10K+ executions), have fallback plan to use standard Convex queries with indexing if performance issues arise.
+**Before starting Phase 5 (Security):**
+1. **Rate limit projections:** Calculate expected Claude API RPM based on: 37 agents × average requests per agent × concurrent users × burst factor. Determine if Tier 4 (4000 RPM) sufficient or need Tier 5.
+2. **Email volume projections:** Estimate welcome emails + password resets + notifications to determine if Resend default (2 req/sec) sufficient or need rate limit increase.
 
-**Email service deliverability:** PDF reports with charts may hit spam filters if attachments are large. Mitigation: Research email service selection during Phase 6 planning, validate PDF size optimization (compress images, limit chart resolution), consider hosted report links instead of attachments.
+**Before starting Phase 6 (Onboarding):**
+1. **User testing:** Validate onboarding flow with 5-10 beta users to ensure 4-step flow reduces time-to-first-value.
+2. **Accessibility audit:** Manual testing with screen readers (NVDA, JAWS, VoiceOver) required for 70% of WCAG issues (automated tools catch only 30%).
+
+**Validation needed during implementation:**
+1. **Convex rate limiting:** Verify if Convex has built-in rate limiting or needs external service (Upstash Redis).
+2. **Clerk session timeout:** Verify current idle timeout settings, determine if custom implementation needed or Clerk built-in sufficient.
+3. **Error tracking coverage:** After Sentry integration, verify all critical paths (agent execution, content creation, OAuth flows) are instrumented.
+
+---
 
 ## Sources
 
 ### Primary (HIGH confidence)
 
-**Authentication & Authorization:**
-- [Convex Auth Documentation](https://docs.convex.dev/auth) — Convex Auth beta status
-- [Convex & Clerk Integration](https://docs.convex.dev/auth/clerk) — Official integration guide
-- [Clerk Pricing](https://clerk.com/pricing) — Free tier limits (10K MAU, 100 orgs)
-- [Convex Authorization Best Practices](https://stack.convex.dev/authorization) — requireAuth patterns
-- [Next.js Authentication Guide](https://nextjs.org/docs/app/guides/authentication) — Defense-in-depth
+**Deployment & Hosting:**
+- [Vercel Deployment Configuration (2026)](https://oneuptime.com/blog/post/2026-01-24-configure-vercel-deployment/view)
+- [Next.js 16 Production Checklist](https://nextjs.org/docs/app/guides/production-checklist)
+- [Convex Production Deployment](https://docs.convex.dev/production)
+- [Convex + Vercel Integration](https://docs.convex.dev/production/hosting/vercel)
 
-**Stack Research:**
-- [twitter-api-v2 Library](https://www.npmjs.com/package/twitter-api-v2) — Official community SDK
-- [facebook-nodejs-business-sdk](https://www.npmjs.com/package/facebook-nodejs-business-sdk) — Official Meta SDK
-- [Convex Aggregate Component](https://www.convex.dev/components/aggregate) — Official docs
-- [Recharts vs alternatives](https://npm-compare.com/chart.js,react-vis,recharts,victory-chart) — Feature comparison
+**Authentication & Security:**
+- [Clerk Production Deployment](https://clerk.com/docs/guides/development/deployment/production)
+- [Clerk Security Best Practices](https://clerk.com/docs/guides/secure/best-practices/fixation-protection)
+- [Convex + Clerk + Next.js Authentication](https://stack.convex.dev/authentication-best-practices-convex-clerk-and-nextjs)
 
-**Platform APIs:**
-- [Instagram Graph API Guide 2026](https://elfsight.com/blog/instagram-graph-api-complete-developer-guide-for-2026/) — App Review requirements
-- [LinkedIn Analytics API](https://learn.microsoft.com/en-us/linkedin/marketing/community-management/members/post-statistics) — Official Microsoft docs
-- [X API Pricing 2026](https://getlate.dev/blog/twitter-api-pricing) — Tier comparison
-- [Twitter API v2 Guide 2026](https://getlate.dev/blog/x-api) — OAuth 2.0 patterns
+**CI/CD:**
+- [GitHub Actions CI/CD for Next.js](https://arnab-k.medium.com/setting-up-ci-cd-pipelines-for-next-js-projects-354d500f7461)
+- [Next.js CI/CD Guide 2024](https://nextjsstarter.com/blog/nextjs-cicd-deployment-guide-2024/)
 
-**Analytics & Caching:**
-- [Vercel External API Caching](https://www.infoq.com/news/2025/07/vercel-api-caching-analytics/) — Stale-while-revalidate
-- [Caching Strategies 2026](https://www.dragonflydb.io/guides/caching-strategies-to-know) — Dynamic TTL patterns
-- [Marketing Dashboard Best Practices](https://www.dataslayer.ai/blog/marketing-dashboard-best-practices-2025) — Expected features
+**Error Monitoring:**
+- [Sentry Next.js Documentation](https://docs.sentry.io/platforms/javascript/guides/nextjs/)
+- [Convex Exception Reporting](https://docs.convex.dev/production/integrations/exception-reporting)
+- [Convex + Sentry Integration](https://sentry.io/integrations/convex/)
 
-**Team Collaboration:**
-- [Content Approval Workflow](https://planable.io/blog/content-approval-workflow/) — Role definitions
-- [Social Media Approval Process](https://blog.hootsuite.com/social-media-approval-workflow/) — Standard patterns
+**Performance:**
+- [Optimizing Core Web Vitals 2024](https://vercel.com/kb/guide/optimizing-core-web-vitals-in-2024)
+- [Next.js Web Performance](https://nextjs.org/learn/seo/web-performance)
+- [Optimize Core Web Vitals Next.js App Router 2025](https://makersden.io/blog/optimize-web-vitals-in-nextjs-2025)
+
+**Testing:**
+- [Vitest vs Jest Comparison](https://betterstack.com/community/guides/scaling-nodejs/vitest-vs-jest/)
+- [Vitest for Next.js Apps](https://www.wisp.blog/blog/vitest-vs-jest-which-should-i-use-for-my-nextjs-app)
+- [Testing in 2026: Full Stack Strategies](https://www.nucamp.co/blog/testing-in-2026-jest-react-testing-library-and-full-stack-testing-strategies)
+
+**UX & Accessibility:**
+- [Error Message UX Best Practices](https://www.pencilandpaper.io/articles/ux-pattern-analysis-error-feedback)
+- [SaaS UX Design Guide 2026](https://www.designstudiouiux.com/blog/saas-ux-design-the-ultimate-guide/)
+- [Best Practices for Loading States in Next.js](https://www.getfishtank.com/insights/best-practices-for-loading-states-in-nextjs)
+- [Empty State in SaaS Applications](https://userpilot.com/blog/empty-state-saas/)
+- [WCAG 2.2 Level AA Requirements 2026](https://www.accessibility.works/blog/wcag-ada-website-compliance-standards-requirements/)
+- [SaaS Onboarding Best Practices 2026](https://www.sales-hacking.com/en/post/best-practices-onboarding-saas)
+
+**Security & Compliance:**
+- [SaaS Security Best Practices 2026](https://www.nudgesecurity.com/post/saas-security-best-practices)
+- [State of SaaS Security 2025-2026](https://cloudsecurityalliance.org/artifacts/state-of-saas-security-report-2025)
+- [Enterprise Ready Audit Logging](https://www.enterpriseready.io/features/audit-log/)
+
+**API Rate Limits:**
+- [Claude API Rate Limits](https://platform.claude.com/docs/en/api/rate-limits)
+- [Claude API Production Scaling Guide](https://www.hashbuilds.com/articles/claude-api-rate-limits-production-scaling-guide-for-saas)
+- [Resend API Rate Limit](https://resend.com/docs/api-reference/rate-limit)
+- [Mastering Email Rate Limits - Resend API](https://dalenguyen.me/blog/2025-09-07-mastering-email-rate-limits-resend-api-cloud-run-debugging)
+
+**Deployment Pitfalls:**
+- [Convex Intro to Migrations](https://stack.convex.dev/intro-to-migrations)
+- [Svix Webhook Verification](https://docs.svix.com/receiving/verifying-payloads/how)
+- [Vercel Function Timeouts](https://vercel.com/kb/guide/what-can-i-do-about-vercel-serverless-functions-timing-out)
+- [Next.js Environment Variables (2026)](https://thelinuxcode.com/nextjs-environment-variables-2026-build-time-vs-runtime-security-and-production-patterns/)
 
 ### Secondary (MEDIUM confidence)
 
-**UX for Non-Technical Users:**
-- [Simplify Analytics for Non-Technical Users](https://medium.com/@toritsejumoju/ui-ux-for-complex-data-how-to-simplify-analytics-for-non-technical-users-b427181423bc) — Natural language patterns
-- [React Onboarding Libraries 2025](https://onboardjs.com/blog/5-best-react-onboarding-libraries-in-2025-compared) — State machine patterns
+**OAuth Configuration:**
+- [LinkedIn 3-Legged OAuth Flow](https://learn.microsoft.com/en-us/linkedin/shared/authentication/authorization-code-flow)
+- [Twitter Callback URLs](https://developer.twitter.com/en/docs/apps/callback-urls)
+- [Instagram Platform API Guide](https://gist.github.com/PrenSJ2/0213e60e834e66b7e09f7f93999163fc)
+- [Solving Dynamic OAuth 2.0 Callbacks](https://release.com/blog/solving-for-dynamic-oauth-2-0-callbacks-with-environment-handles)
 
-**Multi-Platform Publishing:**
-- [Best Unified Social Media APIs 2026](https://www.outstand.so/blog/best-unified-social-media-apis-for-devs) — Platform comparison
-- [Cross-Platform Content Strategy](https://socialrails.com/blog/cross-posting-social-media) — Format constraints
+**Performance Benchmarks:**
+- [SaaS Performance Benchmarking 2026](https://www.binadox.com/blog/saas-performance-benchmarking-industry-standards-for-speed-uptime-and-user-satisfaction/)
+- [Website Load Time Statistics 2026](https://www.hostinger.com/tutorials/website-load-time-statistics)
+- [Page Load Speed for SaaS Success](https://www.getmonetizely.com/articles/why-page-load-speed-matters-for-saas-success-measurement-impact-and-optimization)
 
-### Tertiary (LOW confidence, flagged for validation)
-
-- Single blog posts about Instagram API changes (validate with official Meta docs during Phase 3)
-- Community discussions on Twitter API quota burn rates (need production testing to validate)
-- Generic "best tools" lists without specific feature details (verified against official platform docs)
+**Monitoring:**
+- [Top 10 SaaS Monitoring Tools 2026](https://themantrix.com/en/blog/Top-10-Tools-for-Monitoring-SaaS-Availability-and-Uptime-in-2026)
+- [11 Best Error Tracking Tools 2026](https://betterstack.com/community/comparisons/error-tracking-tools/)
 
 ---
-*Research completed: 2026-02-05*
-*Confidence: HIGH (auth, Twitter, charting), MEDIUM (Instagram, LinkedIn)*
-*Ready for roadmap: yes*
+
+*Research completed: 2026-02-09*
+
+*Ready for roadmap: Yes — 6-phase structure with clear dependencies, blockers, and timelines*
+
+*Total effort: 6-7 weeks from working prototype to production launch*
