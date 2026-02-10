@@ -82,6 +82,7 @@ import type * as multiChannelGenerate from "../multiChannelGenerate.js";
 import type * as oauthHelpers from "../oauthHelpers.js";
 import type * as onboarding from "../onboarding.js";
 import type * as platformApprovals from "../platformApprovals.js";
+import type * as rateLimit from "../rateLimit.js";
 import type * as reports from "../reports.js";
 import type * as reportsActions from "../reportsActions.js";
 import type * as seed from "../seed.js";
@@ -175,6 +176,7 @@ declare const fullApi: ApiFromModules<{
   oauthHelpers: typeof oauthHelpers;
   onboarding: typeof onboarding;
   platformApprovals: typeof platformApprovals;
+  rateLimit: typeof rateLimit;
   reports: typeof reports;
   reportsActions: typeof reportsActions;
   seed: typeof seed;

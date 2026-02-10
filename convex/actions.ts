@@ -17,6 +17,17 @@ export const callClaude = action({
     maxTokens: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    // Rate limit check — 20 calls/min per user
+    const rateCheck = await ctx.runMutation(api.rateLimit.checkAndRecord, {
+      identifier: "system",
+      endpoint: "callClaude",
+    });
+    if (!rateCheck.allowed) {
+      throw new Error(
+        `Límite de velocidad excedido. Intenta de nuevo en ${Math.ceil(rateCheck.retryAfterMs / 1000)}s.`
+      );
+    }
+
     const apiKey = process.env.ANTHROPIC_API_KEY;
     if (!apiKey) {
       throw new Error("ANTHROPIC_API_KEY not configured");
@@ -82,6 +93,17 @@ export const executeAgent = action({
       cost: number;
     };
   }> => {
+    // 0. Rate limit check — 10 executions/min
+    const rateCheck = await ctx.runMutation(api.rateLimit.checkAndRecord, {
+      identifier: "system",
+      endpoint: "executeAgent",
+    });
+    if (!rateCheck.allowed) {
+      throw new Error(
+        `Límite de ejecuciones excedido. Intenta de nuevo en ${Math.ceil(rateCheck.retryAfterMs / 1000)}s.`
+      );
+    }
+
     // 1. Obtener configuración del agente
     const agent = await ctx.runQuery(api.functions.getAgent, {
       agentId: args.agentId,

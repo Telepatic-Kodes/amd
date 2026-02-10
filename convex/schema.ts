@@ -1184,4 +1184,15 @@ export default defineSchema({
     updatedAt: v.number(),
   })
     .index("by_userId", ["userId"]),
+
+  // ===========================================
+  // RATE_LIMITS - Token bucket per user/endpoint
+  // ===========================================
+  rateLimits: defineTable({
+    identifier: v.string(), // userId or "system"
+    endpoint: v.string(), // "callClaude", "executeAgent"
+    windowStart: v.number(), // start of current window (ms)
+    count: v.number(), // requests in current window
+  })
+    .index("by_identifier_endpoint", ["identifier", "endpoint"]),
 });
