@@ -1,13 +1,30 @@
 import { QueryCtx, MutationCtx } from "../_generated/server";
 
+// DEV BYPASS: Set to true to skip Clerk auth in development
+// Hardcoded because Convex cloud doesn't have process.env.NODE_ENV
+// TODO: Set back to false before production
+const DEV_AUTH_BYPASS = true;
+
+const DEV_IDENTITY = {
+  subject: "dev-user-001",
+  issuer: "dev-bypass",
+  email: "dev@amd.local",
+  name: "Dev User",
+  pictureUrl: undefined,
+  tokenIdentifier: "dev-bypass|dev-user-001",
+};
+
 /**
  * Require authentication. Throws if not authenticated.
  * Returns the user identity from Clerk JWT.
- * Use in ALL user-facing queries and mutations.
+ * In dev mode with bypass enabled, returns a mock identity.
  */
 export async function requireAuth(ctx: QueryCtx | MutationCtx) {
   const identity = await ctx.auth.getUserIdentity();
   if (!identity) {
+    if (DEV_AUTH_BYPASS) {
+      return DEV_IDENTITY;
+    }
     throw new Error("No autenticado. Inicia sesión para continuar.");
   }
   return identity;
