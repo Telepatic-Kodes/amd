@@ -9,6 +9,7 @@ import { useToast } from "@/components/ui/Toast";
 import { FileImportModal } from "./FileImportModal";
 import { contentSchema, zodFieldErrors } from "@/lib/schemas";
 import { sanitizePlainText } from "@/lib/sanitize";
+import { usePreference } from "@/hooks/usePreferences";
 
 const CONTENT_TYPES = [
   { value: "blog", label: "Blog" },
@@ -32,7 +33,8 @@ export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
-  const [type, setType] = useState("blog");
+  const [lastContentType, setLastContentType] = usePreference("lastContentType", "blog");
+  const [type, setType] = useState(lastContentType);
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [summary, setSummary] = useState("");
@@ -79,10 +81,10 @@ export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {
       });
 
       success("Contenido creado", "Tu contenido ha sido agregado como borrador.");
+      setLastContentType(type); // Remember for next time
       setTitle("");
       setBody("");
       setSummary("");
-      setType("blog");
       setIsOpen(false);
       onSuccess?.();
     } catch (err) {
