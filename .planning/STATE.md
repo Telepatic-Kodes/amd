@@ -2,21 +2,21 @@
 
 **Started:** 2026-01-30
 **Current Milestone:** v4.0 Production Readiness
-**Status:** Defining requirements
+**Status:** Ready to plan Phase 19
 
 ## Project Reference
 
 See: .planning/PROJECT.md (updated 2026-02-09)
 
 **Core Value:** Non-technical users can manage a complete marketing department in minutes, not hours.
-**Current Focus:** v4.0 — deploy, harden, optimize, polish for real users
+**Current Focus:** v4.0 -- deploy, harden, optimize, polish for real users
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-02-09 — Milestone v4.0 started
+Phase: 19 of 24 (Environment Setup & Infrastructure)
+Plan: 0 of 4 in current phase
+Status: Ready to plan
+Last activity: 2026-02-09 -- Roadmap created (6 phases, 83 requirements, 16 plans)
 
 Progress: [░░░░░░░░░░░░░░░░░░░░] 0%
 
@@ -49,31 +49,31 @@ None.
 
 ### Blockers/Concerns
 
-**External Dependencies (carry forward):**
-- Instagram App Review: 60-90 day approval (must submit)
-- Twitter API: Free tier write-only; Basic tier ($200/mo) for analytics
-- Pre-existing TypeScript error in convex/topicSuggestions.ts:189
+**External Dependencies (critical path):**
+- Instagram App Review: 1-2 weeks approval (submit in Phase 19)
+- Clerk DNS propagation: 24-48 hours (start in Phase 19)
+- Custom domain DNS: 1-48 hours (start in Phase 19)
+- LinkedIn/Twitter OAuth production: 1-3 days (submit in Phase 19)
 
-**Production-specific concerns:**
-- Convex production deployment requires separate deployment from dev
-- Clerk production keys differ from development keys
-- OAuth callback URLs must be updated for production domain
-- Environment variable management across dev/staging/production
+**Carry forward from v3.0:**
+- Pre-existing TypeScript error in convex/topicSuggestions.ts:189
+- Twitter Analytics requires Basic tier ($200/mo) -- deferred
+- Instagram App Review 60-90 day timeline (pending from v3.0)
 
 ## Session Continuity
 
 Last session: 2026-02-09
-Stopped at: Defining v4.0 requirements
+Stopped at: Roadmap created for v4.0 Production Readiness
 Resume file: None
-Next action: Complete requirements → create roadmap
+Next action: `/gsd:plan-phase 19`
 
 ---
 
 ## Milestone Archives
 
-- v1.0 UX Simplification — shipped 2026-01-30 (8 phases, 19 plans)
-- v2.0 UX/UI Excellence — shipped 2026-02-05 (4 phases, 6 plans)
-- v3.0 Intelligence & Scale — shipped 2026-02-07 (6 phases, 20 plans)
+- v1.0 UX Simplification -- shipped 2026-01-30 (8 phases, 19 plans)
+- v2.0 UX/UI Excellence -- shipped 2026-02-05 (4 phases, 6 plans)
+- v3.0 Intelligence & Scale -- shipped 2026-02-07 (6 phases, 20 plans)
 
 See .planning/MILESTONES.md for full details.
 
