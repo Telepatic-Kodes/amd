@@ -2,7 +2,7 @@
 
 import { ErrorFallback } from "@/components/ui/ErrorFallback";
 
-export default function DashboardError({
+export default function ContentError({
   error,
   reset,
 }: {
