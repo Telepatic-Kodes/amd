@@ -39,8 +39,9 @@ import {
   LayoutGrid,
 } from "lucide-react";
 import { useState, useMemo } from "react";
-import ReactMarkdown from "react-markdown";
 import { motion, AnimatePresence } from "framer-motion";
+
+const ReactMarkdown = dynamic(() => import("react-markdown"), { ssr: false });
 import type { Doc } from "@convex/_generated/dataModel";
 
 const TASK_ICONS: Record<string, React.ElementType> = {

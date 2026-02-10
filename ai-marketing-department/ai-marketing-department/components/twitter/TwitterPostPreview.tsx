@@ -36,6 +36,7 @@ export function TwitterPostPreview({
           <img
             src={authorAvatar}
             alt={authorName}
+            loading="lazy"
             className="h-12 w-12 rounded-full object-cover"
           />
         ) : (

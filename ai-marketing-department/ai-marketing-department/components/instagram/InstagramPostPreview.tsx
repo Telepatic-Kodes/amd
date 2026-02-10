@@ -33,6 +33,7 @@ export function InstagramPostPreview({
               <img
                 src={authorAvatar}
                 alt={authorUsername}
+                loading="lazy"
                 className="h-full w-full rounded-full object-cover"
               />
             ) : (
@@ -52,6 +53,7 @@ export function InstagramPostPreview({
           <img
             src={imageUrl}
             alt="Instagram post preview"
+            loading="lazy"
             className="w-full h-full object-cover"
           />
         ) : (

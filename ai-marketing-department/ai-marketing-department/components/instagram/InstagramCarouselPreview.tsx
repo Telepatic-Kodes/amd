@@ -39,6 +39,7 @@ export function InstagramCarouselPreview({
               <img
                 src={authorAvatar}
                 alt={authorUsername}
+                loading="lazy"
                 className="h-full w-full rounded-full object-cover"
               />
             ) : (
@@ -59,6 +60,7 @@ export function InstagramCarouselPreview({
             <img
               src={imageUrls[currentIndex]}
               alt={`Instagram carousel image ${currentIndex + 1}`}
+              loading="lazy"
               className="w-full h-full object-cover"
             />
 

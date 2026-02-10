@@ -117,6 +117,7 @@ export function TeamManagement() {
                             <img
                               src={user.imageUrl}
                               alt={user.name || user.email}
+                              loading="lazy"
                               className="h-10 w-10 rounded-full object-cover"
                             />
                           ) : (
@@ -210,6 +211,7 @@ export function TeamManagement() {
                       <img
                         src={user.imageUrl}
                         alt={user.name || user.email}
+                        loading="lazy"
                         className="h-12 w-12 rounded-full object-cover"
                       />
                     ) : (
