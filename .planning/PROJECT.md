@@ -37,7 +37,11 @@ When tradeoffs arise, prioritize reducing friction and cognitive load over advan
 
 ### Active
 
-(No active requirements — ready for v4.0 milestone definition)
+- [ ] Vercel production deployment with environment configs and domain setup
+- [ ] Full CI/CD pipeline (GitHub Actions: lint, typecheck, tests, staging preview, production deploy with rollback)
+- [ ] Error resilience (error boundaries, retry logic, graceful degradation, Sentry monitoring)
+- [ ] Performance optimization (page load, image optimization, caching, API response times)
+- [ ] Full UX audit (every page, every state, mobile breakpoints, empty states, loading skeletons, accessibility, translations)
 
 ### Out of Scope
 
@@ -105,6 +109,17 @@ When tradeoffs arise, prioritize reducing friction and cognitive load over advan
 | Dark theme email templates | Match dashboard UI for brand consistency | Good |
 | AI narrative optional | User setting (default: true) for cost control | Good |
 
+## Current Milestone: v4.0 Production Readiness
+
+**Goal:** Take AMD from "works in dev" to "ready for real paying clients" — deploy, harden, optimize, and polish every surface.
+
+**Target features:**
+- Vercel production deployment with domain, SSL, environment configs
+- Full CI/CD pipeline (GitHub Actions: lint + typecheck + test + staging preview + production deploy + rollback)
+- Error resilience (error boundaries, retry logic, Sentry free tier, graceful degradation)
+- Performance optimization (Lighthouse >90, image optimization, caching, lazy loading)
+- Full UX audit (every page, every state, every breakpoint — no rough edges for real users)
+
 ## Previous Milestones
 
 - v1.0 UX Simplification (shipped 2026-01-30, 8 phases, 19 plans, 29 requirements)
@@ -113,4 +128,4 @@ When tradeoffs arise, prioritize reducing friction and cognitive load over advan
 
 ---
 
-*Last updated: 2026-02-09 after v3.0 milestone completion*
+*Last updated: 2026-02-09 after v4.0 milestone initialization*
