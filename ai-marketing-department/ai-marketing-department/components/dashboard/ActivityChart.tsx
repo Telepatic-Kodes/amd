@@ -1,7 +1,12 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { AreaChartComponent } from "@/components/charts/AreaChart";
+import dynamic from "next/dynamic";
+
+const AreaChartComponent = dynamic(
+  () => import("@/components/charts/AreaChart").then((m) => m.AreaChartComponent),
+  { ssr: false }
+);
 import { cn } from "@/lib/utils";
 
 interface ActivityChartProps {

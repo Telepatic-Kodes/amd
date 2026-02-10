@@ -5,7 +5,12 @@ import { X, Zap, Clock, Activity, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
-import { QuickExecuteModal } from "./QuickExecuteModal";
+import dynamic from "next/dynamic";
+
+const QuickExecuteModal = dynamic(
+  () => import("./QuickExecuteModal").then((m) => m.QuickExecuteModal),
+  { ssr: false }
+);
 
 interface AgentActivity {
   description: string;

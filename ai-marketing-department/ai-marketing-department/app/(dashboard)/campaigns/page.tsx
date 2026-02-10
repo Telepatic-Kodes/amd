@@ -15,7 +15,6 @@ import {
   MousePointer,
   Eye,
   Calendar,
-  BarChart3,
   Zap,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -24,8 +23,16 @@ import { StatusBadge, Badge } from "@/components/ui/Badge";
 import { SimpleCounter } from "@/components/ui/AnimatedCounter";
 import { TrendIndicator } from "@/components/ui/TrendIndicator";
 import { EmptyCampaigns, EmptySearchResults } from "@/components/ui/EmptyState";
-import { MiniDonut } from "@/components/charts/DonutChart";
-import { Sparkline } from "@/components/charts/Sparkline";
+import dynamic from "next/dynamic";
+
+const MiniDonut = dynamic(
+  () => import("@/components/charts/DonutChart").then((m) => m.MiniDonut),
+  { ssr: false }
+);
+const Sparkline = dynamic(
+  () => import("@/components/charts/Sparkline").then((m) => m.Sparkline),
+  { ssr: false }
+);
 import { chartColors } from "@/components/charts/theme";
 
 const CAMPAIGN_TYPES = [

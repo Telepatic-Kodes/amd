@@ -1,8 +1,16 @@
 "use client";
 
 import { useMemo } from "react";
-import { AreaChartComponent } from "@/components/charts/AreaChart";
-import { DonutChart } from "@/components/charts/DonutChart";
+import dynamic from "next/dynamic";
+
+const AreaChartComponent = dynamic(
+  () => import("@/components/charts/AreaChart").then((m) => m.AreaChartComponent),
+  { ssr: false }
+);
+const DonutChart = dynamic(
+  () => import("@/components/charts/DonutChart").then((m) => m.DonutChart),
+  { ssr: false }
+);
 
 interface ChartsRowProps {
   tasksByDay?: Record<string, { completed: number; failed: number; total: number }>;

@@ -15,7 +15,12 @@ import {
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { SimpleCounter } from "@/components/ui/AnimatedCounter";
-import { LineChart } from "@/components/charts/LineChart";
+import dynamic from "next/dynamic";
+
+const LineChart = dynamic(
+  () => import("@/components/charts/LineChart").then((m) => m.LineChart),
+  { ssr: false }
+);
 
 export default function ResultsPage() {
   // Date range: last 30 days for engagement data

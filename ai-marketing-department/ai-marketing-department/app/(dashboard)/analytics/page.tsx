@@ -21,10 +21,21 @@ import {
 import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
-import { BarChart } from "@/components/charts/BarChart";
-import { AreaChart } from "@/components/charts/AreaChart";
-import { DonutChart } from "@/components/charts/DonutChart";
+import dynamic from "next/dynamic";
 import { Sparkline } from "@/components/charts/Sparkline";
+
+const BarChart = dynamic(
+  () => import("@/components/charts/BarChart").then((m) => m.BarChart),
+  { ssr: false }
+);
+const AreaChart = dynamic(
+  () => import("@/components/charts/AreaChart").then((m) => m.AreaChart),
+  { ssr: false }
+);
+const DonutChart = dynamic(
+  () => import("@/components/charts/DonutChart").then((m) => m.DonutChart),
+  { ssr: false }
+);
 import { chartColors, seriesColors } from "@/components/charts/theme";
 import { SimpleCounter, CurrencyCounter, PercentageCounter } from "@/components/ui/AnimatedCounter";
 import { TrendIndicator } from "@/components/ui/TrendIndicator";
@@ -94,6 +105,12 @@ export default function AnalyticsPage() {
 
   const completeStep = useMutation(api.guidance.completeSetupStep);
 
+  // Query agent performance for cost distribution (must be before early return)
+  const agentPerformance = useQuery(api.analytics.getAgentPerformanceSummary, {
+    startDate: dateRange.startDate,
+    endDate: dateRange.endDate,
+  });
+
   // Auto-mark "analyticsViewed" setup step
   useEffect(() => {
     completeStep({ step: "analyticsViewed" }).catch(() => {});
@@ -123,12 +140,6 @@ export default function AnalyticsPage() {
       </div>
     );
   }
-
-  // Query agent performance for cost distribution
-  const agentPerformance = useQuery(api.analytics.getAgentPerformanceSummary, {
-    startDate: dateRange.startDate,
-    endDate: dateRange.endDate,
-  });
 
   const { overview, tasksByDay, executionsByDay, topAgents, recentExecutions } = analytics;
 
@@ -187,9 +198,10 @@ export default function AnalyticsPage() {
 
   // Build sparkline data from real executionsByDay (last 7 days)
   const last7Days = (() => {
+    const now = dateRange.endDate;
     const days: string[] = [];
     for (let i = 6; i >= 0; i--) {
-      const d = new Date(Date.now() - i * 24 * 60 * 60 * 1000);
+      const d = new Date(now - i * 24 * 60 * 60 * 1000);
       days.push(d.toISOString().split("T")[0]);
     }
     return days;
@@ -591,8 +603,6 @@ function MetricCard({
   iconColor,
   title,
   value,
-  badge,
-  badgeVariant = 'info',
   isPercentage = false,
   isCurrency = false,
   formatter,
@@ -604,7 +614,7 @@ function MetricCard({
   iconColor: string;
   title: string;
   value: number;
-  badge: string;
+  badge?: string;
   badgeVariant?: 'default' | 'success' | 'warning' | 'error' | 'info';
   isPercentage?: boolean;
   isCurrency?: boolean;

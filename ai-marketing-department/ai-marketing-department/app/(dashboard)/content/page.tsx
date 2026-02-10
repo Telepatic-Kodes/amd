@@ -20,10 +20,8 @@ import {
   FileCode,
   Eye,
   Calendar,
-  Clock,
   Hash,
   Copy,
-  ExternalLink,
   X,
   LayoutGrid,
   List,
@@ -40,12 +38,20 @@ import { SkeletonGrid } from "@/components/ui/Skeleton";
 import { EmptyContent } from "@/components/ui/EmptyState";
 import { useToast } from "@/components/ui/Toast";
 import { UploadContentForm } from "@/components/content/UploadContentForm";
-import { EditContentModal } from "@/components/content/EditContentModal";
+import dynamic from "next/dynamic";
 import { CrossPlatformPublishPanel } from "@/components/content/CrossPlatformPublishPanel";
 import { UnifiedPublishHistory } from "@/components/content/UnifiedPublishHistory";
 import { AnalyzeButton } from "@/components/content/AnalyzeButton";
 import { ContentAnalysisPanel } from "@/components/content/ContentAnalysisPanel";
-import { GenerateContentModal } from "@/components/content/GenerateContentModal";
+
+const EditContentModal = dynamic(
+  () => import("@/components/content/EditContentModal").then((m) => m.EditContentModal),
+  { ssr: false }
+);
+const GenerateContentModal = dynamic(
+  () => import("@/components/content/GenerateContentModal").then((m) => m.GenerateContentModal),
+  { ssr: false }
+);
 import { VersionHistory } from "@/components/content/VersionHistory";
 import { VersionDiff } from "@/components/content/VersionDiff";
 import { RollbackDialog } from "@/components/content/RollbackDialog";
@@ -230,7 +236,7 @@ export default function ContentPage() {
   });
 
   const updateContentStatus = useMutation(api.functions.updateContentStatus);
-  const { success, error: showError } = useToast();
+  const { success } = useToast();
 
   const filteredContent = useMemo(() => {
     if (!content) return [];

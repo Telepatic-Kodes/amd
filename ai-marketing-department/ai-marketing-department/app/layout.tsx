@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Playfair_Display, DM_Sans, JetBrains_Mono } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { validateEnvironment } from "@/lib/validateEnv";
@@ -34,6 +34,14 @@ import ConvexClientProvider from "./ConvexClientProvider";
 export const metadata: Metadata = {
   title: "AI Marketing Department",
   description: "Automated marketing department operated by 37 AI agents",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  viewportFit: "cover",
+  themeColor: "#faf8f4",
 };
 
 export default function RootLayout({

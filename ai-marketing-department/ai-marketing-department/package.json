@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^6.37.3",
+    "@next/bundle-analyzer": "^16.1.6",
     "@remotion/cli": "4.0.409",
     "@remotion/player": "4.0.409",
     "@tiptap/extension-character-count": "^3.18.0",

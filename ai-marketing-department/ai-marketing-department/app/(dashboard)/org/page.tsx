@@ -14,7 +14,12 @@ import {
   Cpu,
   X,
 } from "lucide-react";
-import { OrgChart } from "@/components/org/OrgChart";
+import dynamic from "next/dynamic";
+
+const OrgChart = dynamic(
+  () => import("@/components/org/OrgChart").then((m) => m.OrgChart),
+  { ssr: false }
+);
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 import { StatusBadge, RoleBadge, Badge } from "@/components/ui/Badge";
 import { cn } from "@/lib/utils";

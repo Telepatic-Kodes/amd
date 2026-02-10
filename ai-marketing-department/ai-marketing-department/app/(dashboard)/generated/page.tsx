@@ -7,7 +7,12 @@ import { Badge } from "@/components/ui/Badge";
 import { FilterTabs } from "@/components/ui/FilterTabs";
 import { EmptyContent } from "@/components/ui/EmptyState";
 import { SkeletonGrid } from "@/components/ui/Skeleton";
-import { DonutChart } from "@/components/charts/DonutChart";
+import dynamic from "next/dynamic";
+
+const DonutChart = dynamic(
+  () => import("@/components/charts/DonutChart").then((m) => m.DonutChart),
+  { ssr: false }
+);
 import { chartColors } from "@/components/charts/theme";
 import { useToast } from "@/components/ui/Toast";
 import {
@@ -32,8 +37,6 @@ import {
   Bookmark,
   Download,
   LayoutGrid,
-  List,
-  Sparkles,
 } from "lucide-react";
 import { useState, useMemo } from "react";
 import ReactMarkdown from "react-markdown";
@@ -761,7 +764,7 @@ export default function GeneratedContentPage() {
               <CardContent className="p-12 text-center">
                 <EmptyContent />
                 <code className="block mt-4 text-sm text-orange-400">
-                  npm run workflow:content -- --topic "Your topic"
+                  npm run workflow:content -- --topic &quot;Your topic&quot;
                 </code>
               </CardContent>
             </Card>

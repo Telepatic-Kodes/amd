@@ -19,7 +19,12 @@ import { BrandProfileSummary } from "@/components/brand/BrandProfileSummary";
 import { BrandSuggestionsPanel } from "@/components/brand/BrandSuggestionsPanel";
 import { BrandSourcesList } from "@/components/brand/BrandSourcesList";
 import { AddSourceDialog } from "@/components/brand/AddSourceDialog";
-import { GenerateContentModal } from "@/components/content/GenerateContentModal";
+import dynamic from "next/dynamic";
+
+const GenerateContentModal = dynamic(
+  () => import("@/components/content/GenerateContentModal").then((m) => m.GenerateContentModal),
+  { ssr: false }
+);
 import { BrandOnboardingChoice } from "@/components/brand/BrandOnboardingChoice";
 import { BrandUploadFlow } from "@/components/brand/BrandUploadFlow";
 
