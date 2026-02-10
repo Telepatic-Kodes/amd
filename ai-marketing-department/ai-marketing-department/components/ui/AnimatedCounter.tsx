@@ -93,7 +93,7 @@ export function SimpleCounter({
       const eased = 1 - Math.pow(1 - progress, 3);
       const current = startValue + (endValue - startValue) * eased;
 
-      setDisplayValue(current);
+      setDisplayValue(progress < 1 ? current : endValue);
 
       if (progress < 1) {
         requestAnimationFrame(animate);

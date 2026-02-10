@@ -60,7 +60,7 @@ export function MetricsSummary({ metrics }: MetricsSummaryProps) {
       iconColor: "text-green-400",
       iconBg: "bg-green-500/10",
       value: metrics.tasks.completed,
-      formatter: (v: number) => v.toString(),
+      formatter: (v: number) => Math.round(v).toString(),
       label: translate("tasksCompleted"),
       sublabel: `${metrics.tasks.completedToday} hoy`,
     },

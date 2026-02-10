@@ -1,8 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
-import { useConvexAuth } from "convex/react";
+import { useMutation } from "convex/react";
+import { api } from "@convex/_generated/api";
+// import { useConvexAuth } from "convex/react"; // DEV BYPASS: disabled
 import { Sidebar } from "@/components/layout/Sidebar";
 import { MobileNav } from "@/components/layout/MobileNav";
 import { CommandPalette } from "@/components/dashboard/CommandPalette";
@@ -11,9 +13,23 @@ import { shouldShowTour } from "@/lib/tour-utils";
 
 export function LayoutShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { isLoading, isAuthenticated } = useConvexAuth();
+  // DEV BYPASS: useConvexAuth requires ConvexProviderWithClerk
+  // const { isLoading, isAuthenticated } = useConvexAuth();
   const isOnboarding = pathname.startsWith("/onboarding");
   const [showTour, setShowTour] = useState(false);
+
+  // Sync user on any dashboard page (not just home)
+  const syncUser = useMutation(api.users.getOrCreateUser);
+  const syncAttemptedRef = useRef(false);
+
+  useEffect(() => {
+    if (!isOnboarding && !syncAttemptedRef.current) {
+      syncAttemptedRef.current = true;
+      syncUser().catch(() => {
+        // Silent fail — user sync is best-effort
+      });
+    }
+  }, [isOnboarding, syncUser]);
 
   // Check if tour should be shown for first-time users (client-side only)
   useEffect(() => {
