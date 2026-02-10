@@ -1,5 +1,59 @@
 # Project Milestones: AI Marketing Department (AMD)
 
+## v3.0 Intelligence & Scale (Shipped: 2026-02-07)
+
+**Delivered:** Multi-user, multi-platform marketing intelligence system with Clerk authentication, LinkedIn/Twitter/Instagram publishing, analytics dashboards, team collaboration with RBAC, version history, and automated reports via email.
+
+**Phases completed:** 13-18 (20 plans total)
+
+**Key accomplishments:**
+
+- Clerk authentication with defense-in-depth auth enforcement on all Convex functions
+- Analytics dashboard with LinkedIn real engagement data, date filtering, and CSV export
+- Twitter/X publishing with OAuth PKCE, single tweets and threads
+- Instagram publishing with Facebook OAuth, image posts and carousels
+- Cross-platform batch publishing with unified timeline and side-by-side previews
+- 6-role RBAC (owner > admin > editor > reviewer > publisher > viewer) with server-side enforcement
+- Content version history with automatic snapshots, diff view, and rollback
+- Automated weekly/monthly reports with AI narrative and email delivery via Resend
+
+**Stats:**
+
+- 65 commits (atomic, feature-isolated)
+- 223,687 lines of TypeScript/React (total codebase)
+- 6 phases, 20 plans, 41 requirements met (100% coverage)
+- 3 days execution (2026-02-05 to 2026-02-07, ~140 min total)
+- Average plan duration: ~5.2 min
+
+**Git range:** `0be7887` (docs(13)) to `dfd56ba` (docs(18-02))
+
+**What's next:** v4.0 planning — potential areas include TikTok/YouTube, i18n, real-time collaboration, advanced A/B testing
+
+---
+
+## v2.0 UX/UI Excellence (Shipped: 2026-02-05)
+
+**Delivered:** Fully operational AMD with real-time Control Center, content pipeline with Kanban workflow, LinkedIn OAuth publishing, and guided UX system
+
+**Phases completed:** 9-12 (6 plans total)
+
+**Key accomplishments:**
+
+- Control Center with real-time agent monitoring (37 agents, metrics, department view)
+- Content Pipeline with Kanban board, drag-and-drop, and scheduling
+- LinkedIn Integration with OAuth 2.0, publishing, and preview
+- Guided UX layer with wizard, next-action recommendations, and adaptive quick mode
+
+**Stats:**
+
+- 4 phases, 6 plans, 24 requirements met (100% coverage)
+- ~45 min total execution time
+- Average plan duration: ~7.5 min
+
+**What's next:** v3.0 Intelligence & Scale — analytics, multi-platform, team collaboration
+
+---
+
 ## v1.0 UX Simplification (Shipped: 2026-01-30)
 
 **Delivered:** Complete UX redesign transforming technical dashboard into simple, user-friendly system for non-technical users
@@ -25,8 +79,8 @@
 - 1 day execution (2026-01-30, ~9 hours of focused implementation)
 - All features production-ready with WCAG 2.1 AAA compliance
 
-**Git range:** `d2af352` (feat(ux-simplification)) → `020b680` (feat(08-02))
+**Git range:** `d2af352` (feat(ux-simplification)) to `020b680` (feat(08-02))
 
-**What's next:** User acceptance testing, production deployment, and v2.0 planning with advanced features
+**What's next:** v2.0 UX/UI Excellence
 
 ---
