@@ -21,11 +21,11 @@ interface Props {
 
 function SummaryRow({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) {
   return (
-    <div className="flex items-start gap-3 p-3 rounded-lg bg-zinc-900/50">
-      <Icon className="w-4 h-4 text-indigo-400 mt-0.5 shrink-0" />
+    <div className="flex items-start gap-3 p-3 rounded-lg bg-stone-100/50">
+      <Icon className="w-4 h-4 text-orange-400 mt-0.5 shrink-0" />
       <div>
-        <p className="text-xs text-zinc-500">{label}</p>
-        <p className="text-sm text-zinc-200">{value}</p>
+        <p className="text-xs text-stone-500">{label}</p>
+        <p className="text-sm text-stone-200">{value}</p>
       </div>
     </div>
   );
@@ -35,11 +35,11 @@ export function StepLaunch({ data, onLaunch, loading, simplified = false }: Prop
   return (
     <div className="space-y-6 max-w-lg mx-auto">
       <div className="text-center space-y-2">
-        <div className="inline-flex p-3 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 mb-2">
+        <div className="inline-flex p-3 rounded-2xl bg-gradient-to-br from-orange-600 to-purple-600 mb-2">
           <Rocket className="w-8 h-8 text-white" />
         </div>
         <h2 className="text-2xl font-bold text-white">¡Listo para comenzar!</h2>
-        <p className="text-zinc-400 text-sm">Revisa tu configuración y lanza tu departamento.</p>
+        <p className="text-stone-400 text-sm">Revisa tu configuración y lanza tu departamento.</p>
       </div>
 
       {!simplified && (
@@ -55,7 +55,7 @@ export function StepLaunch({ data, onLaunch, loading, simplified = false }: Prop
       <button
         onClick={onLaunch}
         disabled={loading}
-        className="w-full py-4 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-semibold text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        className="w-full py-4 rounded-xl bg-gradient-to-r from-orange-600 to-purple-600 hover:from-orange-500 hover:to-purple-500 text-white font-semibold text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
         {loading ? (
           <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />

@@ -41,11 +41,11 @@ export function SolutionSection() {
           >
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
               6 Departamentos.{" "}
-              <span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-orange-400 to-purple-400 bg-clip-text text-transparent">
                 37 Agentes Especializados.
               </span>
             </h2>
-            <p className="text-xl text-zinc-400 max-w-3xl mx-auto">
+            <p className="text-xl text-stone-400 max-w-3xl mx-auto">
               Un departamento de marketing completo operado por IA, coordinado y
               trabajando 24/7 en tus campañas.
             </p>
@@ -63,7 +63,7 @@ export function SolutionSection() {
               <motion.div key={index} variants={cardVariants}>
                 <Card
                   hover
-                  className="group hover:border-indigo-500/50 transition-all duration-300 h-full"
+                  className="group hover:border-orange-500/50 transition-all duration-300 h-full"
                 >
                   <CardContent className="p-8">
                     {/* Header */}
@@ -81,18 +81,18 @@ export function SolutionSection() {
                     </div>
 
                     {/* Description */}
-                    <p className="text-zinc-400 mb-6">{dept.description}</p>
+                    <p className="text-stone-400 mb-6">{dept.description}</p>
 
                     {/* Capabilities */}
                     <div className="space-y-2">
-                      <p className="text-xs text-zinc-500 uppercase font-semibold mb-3">
+                      <p className="text-xs text-stone-500 uppercase font-semibold mb-3">
                         Capacidades:
                       </p>
                       <ul className="space-y-2">
                         {dept.capabilities.map((capability, i) => (
                           <motion.li
                             key={i}
-                            className="flex items-start gap-2 text-sm text-zinc-300"
+                            className="flex items-start gap-2 text-sm text-stone-300"
                             initial={{ opacity: 0, x: -10 }}
                             whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
@@ -118,7 +118,7 @@ export function SolutionSection() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6, delay: 0.3 }}
           >
-            <Card className="bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border-indigo-500/20">
+            <Card className="bg-gradient-to-r from-orange-500/10 to-purple-500/10 border-orange-500/20">
               <CardContent className="px-8 py-12">
                 <div className="grid gap-8 md:grid-cols-3">
                   {[
@@ -136,7 +136,7 @@ export function SolutionSection() {
                       <div className="text-4xl font-bold text-white mb-2">
                         {stat.value}
                       </div>
-                      <p className="text-zinc-400">{stat.label}</p>
+                      <p className="text-stone-400">{stat.label}</p>
                     </motion.div>
                   ))}
                 </div>

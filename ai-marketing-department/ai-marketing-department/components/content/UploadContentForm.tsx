@@ -124,7 +124,7 @@ export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setIsOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-500 hover:bg-indigo-600 text-white font-medium transition-colors"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-orange-500 hover:bg-orange-600 text-white font-medium transition-colors"
           >
             <Plus className="h-4 w-4" />
             Agregar Contenido
@@ -135,15 +135,15 @@ export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             onSubmit={handleSubmit}
-            className="p-4 rounded-lg border border-gray-200 bg-white shadow-sm space-y-4"
+            className="p-4 rounded-lg border border-stone-200 bg-white shadow-sm space-y-4"
           >
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-gray-900 font-medium">Crear Nuevo Contenido</h3>
+              <h3 className="text-stone-900 font-medium">Crear Nuevo Contenido</h3>
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => setIsImportModalOpen(true)}
-                  className="flex items-center gap-2 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 rounded text-xs font-medium text-white transition-colors"
+                  className="flex items-center gap-2 px-3 py-1.5 bg-orange-600 hover:bg-orange-700 rounded text-xs font-medium text-white transition-colors"
                   title="Importar desde archivo"
                 >
                   <Upload className="w-3.5 h-3.5" />
@@ -155,7 +155,7 @@ export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {
                     setIsOpen(false);
                     setError(null);
                   }}
-                  className="p-1 rounded hover:bg-gray-100 text-gray-400"
+                  className="p-1 rounded hover:bg-stone-100 text-stone-400"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -171,11 +171,11 @@ export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {
             <div className="space-y-4">
               {/* Type */}
               <div>
-                <label className="block text-xs text-gray-500 mb-1">Tipo de Contenido *</label>
+                <label className="block text-xs text-stone-500 mb-1">Tipo de Contenido *</label>
                 <select
                   value={type}
                   onChange={(e) => setType(e.target.value)}
-                  className="w-full rounded-lg border border-gray-300 bg-white py-2 px-3 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-stone-300 bg-white py-2 px-3 text-sm text-stone-900 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
                   required
                 >
                   {CONTENT_TYPES.map((opt) => (
@@ -188,43 +188,43 @@ export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {
 
               {/* Title */}
               <div>
-                <label className="block text-xs text-gray-500 mb-1">Título *</label>
+                <label className="block text-xs text-stone-500 mb-1">Título *</label>
                 <input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Título del contenido"
                   required
-                  className="w-full rounded-lg border border-gray-300 bg-white py-2 px-3 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-stone-300 bg-white py-2 px-3 text-sm text-stone-900 placeholder-stone-400 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
                 />
-                <p className="text-xs text-gray-500 mt-1">{title.length} caracteres</p>
+                <p className="text-xs text-stone-500 mt-1">{title.length} caracteres</p>
               </div>
 
               {/* Body */}
               <div>
-                <label className="block text-xs text-gray-500 mb-1">Contenido *</label>
+                <label className="block text-xs text-stone-500 mb-1">Contenido *</label>
                 <textarea
                   value={body}
                   onChange={(e) => setBody(e.target.value)}
                   placeholder="Escribe tu contenido aquí... (mínimo 50 caracteres)"
                   required
                   rows={8}
-                  className="w-full rounded-lg border border-gray-300 bg-white py-2 px-3 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 font-mono"
+                  className="w-full rounded-lg border border-stone-300 bg-white py-2 px-3 text-sm text-stone-900 placeholder-stone-400 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 font-mono"
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-stone-500 mt-1">
                   {body.length} caracteres • {body.split(/\s+/).filter(w => w.length > 0).length} palabras
                 </p>
               </div>
 
               {/* Summary */}
               <div>
-                <label className="block text-xs text-gray-500 mb-1">Resumen (Opcional)</label>
+                <label className="block text-xs text-stone-500 mb-1">Resumen (Opcional)</label>
                 <textarea
                   value={summary}
                   onChange={(e) => setSummary(e.target.value)}
                   placeholder="Breve resumen del contenido..."
                   rows={3}
-                  className="w-full rounded-lg border border-gray-300 bg-white py-2 px-3 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-stone-300 bg-white py-2 px-3 text-sm text-stone-900 placeholder-stone-400 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
                 />
               </div>
             </div>
@@ -236,14 +236,14 @@ export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {
                   setIsOpen(false);
                   setError(null);
                 }}
-                className="flex-1 py-2 rounded-lg border border-gray-300 text-gray-500 hover:bg-gray-50 transition-colors"
+                className="flex-1 py-2 rounded-lg border border-stone-300 text-stone-500 hover:bg-stone-50 transition-colors"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 disabled={isLoading}
-                className="flex-1 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                className="flex-1 py-2 rounded-lg bg-orange-600 hover:bg-orange-700 text-white font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
                 Crear Contenido

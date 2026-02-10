@@ -26,7 +26,7 @@ export function StepGoals({ selected, onChange }: Props) {
     <div className="space-y-6 max-w-2xl mx-auto">
       <div className="text-center space-y-2">
         <h2 className="text-2xl font-bold text-white">¿Cuáles son tus objetivos?</h2>
-        <p className="text-zinc-400 text-sm">Selecciona todos los que apliquen. Tus agentes los priorizarán.</p>
+        <p className="text-stone-400 text-sm">Selecciona todos los que apliquen. Tus agentes los priorizarán.</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -39,16 +39,16 @@ export function StepGoals({ selected, onChange }: Props) {
               className={cn(
                 "flex items-start gap-3 p-4 rounded-xl border text-left transition-all duration-200",
                 active
-                  ? "border-indigo-500 bg-indigo-500/10 ring-1 ring-indigo-500/30"
-                  : "border-zinc-800 bg-zinc-950/50 hover:border-zinc-700"
+                  ? "border-orange-500 bg-orange-500/10 ring-1 ring-orange-500/30"
+                  : "border-stone-200 bg-[#faf8f4]/50 hover:border-stone-300"
               )}
             >
-              <div className={cn("p-2 rounded-lg", active ? "bg-indigo-600" : "bg-zinc-800")}>
+              <div className={cn("p-2 rounded-lg", active ? "bg-orange-600" : "bg-stone-200")}>
                 <Icon className="w-5 h-5 text-white" />
               </div>
               <div>
                 <p className="font-semibold text-sm text-white">{label}</p>
-                <p className="text-xs text-zinc-500 mt-0.5">{desc}</p>
+                <p className="text-xs text-stone-500 mt-0.5">{desc}</p>
               </div>
             </button>
           );

@@ -155,8 +155,11 @@ export function resetTour(): void {
  * @returns true if user hasn't completed or skipped the tour
  */
 export function shouldShowTour(): boolean {
-  const state = getTourState();
-  return !state.completed && !state.skipped;
+  // DEV BYPASS: disable tour for preview
+  // TODO: restore before production
+  return false;
+  // const state = getTourState();
+  // return !state.completed && !state.skipped;
 }
 
 /**

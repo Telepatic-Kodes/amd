@@ -61,8 +61,8 @@ export function TrendIndicator({
       ? 'bg-red-500/10 text-red-400'
       : 'text-red-400',
     neutral: showBackground
-      ? 'bg-zinc-500/10 text-zinc-400'
-      : 'text-zinc-400',
+      ? 'bg-stone-500/10 text-stone-400'
+      : 'text-stone-400',
   };
 
   const color = isPositive
@@ -124,7 +124,7 @@ export function CompactTrend({ value, suffix = '%', className }: CompactTrendPro
     ? 'text-green-400'
     : isNegative
     ? 'text-red-400'
-    : 'text-zinc-400';
+    : 'text-stone-400';
 
   const arrow = isPositive ? '↑' : isNegative ? '↓' : '→';
 
@@ -151,13 +151,13 @@ export function TrendBadge({ value, label, suffix = '%', className }: TrendBadge
     ? 'bg-green-500/10 border-green-500/20'
     : isNegative
     ? 'bg-red-500/10 border-red-500/20'
-    : 'bg-zinc-500/10 border-zinc-500/20';
+    : 'bg-stone-500/10 border-stone-500/20';
 
   const textColor = isPositive
     ? 'text-green-400'
     : isNegative
     ? 'text-red-400'
-    : 'text-zinc-400';
+    : 'text-stone-400';
 
   return (
     <div
@@ -173,7 +173,7 @@ export function TrendBadge({ value, label, suffix = '%', className }: TrendBadge
         showBackground={false}
         size="sm"
       />
-      <span className="text-xs text-zinc-400">{label}</span>
+      <span className="text-xs text-stone-400">{label}</span>
     </div>
   );
 }

@@ -66,20 +66,20 @@ const EditorStatusBarComponent = ({
   return (
     <div
       className={cn(
-        "flex items-center justify-between px-4 py-3 border-t border-zinc-800 bg-zinc-950/50",
+        "flex items-center justify-between px-4 py-3 border-t border-stone-200 bg-[#faf8f4]/50",
         className
       )}
     >
       {/* Metrics */}
-      <div className="flex items-center gap-4 text-xs text-zinc-400">
+      <div className="flex items-center gap-4 text-xs text-stone-400">
         <span>
           <span className="font-medium text-white">{charCount.toLocaleString()}</span> characters
         </span>
-        <span className="text-zinc-700">•</span>
+        <span className="text-stone-700">•</span>
         <span>
           <span className="font-medium text-white">{wordCount.toLocaleString()}</span> words
         </span>
-        <span className="text-zinc-700">•</span>
+        <span className="text-stone-700">•</span>
         <span>
           <span className="font-medium text-white">{readingTime}</span> min read
         </span>

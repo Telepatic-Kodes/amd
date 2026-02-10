@@ -192,8 +192,8 @@ export function FileDropZone({
         "relative border-2 border-dashed rounded-lg p-8 transition-all cursor-pointer",
         "min-h-[200px] flex flex-col items-center justify-center gap-4",
         isDragging
-          ? "border-indigo-500 bg-indigo-500/10"
-          : "border-zinc-700 hover:border-zinc-600 hover:bg-zinc-900/50",
+          ? "border-orange-500 bg-orange-500/10"
+          : "border-stone-300 hover:border-stone-600 hover:bg-stone-100/50",
         isProcessing && "opacity-50 pointer-events-none",
         success && "border-green-500 bg-green-500/10",
         error && "border-red-500",
@@ -217,13 +217,13 @@ export function FileDropZone({
       {/* Estado de procesando */}
       {isProcessing && selectedFile && (
         <>
-          <Loader2 className="w-12 h-12 text-indigo-400 animate-spin" />
+          <Loader2 className="w-12 h-12 text-orange-400 animate-spin" />
           <div className="text-center">
-            <p className="text-base font-medium text-zinc-200">
+            <p className="text-base font-medium text-stone-200">
               Procesando archivo...
             </p>
-            <p className="text-sm text-zinc-400 mt-1">{selectedFile.name}</p>
-            <p className="text-xs text-zinc-500 mt-1">
+            <p className="text-sm text-stone-400 mt-1">{selectedFile.name}</p>
+            <p className="text-xs text-stone-500 mt-1">
               {getFileTypeLabel(selectedFile.type)} •{" "}
               {(selectedFile.size / 1024).toFixed(1)} KB
             </p>
@@ -239,7 +239,7 @@ export function FileDropZone({
             <p className="text-base font-medium text-green-400">
               ¡Archivo procesado con éxito!
             </p>
-            <p className="text-sm text-zinc-400 mt-1">{selectedFile.name}</p>
+            <p className="text-sm text-stone-400 mt-1">{selectedFile.name}</p>
           </div>
         </>
       )}
@@ -250,7 +250,7 @@ export function FileDropZone({
           <AlertCircle className="w-12 h-12 text-red-400" />
           <div className="text-center max-w-md">
             <p className="text-base font-medium text-red-400">Error</p>
-            <p className="text-sm text-zinc-300 mt-2">{error}</p>
+            <p className="text-sm text-stone-300 mt-2">{error}</p>
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -268,37 +268,37 @@ export function FileDropZone({
       {!isProcessing && !success && !error && (
         <>
           <div className="relative">
-            <Upload className="w-16 h-16 text-zinc-500" />
+            <Upload className="w-16 h-16 text-stone-500" />
             {isDragging && (
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-20 h-20 border-4 border-indigo-500 border-dashed rounded-full animate-pulse" />
+                <div className="w-20 h-20 border-4 border-orange-500 border-dashed rounded-full animate-pulse" />
               </div>
             )}
           </div>
 
           <div className="text-center space-y-2">
-            <p className="text-base font-medium text-zinc-200">
+            <p className="text-base font-medium text-stone-200">
               {isDragging
                 ? "Suelta el archivo aquí"
                 : "Arrastra un archivo o haz clic para seleccionar"}
             </p>
-            <p className="text-sm text-zinc-400">
+            <p className="text-sm text-stone-400">
               Formatos soportados: PDF, DOCX, TXT
             </p>
-            <p className="text-xs text-zinc-500">Tamaño máximo: {maxSizeMB}MB</p>
+            <p className="text-xs text-stone-500">Tamaño máximo: {maxSizeMB}MB</p>
           </div>
 
           {/* Indicador visual de archivos soportados */}
           <div className="flex gap-4 mt-2">
-            <div className="flex items-center gap-1.5 text-xs text-zinc-500">
+            <div className="flex items-center gap-1.5 text-xs text-stone-500">
               <FileText className="w-4 h-4" />
               <span>PDF</span>
             </div>
-            <div className="flex items-center gap-1.5 text-xs text-zinc-500">
+            <div className="flex items-center gap-1.5 text-xs text-stone-500">
               <FileText className="w-4 h-4" />
               <span>DOCX</span>
             </div>
-            <div className="flex items-center gap-1.5 text-xs text-zinc-500">
+            <div className="flex items-center gap-1.5 text-xs text-stone-500">
               <FileText className="w-4 h-4" />
               <span>TXT</span>
             </div>

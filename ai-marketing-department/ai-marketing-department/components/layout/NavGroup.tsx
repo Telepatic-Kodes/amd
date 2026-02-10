@@ -58,14 +58,14 @@ export function NavGroup({
         className={cn(
           "flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-all duration-200",
           hasActiveItem
-            ? "bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20"
-            : "text-zinc-400 hover:bg-white/5 hover:text-white"
+            ? "bg-orange-500/10 text-orange-400 hover:bg-orange-500/20"
+            : "text-stone-400 hover:bg-white/5 hover:text-white"
         )}
       >
         <Icon className="h-4 w-4" />
         <span className="flex-1 text-left">{title}</span>
         {badge && (
-          <span className="rounded-full bg-indigo-500/20 px-2 py-1 text-xs text-indigo-300">
+          <span className="rounded-full bg-orange-500/20 px-2 py-1 text-xs text-orange-300">
             {badge}
           </span>
         )}
@@ -83,7 +83,7 @@ export function NavGroup({
           isExpanded ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
         )}
       >
-        <div className="mt-2 flex flex-col gap-1 pl-6 border-l border-zinc-800/50 ml-2">
+        <div className="mt-2 flex flex-col gap-1 pl-6 border-l border-stone-800/50 ml-2">
           {items.map((item) => {
             const isActive = pathname === item.href;
             return (
@@ -93,8 +93,8 @@ export function NavGroup({
                 className={cn(
                   "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-all duration-200",
                   isActive
-                    ? "bg-indigo-500/10 text-indigo-400 shadow-[0_0_20px_rgba(99,102,241,0.1)]"
-                    : "text-zinc-400 hover:bg-white/5 hover:text-white"
+                    ? "bg-orange-500/10 text-orange-400 shadow-[0_0_20px_rgba(234,88,12,0.1)]"
+                    : "text-stone-400 hover:bg-white/5 hover:text-white"
                 )}
               >
                 <item.icon className="h-4 w-4" />

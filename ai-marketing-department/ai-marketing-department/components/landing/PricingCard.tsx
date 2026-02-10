@@ -27,8 +27,8 @@ export function PricingCard({ tier }: PricingCardProps) {
       hover
       className={
         tier.popular
-          ? "border-indigo-500 relative scale-105"
-          : "border-zinc-800"
+          ? "border-orange-500 relative scale-105"
+          : "border-stone-200"
       }
     >
       {tier.popular && (
@@ -47,10 +47,10 @@ export function PricingCard({ tier }: PricingCardProps) {
           <div className="flex items-baseline justify-center gap-2 mb-4">
             <span className="text-5xl font-bold text-white">{tier.price}</span>
             {tier.priceMonthly && (
-              <span className="text-zinc-500 text-lg">/mes</span>
+              <span className="text-stone-500 text-lg">/mes</span>
             )}
           </div>
-          <p className="text-zinc-400 text-sm">{tier.idealFor}</p>
+          <p className="text-stone-400 text-sm">{tier.idealFor}</p>
         </div>
 
         {/* Features */}
@@ -58,7 +58,7 @@ export function PricingCard({ tier }: PricingCardProps) {
           {tier.features.map((feature, index) => (
             <li key={index} className="flex items-start gap-3">
               <Check className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-              <span className="text-zinc-300 text-sm">{feature}</span>
+              <span className="text-stone-300 text-sm">{feature}</span>
             </li>
           ))}
         </ul>

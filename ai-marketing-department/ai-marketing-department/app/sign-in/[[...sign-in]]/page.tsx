@@ -8,7 +8,7 @@ export default function SignInPage() {
           <h1 className="text-3xl font-bold text-white mb-2">
             AI Marketing Department
           </h1>
-          <p className="text-zinc-400">
+          <p className="text-stone-400">
             Departamento de marketing automatizado con 37 agentes de IA
           </p>
         </div>
@@ -19,21 +19,21 @@ export default function SignInPage() {
           signUpUrl="/sign-up"
           appearance={{
             variables: {
-              colorPrimary: '#3b82f6',
+              colorPrimary: '#ea580c',
               colorBackground: '#000000',
               colorText: '#ffffff',
               colorInputBackground: '#111111',
               colorInputText: '#ffffff',
             },
             elements: {
-              formButtonPrimary: 'bg-blue-600 hover:bg-blue-700 text-white',
-              card: 'bg-zinc-900 border border-zinc-800',
+              formButtonPrimary: 'bg-orange-600 hover:bg-orange-700 text-white',
+              card: 'bg-stone-100 border border-stone-200',
               headerTitle: 'text-white',
-              headerSubtitle: 'text-zinc-400',
-              socialButtonsBlockButton: 'bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700',
-              formFieldLabel: 'text-zinc-300',
-              formFieldInput: 'bg-zinc-800 border-zinc-700 text-white',
-              footerActionLink: 'text-blue-500 hover:text-blue-400',
+              headerSubtitle: 'text-stone-400',
+              socialButtonsBlockButton: 'bg-stone-200 border-stone-300 text-white hover:bg-stone-100',
+              formFieldLabel: 'text-stone-300',
+              formFieldInput: 'bg-stone-200 border-stone-300 text-white',
+              footerActionLink: 'text-orange-500 hover:text-orange-400',
             },
           }}
         />

@@ -10,9 +10,9 @@ export function UserMenu() {
         appearance={{
           elements: {
             avatarBox: "w-8 h-8",
-            userButtonPopoverCard: "bg-zinc-900 border border-zinc-800",
-            userButtonPopoverActionButton: "text-zinc-300 hover:text-white",
-            userButtonPopoverActionButtonText: "text-zinc-300",
+            userButtonPopoverCard: "bg-white border border-stone-200",
+            userButtonPopoverActionButton: "text-stone-600 hover:text-stone-900",
+            userButtonPopoverActionButtonText: "text-stone-600",
             userButtonPopoverFooter: "hidden",
           },
         }}

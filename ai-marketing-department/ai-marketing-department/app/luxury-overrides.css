@@ -1,0 +1,399 @@
+/* Warm Atelier Redesign — Component Overrides (AMD)
+   Remove this single import to revert all atelier styling.
+   All overrides use @layer components so Tailwind utilities can still override.
+
+   Design: Light editorial dashboard with warm paper tones,
+   distinctive serif typography, and copper-orange accents. */
+
+@layer components {
+  /* === GRADIENT TEXT UTILITY === */
+  .luxury-gradient-text {
+    color: var(--color-luxury-gold);
+    font-weight: 700;
+  }
+
+  .luxury-gradient-text-accent {
+    color: var(--color-luxury-emerald);
+    font-weight: 600;
+  }
+
+  @supports (-webkit-background-clip: text) or (background-clip: text) {
+    .luxury-gradient-text {
+      background: linear-gradient(135deg, #c2410c 0%, var(--color-luxury-gold) 50%, var(--color-luxury-steel-blue) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .luxury-gradient-text-accent {
+      background: linear-gradient(135deg, var(--color-luxury-emerald) 0%, #0d9488 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+
+  /* === CARD BASE (light, warm) === */
+  .luxury-glass {
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 2px rgba(28, 25, 23, 0.04);
+  }
+
+  @supports (backdrop-filter: blur(12px)) {
+    .luxury-glass {
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+  }
+
+  /* === GRADIENT BUTTON === */
+  .luxury-gradient-button {
+    background: linear-gradient(135deg, var(--color-luxury-gold) 0%, #c2410c 100%);
+    color: white;
+    border: none;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    transition: transform 0.15s ease-out, box-shadow 0.3s ease, opacity 0.2s ease;
+  }
+
+  @media (hover: hover) {
+    .luxury-gradient-button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(234, 88, 12, 0.2);
+    }
+  }
+
+  .luxury-gradient-button:active {
+    transform: translateY(0);
+    transition-duration: 0.05s;
+  }
+
+  .luxury-gradient-button:disabled {
+    opacity: 0.5;
+    transform: none;
+    box-shadow: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .luxury-gradient-text,
+    .luxury-gradient-text-accent,
+    .luxury-glass,
+    .luxury-gradient-button {
+      transition: none;
+    }
+
+    .luxury-gradient-button:hover {
+      transform: none;
+    }
+  }
+
+  /* === WIDGET CARD (warm white, subtle shadow) === */
+  .luxury-card {
+    background: #ffffff;
+    border: 1px solid #e7e5e4;
+    border-radius: 0.75rem;
+    box-shadow:
+      0 1px 3px rgba(28, 25, 23, 0.04),
+      0 4px 16px rgba(28, 25, 23, 0.02);
+    transition: box-shadow 0.2s ease;
+  }
+
+  @media (hover: hover) {
+    .luxury-card:hover {
+      box-shadow:
+        0 2px 6px rgba(28, 25, 23, 0.06),
+        0 8px 24px rgba(28, 25, 23, 0.04);
+    }
+  }
+
+  /* === SECTION HEADING (dark, editorial) === */
+  .luxury-section-heading {
+    color: #78716c;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.7rem;
+    font-weight: 700;
+  }
+
+  /* === METRICS (serif, bold, dark) === */
+  .luxury-metric {
+    font-size: 2rem;
+    font-weight: 800;
+    font-family: var(--font-playfair), Georgia, 'Times New Roman', serif;
+    color: #1c1917;
+    line-height: 1.2;
+  }
+
+  .luxury-metric-sm {
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-family: var(--font-playfair), Georgia, 'Times New Roman', serif;
+    color: #1c1917;
+    line-height: 1.2;
+  }
+
+  /* === PROGRESS BARS (slim, warm) === */
+  .luxury-progress-track {
+    background: #f5f0eb;
+    border-radius: 9999px;
+    overflow: hidden;
+    height: 0.375rem;
+  }
+
+  .luxury-progress-fill {
+    height: 100%;
+    border-radius: 9999px;
+    background: linear-gradient(90deg, var(--color-luxury-gold) 0%, #f97316 100%);
+    transition: width 0.5s ease;
+  }
+
+  .luxury-progress-fill-emerald {
+    height: 100%;
+    border-radius: 9999px;
+    background: linear-gradient(90deg, var(--color-luxury-emerald) 0%, #34d399 100%);
+    transition: width 0.5s ease;
+  }
+
+  /* === STAGE INDICATORS (left border) === */
+  .luxury-stage-in-progress {
+    border-left: 3px solid var(--color-luxury-steel-blue);
+    padding-left: 0.75rem;
+  }
+
+  .luxury-stage-todo {
+    border-left: 3px solid var(--color-luxury-gold);
+    padding-left: 0.75rem;
+  }
+
+  .luxury-stage-blocked {
+    border-left: 3px solid #ef4444;
+    padding-left: 0.75rem;
+  }
+
+  .luxury-stage-done {
+    border-left: 3px solid var(--color-luxury-emerald);
+    padding-left: 0.75rem;
+  }
+
+  .luxury-stage-cancelled {
+    border-left: 3px solid #d6d3d1;
+    padding-left: 0.75rem;
+  }
+
+  .luxury-chart-container {
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+  }
+
+  .luxury-chart-legend {
+    font-size: 0.75rem;
+    color: #78716c;
+    letter-spacing: 0.05em;
+  }
+
+  /* === TODAY HIGHLIGHT (warm orange tint) === */
+  .luxury-today-highlight {
+    background: rgba(234, 88, 12, 0.06);
+    border: 1px solid rgba(234, 88, 12, 0.15);
+    border-radius: 0.5rem;
+  }
+
+  /* === VALUE PULSE (orange dot) === */
+  .luxury-value-pulse {
+    position: relative;
+  }
+
+  .luxury-value-pulse::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: -0.5rem;
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: 50%;
+    background: var(--color-luxury-gold);
+    transform: translateY(-50%);
+    animation: luxury-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes luxury-pulse {
+    0%, 100% { opacity: 0.3; transform: translateY(-50%) scale(1); }
+    50% { opacity: 1; transform: translateY(-50%) scale(1.3); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .luxury-value-pulse::after {
+      animation: none;
+      opacity: 0.7;
+    }
+
+    .luxury-progress-fill,
+    .luxury-progress-fill-emerald {
+      transition: none;
+    }
+  }
+
+  /* === PAGE LOAD CARD REVEAL === */
+  @keyframes luxury-card-reveal {
+    0% {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .luxury-card-animated {
+    animation: luxury-card-reveal 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: calc(var(--stagger-index, 0) * 0.08s);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .luxury-card-animated {
+      animation: luxury-fade-only 0.3s both;
+    }
+  }
+
+  @keyframes luxury-fade-only {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+  /* === SCROLL-TRIGGERED REVEAL === */
+  .luxury-scroll-reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .luxury-scroll-reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .luxury-scroll-reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+
+  /* === LOADING SPINNER (orange conic gradient) === */
+  @keyframes luxury-spinner-rotate {
+    100% { transform: rotate(360deg); }
+  }
+
+  .luxury-spinner {
+    display: inline-block;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    background: conic-gradient(
+      from 0deg,
+      transparent 0%,
+      var(--color-luxury-gold) 50%,
+      var(--color-luxury-steel-blue) 100%
+    );
+    mask: radial-gradient(
+      circle,
+      transparent 0%,
+      transparent 40%,
+      black 40%,
+      black 100%
+    );
+    -webkit-mask: radial-gradient(
+      circle,
+      transparent 0%,
+      transparent 40%,
+      black 40%,
+      black 100%
+    );
+    animation: luxury-spinner-rotate 1s linear infinite;
+  }
+
+  .luxury-spinner-sm {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .luxury-spinner-lg {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .luxury-spinner {
+      animation-duration: 3s;
+    }
+  }
+
+  /* === RESPONSIVE: MOBILE & TABLET === */
+  @media (max-width: 768px) {
+    .luxury-metric {
+      font-size: 1.5rem;
+    }
+
+    .luxury-metric-sm {
+      font-size: 1.25rem;
+    }
+
+    .luxury-card {
+      border-radius: 0.5rem;
+    }
+
+    .luxury-section-heading {
+      font-size: 0.65rem;
+    }
+
+    .luxury-gradient-button {
+      min-height: 44px;
+      min-width: 44px;
+    }
+
+    .luxury-card-animated {
+      animation-delay: calc(var(--stagger-index, 0) * 0.05s);
+    }
+  }
+
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .luxury-metric {
+      font-size: 1.75rem;
+    }
+  }
+}
+
+/* === SCROLLBAR STYLING ===
+   Outside @layer — scrollbar pseudo-elements break in CSS layers. */
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #d6d3d1 #f5f0eb;
+}
+
+/* Chrome, Safari, Edge */
+*::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #f5f0eb;
+  border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #d6d3d1;
+  border-radius: 4px;
+  border: 1px solid #f5f0eb;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #a8a29e;
+}

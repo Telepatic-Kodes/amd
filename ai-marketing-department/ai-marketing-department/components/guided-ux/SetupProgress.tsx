@@ -106,42 +106,42 @@ export function SetupProgress() {
   );
 
   return (
-    <div className="rounded-xl border border-zinc-800 bg-zinc-950/50 overflow-hidden">
+    <div className="rounded-xl border border-stone-200 bg-[#faf8f4]/50 overflow-hidden">
       {/* Progress Header */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-between p-4 hover:bg-zinc-900/50 transition-colors"
+        className="w-full flex items-center justify-between p-4 hover:bg-stone-100/50 transition-colors"
       >
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-indigo-500/10">
-            <Sparkles className="w-4 h-4 text-indigo-400" />
+          <div className="p-2 rounded-lg bg-orange-500/10">
+            <Sparkles className="w-4 h-4 text-orange-400" />
           </div>
           <div className="text-left">
             <p className="text-sm font-medium text-white">
               Progreso de Configuración
             </p>
-            <p className="text-xs text-zinc-500">
+            <p className="text-xs text-stone-500">
               {completedCount}/{totalCount} pasos completados
             </p>
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-sm font-semibold text-indigo-400">
+          <span className="text-sm font-semibold text-orange-400">
             {progress}%
           </span>
           {expanded ? (
-            <ChevronUp className="w-4 h-4 text-zinc-500" />
+            <ChevronUp className="w-4 h-4 text-stone-500" />
           ) : (
-            <ChevronDown className="w-4 h-4 text-zinc-500" />
+            <ChevronDown className="w-4 h-4 text-stone-500" />
           )}
         </div>
       </button>
 
       {/* Progress Bar */}
       <div className="px-4 pb-3">
-        <div className="h-1.5 rounded-full bg-zinc-800 overflow-hidden">
+        <div className="h-1.5 rounded-full bg-stone-200 overflow-hidden">
           <motion.div
-            className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-purple-500"
+            className="h-full rounded-full bg-gradient-to-r from-orange-500 to-purple-500"
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
             transition={{ duration: 0.8, ease: "easeOut" }}
@@ -173,26 +173,26 @@ export function SetupProgress() {
                       completed
                         ? "opacity-60"
                         : isNext
-                        ? "bg-indigo-500/10 border border-indigo-500/20"
-                        : "hover:bg-zinc-900/50"
+                        ? "bg-orange-500/10 border border-orange-500/20"
+                        : "hover:bg-stone-100/50"
                     }`}
                   >
                     {completed ? (
                       <CheckCircle2 className="w-4 h-4 text-green-400 flex-shrink-0" />
                     ) : (
-                      <Circle className={`w-4 h-4 flex-shrink-0 ${isNext ? "text-indigo-400" : "text-zinc-600"}`} />
+                      <Circle className={`w-4 h-4 flex-shrink-0 ${isNext ? "text-orange-400" : "text-stone-600"}`} />
                     )}
-                    <StepIcon className={`w-4 h-4 flex-shrink-0 ${completed ? "text-zinc-500" : isNext ? "text-indigo-400" : "text-zinc-500"}`} />
+                    <StepIcon className={`w-4 h-4 flex-shrink-0 ${completed ? "text-stone-500" : isNext ? "text-orange-400" : "text-stone-500"}`} />
                     <div className="flex-1 min-w-0">
-                      <p className={`text-sm ${completed ? "line-through text-zinc-500" : "text-white"}`}>
+                      <p className={`text-sm ${completed ? "line-through text-stone-500" : "text-white"}`}>
                         {step.label}
                       </p>
-                      <p className="text-xs text-zinc-500 truncate">
+                      <p className="text-xs text-stone-500 truncate">
                         {step.description}
                       </p>
                     </div>
                     {isNext && (
-                      <span className="text-xs text-indigo-400 font-medium flex-shrink-0">
+                      <span className="text-xs text-orange-400 font-medium flex-shrink-0">
                         Siguiente
                       </span>
                     )}
@@ -209,7 +209,7 @@ export function SetupProgress() {
         <div className="px-4 pb-3">
           <Link
             href={nextStep.href}
-            className="text-xs text-zinc-500 hover:text-indigo-400 transition-colors"
+            className="text-xs text-stone-500 hover:text-orange-400 transition-colors"
           >
             Siguiente: {nextStep.label} →
           </Link>

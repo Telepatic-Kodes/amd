@@ -71,7 +71,7 @@ export function PublishToLinkedInButton({
         <CheckCircle2 className="h-4 w-4 text-green-400" />
         <span className="text-green-400">{translate("linkedinPublished")}</span>
         {lastPublish?.publishedAt && (
-          <span className="text-xs text-zinc-500">
+          <span className="text-xs text-stone-500">
             {new Date(lastPublish.publishedAt).toLocaleDateString("es-CL", {
               day: "numeric",
               month: "short",
@@ -122,7 +122,7 @@ export function PublishToLinkedInButton({
           <div className="flex justify-end gap-2">
             <button
               onClick={() => setShowPreview(false)}
-              className="px-3 py-1.5 rounded-lg text-sm text-zinc-400 hover:bg-zinc-800 transition-colors"
+              className="px-3 py-1.5 rounded-lg text-sm text-stone-400 hover:bg-stone-200 transition-colors"
             >
               Cancelar
             </button>

@@ -54,7 +54,7 @@ export function AddFeedForm({ onSuccess }: { onSuccess?: () => void }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setIsOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-500 hover:bg-indigo-600 text-white font-medium transition-colors"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-orange-500 hover:bg-orange-600 text-white font-medium transition-colors"
           >
             <Plus className="h-4 w-4" />
             Add Feed
@@ -65,14 +65,14 @@ export function AddFeedForm({ onSuccess }: { onSuccess?: () => void }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             onSubmit={handleSubmit}
-            className="p-4 rounded-lg border border-zinc-800 bg-zinc-950/50 space-y-4"
+            className="p-4 rounded-lg border border-stone-200 bg-[#faf8f4]/50 space-y-4"
           >
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-white font-medium">Add New Feed</h3>
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="p-1 rounded hover:bg-zinc-800 text-zinc-400"
+                className="p-1 rounded hover:bg-stone-200 text-stone-400"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -86,35 +86,35 @@ export function AddFeedForm({ onSuccess }: { onSuccess?: () => void }) {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="col-span-2">
-                <label className="block text-xs text-zinc-500 mb-1">Feed URL</label>
+                <label className="block text-xs text-stone-500 mb-1">Feed URL</label>
                 <input
                   type="url"
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
                   placeholder="https://example.com/feed.xml"
                   required
-                  className="w-full rounded-lg border border-zinc-800 bg-zinc-900 py-2 px-3 text-sm text-white placeholder-zinc-500 focus:border-indigo-500 focus:outline-none"
+                  className="w-full rounded-lg border border-stone-200 bg-stone-100 py-2 px-3 text-sm text-white placeholder-stone-500 focus:border-orange-500 focus:outline-none"
                 />
               </div>
 
               <div className="col-span-2">
-                <label className="block text-xs text-zinc-500 mb-1">Name</label>
+                <label className="block text-xs text-stone-500 mb-1">Name</label>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="My Feed"
                   required
-                  className="w-full rounded-lg border border-zinc-800 bg-zinc-900 py-2 px-3 text-sm text-white placeholder-zinc-500 focus:border-indigo-500 focus:outline-none"
+                  className="w-full rounded-lg border border-stone-200 bg-stone-100 py-2 px-3 text-sm text-white placeholder-stone-500 focus:border-orange-500 focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs text-zinc-500 mb-1">Category</label>
+                <label className="block text-xs text-stone-500 mb-1">Category</label>
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full rounded-lg border border-zinc-800 bg-zinc-900 py-2 px-3 text-sm text-white focus:border-indigo-500 focus:outline-none"
+                  className="w-full rounded-lg border border-stone-200 bg-stone-100 py-2 px-3 text-sm text-white focus:border-orange-500 focus:outline-none"
                 >
                   {CATEGORIES.map((cat) => (
                     <option key={cat} value={cat}>{cat}</option>
@@ -123,11 +123,11 @@ export function AddFeedForm({ onSuccess }: { onSuccess?: () => void }) {
               </div>
 
               <div>
-                <label className="block text-xs text-zinc-500 mb-1">Sync Frequency</label>
+                <label className="block text-xs text-stone-500 mb-1">Sync Frequency</label>
                 <select
                   value={syncFrequency}
                   onChange={(e) => setSyncFrequency(e.target.value as typeof syncFrequency)}
-                  className="w-full rounded-lg border border-zinc-800 bg-zinc-900 py-2 px-3 text-sm text-white focus:border-indigo-500 focus:outline-none"
+                  className="w-full rounded-lg border border-stone-200 bg-stone-100 py-2 px-3 text-sm text-white focus:border-orange-500 focus:outline-none"
                 >
                   {FREQUENCIES.map((freq) => (
                     <option key={freq.value} value={freq.value}>{freq.label}</option>
@@ -140,14 +140,14 @@ export function AddFeedForm({ onSuccess }: { onSuccess?: () => void }) {
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="flex-1 py-2 rounded-lg border border-zinc-800 text-zinc-400 hover:bg-zinc-800 transition-colors"
+                className="flex-1 py-2 rounded-lg border border-stone-200 text-stone-400 hover:bg-stone-200 transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isLoading}
-                className="flex-1 py-2 rounded-lg bg-indigo-500 hover:bg-indigo-600 text-white font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                className="flex-1 py-2 rounded-lg bg-orange-500 hover:bg-orange-600 text-white font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
                 Add Feed

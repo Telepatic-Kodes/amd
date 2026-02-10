@@ -26,8 +26,8 @@ export function CaseStudyCard({ caseStudy }: CaseStudyCardProps) {
             <h3 className="text-2xl font-bold text-white mb-2">
               {caseStudy.name}
             </h3>
-            <p className="text-zinc-400 text-sm">{caseStudy.industry}</p>
-            <p className="text-zinc-500 text-xs mt-1">{caseStudy.size}</p>
+            <p className="text-stone-400 text-sm">{caseStudy.industry}</p>
+            <p className="text-stone-500 text-xs mt-1">{caseStudy.size}</p>
           </div>
           <Badge variant="success">{caseStudy.timeline}</Badge>
         </div>
@@ -35,26 +35,26 @@ export function CaseStudyCard({ caseStudy }: CaseStudyCardProps) {
         {/* Challenge & Solution */}
         <div className="space-y-4 mb-6">
           <div>
-            <p className="text-xs text-zinc-500 uppercase font-semibold mb-1">
+            <p className="text-xs text-stone-500 uppercase font-semibold mb-1">
               Desafío:
             </p>
-            <p className="text-zinc-300 text-sm">{caseStudy.challenge}</p>
+            <p className="text-stone-300 text-sm">{caseStudy.challenge}</p>
           </div>
           <div>
-            <p className="text-xs text-zinc-500 uppercase font-semibold mb-1">
+            <p className="text-xs text-stone-500 uppercase font-semibold mb-1">
               Solución:
             </p>
-            <p className="text-indigo-400 text-sm font-medium">
+            <p className="text-orange-400 text-sm font-medium">
               {caseStudy.solution}
             </p>
           </div>
         </div>
 
         {/* Results Grid */}
-        <div className="bg-zinc-900/50 rounded-lg p-6 mb-6">
+        <div className="bg-stone-100/50 rounded-lg p-6 mb-6">
           <div className="flex items-center gap-2 mb-4">
             <TrendingUp className="h-4 w-4 text-green-500" />
-            <p className="text-xs text-zinc-400 uppercase font-semibold">
+            <p className="text-xs text-stone-400 uppercase font-semibold">
               Resultados:
             </p>
           </div>
@@ -70,7 +70,7 @@ export function CaseStudyCard({ caseStudy }: CaseStudyCardProps) {
                   <div className="text-2xl font-bold text-green-400">
                     {value}
                   </div>
-                  <div className="text-xs text-zinc-500 mt-1">
+                  <div className="text-xs text-stone-500 mt-1">
                     {key
                       .replace(/([A-Z])/g, " $1")
                       .trim()
@@ -83,10 +83,10 @@ export function CaseStudyCard({ caseStudy }: CaseStudyCardProps) {
         </div>
 
         {/* Quote */}
-        <div className="border-l-4 border-indigo-500 pl-4 py-2">
-          <Quote className="h-5 w-5 text-indigo-500 mb-2" />
-          <p className="text-zinc-300 italic mb-3">{caseStudy.quote}</p>
-          <p className="text-zinc-500 text-sm">— {caseStudy.author}</p>
+        <div className="border-l-4 border-orange-500 pl-4 py-2">
+          <Quote className="h-5 w-5 text-orange-500 mb-2" />
+          <p className="text-stone-300 italic mb-3">{caseStudy.quote}</p>
+          <p className="text-stone-500 text-sm">— {caseStudy.author}</p>
         </div>
       </CardContent>
     </Card>

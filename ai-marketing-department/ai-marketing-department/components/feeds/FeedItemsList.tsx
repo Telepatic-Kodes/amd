@@ -22,7 +22,7 @@ export function FeedItemsList({ feedId, limit = 10 }: FeedItemsListProps) {
     return (
       <div className="space-y-2">
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="h-20 rounded-lg bg-zinc-900/50 animate-pulse" />
+          <div key={i} className="h-20 rounded-lg bg-stone-100/50 animate-pulse" />
         ))}
       </div>
     );
@@ -30,7 +30,7 @@ export function FeedItemsList({ feedId, limit = 10 }: FeedItemsListProps) {
 
   if (feedItems.length === 0) {
     return (
-      <div className="text-center py-8 text-zinc-500">
+      <div className="text-center py-8 text-stone-500">
         No items yet. Sync a feed to see items here.
       </div>
     );
@@ -57,23 +57,23 @@ export function FeedItemsList({ feedId, limit = 10 }: FeedItemsListProps) {
         feedName?: string;
         summary?: string;
       }) => (
-        <Card key={item._id} className="p-3 hover:border-zinc-700 transition-colors">
+        <Card key={item._id} className="p-3 hover:border-stone-300 transition-colors">
           <div className="flex items-start gap-3">
             <div className="flex-1 min-w-0">
               <a
                 href={item.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm font-medium text-white hover:text-indigo-400 transition-colors line-clamp-2"
+                className="text-sm font-medium text-white hover:text-orange-400 transition-colors line-clamp-2"
               >
                 {item.title}
               </a>
               {item.summary && (
-                <p className="text-xs text-zinc-500 mt-1 line-clamp-2">{item.summary}</p>
+                <p className="text-xs text-stone-500 mt-1 line-clamp-2">{item.summary}</p>
               )}
-              <div className="flex items-center gap-3 mt-2 text-xs text-zinc-500">
+              <div className="flex items-center gap-3 mt-2 text-xs text-stone-500">
                 {item.feedName && (
-                  <span className="text-indigo-400">{item.feedName}</span>
+                  <span className="text-orange-400">{item.feedName}</span>
                 )}
                 {item.author && (
                   <span className="flex items-center gap-1">
@@ -91,7 +91,7 @@ export function FeedItemsList({ feedId, limit = 10 }: FeedItemsListProps) {
               href={item.link}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-1.5 rounded-lg hover:bg-zinc-800 text-zinc-500 hover:text-white transition-colors"
+              className="p-1.5 rounded-lg hover:bg-stone-200 text-stone-500 hover:text-stone-900 transition-colors"
             >
               <ExternalLink className="h-4 w-4" />
             </a>

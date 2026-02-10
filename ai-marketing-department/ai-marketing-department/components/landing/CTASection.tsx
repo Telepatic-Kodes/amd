@@ -33,7 +33,7 @@ export function CTASection() {
   return (
     <section
       id="cta-final"
-      className="py-24 bg-gradient-to-b from-zinc-950/50 to-black"
+      className="py-24 bg-gradient-to-b from-stone-100/30 to-black"
     >
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
@@ -43,12 +43,12 @@ export function CTASection() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6 }}
           >
-            <Card className="bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border-indigo-500/20">
+            <Card className="bg-gradient-to-r from-orange-500/10 to-purple-500/10 border-orange-500/20">
               <CardContent className="p-12">
                 {/* Header */}
                 <div className="text-center mb-12">
                   <motion.div
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 text-sm font-medium mb-6"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-500/20 border border-orange-500/30 text-orange-300 text-sm font-medium mb-6"
                     initial={{ opacity: 0, scale: 0.8 }}
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
@@ -66,13 +66,13 @@ export function CTASection() {
                     transition={{ duration: 0.6, delay: 0.3 }}
                   >
                     Empieza a Automatizar{" "}
-                    <span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+                    <span className="bg-gradient-to-r from-orange-400 to-purple-400 bg-clip-text text-transparent">
                       Tu Marketing Hoy
                     </span>
                   </motion.h2>
 
                   <motion.p
-                    className="text-xl text-zinc-300 mb-8"
+                    className="text-xl text-stone-300 mb-8"
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
@@ -98,7 +98,7 @@ export function CTASection() {
                     ].map((benefit, index) => (
                       <motion.div
                         key={index}
-                        className="flex items-center gap-2 text-zinc-400"
+                        className="flex items-center gap-2 text-stone-400"
                         initial={{ opacity: 0, x: -10 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
@@ -130,7 +130,7 @@ export function CTASection() {
                         onChange={(e) =>
                           setFormData({ ...formData, name: e.target.value })
                         }
-                        className="w-full px-4 py-3 bg-zinc-900 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                        className="w-full px-4 py-3 bg-stone-100 border border-stone-300 rounded-lg text-white placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
                       />
                       <input
                         type="email"
@@ -140,7 +140,7 @@ export function CTASection() {
                         onChange={(e) =>
                           setFormData({ ...formData, email: e.target.value })
                         }
-                        className="w-full px-4 py-3 bg-zinc-900 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                        className="w-full px-4 py-3 bg-stone-100 border border-stone-300 rounded-lg text-white placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
                       />
                       <input
                         type="text"
@@ -150,7 +150,7 @@ export function CTASection() {
                         onChange={(e) =>
                           setFormData({ ...formData, company: e.target.value })
                         }
-                        className="w-full px-4 py-3 bg-zinc-900 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                        className="w-full px-4 py-3 bg-stone-100 border border-stone-300 rounded-lg text-white placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
                       />
                     </div>
 
@@ -159,7 +159,7 @@ export function CTASection() {
                       <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
 
-                    <p className="text-center text-zinc-500 text-xs mt-4">
+                    <p className="text-center text-stone-500 text-xs mt-4">
                       Al enviar, aceptas nuestros términos y política de
                       privacidad.
                     </p>
@@ -181,7 +181,7 @@ export function CTASection() {
                     <h3 className="text-2xl font-bold text-white mb-2">
                       ¡Gracias!
                     </h3>
-                    <p className="text-zinc-400">
+                    <p className="text-stone-400">
                       Te contactaremos pronto para agendar tu demo.
                     </p>
                   </motion.div>

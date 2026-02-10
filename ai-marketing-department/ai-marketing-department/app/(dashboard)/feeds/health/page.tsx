@@ -114,20 +114,20 @@ export default function FeedsHealthPage() {
         <div className="flex items-center gap-4">
           <Link
             href="/"
-            className="p-2 rounded-lg text-zinc-400 hover:bg-white/5 transition-colors"
+            className="p-2 rounded-lg text-stone-400 hover:bg-stone-100 transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-white to-stone-400 bg-clip-text text-transparent">
               Salud de Fuentes
             </h1>
-            <p className="text-zinc-400 mt-2 text-lg">
+            <p className="text-stone-400 mt-2 text-lg">
               Reporte mensual detallado de todas tus fuentes RSS
             </p>
           </div>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 transition-colors">
+        <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-orange-500/10 text-orange-400 hover:bg-orange-500/20 transition-colors">
           <Download className="w-4 h-4" />
           Exportar
         </button>
@@ -143,12 +143,12 @@ export default function FeedsHealthPage() {
         >
           <Card className="p-4">
             <div className="flex items-center justify-between mb-2">
-              <div className="p-2 rounded-lg bg-blue-500/10">
-                <Activity className="w-5 h-5 text-blue-400" />
+              <div className="p-2 rounded-lg bg-orange-500/10">
+                <Activity className="w-5 h-5 text-orange-400" />
               </div>
             </div>
             <p className="text-3xl font-bold text-white">{stats.totalFeeds}</p>
-            <p className="text-sm text-zinc-400">Fuentes totales</p>
+            <p className="text-sm text-stone-400">Fuentes totales</p>
           </Card>
         </motion.div>
 
@@ -165,7 +165,7 @@ export default function FeedsHealthPage() {
               </div>
             </div>
             <p className="text-3xl font-bold text-white">{stats.activeFeeds}</p>
-            <p className="text-sm text-zinc-400">Activas ahora</p>
+            <p className="text-sm text-stone-400">Activas ahora</p>
           </Card>
         </motion.div>
 
@@ -182,7 +182,7 @@ export default function FeedsHealthPage() {
               </div>
             </div>
             <p className="text-3xl font-bold text-white">{stats.errorFeeds}</p>
-            <p className="text-sm text-zinc-400">Con problemas</p>
+            <p className="text-sm text-stone-400">Con problemas</p>
           </Card>
         </motion.div>
 
@@ -199,7 +199,7 @@ export default function FeedsHealthPage() {
               </div>
             </div>
             <p className="text-3xl font-bold text-white">{stats.avgUptime}%</p>
-            <p className="text-sm text-zinc-400">Disponibilidad promedio</p>
+            <p className="text-sm text-stone-400">Disponibilidad promedio</p>
           </Card>
         </motion.div>
       </div>
@@ -239,9 +239,9 @@ export default function FeedsHealthPage() {
                   <AlertCircle className={`w-5 h-5 ${iconColor} flex-shrink-0 mt-0.5`} />
                   <div className="flex-1">
                     <p className="font-medium text-white">{rec.title}</p>
-                    <p className="text-sm text-zinc-400 mt-1">{rec.message}</p>
+                    <p className="text-sm text-stone-400 mt-1">{rec.message}</p>
                   </div>
-                  <button className="px-3 py-1 rounded-lg text-sm font-medium text-indigo-400 hover:bg-indigo-500/20 transition-colors flex-shrink-0">
+                  <button className="px-3 py-1 rounded-lg text-sm font-medium text-orange-400 hover:bg-orange-500/20 transition-colors flex-shrink-0">
                     {rec.action}
                   </button>
                 </div>
@@ -263,23 +263,23 @@ export default function FeedsHealthPage() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-zinc-800">
-                  <th className="text-left py-3 px-4 text-sm font-medium text-zinc-400">
+                <tr className="border-b border-stone-200">
+                  <th className="text-left py-3 px-4 text-sm font-medium text-stone-400">
                     Fuente
                   </th>
-                  <th className="text-right py-3 px-4 text-sm font-medium text-zinc-400">
+                  <th className="text-right py-3 px-4 text-sm font-medium text-stone-400">
                     Estado
                   </th>
-                  <th className="text-right py-3 px-4 text-sm font-medium text-zinc-400">
+                  <th className="text-right py-3 px-4 text-sm font-medium text-stone-400">
                     Disponibilidad
                   </th>
-                  <th className="text-right py-3 px-4 text-sm font-medium text-zinc-400">
+                  <th className="text-right py-3 px-4 text-sm font-medium text-stone-400">
                     Artículos
                   </th>
-                  <th className="text-right py-3 px-4 text-sm font-medium text-zinc-400">
+                  <th className="text-right py-3 px-4 text-sm font-medium text-stone-400">
                     Sincronización
                   </th>
-                  <th className="text-right py-3 px-4 text-sm font-medium text-zinc-400">
+                  <th className="text-right py-3 px-4 text-sm font-medium text-stone-400">
                     Últimos problemas
                   </th>
                 </tr>
@@ -288,12 +288,12 @@ export default function FeedsHealthPage() {
                 {feeds.map((feed) => (
                   <tr
                     key={feed.id}
-                    className="border-b border-zinc-800/50 hover:bg-zinc-900/50 transition-colors"
+                    className="border-b border-stone-200/50 hover:bg-stone-100/50 transition-colors"
                   >
                     <td className="py-4 px-4 text-sm">
                       <div>
                         <p className="font-medium text-white">{feed.name}</p>
-                        <p className="text-xs text-zinc-500 mt-0.5">{feed.url}</p>
+                        <p className="text-xs text-stone-500 mt-0.5">{feed.url}</p>
                       </div>
                     </td>
                     <td className="py-4 px-4 text-right">
@@ -327,7 +327,7 @@ export default function FeedsHealthPage() {
                       </p>
                     </td>
                     <td className="py-4 px-4 text-right">
-                      <p className="font-semibold text-blue-400">
+                      <p className="font-semibold text-orange-400">
                         {feed.itemsThisMonth}
                       </p>
                     </td>
@@ -336,7 +336,7 @@ export default function FeedsHealthPage() {
                         {feed.syncSuccess}%
                       </p>
                     </td>
-                    <td className="py-4 px-4 text-right text-sm text-zinc-400">
+                    <td className="py-4 px-4 text-right text-sm text-stone-400">
                       {feed.lastError ? (
                         <span className="text-red-400 font-medium">
                           {feed.lastError}
@@ -359,9 +359,9 @@ export default function FeedsHealthPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6 }}
       >
-        <Card className="p-6 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border-indigo-500/30">
+        <Card className="p-6 bg-gradient-to-r from-orange-500/10 to-purple-500/10 border-orange-500/30">
           <h3 className="text-2xl font-semibold text-white mb-2">¿Cómo mejoro la salud?</h3>
-          <ul className="space-y-2 text-zinc-300">
+          <ul className="space-y-2 text-stone-300">
             <li>✓ Revisa regularmente fuentes con bajo rendimiento</li>
             <li>✓ Elimina fuentes pausadas que ya no uses</li>
             <li>✓ Aumenta el intervalo de sincronización para fuentes lentas</li>

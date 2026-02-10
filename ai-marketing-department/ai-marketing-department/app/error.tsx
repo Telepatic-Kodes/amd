@@ -11,25 +11,25 @@ export default function RootError({
 }) {
   return (
     <div className="flex min-h-screen items-center justify-center p-6">
-      <div className="w-full max-w-md rounded-xl border border-gray-100 bg-white p-8 shadow-sm text-center space-y-4">
+      <div className="w-full max-w-md rounded-xl border border-stone-100 bg-white p-8 shadow-sm text-center space-y-4">
         <AlertCircle className="mx-auto h-10 w-10 text-red-500" />
-        <h2 className="text-xl font-semibold text-gray-900">
+        <h2 className="text-xl font-semibold text-stone-900">
           Algo salió mal
         </h2>
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-stone-500">
           Ocurrió un error inesperado. Puedes intentar de nuevo o volver al
           inicio.
         </p>
         <div className="flex flex-col gap-2">
           <button
             onClick={reset}
-            className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-6 py-3 text-base font-medium text-white hover:bg-blue-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            className="inline-flex items-center justify-center rounded-lg bg-orange-600 px-6 py-3 text-base font-medium text-white hover:bg-orange-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
           >
             Reintentar
           </button>
           <a
             href="/"
-            className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
+            className="text-sm text-stone-500 hover:text-stone-700 transition-colors"
           >
             Volver al inicio
           </a>

@@ -70,7 +70,7 @@ export function VersionHistory({ contentId, onCompare, onRollback }: VersionHist
     return (
       <div className="space-y-3">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="h-16 rounded-lg bg-zinc-900/50 animate-pulse" />
+          <div key={i} className="h-16 rounded-lg bg-stone-100/50 animate-pulse" />
         ))}
       </div>
     );
@@ -79,7 +79,7 @@ export function VersionHistory({ contentId, onCompare, onRollback }: VersionHist
   if (versions.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-sm text-zinc-500">Sin historial de versiones</p>
+        <p className="text-sm text-stone-500">Sin historial de versiones</p>
       </div>
     );
   }
@@ -113,7 +113,7 @@ export function VersionHistory({ contentId, onCompare, onRollback }: VersionHist
             <div key={version._id} className="relative">
               {/* Vertical line (skip for last item) */}
               {index < versions.length - 1 && (
-                <div className="absolute left-[15px] top-8 bottom-[-16px] w-[2px] bg-zinc-800" />
+                <div className="absolute left-[15px] top-8 bottom-[-16px] w-[2px] bg-stone-200" />
               )}
 
               {/* Version Entry */}
@@ -122,8 +122,8 @@ export function VersionHistory({ contentId, onCompare, onRollback }: VersionHist
                 className={cn(
                   "flex gap-4 p-3 rounded-lg cursor-pointer transition-all",
                   isSelected
-                    ? "bg-indigo-500/10 border border-indigo-500/30"
-                    : "bg-zinc-900/30 border border-zinc-800 hover:bg-zinc-900/50"
+                    ? "bg-orange-500/10 border border-orange-500/30"
+                    : "bg-stone-100/30 border border-stone-200 hover:bg-stone-100/50"
                 )}
               >
                 {/* Icon */}
@@ -133,7 +133,7 @@ export function VersionHistory({ contentId, onCompare, onRollback }: VersionHist
                     version.changeType === "created"
                       ? "bg-green-500/10 text-green-400"
                       : version.changeType === "edited"
-                      ? "bg-blue-500/10 text-blue-400"
+                      ? "bg-orange-500/10 text-orange-400"
                       : version.changeType === "status_change"
                       ? "bg-purple-500/10 text-purple-400"
                       : "bg-amber-500/10 text-amber-400"
@@ -151,17 +151,17 @@ export function VersionHistory({ contentId, onCompare, onRollback }: VersionHist
                         <span className="ml-2 text-xs text-emerald-400">(Actual)</span>
                       )}
                     </p>
-                    <span className="text-xs text-zinc-500 shrink-0">
+                    <span className="text-xs text-stone-500 shrink-0">
                       {formatRelativeTime(version.createdAt)}
                     </span>
                   </div>
-                  <p className="text-xs text-zinc-400 mb-1">
+                  <p className="text-xs text-stone-400 mb-1">
                     {getChangeLabel(version.changeType)}
                   </p>
                   {version.changeSummary && (
-                    <p className="text-xs text-zinc-500">{version.changeSummary}</p>
+                    <p className="text-xs text-stone-500">{version.changeSummary}</p>
                   )}
-                  <p className="text-xs text-zinc-600 mt-1">
+                  <p className="text-xs text-stone-600 mt-1">
                     {translate("editedBy")}: {version.editedByName}
                   </p>
                 </div>
@@ -196,8 +196,8 @@ export function VersionHistory({ contentId, onCompare, onRollback }: VersionHist
           className={cn(
             "w-full px-4 py-2 rounded-lg text-sm font-medium transition-colors",
             canCompare
-              ? "bg-indigo-500 text-white hover:bg-indigo-600"
-              : "bg-zinc-800 text-zinc-500 cursor-not-allowed"
+              ? "bg-orange-500 text-white hover:bg-orange-600"
+              : "bg-stone-200 text-stone-500 cursor-not-allowed"
           )}
         >
           {canCompare

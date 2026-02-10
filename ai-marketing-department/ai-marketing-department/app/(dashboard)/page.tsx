@@ -230,7 +230,7 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3 flex-1">
               <Database className="w-4 h-4 text-amber-600 shrink-0" />
-              <p className="text-xs text-gray-600">
+              <p className="text-xs text-stone-600">
                 {translate("auth_migracion_titulo")} —{" "}
                 <button
                   onClick={handleMigration}
@@ -246,7 +246,7 @@ export default function DashboardPage() {
                 setShowMigrationBanner(false);
                 localStorage.setItem("amd_migration_dismissed", "true");
               }}
-              className="text-gray-400 hover:text-gray-900 transition-colors"
+              className="text-stone-400 hover:text-stone-900 transition-colors"
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -257,16 +257,16 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="flex items-baseline justify-between">
         <div>
-          <h1 className="text-base font-medium text-gray-900">
+          <h1 className="text-base font-medium text-stone-900">
             {greeting}, {userName}
           </h1>
-          <p className="text-xs text-gray-400 capitalize mt-0.5">
+          <p className="text-xs text-stone-400 capitalize mt-0.5">
             {dateStr} &middot; {timeStr}
           </p>
         </div>
         <Link
           href="/control-center"
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-stone-300 text-stone-700 hover:bg-stone-50 transition-colors"
         >
           <Plus className="h-3.5 w-3.5" />
           Nueva Tarea
@@ -287,7 +287,7 @@ export default function DashboardPage() {
             label="Ejecuciones"
             value={analytics.overview.totalExecutions}
             sparkData={kpiSparkData}
-            sparkColor="#2563eb"
+            sparkColor="#ea580c"
             trend={trends.executions}
             href="/results"
           />

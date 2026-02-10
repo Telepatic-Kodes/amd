@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 
 export function FAQSection() {
   return (
-    <section className="py-24 bg-zinc-950/50">
+    <section className="py-24 bg-[#faf8f4]/50">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
@@ -31,7 +31,7 @@ export function FAQSection() {
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
               ¿Tienes Preguntas?
             </h2>
-            <p className="text-xl text-zinc-400">
+            <p className="text-xl text-stone-400">
               Respondemos las dudas más comunes sobre AMD.
             </p>
           </motion.div>

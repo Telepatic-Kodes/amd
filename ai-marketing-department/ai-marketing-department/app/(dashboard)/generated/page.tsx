@@ -52,25 +52,25 @@ const TASK_ICONS: Record<string, React.ElementType> = {
 };
 
 const TASK_COLORS: Record<string, string> = {
-  write_blog: "text-blue-400",
+  write_blog: "text-orange-400",
   create_linkedin_post: "text-sky-400",
   create_twitter_thread: "text-cyan-400",
   write_email: "text-purple-400",
   create_ads: "text-orange-400",
   keyword_research: "text-green-400",
   brand_strategy: "text-pink-400",
-  default: "text-zinc-400",
+  default: "text-stone-400",
 };
 
 const TASK_BG_COLORS: Record<string, string> = {
-  write_blog: "bg-blue-500/10",
+  write_blog: "bg-orange-500/10",
   create_linkedin_post: "bg-sky-500/10",
   create_twitter_thread: "bg-cyan-500/10",
   write_email: "bg-purple-500/10",
   create_ads: "bg-orange-500/10",
   keyword_research: "bg-green-500/10",
   brand_strategy: "bg-pink-500/10",
-  default: "bg-zinc-500/10",
+  default: "bg-stone-500/10",
 };
 
 const TASK_LABELS: Record<string, string> = {
@@ -109,7 +109,7 @@ function CopyButton({ text, size = "sm" }: { text: string; size?: "sm" | "lg" })
     return (
       <button
         onClick={handleCopy}
-        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition-colors"
+        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-orange-600 hover:bg-orange-500 text-white transition-colors"
       >
         {copied ? (
           <>
@@ -129,13 +129,13 @@ function CopyButton({ text, size = "sm" }: { text: string; size?: "sm" | "lg" })
   return (
     <button
       onClick={handleCopy}
-      className="p-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 transition-colors"
+      className="p-2 rounded-lg bg-stone-200 hover:bg-stone-100 transition-colors"
       title="Copy content"
     >
       {copied ? (
         <Check className="h-4 w-4 text-green-400" />
       ) : (
-        <Copy className="h-4 w-4 text-zinc-400" />
+        <Copy className="h-4 w-4 text-stone-400" />
       )}
     </button>
   );
@@ -146,39 +146,39 @@ function LinkedInPreview({ content }: { content: string }) {
   return (
     <div className="bg-white rounded-lg shadow-lg overflow-hidden max-w-xl">
       <div className="p-4 flex items-start gap-3">
-        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold">
+        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-500 to-purple-600 flex items-center justify-center text-white font-bold">
           AI
         </div>
         <div className="flex-1">
-          <p className="font-semibold text-gray-900">AI Marketing Department</p>
-          <p className="text-xs text-gray-500">Marketing Automation • 1m</p>
+          <p className="font-semibold text-stone-900">AI Marketing Department</p>
+          <p className="text-xs text-stone-500">Marketing Automation • 1m</p>
         </div>
       </div>
       <div className="px-4 pb-3">
-        <div className="text-gray-800 text-sm whitespace-pre-wrap leading-relaxed">
+        <div className="text-stone-800 text-sm whitespace-pre-wrap leading-relaxed">
           {content}
         </div>
       </div>
-      <div className="px-4 py-2 border-t border-gray-100 flex items-center gap-1 text-xs text-gray-500">
+      <div className="px-4 py-2 border-t border-stone-100 flex items-center gap-1 text-xs text-stone-500">
         <span className="flex items-center gap-1">
-          <span className="w-4 h-4 rounded-full bg-blue-500 flex items-center justify-center">
+          <span className="w-4 h-4 rounded-full bg-orange-500 flex items-center justify-center">
             <ThumbsUp className="w-2.5 h-2.5 text-white" />
           </span>
           128
         </span>
         <span className="ml-auto">24 comments • 8 shares</span>
       </div>
-      <div className="px-4 py-2 border-t border-gray-100 flex justify-around">
-        <button className="flex items-center gap-2 text-gray-600 hover:text-gray-900 text-sm py-2 px-4 rounded hover:bg-gray-50">
+      <div className="px-4 py-2 border-t border-stone-100 flex justify-around">
+        <button className="flex items-center gap-2 text-stone-600 hover:text-stone-900 text-sm py-2 px-4 rounded hover:bg-stone-50">
           <ThumbsUp className="w-4 h-4" /> Like
         </button>
-        <button className="flex items-center gap-2 text-gray-600 hover:text-gray-900 text-sm py-2 px-4 rounded hover:bg-gray-50">
+        <button className="flex items-center gap-2 text-stone-600 hover:text-stone-900 text-sm py-2 px-4 rounded hover:bg-stone-50">
           <MessageCircle className="w-4 h-4" /> Comment
         </button>
-        <button className="flex items-center gap-2 text-gray-600 hover:text-gray-900 text-sm py-2 px-4 rounded hover:bg-gray-50">
+        <button className="flex items-center gap-2 text-stone-600 hover:text-stone-900 text-sm py-2 px-4 rounded hover:bg-stone-50">
           <Share2 className="w-4 h-4" /> Share
         </button>
-        <button className="flex items-center gap-2 text-gray-600 hover:text-gray-900 text-sm py-2 px-4 rounded hover:bg-gray-50">
+        <button className="flex items-center gap-2 text-stone-600 hover:text-stone-900 text-sm py-2 px-4 rounded hover:bg-stone-50">
           <Send className="w-4 h-4" /> Send
         </button>
       </div>
@@ -192,21 +192,21 @@ function TwitterPreview({ content }: { content: string }) {
   return (
     <div className="space-y-3 max-w-xl">
       {tweets.map((tweet, i) => (
-        <div key={i} className="bg-black rounded-xl border border-gray-800 p-4">
+        <div key={i} className="bg-black rounded-xl border border-stone-200 p-4">
           <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center text-white font-bold text-sm">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-400 to-orange-500 flex items-center justify-center text-white font-bold text-sm">
               AI
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1">
                 <span className="font-bold text-white">AI Marketing</span>
-                <span className="text-gray-500">@ai_marketing · 1m</span>
+                <span className="text-stone-500">@ai_marketing · 1m</span>
               </div>
               <p className="text-white text-sm mt-1 whitespace-pre-wrap">{tweet.trim()}</p>
             </div>
           </div>
-          <div className="flex justify-between mt-4 px-8 text-gray-500">
-            <button className="flex items-center gap-1 hover:text-blue-400 text-sm">
+          <div className="flex justify-between mt-4 px-8 text-stone-500">
+            <button className="flex items-center gap-1 hover:text-orange-400 text-sm">
               <MessageCircle className="w-4 h-4" /> 12
             </button>
             <button className="flex items-center gap-1 hover:text-green-400 text-sm">
@@ -215,7 +215,7 @@ function TwitterPreview({ content }: { content: string }) {
             <button className="flex items-center gap-1 hover:text-pink-400 text-sm">
               <Heart className="w-4 h-4" /> 256
             </button>
-            <button className="flex items-center gap-1 hover:text-blue-400 text-sm">
+            <button className="flex items-center gap-1 hover:text-orange-400 text-sm">
               <Bookmark className="w-4 h-4" />
             </button>
           </div>
@@ -233,20 +233,20 @@ function EmailPreview({ content }: { content: string }) {
 
   return (
     <div className="bg-white rounded-lg shadow-lg overflow-hidden max-w-2xl">
-      <div className="bg-gray-50 p-4 border-b border-gray-200">
+      <div className="bg-stone-50 p-4 border-b border-stone-200">
         <div className="flex items-center gap-3 mb-3">
           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold">
             AI
           </div>
           <div>
-            <p className="font-medium text-gray-900">AI Marketing Department</p>
-            <p className="text-xs text-gray-500">marketing@ai-dept.com</p>
+            <p className="font-medium text-stone-900">AI Marketing Department</p>
+            <p className="text-xs text-stone-500">marketing@ai-dept.com</p>
           </div>
         </div>
-        <p className="font-semibold text-gray-900 text-lg">{subject}</p>
+        <p className="font-semibold text-stone-900 text-lg">{subject}</p>
       </div>
       <div className="p-6">
-        <div className="prose prose-sm max-w-none text-gray-700">
+        <div className="prose prose-sm max-w-none text-stone-700">
           <ReactMarkdown>{body}</ReactMarkdown>
         </div>
       </div>
@@ -262,26 +262,26 @@ function EmailPreview({ content }: { content: string }) {
 function BlogPreview({ content }: { content: string }) {
   return (
     <div className="bg-white rounded-lg shadow-lg overflow-hidden max-w-3xl">
-      <div className="h-48 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center">
+      <div className="h-48 bg-gradient-to-br from-orange-500 via-purple-500 to-pink-500 flex items-center justify-center">
         <FileText className="w-16 h-16 text-white/50" />
       </div>
       <article className="p-8">
-        <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
-          <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded">Marketing</span>
+        <div className="flex items-center gap-2 text-sm text-stone-500 mb-4">
+          <span className="px-2 py-1 bg-orange-100 text-orange-700 rounded">Marketing</span>
           <span>•</span>
           <span>5 min read</span>
         </div>
-        <div className="prose prose-lg max-w-none text-gray-800">
+        <div className="prose prose-lg max-w-none text-stone-800">
           <ReactMarkdown
             components={{
-              h1: ({children}) => <h1 className="text-3xl font-bold text-gray-900 mb-4">{children}</h1>,
-              h2: ({children}) => <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">{children}</h2>,
-              h3: ({children}) => <h3 className="text-xl font-semibold text-gray-900 mt-6 mb-3">{children}</h3>,
-              p: ({children}) => <p className="text-gray-700 leading-relaxed mb-4">{children}</p>,
+              h1: ({children}) => <h1 className="text-3xl font-bold text-stone-900 mb-4">{children}</h1>,
+              h2: ({children}) => <h2 className="text-2xl font-bold text-stone-900 mt-8 mb-4">{children}</h2>,
+              h3: ({children}) => <h3 className="text-xl font-semibold text-stone-900 mt-6 mb-3">{children}</h3>,
+              p: ({children}) => <p className="text-stone-700 leading-relaxed mb-4">{children}</p>,
               ul: ({children}) => <ul className="list-disc list-inside space-y-2 mb-4">{children}</ul>,
               ol: ({children}) => <ol className="list-decimal list-inside space-y-2 mb-4">{children}</ol>,
-              li: ({children}) => <li className="text-gray-700">{children}</li>,
-              strong: ({children}) => <strong className="font-semibold text-gray-900">{children}</strong>,
+              li: ({children}) => <li className="text-stone-700">{children}</li>,
+              strong: ({children}) => <strong className="font-semibold text-stone-900">{children}</strong>,
               em: ({children}) => <em className="italic">{children}</em>,
             }}
           >
@@ -297,23 +297,23 @@ function AdsPreview({ content }: { content: string }) {
   return (
     <div className="space-y-6 max-w-2xl">
       <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-        <div className="p-3 flex items-center gap-2 border-b border-gray-100">
-          <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center">
+        <div className="p-3 flex items-center gap-2 border-b border-stone-100">
+          <div className="w-8 h-8 rounded-full bg-orange-600 flex items-center justify-center">
             <span className="text-white font-bold text-xs">f</span>
           </div>
           <div>
-            <p className="font-semibold text-gray-900 text-sm">Sponsored</p>
-            <p className="text-xs text-gray-500">Facebook Ad</p>
+            <p className="font-semibold text-stone-900 text-sm">Sponsored</p>
+            <p className="text-xs text-stone-500">Facebook Ad</p>
           </div>
         </div>
         <div className="h-40 bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center">
           <Megaphone className="w-12 h-12 text-white/50" />
         </div>
         <div className="p-4">
-          <div className="text-sm text-gray-700 whitespace-pre-wrap mb-3">
+          <div className="text-sm text-stone-700 whitespace-pre-wrap mb-3">
             <ReactMarkdown>{content.substring(0, 500)}</ReactMarkdown>
           </div>
-          <button className="w-full py-2 bg-blue-600 text-white rounded font-medium text-sm">
+          <button className="w-full py-2 bg-orange-600 text-white rounded font-medium text-sm">
             Learn More
           </button>
         </div>
@@ -331,17 +331,17 @@ function GenericPreview({ content, type }: { content: string; type: string }) {
         <div className="prose prose-sm max-w-none">
           <ReactMarkdown
             components={{
-              h1: ({children}) => <h1 className="text-2xl font-bold text-gray-900 mb-4">{children}</h1>,
-              h2: ({children}) => <h2 className="text-xl font-bold text-gray-900 mt-6 mb-3">{children}</h2>,
-              h3: ({children}) => <h3 className="text-lg font-semibold text-gray-900 mt-4 mb-2">{children}</h3>,
-              p: ({children}) => <p className="text-gray-700 leading-relaxed mb-3">{children}</p>,
-              ul: ({children}) => <ul className="list-disc list-inside space-y-1 mb-3 text-gray-700">{children}</ul>,
-              ol: ({children}) => <ol className="list-decimal list-inside space-y-1 mb-3 text-gray-700">{children}</ol>,
-              li: ({children}) => <li className="text-gray-700">{children}</li>,
-              strong: ({children}) => <strong className="font-semibold text-gray-900">{children}</strong>,
+              h1: ({children}) => <h1 className="text-2xl font-bold text-stone-900 mb-4">{children}</h1>,
+              h2: ({children}) => <h2 className="text-xl font-bold text-stone-900 mt-6 mb-3">{children}</h2>,
+              h3: ({children}) => <h3 className="text-lg font-semibold text-stone-900 mt-4 mb-2">{children}</h3>,
+              p: ({children}) => <p className="text-stone-700 leading-relaxed mb-3">{children}</p>,
+              ul: ({children}) => <ul className="list-disc list-inside space-y-1 mb-3 text-stone-700">{children}</ul>,
+              ol: ({children}) => <ol className="list-decimal list-inside space-y-1 mb-3 text-stone-700">{children}</ol>,
+              li: ({children}) => <li className="text-stone-700">{children}</li>,
+              strong: ({children}) => <strong className="font-semibold text-stone-900">{children}</strong>,
               em: ({children}) => <em className="italic">{children}</em>,
-              code: ({children}) => <code className="bg-gray-100 px-1.5 py-0.5 rounded text-sm font-mono">{children}</code>,
-              blockquote: ({children}) => <blockquote className="border-l-4 border-gray-300 pl-4 italic text-gray-600">{children}</blockquote>,
+              code: ({children}) => <code className="bg-stone-100 px-1.5 py-0.5 rounded text-sm font-mono">{children}</code>,
+              blockquote: ({children}) => <blockquote className="border-l-4 border-stone-300 pl-4 italic text-stone-600">{children}</blockquote>,
             }}
           >
             {content}
@@ -397,18 +397,18 @@ function ReviewModal({
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
-        className="relative w-full max-w-5xl max-h-[90vh] bg-zinc-900 rounded-2xl border border-zinc-700 shadow-2xl flex flex-col"
+        className="relative w-full max-w-5xl max-h-[90vh] bg-stone-100 rounded-2xl border border-stone-300 shadow-2xl flex flex-col"
       >
-        <div className="flex items-center justify-between p-6 border-b border-zinc-800">
+        <div className="flex items-center justify-between p-6 border-b border-stone-200">
           <div className="flex items-center gap-3">
-            <div className={`rounded-lg bg-zinc-800 p-2 ${colorClass}`}>
+            <div className={`rounded-lg bg-stone-200 p-2 ${colorClass}`}>
               <Icon className="h-6 w-6" />
             </div>
             <div>
               <h2 className="text-xl font-semibold text-white">
                 {task.title.replace("[SDK] ", "")}
               </h2>
-              <p className="text-sm text-zinc-500">
+              <p className="text-sm text-stone-500">
                 {new Date(task.createdAt).toLocaleString("es-ES", {
                   day: "numeric",
                   month: "long",
@@ -420,13 +420,13 @@ function ReviewModal({
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <div className="flex bg-zinc-800 rounded-lg p-1">
+            <div className="flex bg-stone-200 rounded-lg p-1">
               <button
                 onClick={() => setViewMode('preview')}
                 className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
                   viewMode === 'preview'
-                    ? 'bg-indigo-600 text-white'
-                    : 'text-zinc-400 hover:text-white'
+                    ? 'bg-orange-600 text-white'
+                    : 'text-stone-400 hover:text-stone-900'
                 }`}
               >
                 <Eye className="h-4 w-4 inline mr-1" />
@@ -436,8 +436,8 @@ function ReviewModal({
                 onClick={() => setViewMode('raw')}
                 className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
                   viewMode === 'raw'
-                    ? 'bg-indigo-600 text-white'
-                    : 'text-zinc-400 hover:text-white'
+                    ? 'bg-orange-600 text-white'
+                    : 'text-stone-400 hover:text-stone-900'
                 }`}
               >
                 <Code className="h-4 w-4 inline mr-1" />
@@ -446,9 +446,9 @@ function ReviewModal({
             </div>
             <button
               onClick={onClose}
-              className="p-2 rounded-lg hover:bg-zinc-800 transition-colors"
+              className="p-2 rounded-lg hover:bg-stone-200 transition-colors"
             >
-              <X className="h-5 w-5 text-zinc-400" />
+              <X className="h-5 w-5 text-stone-400" />
             </button>
           </div>
         </div>
@@ -459,8 +459,8 @@ function ReviewModal({
               <ContentPreview content={content} type={task.type} />
             </div>
           ) : (
-            <div className="p-4 rounded-xl bg-zinc-950 border border-zinc-800">
-              <pre className="text-sm text-zinc-200 whitespace-pre-wrap font-mono leading-relaxed">
+            <div className="p-4 rounded-xl bg-stone-50 border border-stone-200">
+              <pre className="text-sm text-stone-200 whitespace-pre-wrap font-mono leading-relaxed">
                 {content}
               </pre>
             </div>
@@ -468,11 +468,11 @@ function ReviewModal({
 
           {task.input && Object.keys(task.input).length > 0 && (
             <div className="mt-6">
-              <p className="text-xs text-zinc-500 mb-2 uppercase tracking-wider">
+              <p className="text-xs text-stone-500 mb-2 uppercase tracking-wider">
                 Input Parameters
               </p>
-              <div className="p-3 rounded-lg bg-zinc-950 border border-zinc-800">
-                <code className="text-xs text-indigo-400 whitespace-pre">
+              <div className="p-3 rounded-lg bg-stone-50 border border-stone-200">
+                <code className="text-xs text-orange-400 whitespace-pre">
                   {JSON.stringify(task.input, null, 2)}
                 </code>
               </div>
@@ -480,18 +480,18 @@ function ReviewModal({
           )}
         </div>
 
-        <div className="flex items-center justify-between p-6 border-t border-zinc-800">
+        <div className="flex items-center justify-between p-6 border-t border-stone-200">
           <div className="flex items-center gap-2">
             <Badge variant="success">Completed</Badge>
             <Badge variant="info">$0.00</Badge>
-            <span className="text-xs text-zinc-500">
+            <span className="text-xs text-stone-500">
               {content.length} characters
             </span>
           </div>
           <div className="flex items-center gap-3">
             <button
               onClick={onClose}
-              className="px-4 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 transition-colors"
+              className="px-4 py-2 rounded-lg bg-stone-200 hover:bg-stone-100 text-stone-300 transition-colors"
             >
               Close
             </button>
@@ -539,7 +539,7 @@ function ContentCard({
         {/* Mini Preview Header */}
         <div className={`h-24 ${bgColor} rounded-t-xl flex items-center justify-center relative overflow-hidden`}>
           <Icon className={`h-10 w-10 ${colorClass} opacity-50`} />
-          <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 to-transparent opacity-60" />
+          <div className="absolute inset-0 bg-gradient-to-t from-stone-100 to-transparent opacity-60" />
 
           {/* Type Badge */}
           <div className="absolute top-3 left-3">
@@ -601,7 +601,7 @@ function ContentCard({
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className={`rounded-md bg-zinc-800 p-1.5 ${colorClass}`}>
+              <div className={`rounded-md bg-stone-200 p-1.5 ${colorClass}`}>
                 <Icon className="h-4 w-4" />
               </div>
               <h3 className="font-semibold text-white text-sm truncate">
@@ -612,12 +612,12 @@ function ContentCard({
         </CardHeader>
 
         <CardContent className="pt-0">
-          <p className="text-xs text-zinc-500 mb-3 line-clamp-2">
+          <p className="text-xs text-stone-500 mb-3 line-clamp-2">
             {preview}...
           </p>
 
           <div className="flex items-center justify-between">
-            <span className="text-xs text-zinc-600">
+            <span className="text-xs text-stone-600">
               {new Date(task.createdAt).toLocaleString("es-ES", {
                 day: "numeric",
                 month: "short",
@@ -688,10 +688,10 @@ export default function GeneratedContentPage() {
     return (
       <div className="space-y-8">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-stone-400 bg-clip-text text-transparent">
             Generated Content
           </h1>
-          <p className="text-zinc-400 mt-2">Loading...</p>
+          <p className="text-stone-400 mt-2">Loading...</p>
         </div>
         <SkeletonGrid items={6} columns={3} />
       </div>
@@ -703,17 +703,17 @@ export default function GeneratedContentPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-stone-400 bg-clip-text text-transparent">
             Generated Content
           </h1>
-          <p className="text-zinc-400 mt-2">
+          <p className="text-stone-400 mt-2">
             {completedTasks.length} pieces generated with Plan Max (Cost: $0.00)
           </p>
         </div>
 
         {/* Mini Distribution Chart */}
         {contentDistribution.length > 0 && (
-          <div className="flex items-center gap-4 p-3 rounded-xl bg-zinc-900/50 border border-zinc-800">
+          <div className="flex items-center gap-4 p-3 rounded-xl bg-stone-100/50 border border-stone-200">
             <DonutChart
               data={contentDistribution}
               height={60}
@@ -730,8 +730,8 @@ export default function GeneratedContentPage() {
                     className="w-2 h-2 rounded-full"
                     style={{ backgroundColor: item.color }}
                   />
-                  <span className="text-zinc-400">{item.name}</span>
-                  <span className="text-zinc-500">{item.value}</span>
+                  <span className="text-stone-400">{item.name}</span>
+                  <span className="text-stone-500">{item.value}</span>
                 </div>
               ))}
             </div>
@@ -760,7 +760,7 @@ export default function GeneratedContentPage() {
             <Card className="md:col-span-2 lg:col-span-3">
               <CardContent className="p-12 text-center">
                 <EmptyContent />
-                <code className="block mt-4 text-sm text-indigo-400">
+                <code className="block mt-4 text-sm text-orange-400">
                   npm run workflow:content -- --topic "Your topic"
                 </code>
               </CardContent>

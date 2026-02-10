@@ -46,12 +46,12 @@ export function Sidebar() {
     return (
         <div
             data-tour="sidebar"
-            className="hidden md:flex h-screen w-56 flex-col fixed left-0 top-0 bg-white border-r border-gray-200"
+            className="hidden md:flex h-screen w-56 flex-col fixed left-0 top-0 bg-[#1c1917] border-r border-[#44403c]"
         >
             {/* Logo Header */}
             <div className="flex h-14 items-center justify-between px-5">
-                <Link href="/" className="flex items-center gap-2.5 font-semibold text-gray-900">
-                    <Sparkles className="h-4 w-4 text-blue-600" />
+                <Link href="/" className="flex items-center gap-2.5 font-semibold text-stone-200">
+                    <Sparkles className="h-4 w-4 text-orange-500" />
                     <span className="text-sm tracking-tight">AMD</span>
                 </Link>
                 <NotificationCenter />
@@ -71,25 +71,25 @@ export function Sidebar() {
                             className={cn(
                                 "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors mb-0.5 relative",
                                 isActive
-                                    ? "bg-blue-50 text-blue-600"
-                                    : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+                                    ? "bg-[#292524] text-orange-400"
+                                    : "text-stone-400 hover:text-stone-200 hover:bg-[#292524]"
                             )}
                             title={item.label}
                         >
                             {isActive && (
-                                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-blue-600 rounded-r" />
+                                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-orange-500 rounded-r" />
                             )}
                             <Icon className={cn(
                                 "h-4 w-4 flex-shrink-0",
-                                isActive ? "text-blue-600" : ""
+                                isActive ? "text-orange-400" : ""
                             )} />
                             <span className="flex-1">{item.name}</span>
                             {badgeCount > 0 && (
                                 <span className={cn(
                                     "text-[10px] font-semibold min-w-[18px] h-[18px] flex items-center justify-center rounded-full",
                                     item.badgeKey === "control"
-                                        ? "bg-red-50 text-red-600"
-                                        : "bg-amber-50 text-amber-600"
+                                        ? "bg-red-900/40 text-red-400"
+                                        : "bg-amber-900/40 text-amber-400"
                                 )}>
                                     {badgeCount}
                                 </span>
@@ -101,14 +101,14 @@ export function Sidebar() {
 
             {/* Cmd+K hint */}
             <div className="px-4 py-2">
-                <div className="flex items-center justify-center gap-1.5 text-[10px] text-gray-400">
-                    <kbd className="border border-gray-200 rounded px-1.5 py-0.5 text-gray-400 bg-gray-50">⌘K</kbd>
+                <div className="flex items-center justify-center gap-1.5 text-[10px] text-stone-500">
+                    <kbd className="border border-[#44403c] rounded px-1.5 py-0.5 text-stone-500 bg-[#292524]">⌘K</kbd>
                     <span>Buscar</span>
                 </div>
             </div>
 
             {/* User Menu */}
-            <div className="border-t border-gray-200 p-3">
+            <div className="border-t border-[#44403c] p-3">
                 <div className="flex items-center justify-center">
                     <UserMenu />
                 </div>

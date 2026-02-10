@@ -51,7 +51,7 @@ export function CaseStudiesSection() {
               Resultados Reales de{" "}
               <span className="text-green-400">Clientes Reales</span>
             </h2>
-            <p className="text-xl text-zinc-400 max-w-3xl mx-auto">
+            <p className="text-xl text-stone-400 max-w-3xl mx-auto">
               Empresas de diferentes industrias están escalando su marketing con
               AMD sin contratar equipos adicionales.
             </p>

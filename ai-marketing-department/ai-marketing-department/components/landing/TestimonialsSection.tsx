@@ -26,7 +26,7 @@ const cardVariants = {
 
 export function TestimonialsSection() {
   return (
-    <section className="py-24 bg-zinc-950/50">
+    <section className="py-24 bg-[#faf8f4]/50">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
@@ -40,7 +40,7 @@ export function TestimonialsSection() {
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
               Lo Que Dicen Nuestros Clientes
             </h2>
-            <p className="text-xl text-zinc-400 max-w-3xl mx-auto">
+            <p className="text-xl text-stone-400 max-w-3xl mx-auto">
               Líderes de marketing que están transformando sus departamentos con
               AMD.
             </p>
@@ -80,17 +80,17 @@ export function TestimonialsSection() {
                     </motion.div>
 
                     {/* Quote */}
-                    <Quote className="h-8 w-8 text-indigo-500 mb-4" />
-                    <p className="text-zinc-300 leading-relaxed mb-6">
+                    <Quote className="h-8 w-8 text-orange-500 mb-4" />
+                    <p className="text-stone-300 leading-relaxed mb-6">
                       "{testimonial.quote}"
                     </p>
 
                     {/* Author */}
-                    <div className="border-t border-zinc-800 pt-4">
+                    <div className="border-t border-stone-200 pt-4">
                       <p className="text-white font-semibold">
                         {testimonial.author}
                       </p>
-                      <p className="text-zinc-500 text-sm">
+                      <p className="text-stone-500 text-sm">
                         {testimonial.role} at {testimonial.company}
                       </p>
                     </div>

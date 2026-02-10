@@ -59,7 +59,7 @@ const execStatusIcons: Record<string, { color: string; label: string }> = {
   failure: { color: "bg-red-500", label: "Fallida" },
   failed: { color: "bg-red-500", label: "Fallida" },
   running: { color: "bg-amber-500", label: "En curso" },
-  pending: { color: "bg-gray-400", label: "Pendiente" },
+  pending: { color: "bg-stone-400", label: "Pendiente" },
 };
 
 export function AgentSlideOver({ agent, recentActivity, recentExecutions, onClose }: AgentSlideOverProps) {
@@ -85,7 +85,7 @@ export function AgentSlideOver({ agent, recentActivity, recentExecutions, onClos
               </p>
             </div>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-900 transition-colors shrink-0">
+          <button onClick={onClose} className="text-stone-400 hover:text-stone-900 transition-colors shrink-0">
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -104,7 +104,7 @@ export function AgentSlideOver({ agent, recentActivity, recentExecutions, onClos
                 "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors",
                 agent.status === "active"
                   ? "bg-emerald-600 hover:bg-emerald-500 text-white"
-                  : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                  : "bg-stone-100 text-stone-400 cursor-not-allowed"
               )}
             >
               <Zap className="h-3 w-3" />
@@ -203,7 +203,7 @@ export function AgentSlideOver({ agent, recentActivity, recentExecutions, onClos
           {/* Empty state */}
           {(!recentActivity || recentActivity.length === 0) && (!recentExecutions || recentExecutions.length === 0) && (
             <div className="flex flex-col items-center justify-center py-8 text-center">
-              <Clock className="h-6 w-6 text-gray-400 mb-2" />
+              <Clock className="h-6 w-6 text-stone-400 mb-2" />
               <p className="text-sm text-[var(--text-tertiary)]">Sin actividad reciente</p>
             </div>
           )}

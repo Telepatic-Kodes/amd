@@ -88,16 +88,16 @@ export function InstagramConnectionCard({ convexSiteUrl }: InstagramConnectionCa
     },
     disconnected: {
       icon: XCircle,
-      color: "text-zinc-400",
-      bg: "bg-zinc-400/10",
-      border: "border-zinc-700",
+      color: "text-stone-400",
+      bg: "bg-stone-400/10",
+      border: "border-stone-300",
       label: "Desconectado",
     },
     pending_review: {
       icon: Clock,
-      color: "text-blue-400",
-      bg: "bg-blue-400/10",
-      border: "border-blue-500/30",
+      color: "text-orange-400",
+      bg: "bg-orange-400/10",
+      border: "border-orange-500/30",
       label: "Revisión pendiente",
     },
   };
@@ -123,9 +123,9 @@ export function InstagramConnectionCard({ convexSiteUrl }: InstagramConnectionCa
             </h4>
             {connection ? (
               <div className="mt-1 space-y-1">
-                <p className="text-sm text-zinc-300">@{connection.username}</p>
+                <p className="text-sm text-stone-300">@{connection.username}</p>
                 {connection.facebookPageName && (
-                  <p className="text-xs text-zinc-400">
+                  <p className="text-xs text-stone-400">
                     Página: {connection.facebookPageName}
                   </p>
                 )}
@@ -140,12 +140,12 @@ export function InstagramConnectionCard({ convexSiteUrl }: InstagramConnectionCa
                     Token expirado - Reconectar para continuar
                   </p>
                 )}
-                <p className="text-xs text-zinc-500">
+                <p className="text-xs text-stone-500">
                   Publicaciones hoy: {connection.dailyPostCount}/25
                 </p>
               </div>
             ) : (
-              <p className="text-sm text-zinc-400 mt-1">
+              <p className="text-sm text-stone-400 mt-1">
                 Conecta tu cuenta de Instagram Business para publicar contenido
               </p>
             )}
@@ -173,7 +173,7 @@ export function InstagramConnectionCard({ convexSiteUrl }: InstagramConnectionCa
               <button
                 onClick={handleDisconnect}
                 disabled={isDisconnecting}
-                className="text-xs text-zinc-500 hover:text-red-400 transition-colors disabled:opacity-50"
+                className="text-xs text-stone-500 hover:text-red-400 transition-colors disabled:opacity-50"
               >
                 {isDisconnecting ? (
                   <Loader2 className="h-3 w-3 animate-spin inline mr-1" />
@@ -186,45 +186,45 @@ export function InstagramConnectionCard({ convexSiteUrl }: InstagramConnectionCa
       </div>
 
       {/* Facebook Business Requirement Explanation - Always Visible */}
-      <div className="mt-4 pt-4 border-t border-zinc-800">
+      <div className="mt-4 pt-4 border-t border-stone-200">
         <button
           onClick={() => setShowFacebookInfo(!showFacebookInfo)}
           className="flex items-center justify-between w-full text-left"
         >
           <div className="flex items-center gap-2">
-            <Info className="h-4 w-4 text-blue-400" />
-            <span className="text-sm font-medium text-zinc-300">
+            <Info className="h-4 w-4 text-orange-400" />
+            <span className="text-sm font-medium text-stone-300">
               Requisitos de Instagram Business API
             </span>
           </div>
           {showFacebookInfo ? (
-            <ChevronUp className="h-4 w-4 text-zinc-500" />
+            <ChevronUp className="h-4 w-4 text-stone-500" />
           ) : (
-            <ChevronDown className="h-4 w-4 text-zinc-500" />
+            <ChevronDown className="h-4 w-4 text-stone-500" />
           )}
         </button>
 
         {showFacebookInfo && (
-          <div className="mt-3 p-3 rounded-lg bg-blue-500/5 border border-blue-500/20">
-            <p className="text-xs text-zinc-400 mb-2">
+          <div className="mt-3 p-3 rounded-lg bg-orange-500/5 border border-orange-500/20">
+            <p className="text-xs text-stone-400 mb-2">
               Instagram Business API requiere:
             </p>
-            <ul className="text-xs text-zinc-400 space-y-1.5 ml-4">
+            <ul className="text-xs text-stone-400 space-y-1.5 ml-4">
               <li className="list-decimal">
-                Una cuenta de Instagram de tipo <span className="text-zinc-300 font-medium">Business o Creator</span>
+                Una cuenta de Instagram de tipo <span className="text-stone-300 font-medium">Business o Creator</span>
               </li>
               <li className="list-decimal">
-                Vinculada a una <span className="text-zinc-300 font-medium">Página de Facebook</span>
+                Vinculada a una <span className="text-stone-300 font-medium">Página de Facebook</span>
               </li>
               <li className="list-decimal">
-                Aprobación de <span className="text-zinc-300 font-medium">Meta App Review</span> (60-90 días)
+                Aprobación de <span className="text-stone-300 font-medium">Meta App Review</span> (60-90 días)
               </li>
             </ul>
             <a
               href="https://help.instagram.com/502981923235522"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300 mt-3 transition-colors"
+              className="inline-flex items-center gap-1 text-xs text-orange-400 hover:text-orange-300 mt-3 transition-colors"
             >
               Cómo convertir a cuenta Business
               <ExternalLink className="h-3 w-3" />
@@ -235,14 +235,14 @@ export function InstagramConnectionCard({ convexSiteUrl }: InstagramConnectionCa
 
       {/* App Review Status (if applicable) */}
       {status === "pending_review" && (
-        <div className="mt-3 p-3 rounded-lg bg-blue-500/10 border border-blue-500/30">
+        <div className="mt-3 p-3 rounded-lg bg-orange-500/10 border border-orange-500/30">
           <div className="flex items-start gap-2">
-            <Clock className="h-4 w-4 text-blue-400 mt-0.5 shrink-0" />
+            <Clock className="h-4 w-4 text-orange-400 mt-0.5 shrink-0" />
             <div>
-              <p className="text-xs font-medium text-blue-300">
+              <p className="text-xs font-medium text-orange-300">
                 App pendiente de revisión por Meta
               </p>
-              <p className="text-xs text-zinc-400 mt-1">
+              <p className="text-xs text-stone-400 mt-1">
                 Mientras tanto, puedes probar la publicación con cuentas de prueba.
               </p>
             </div>

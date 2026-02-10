@@ -55,10 +55,10 @@ export default function ControlCenterPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0 }}
       >
-        <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
+        <h1 className="text-3xl md:text-4xl font-bold text-stone-900">
           Centro de Control
         </h1>
-        <p className="text-gray-500 mt-2 text-base md:text-lg">
+        <p className="text-stone-500 mt-2 text-base md:text-lg">
           Monitorea todos tus agentes de marketing en tiempo real.
         </p>
       </motion.div>
@@ -79,10 +79,10 @@ export default function ControlCenterPage() {
         transition={{ delay: 0.2 }}
       >
         <div className="mb-4">
-          <h2 className="text-xl md:text-2xl font-semibold text-gray-900">
+          <h2 className="text-xl md:text-2xl font-semibold text-stone-900">
             Estado de Agentes
           </h2>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-stone-500 mt-1">
             {status?.totalAgents || 0} agentes organizados por departamento
           </p>
         </div>

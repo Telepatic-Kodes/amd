@@ -35,7 +35,7 @@ export function Accordion({ items, allowMultiple = false }: AccordionProps) {
         return (
           <div
             key={item.id}
-            className="border border-zinc-800 rounded-lg bg-zinc-950/50 overflow-hidden transition-all duration-200 hover:border-zinc-700"
+            className="border border-stone-200 rounded-lg bg-[#faf8f4]/50 overflow-hidden transition-all duration-200 hover:border-stone-300"
           >
             <button
               onClick={() => toggleItem(item.id)}
@@ -46,7 +46,7 @@ export function Accordion({ items, allowMultiple = false }: AccordionProps) {
               </h3>
               <ChevronDown
                 className={cn(
-                  "h-5 w-5 text-zinc-400 transition-transform duration-200 flex-shrink-0",
+                  "h-5 w-5 text-stone-400 transition-transform duration-200 flex-shrink-0",
                   isOpen && "transform rotate-180"
                 )}
               />
@@ -57,7 +57,7 @@ export function Accordion({ items, allowMultiple = false }: AccordionProps) {
                 isOpen ? "max-h-96" : "max-h-0"
               )}
             >
-              <div className="p-6 pt-0 text-zinc-400 leading-relaxed">
+              <div className="p-6 pt-0 text-stone-400 leading-relaxed">
                 {item.answer}
               </div>
             </div>

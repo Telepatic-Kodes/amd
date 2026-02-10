@@ -38,7 +38,7 @@ const execColors: Record<string, string> = {
   failure: "bg-red-500",
   failed: "bg-red-500",
   running: "bg-amber-500",
-  pending: "bg-gray-300",
+  pending: "bg-stone-300",
 };
 
 export function AgentCard({ name, status, lastAction, lastActionTime, recentExecutions, onClick }: AgentCardProps) {
@@ -78,7 +78,7 @@ export function AgentCard({ name, status, lastAction, lastActionTime, recentExec
           {recentExecutions.map((exec, i) => (
             <div
               key={i}
-              className={cn("h-1 w-3 rounded-sm", execColors[exec] || "bg-gray-300")}
+              className={cn("h-1 w-3 rounded-sm", execColors[exec] || "bg-stone-300")}
             />
           ))}
         </div>

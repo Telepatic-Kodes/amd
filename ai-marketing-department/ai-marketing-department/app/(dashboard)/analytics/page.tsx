@@ -103,10 +103,10 @@ export default function AnalyticsPage() {
     return (
       <div className="space-y-8">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-stone-400 bg-clip-text text-transparent">
             Analiticas
           </h1>
-          <p className="text-zinc-400 mt-2">
+          <p className="text-stone-400 mt-2">
             Metricas de rendimiento e inteligencia de tu equipo de marketing IA.
           </p>
         </div>
@@ -180,7 +180,7 @@ export default function AnalyticsPage() {
       .map(([dept, cost]) => ({
         name: deptLabelMap[dept] || dept,
         value: Math.round((cost / totalCostAll) * 100),
-        color: deptColorMap[dept] || '#6b7280',
+        color: deptColorMap[dept] || '#78716c',
       }))
       .sort((a, b) => b.value - a.value);
   })();
@@ -213,10 +213,10 @@ export default function AnalyticsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-stone-400 bg-clip-text text-transparent">
           Analiticas
         </h1>
-        <p className="text-zinc-400 mt-2">
+        <p className="text-stone-400 mt-2">
           Metricas de rendimiento e inteligencia de tu equipo de marketing IA.
         </p>
       </div>
@@ -231,8 +231,8 @@ export default function AnalyticsPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <MetricCard
           icon={Zap}
-          iconBg="bg-indigo-500/10"
-          iconColor="text-indigo-400"
+          iconBg="bg-orange-500/10"
+          iconColor="text-orange-400"
           title="Ejecuciones"
           value={overview.totalExecutions}
           badge={`${overview.totalExecutions} total`}
@@ -278,7 +278,7 @@ export default function AnalyticsPage() {
         <Card>
           <CardHeader>
             <h3 className="flex items-center gap-2 font-semibold text-lg text-white">
-              <BarChart3 className="h-5 w-5 text-indigo-500" />
+              <BarChart3 className="h-5 w-5 text-orange-500" />
               Tareas por Dia
             </h3>
           </CardHeader>
@@ -382,10 +382,10 @@ export default function AnalyticsPage() {
                   <div key={agent.name} className="space-y-2">
                     <div className="flex items-center justify-between text-sm">
                       <div className="flex items-center gap-2">
-                        <span className="flex items-center justify-center w-5 h-5 rounded-full bg-zinc-800 text-xs font-medium text-zinc-400">
+                        <span className="flex items-center justify-center w-5 h-5 rounded-full bg-stone-200 text-xs font-medium text-stone-400">
                           {index + 1}
                         </span>
-                        <span className="text-zinc-300 truncate max-w-[150px]">
+                        <span className="text-stone-300 truncate max-w-[150px]">
                           {agent.name}
                         </span>
                       </div>
@@ -399,7 +399,7 @@ export default function AnalyticsPage() {
                         </Badge>
                       </div>
                     </div>
-                    <div className="h-2 w-full overflow-hidden rounded-full bg-zinc-800">
+                    <div className="h-2 w-full overflow-hidden rounded-full bg-stone-200">
                       <div
                         className="h-full rounded-full transition-all duration-500"
                         style={{
@@ -439,8 +439,8 @@ export default function AnalyticsPage() {
                 interactive
               />
             ) : (
-              <div className="flex flex-col items-center justify-center h-[240px] text-zinc-500 text-sm">
-                <DollarSign className="h-8 w-8 mb-2 text-zinc-600" />
+              <div className="flex flex-col items-center justify-center h-[240px] text-stone-500 text-sm">
+                <DollarSign className="h-8 w-8 mb-2 text-stone-600" />
                 <p>Sin datos de costos en este periodo</p>
               </div>
             )}
@@ -452,7 +452,7 @@ export default function AnalyticsPage() {
       <Card>
         <CardHeader>
           <h3 className="flex items-center gap-2 font-semibold text-lg text-white">
-            <Clock className="h-5 w-5 text-blue-500" />
+            <Clock className="h-5 w-5 text-orange-500" />
             Ejecuciones Recientes
           </h3>
         </CardHeader>
@@ -463,7 +463,7 @@ export default function AnalyticsPage() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="text-left text-xs text-zinc-500 border-b border-zinc-800">
+                  <tr className="text-left text-xs text-stone-500 border-b border-stone-200">
                     <th className="pb-3 font-medium">Estado</th>
                     <th className="pb-3 font-medium">Duracion</th>
                     <th className="pb-3 font-medium">Tokens</th>
@@ -476,7 +476,7 @@ export default function AnalyticsPage() {
                   {recentExecutions.map((exec, i) => (
                     <tr
                       key={i}
-                      className="border-b border-zinc-800/50 last:border-0 hover:bg-zinc-900/30 transition-colors"
+                      className="border-b border-stone-200/50 last:border-0 hover:bg-stone-100/30 transition-colors"
                     >
                       <td className="py-3">
                         <Badge
@@ -485,19 +485,19 @@ export default function AnalyticsPage() {
                           {exec.status === "success" ? "Exito" : "Error"}
                         </Badge>
                       </td>
-                      <td className="py-3 text-sm text-zinc-300 font-mono">
+                      <td className="py-3 text-sm text-stone-300 font-mono">
                         {formatDuration(exec.duration)}
                       </td>
-                      <td className="py-3 text-sm text-zinc-300 font-mono">
+                      <td className="py-3 text-sm text-stone-300 font-mono">
                         {formatNumber(exec.tokens)}
                       </td>
-                      <td className="py-3 text-sm text-zinc-300 font-mono">
+                      <td className="py-3 text-sm text-stone-300 font-mono">
                         {formatCurrency(exec.cost)}
                       </td>
-                      <td className="py-3 text-sm text-zinc-400 truncate max-w-[150px]">
+                      <td className="py-3 text-sm text-stone-400 truncate max-w-[150px]">
                         {exec.agentName}
                       </td>
-                      <td className="py-3 text-sm text-zinc-500">
+                      <td className="py-3 text-sm text-stone-500">
                         {new Date(exec.timestamp).toLocaleString("es-ES", {
                           month: "short",
                           day: "numeric",
@@ -523,7 +523,7 @@ export default function AnalyticsPage() {
                 <Clock className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-xs text-zinc-500">Duracion Promedio</p>
+                <p className="text-xs text-stone-500">Duracion Promedio</p>
                 <p className="text-lg font-semibold text-white">
                   {formatDuration(overview.avgDuration)}
                 </p>
@@ -539,7 +539,7 @@ export default function AnalyticsPage() {
                 <Activity className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-xs text-zinc-500">Costo Promedio/Ejecucion</p>
+                <p className="text-xs text-stone-500">Costo Promedio/Ejecucion</p>
                 <p className="text-lg font-semibold text-white">
                   {overview.totalExecutions > 0
                     ? formatCurrency(overview.totalCost / overview.totalExecutions)
@@ -557,7 +557,7 @@ export default function AnalyticsPage() {
                 <Zap className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-xs text-zinc-500">Tokens Promedio/Ejecucion</p>
+                <p className="text-xs text-stone-500">Tokens Promedio/Ejecucion</p>
                 <p className="text-lg font-semibold text-white">
                   {overview.totalExecutions > 0
                     ? formatNumber(overview.totalTokens / overview.totalExecutions)
@@ -635,10 +635,10 @@ function MetricCard({
               <SimpleCounter value={value} />
             )}
           </h2>
-          <p className="text-sm text-zinc-400 mt-1">{title}</p>
+          <p className="text-sm text-stone-400 mt-1">{title}</p>
         </div>
         {sparklineData && (
-          <div className="mt-3 pt-3 border-t border-zinc-800/50">
+          <div className="mt-3 pt-3 border-t border-stone-200/50">
             <Sparkline
               data={sparklineData}
               height={28}

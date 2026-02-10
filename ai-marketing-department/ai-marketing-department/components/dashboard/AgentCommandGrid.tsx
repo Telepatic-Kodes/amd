@@ -208,7 +208,7 @@ export function AgentCommandGrid({ agentsByDepartment, lastActivityByAgent, rece
 function AgentCommandGridSkeleton() {
   return (
     <div className="space-y-4">
-      <div className="h-4 w-48 rounded bg-gray-100 animate-pulse" />
+      <div className="h-4 w-48 rounded bg-stone-100 animate-pulse" />
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
         {[...Array(6)].map((_, i) => (
           <div key={i} className="h-24 rounded-lg border border-[var(--border)] bg-[var(--surface-raised)] animate-pulse" />

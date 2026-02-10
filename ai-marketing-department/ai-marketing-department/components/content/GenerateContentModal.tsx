@@ -26,7 +26,7 @@ const CHANNELS = [
   { id: "twitter", label: "Twitter/X", icon: Twitter, color: "bg-cyan-500/10 text-cyan-400 border-cyan-500/30" },
   { id: "instagram", label: "Instagram", icon: Instagram, color: "bg-pink-500/10 text-pink-400 border-pink-500/30" },
   { id: "tiktok", label: "TikTok", icon: Video, color: "bg-purple-500/10 text-purple-400 border-purple-500/30" },
-  { id: "blog", label: "Blog", icon: BookOpen, color: "bg-blue-500/10 text-blue-400 border-blue-500/30" },
+  { id: "blog", label: "Blog", icon: BookOpen, color: "bg-orange-500/10 text-orange-400 border-orange-500/30" },
   { id: "email", label: "Newsletter", icon: Mail, color: "bg-green-500/10 text-green-400 border-green-500/30" },
   { id: "youtube", label: "YouTube", icon: Youtube, color: "bg-red-500/10 text-red-400 border-red-500/30" },
 ];
@@ -145,18 +145,18 @@ export function GenerateContentModal({ isOpen, onClose, defaultChannels = [] }: 
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-        className="relative w-full max-w-lg mx-4 bg-zinc-950 border border-zinc-800 rounded-2xl shadow-2xl overflow-hidden"
+        className="relative w-full max-w-lg mx-4 bg-stone-50 border border-stone-200 rounded-2xl shadow-2xl overflow-hidden"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-stone-200">
           <div className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-indigo-400" />
+            <Sparkles className="w-5 h-5 text-orange-400" />
             <h2 className="text-lg font-semibold text-white">Generar Contenido</h2>
           </div>
           <button
             onClick={handleClose}
             disabled={isGenerating}
-            className="p-1.5 rounded-lg hover:bg-zinc-800 text-zinc-500 hover:text-white transition disabled:opacity-50"
+            className="p-1.5 rounded-lg hover:bg-stone-200 text-stone-500 hover:text-stone-900 transition disabled:opacity-50"
           >
             <X className="w-4 h-4" />
           </button>
@@ -166,20 +166,20 @@ export function GenerateContentModal({ isOpen, onClose, defaultChannels = [] }: 
         <div className="px-6 py-5 space-y-5 max-h-[70vh] overflow-y-auto">
           {/* Topic */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-zinc-300">Tema</label>
+            <label className="text-sm font-medium text-stone-300">Tema</label>
             <input
               type="text"
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
               placeholder="Ej: 5 tendencias de IA para marketing en 2026"
               disabled={isGenerating}
-              className="w-full px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-800 text-white placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition disabled:opacity-50"
+              className="w-full px-4 py-3 rounded-lg bg-stone-100 border border-stone-200 text-white placeholder:text-stone-600 focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition disabled:opacity-50"
             />
           </div>
 
           {/* Channel Selection */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-zinc-300">Canales</label>
+            <label className="text-sm font-medium text-stone-300">Canales</label>
             <div className="grid grid-cols-2 gap-2">
               {CHANNELS.map((channel) => {
                 const Icon = channel.icon;
@@ -194,7 +194,7 @@ export function GenerateContentModal({ isOpen, onClose, defaultChannels = [] }: 
                     disabled={isGenerating}
                     className={cn(
                       "flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium transition-all border",
-                      isSelected ? channel.color : "bg-zinc-900 text-zinc-500 border-zinc-800 hover:border-zinc-700",
+                      isSelected ? channel.color : "bg-stone-100 text-stone-500 border-stone-200 hover:border-stone-300",
                       isGenerating && "cursor-default"
                     )}
                   >
@@ -216,8 +216,8 @@ export function GenerateContentModal({ isOpen, onClose, defaultChannels = [] }: 
 
           {/* Custom Instructions */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-zinc-300">
-              Instrucciones adicionales <span className="text-zinc-600">(opcional)</span>
+            <label className="text-sm font-medium text-stone-300">
+              Instrucciones adicionales <span className="text-stone-600">(opcional)</span>
             </label>
             <textarea
               value={customInstructions}
@@ -225,7 +225,7 @@ export function GenerateContentModal({ isOpen, onClose, defaultChannels = [] }: 
               placeholder="Ej: Enfócate en el mercado latinoamericano, usa ejemplos de Chile..."
               rows={3}
               disabled={isGenerating}
-              className="w-full px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-800 text-white placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition resize-none disabled:opacity-50 text-sm"
+              className="w-full px-4 py-3 rounded-lg bg-stone-100 border border-stone-200 text-white placeholder:text-stone-600 focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition resize-none disabled:opacity-50 text-sm"
             />
           </div>
 
@@ -237,7 +237,7 @@ export function GenerateContentModal({ isOpen, onClose, defaultChannels = [] }: 
                 animate={{ opacity: 1, height: "auto" }}
                 className="space-y-2"
               >
-                <p className="text-sm font-medium text-zinc-300">Resultados</p>
+                <p className="text-sm font-medium text-stone-300">Resultados</p>
                 {results.map((result) => (
                   <div
                     key={result.channel}
@@ -255,7 +255,7 @@ export function GenerateContentModal({ isOpen, onClose, defaultChannels = [] }: 
                     )}
                     <span className="flex-1 capitalize">{result.channel}</span>
                     {result.success ? (
-                      <span className="text-xs text-zinc-500">Creado como borrador</span>
+                      <span className="text-xs text-stone-500">Creado como borrador</span>
                     ) : (
                       <span className="text-xs text-red-500 truncate max-w-48">{result.error}</span>
                     )}
@@ -267,11 +267,11 @@ export function GenerateContentModal({ isOpen, onClose, defaultChannels = [] }: 
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-zinc-800 flex items-center justify-end gap-3">
+        <div className="px-6 py-4 border-t border-stone-200 flex items-center justify-end gap-3">
           {results ? (
             <button
               onClick={handleClose}
-              className="px-6 py-2.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white text-sm font-medium transition"
+              className="px-6 py-2.5 rounded-lg bg-stone-200 hover:bg-stone-100 text-white text-sm font-medium transition"
             >
               Cerrar
             </button>
@@ -280,7 +280,7 @@ export function GenerateContentModal({ isOpen, onClose, defaultChannels = [] }: 
               <button
                 onClick={handleClose}
                 disabled={isGenerating}
-                className="px-4 py-2.5 rounded-lg text-zinc-400 hover:text-white text-sm font-medium transition disabled:opacity-50"
+                className="px-4 py-2.5 rounded-lg text-stone-400 hover:text-stone-900 text-sm font-medium transition disabled:opacity-50"
               >
                 Cancelar
               </button>
@@ -290,8 +290,8 @@ export function GenerateContentModal({ isOpen, onClose, defaultChannels = [] }: 
                 className={cn(
                   "flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold transition",
                   !topic.trim() || selectedChannels.length === 0 || isGenerating
-                    ? "bg-zinc-800 text-zinc-600 cursor-not-allowed"
-                    : "bg-indigo-600 hover:bg-indigo-500 text-white"
+                    ? "bg-stone-200 text-stone-600 cursor-not-allowed"
+                    : "bg-orange-600 hover:bg-orange-500 text-white"
                 )}
               >
                 {isGenerating ? (

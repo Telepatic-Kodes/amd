@@ -52,7 +52,7 @@ export function QuickExecuteModal({ agentId, agentName, onClose }: QuickExecuteM
             <Zap className="h-4 w-4 text-emerald-400" />
             <h3 className="text-sm font-semibold text-[var(--text-primary)]">Ejecutar Agente</h3>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-900 transition-colors">
+          <button onClick={onClose} className="text-stone-400 hover:text-stone-900 transition-colors">
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -89,7 +89,7 @@ export function QuickExecuteModal({ agentId, agentName, onClose }: QuickExecuteM
               disabled={state === "executing"}
               placeholder="Describe lo que quieres que haga el agente..."
               rows={3}
-              className="w-full rounded-md border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm text-[var(--text-primary)] placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-emerald-500/50 resize-none"
+              className="w-full rounded-md border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm text-[var(--text-primary)] placeholder:text-stone-400 focus:outline-none focus:ring-1 focus:ring-emerald-500/50 resize-none"
             />
           </div>
 
@@ -112,7 +112,7 @@ export function QuickExecuteModal({ agentId, agentName, onClose }: QuickExecuteM
         <div className="flex items-center justify-end gap-2 px-5 py-3 border-t border-[var(--border)]">
           <button
             onClick={onClose}
-            className="px-3 py-1.5 text-xs font-medium text-[var(--text-secondary)] hover:text-white transition-colors rounded-md"
+            className="px-3 py-1.5 text-xs font-medium text-[var(--text-secondary)] hover:text-stone-900 transition-colors rounded-md"
           >
             {state === "success" || state === "error" ? "Cerrar" : "Cancelar"}
           </button>

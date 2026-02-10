@@ -87,8 +87,8 @@ const ToolbarButton = ({
     aria-pressed={isActive}
     className={cn(
       "p-2 rounded transition-colors touch-target",
-      "hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed",
-      isActive ? "bg-zinc-800 text-indigo-400" : "text-zinc-400",
+      "hover:bg-stone-200 disabled:opacity-50 disabled:cursor-not-allowed",
+      isActive ? "bg-stone-200 text-orange-400" : "text-stone-400",
       className
     )}
   >
@@ -97,7 +97,7 @@ const ToolbarButton = ({
 );
 
 const Divider = ({ className }: { className?: string }) => (
-  <div className={cn("w-px h-6 bg-zinc-800 my-auto mx-1", className)} />
+  <div className={cn("w-px h-6 bg-stone-200 my-auto mx-1", className)} />
 );
 
 const EditorToolbarComponent = ({
@@ -114,7 +114,7 @@ const EditorToolbarComponent = ({
       role="toolbar"
       aria-label="Text formatting toolbar"
       className={cn(
-        "flex flex-wrap gap-1 p-2 border-b border-zinc-800 bg-zinc-950/50",
+        "flex flex-wrap gap-1 p-2 border-b border-stone-200 bg-[#faf8f4]/50",
         className
       )}
     >

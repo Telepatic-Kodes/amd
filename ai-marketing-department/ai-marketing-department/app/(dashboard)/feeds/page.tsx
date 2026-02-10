@@ -97,10 +97,10 @@ export default function FeedsPage() {
             <Rss className="h-6 w-6 text-orange-400" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-stone-400 bg-clip-text text-transparent">
               RSS Feeds
             </h1>
-            <p className="text-zinc-400 mt-1">
+            <p className="text-stone-400 mt-1">
               Manage your content sources.
             </p>
           </div>
@@ -119,10 +119,10 @@ export default function FeedsPage() {
             <Rss className="h-6 w-6 text-orange-400" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-stone-400 bg-clip-text text-transparent">
               RSS Feeds
             </h1>
-            <p className="text-zinc-400 mt-1">
+            <p className="text-stone-400 mt-1">
               {feeds.length} feeds configured
             </p>
           </div>
@@ -134,23 +134,23 @@ export default function FeedsPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
         {/* Search */}
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-500" />
           <input
             type="text"
             placeholder="Search feeds..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-lg border border-zinc-800 bg-zinc-950/50 py-2 pl-10 pr-4 text-sm text-white placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="w-full rounded-lg border border-stone-200 bg-[#faf8f4]/50 py-2 pl-10 pr-4 text-sm text-white placeholder-stone-500 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
           />
         </div>
 
         {/* Status Filter */}
         <div className="relative">
-          <Filter className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+          <Filter className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-500" />
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="appearance-none rounded-lg border border-zinc-800 bg-zinc-950/50 py-2 pl-10 pr-8 text-sm text-white focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="appearance-none rounded-lg border border-stone-200 bg-[#faf8f4]/50 py-2 pl-10 pr-8 text-sm text-white focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
           >
             {STATUSES.map((status) => (
               <option key={status.value} value={status.value}>
@@ -158,7 +158,7 @@ export default function FeedsPage() {
               </option>
             ))}
           </select>
-          <ChevronDown className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500 pointer-events-none" />
+          <ChevronDown className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-500 pointer-events-none" />
         </div>
 
         {/* Category Filter */}
@@ -166,7 +166,7 @@ export default function FeedsPage() {
           <select
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
-            className="appearance-none rounded-lg border border-zinc-800 bg-zinc-950/50 py-2 pl-4 pr-8 text-sm text-white focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="appearance-none rounded-lg border border-stone-200 bg-[#faf8f4]/50 py-2 pl-4 pr-8 text-sm text-white focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
           >
             {CATEGORIES.map((cat) => (
               <option key={cat.value} value={cat.value}>
@@ -174,7 +174,7 @@ export default function FeedsPage() {
               </option>
             ))}
           </select>
-          <ChevronDown className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500 pointer-events-none" />
+          <ChevronDown className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-500 pointer-events-none" />
         </div>
       </div>
 
@@ -199,7 +199,7 @@ export default function FeedsPage() {
           selectedFeedId ? "lg:w-2/3" : "w-full"
         )}>
           {filteredFeeds.length === 0 ? (
-            <div className="text-center py-12 text-zinc-500">
+            <div className="text-center py-12 text-stone-500">
               {feeds.length === 0 ? (
                 <p>No feeds configured yet. Add your first feed to get started.</p>
               ) : (
@@ -247,7 +247,7 @@ export default function FeedsPage() {
                     </h3>
                     <button
                       onClick={() => setSelectedFeedId(null)}
-                      className="p-1.5 rounded-lg hover:bg-zinc-800 text-zinc-500 hover:text-white transition-colors"
+                      className="p-1.5 rounded-lg hover:bg-stone-200 text-stone-500 hover:text-stone-900 transition-colors"
                     >
                       <X className="h-4 w-4" />
                     </button>
@@ -255,7 +255,7 @@ export default function FeedsPage() {
 
                   <div className="mb-4">
                     <h4 className="text-white font-medium">{selectedFeed.name}</h4>
-                    <p className="text-xs text-zinc-500 truncate">{selectedFeed.url}</p>
+                    <p className="text-xs text-stone-500 truncate">{selectedFeed.url}</p>
                   </div>
 
                   <FeedItemsList feedId={selectedFeedId!} limit={5} />

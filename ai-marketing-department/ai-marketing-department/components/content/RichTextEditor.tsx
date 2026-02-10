@@ -105,7 +105,7 @@ export function RichTextEditor({
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: "text-indigo-400 hover:text-indigo-300 underline cursor-pointer",
+          class: "text-orange-400 hover:text-orange-300 underline cursor-pointer",
         },
       }),
       CharacterCount,
@@ -186,8 +186,8 @@ export function RichTextEditor({
       aria-pressed={isActive}
       className={cn(
         "p-2 rounded transition-colors touch-target min-w-[44px] min-h-[44px] flex items-center justify-center",
-        "hover:bg-zinc-700",
-        isActive ? "bg-zinc-700 text-indigo-400" : "text-zinc-300"
+        "hover:bg-stone-100",
+        isActive ? "bg-stone-700 text-orange-400" : "text-stone-300"
       )}
     >
       {children}
@@ -196,7 +196,7 @@ export function RichTextEditor({
 
   return (
     <div
-      className={cn("border border-zinc-800 rounded-lg overflow-hidden", className)}
+      className={cn("border border-stone-200 rounded-lg overflow-hidden", className)}
       // Prevent virtual keyboard from pushing editor off screen on mobile
       style={{ position: 'relative' }}
     >
@@ -213,7 +213,7 @@ export function RichTextEditor({
           placement: "top",
         }}
         updateDelay={100}
-        className="flex gap-1 p-1 bg-zinc-800 border border-zinc-700 rounded-lg shadow-lg z-50"
+        className="flex gap-1 p-1 bg-stone-200 border border-stone-300 rounded-lg shadow-lg z-50"
       >
         <BubbleMenuButton
           onClick={() => editor.chain().focus().toggleBold().run()}
@@ -243,7 +243,7 @@ export function RichTextEditor({
         >
           <Code className="h-4 w-4" />
         </BubbleMenuButton>
-        <div className="w-px h-6 bg-zinc-700 my-auto mx-1" />
+        <div className="w-px h-6 bg-stone-700 my-auto mx-1" />
         <BubbleMenuButton
           onClick={() => setIsLinkDialogOpen(true)}
           isActive={editor.isActive("link")}
@@ -255,7 +255,7 @@ export function RichTextEditor({
 
       {/* Editor Content */}
       <div
-        className="p-4 bg-zinc-950/50"
+        className="p-4 bg-[#faf8f4]/50"
         style={{ minHeight }}
         data-placeholder={placeholder}
       >
@@ -263,16 +263,16 @@ export function RichTextEditor({
       </div>
 
       {/* Footer - EditorStatusBar with optional export buttons */}
-      <div className="flex items-center justify-between border-t border-zinc-800 bg-zinc-950/50">
+      <div className="flex items-center justify-between border-t border-stone-200 bg-[#faf8f4]/50">
         <EditorStatusBar content={content} className="flex-1 border-0" />
 
         {showExport && (
-          <div className="flex gap-2 px-4 border-l border-zinc-800">
+          <div className="flex gap-2 px-4 border-l border-stone-200">
             <button
               type="button"
               onClick={handleCopyHtml}
               aria-label="Copy HTML to clipboard"
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-zinc-400 hover:text-white hover:bg-zinc-800 rounded transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-stone-400 hover:text-stone-900 hover:bg-stone-200 rounded transition-colors"
               title="Copy HTML to clipboard"
             >
               <Copy className="h-3.5 w-3.5" />
@@ -282,7 +282,7 @@ export function RichTextEditor({
               type="button"
               onClick={handleDownload}
               aria-label="Download as HTML file"
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-zinc-400 hover:text-white hover:bg-zinc-800 rounded transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-stone-400 hover:text-stone-900 hover:bg-stone-200 rounded transition-colors"
               title="Download as HTML file"
             >
               <Download className="h-3.5 w-3.5" />

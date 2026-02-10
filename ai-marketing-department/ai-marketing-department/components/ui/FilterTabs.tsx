@@ -69,13 +69,13 @@ export function FilterTabs({
                 s.gap,
                 isActive
                   ? "text-white"
-                  : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50"
+                  : "text-stone-500 hover:text-stone-700 hover:bg-stone-100"
               )}
             >
               {isActive && (
                 <motion.div
                   layoutId="activePill"
-                  className="absolute inset-0 rounded-full bg-indigo-600"
+                  className="absolute inset-0 rounded-full bg-orange-600"
                   transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
                 />
               )}
@@ -88,7 +88,7 @@ export function FilterTabs({
                       "rounded-full px-1.5 py-0.5 text-xs font-medium",
                       isActive
                         ? "bg-white/20 text-white"
-                        : "bg-zinc-800 text-zinc-400"
+                        : "bg-stone-200 text-stone-500"
                     )}
                   >
                     {tab.count}
@@ -104,7 +104,7 @@ export function FilterTabs({
 
   if (variant === 'underline') {
     return (
-      <div className={cn("relative border-b border-zinc-800", className)}>
+      <div className={cn("relative border-b border-stone-200", className)}>
         <div className="flex items-center gap-4">
           {tabs.map((tab) => {
             const isActive = tab.id === activeTab;
@@ -117,20 +117,20 @@ export function FilterTabs({
                 className={cn(
                   "relative pb-3 font-medium transition-colors",
                   s.text,
-                  isActive ? "text-white" : "text-zinc-400 hover:text-zinc-200"
+                  isActive ? "text-stone-900" : "text-stone-400 hover:text-stone-600"
                 )}
               >
                 <span className={cn("flex items-center", s.gap)}>
                   {Icon && <Icon className={s.iconSize} />}
                   {tab.label}
                   {tab.count !== undefined && (
-                    <span className="text-zinc-500">({tab.count})</span>
+                    <span className="text-stone-400">({tab.count})</span>
                   )}
                 </span>
                 {isActive && (
                   <motion.div
                     layoutId="activeUnderline"
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-500"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-500"
                     transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
                   />
                 )}
@@ -146,7 +146,7 @@ export function FilterTabs({
   return (
     <div
       className={cn(
-        "inline-flex items-center rounded-lg bg-zinc-900 p-1",
+        "inline-flex items-center rounded-lg bg-stone-100 p-1",
         className
       )}
     >
@@ -163,14 +163,14 @@ export function FilterTabs({
               s.text,
               s.padding,
               isActive
-                ? "text-white"
-                : "text-zinc-400 hover:text-zinc-200"
+                ? "text-stone-900"
+                : "text-stone-500 hover:text-stone-700"
             )}
           >
             {isActive && (
               <motion.div
                 layoutId="activeButton"
-                className="absolute inset-0 rounded-md bg-zinc-700"
+                className="absolute inset-0 rounded-md bg-white shadow-sm"
                 transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
               />
             )}
@@ -202,7 +202,7 @@ export function ToggleTabs({ options, value, onChange, className }: ToggleTabsPr
   return (
     <div
       className={cn(
-        "inline-flex items-center rounded-lg bg-zinc-900 p-1",
+        "inline-flex items-center rounded-lg bg-stone-100 p-1",
         className
       )}
     >
@@ -213,14 +213,14 @@ export function ToggleTabs({ options, value, onChange, className }: ToggleTabsPr
           className={cn(
             "relative px-4 py-1.5 rounded-md text-sm font-medium transition-colors",
             value === option
-              ? "text-white"
-              : "text-zinc-400 hover:text-zinc-200"
+              ? "text-stone-900"
+              : "text-stone-500 hover:text-stone-700"
           )}
         >
           {value === option && (
             <motion.div
               layoutId="toggleActive"
-              className="absolute inset-0 rounded-md bg-zinc-700"
+              className="absolute inset-0 rounded-md bg-white shadow-sm"
               transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
             />
           )}

@@ -26,7 +26,7 @@ export function StepChannels({ selected, onChange }: Props) {
     <div className="space-y-6 max-w-lg mx-auto">
       <div className="text-center space-y-2">
         <h2 className="text-2xl font-bold text-white">Active Channels</h2>
-        <p className="text-zinc-400 text-sm">Which channels should your agents manage?</p>
+        <p className="text-stone-400 text-sm">Which channels should your agents manage?</p>
       </div>
 
       <div className="space-y-2">
@@ -39,18 +39,18 @@ export function StepChannels({ selected, onChange }: Props) {
               className={cn(
                 "w-full flex items-center justify-between p-4 rounded-xl border transition-all duration-200",
                 active
-                  ? "border-indigo-500 bg-indigo-500/10"
-                  : "border-zinc-800 bg-zinc-950/50 hover:border-zinc-700"
+                  ? "border-orange-500 bg-orange-500/10"
+                  : "border-stone-200 bg-[#faf8f4]/50 hover:border-stone-300"
               )}
             >
               <div className="flex items-center gap-3">
-                <Icon className={cn("w-5 h-5", active ? "text-indigo-400" : "text-zinc-500")} />
+                <Icon className={cn("w-5 h-5", active ? "text-orange-400" : "text-stone-500")} />
                 <span className="font-medium text-sm text-white">{label}</span>
               </div>
               <div
                 className={cn(
                   "w-10 h-6 rounded-full transition-colors duration-200 relative",
-                  active ? "bg-indigo-600" : "bg-zinc-700"
+                  active ? "bg-orange-600" : "bg-stone-700"
                 )}
               >
                 <div

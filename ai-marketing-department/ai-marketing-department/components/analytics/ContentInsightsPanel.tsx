@@ -43,7 +43,7 @@ export function ContentInsightsPanel({ data, isLoading }: ContentInsightsPanelPr
         {[...Array(3)].map((_, i) => (
           <Card key={i}>
             <CardContent className="p-6">
-              <div className="h-40 rounded-lg bg-zinc-900/50 animate-pulse" />
+              <div className="h-40 rounded-lg bg-stone-100/50 animate-pulse" />
             </CardContent>
           </Card>
         ))}
@@ -57,7 +57,7 @@ export function ContentInsightsPanel({ data, isLoading }: ContentInsightsPanelPr
   if (contentWithEngagement.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-zinc-500 text-sm">
+        <p className="text-stone-500 text-sm">
           Sin datos suficientes para generar insights. Necesitas contenido publicado con
           metricas de LinkedIn.
         </p>
@@ -184,7 +184,7 @@ export function ContentInsightsPanel({ data, isLoading }: ContentInsightsPanelPr
       <Card>
         <CardHeader>
           <h4 className="text-sm font-semibold text-white flex items-center gap-2">
-            <Activity className="w-4 h-4 text-indigo-400" />
+            <Activity className="w-4 h-4 text-orange-400" />
             Rendimiento por Tipo de Contenido
           </h4>
         </CardHeader>
@@ -195,22 +195,22 @@ export function ContentInsightsPanel({ data, isLoading }: ContentInsightsPanelPr
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     {index === 0 && <Star className="w-3.5 h-3.5 text-yellow-400" />}
-                    <span className="text-xs text-zinc-400">
+                    <span className="text-xs text-stone-400">
                       {item.type.replace("social_", "")}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-zinc-500">{item.count} piezas</span>
+                    <span className="text-xs text-stone-500">{item.count} piezas</span>
                     <span className="text-xs font-semibold text-white">
                       {formatNumber(item.avgEngagement)}
                     </span>
                   </div>
                 </div>
-                <div className="h-1.5 w-full overflow-hidden rounded-full bg-zinc-800">
+                <div className="h-1.5 w-full overflow-hidden rounded-full bg-stone-200">
                   <div
                     className={cn(
                       "h-full rounded-full transition-all duration-500",
-                      index === 0 ? "bg-yellow-400" : "bg-indigo-500"
+                      index === 0 ? "bg-yellow-400" : "bg-orange-500"
                     )}
                     style={{
                       width: `${
@@ -224,10 +224,10 @@ export function ContentInsightsPanel({ data, isLoading }: ContentInsightsPanelPr
               </div>
             ))}
             {bestType && (
-              <div className="pt-3 border-t border-zinc-800 mt-4">
-                <p className="text-xs text-zinc-500">
+              <div className="pt-3 border-t border-stone-200 mt-4">
+                <p className="text-xs text-stone-500">
                   Mejor tipo:{" "}
-                  <span className="text-indigo-400 font-semibold">
+                  <span className="text-orange-400 font-semibold">
                     {bestType.type.replace("social_", "")}
                   </span>
                 </p>
@@ -252,20 +252,20 @@ export function ContentInsightsPanel({ data, isLoading }: ContentInsightsPanelPr
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     {index === 0 && <Star className="w-3.5 h-3.5 text-yellow-400" />}
-                    <span className="text-xs text-zinc-400">{item.label}</span>
+                    <span className="text-xs text-stone-400">{item.label}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-zinc-500">{item.count} posts</span>
+                    <span className="text-xs text-stone-500">{item.count} posts</span>
                     <span className="text-xs font-semibold text-white">
                       {formatNumber(item.avgEngagement)}
                     </span>
                   </div>
                 </div>
-                <div className="h-1.5 w-full overflow-hidden rounded-full bg-zinc-800">
+                <div className="h-1.5 w-full overflow-hidden rounded-full bg-stone-200">
                   <div
                     className={cn(
                       "h-full rounded-full transition-all duration-500",
-                      index === 0 ? "bg-cyan-400" : "bg-indigo-500"
+                      index === 0 ? "bg-cyan-400" : "bg-orange-500"
                     )}
                     style={{
                       width: `${
@@ -279,8 +279,8 @@ export function ContentInsightsPanel({ data, isLoading }: ContentInsightsPanelPr
               </div>
             ))}
             {bestTime && (
-              <div className="pt-3 border-t border-zinc-800 mt-4">
-                <p className="text-xs text-zinc-500">
+              <div className="pt-3 border-t border-stone-200 mt-4">
+                <p className="text-xs text-stone-500">
                   Mejor horario:{" "}
                   <span className="text-cyan-400 font-semibold">{bestTime.label}</span>
                 </p>
@@ -305,15 +305,15 @@ export function ContentInsightsPanel({ data, isLoading }: ContentInsightsPanelPr
         <CardContent className="p-6 pt-0">
           <div className="space-y-4">
             {/* Overall trend */}
-            <div className="p-3 rounded-lg bg-zinc-900/50 border border-zinc-800">
+            <div className="p-3 rounded-lg bg-stone-100/50 border border-stone-200">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs text-zinc-500">Tendencia general</span>
+                <span className="text-xs text-stone-500">Tendencia general</span>
                 <Badge variant={trendDirection === "up" ? "success" : "error"}>
                   {trendChange > 0 ? "+" : ""}
                   {trendChange.toFixed(1)}%
                 </Badge>
               </div>
-              <p className="text-xs text-zinc-400">
+              <p className="text-xs text-stone-400">
                 El engagement promedio esta{" "}
                 {trendDirection === "up" ? "mejorando" : "disminuyendo"} en el periodo
                 analizado
@@ -322,13 +322,13 @@ export function ContentInsightsPanel({ data, isLoading }: ContentInsightsPanelPr
 
             {/* Type-specific trends */}
             <div className="space-y-2">
-              <p className="text-xs text-zinc-500 font-medium">Por tipo de contenido:</p>
+              <p className="text-xs text-stone-500 font-medium">Por tipo de contenido:</p>
               {typeTrends.map((item) => (
                 <div
                   key={item.type}
-                  className="flex items-center justify-between py-1.5 border-b border-zinc-800/50 last:border-0"
+                  className="flex items-center justify-between py-1.5 border-b border-stone-200/50 last:border-0"
                 >
-                  <span className="text-xs text-zinc-400">
+                  <span className="text-xs text-stone-400">
                     {item.type.replace("social_", "")}
                   </span>
                   <div className="flex items-center gap-2">

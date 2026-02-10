@@ -37,7 +37,7 @@ interface Agent {
 
 const departmentColors: Record<string, string> = {
   leadership: "bg-purple-500/10 text-purple-400 border-purple-500/20",
-  content: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+  content: "bg-orange-500/10 text-orange-400 border-orange-500/20",
   social: "bg-pink-500/10 text-pink-400 border-pink-500/20",
   demandgen: "bg-orange-500/10 text-orange-400 border-orange-500/20",
   seo: "bg-green-500/10 text-green-400 border-green-500/20",
@@ -73,14 +73,14 @@ export default function OrgPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <div className="p-3 rounded-xl bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border border-indigo-500/30">
-            <Network className="w-8 h-8 text-indigo-400" />
+          <div className="p-3 rounded-xl bg-gradient-to-br from-orange-500/20 to-purple-500/20 border border-orange-500/30">
+            <Network className="w-8 h-8 text-orange-400" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-white to-stone-400 bg-clip-text text-transparent">
               Organizational Chart
             </h1>
-            <p className="text-zinc-500 text-sm">
+            <p className="text-stone-500 text-sm">
               37 AI Agents - Hierarchical Structure
             </p>
           </div>
@@ -91,22 +91,22 @@ export default function OrgPage() {
           <div className="hidden md:flex items-center gap-6">
             <div className="text-center">
               <p className="text-2xl font-bold text-white">{stats.total}</p>
-              <p className="text-xs text-zinc-500">Total</p>
+              <p className="text-xs text-stone-500">Total</p>
             </div>
-            <div className="w-px h-10 bg-zinc-800" />
+            <div className="w-px h-10 bg-stone-200" />
             <div className="text-center">
               <p className="text-2xl font-bold text-green-400">{stats.active}</p>
-              <p className="text-xs text-zinc-500">Active</p>
+              <p className="text-xs text-stone-500">Active</p>
             </div>
-            <div className="w-px h-10 bg-zinc-800" />
+            <div className="w-px h-10 bg-stone-200" />
             <div className="text-center">
-              <p className="text-2xl font-bold text-blue-400">{stats.directors}</p>
-              <p className="text-xs text-zinc-500">Directors</p>
+              <p className="text-2xl font-bold text-orange-400">{stats.directors}</p>
+              <p className="text-xs text-stone-500">Directors</p>
             </div>
-            <div className="w-px h-10 bg-zinc-800" />
+            <div className="w-px h-10 bg-stone-200" />
             <div className="text-center">
               <p className="text-2xl font-bold text-purple-400">{stats.departments}</p>
-              <p className="text-xs text-zinc-500">Depts</p>
+              <p className="text-xs text-stone-500">Depts</p>
             </div>
           </div>
         )}
@@ -139,7 +139,7 @@ export default function OrgPage() {
                 <h3 className="font-semibold text-white">Agent Details</h3>
                 <button
                   onClick={() => setSelectedAgent(null)}
-                  className="p-1 rounded-lg hover:bg-zinc-800 text-zinc-500 hover:text-white transition-colors"
+                  className="p-1 rounded-lg hover:bg-stone-200 text-stone-500 hover:text-stone-900 transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -159,7 +159,7 @@ export default function OrgPage() {
                   </div>
                   <div>
                     <h4 className="font-semibold text-white">{selectedAgent.name}</h4>
-                    <p className="text-xs text-zinc-500">{selectedAgent.agentId}</p>
+                    <p className="text-xs text-stone-500">{selectedAgent.agentId}</p>
                   </div>
                 </div>
 
@@ -175,29 +175,29 @@ export default function OrgPage() {
                 {/* Description */}
                 {selectedAgent.description && (
                   <div>
-                    <p className="text-xs text-zinc-500 mb-1">Description</p>
-                    <p className="text-sm text-zinc-300">{selectedAgent.description}</p>
+                    <p className="text-xs text-stone-500 mb-1">Description</p>
+                    <p className="text-sm text-stone-300">{selectedAgent.description}</p>
                   </div>
                 )}
 
                 {/* Config */}
                 {selectedAgent.config && (
                   <div className="space-y-2">
-                    <p className="text-xs text-zinc-500">Configuration</p>
+                    <p className="text-xs text-stone-500">Configuration</p>
                     <div className="grid grid-cols-2 gap-2">
-                      <div className="flex items-center gap-2 p-2 rounded-lg bg-zinc-900">
-                        <Cpu className="w-4 h-4 text-zinc-500" />
+                      <div className="flex items-center gap-2 p-2 rounded-lg bg-stone-100">
+                        <Cpu className="w-4 h-4 text-stone-500" />
                         <div>
-                          <p className="text-[10px] text-zinc-500">Model</p>
+                          <p className="text-[10px] text-stone-500">Model</p>
                           <p className="text-xs text-white truncate">
                             {selectedAgent.config.model?.split("-").slice(-2).join("-") || "claude"}
                           </p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2 p-2 rounded-lg bg-zinc-900">
-                        <Zap className="w-4 h-4 text-zinc-500" />
+                      <div className="flex items-center gap-2 p-2 rounded-lg bg-stone-100">
+                        <Zap className="w-4 h-4 text-stone-500" />
                         <div>
-                          <p className="text-[10px] text-zinc-500">Temp</p>
+                          <p className="text-[10px] text-stone-500">Temp</p>
                           <p className="text-xs text-white">
                             {selectedAgent.config.temperature || 0.7}
                           </p>
@@ -210,12 +210,12 @@ export default function OrgPage() {
                 {/* Triggers */}
                 {selectedAgent.triggers && selectedAgent.triggers.length > 0 && (
                   <div>
-                    <p className="text-xs text-zinc-500 mb-2">Triggers</p>
+                    <p className="text-xs text-stone-500 mb-2">Triggers</p>
                     <div className="flex flex-wrap gap-1">
                       {selectedAgent.triggers.map((trigger) => (
                         <span
                           key={trigger}
-                          className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-zinc-900 text-xs text-zinc-400"
+                          className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-stone-100 text-xs text-stone-400"
                         >
                           <Clock className="w-3 h-3" />
                           {trigger}

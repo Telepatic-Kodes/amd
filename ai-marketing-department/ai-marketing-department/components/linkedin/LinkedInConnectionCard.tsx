@@ -83,9 +83,9 @@ export function LinkedInConnectionCard({ convexSiteUrl }: LinkedInConnectionCard
     },
     disconnected: {
       icon: XCircle,
-      color: "text-zinc-400",
-      bg: "bg-zinc-400/10",
-      border: "border-zinc-700",
+      color: "text-stone-400",
+      bg: "bg-stone-400/10",
+      border: "border-stone-300",
       label: translate("linkedinDisconnected"),
     },
   };
@@ -111,9 +111,9 @@ export function LinkedInConnectionCard({ convexSiteUrl }: LinkedInConnectionCard
             </h4>
             {connection ? (
               <div className="mt-1 space-y-1">
-                <p className="text-sm text-zinc-300">{connection.displayName}</p>
+                <p className="text-sm text-stone-300">{connection.displayName}</p>
                 {connection.email && (
-                  <p className="text-xs text-zinc-500">{connection.email}</p>
+                  <p className="text-xs text-stone-500">{connection.email}</p>
                 )}
                 {connection.isExpiringSoon && (
                   <p className="text-xs text-yellow-400 flex items-center gap-1">
@@ -126,12 +126,12 @@ export function LinkedInConnectionCard({ convexSiteUrl }: LinkedInConnectionCard
                     {translate("linkedinTokenExpired")}
                   </p>
                 )}
-                <p className="text-xs text-zinc-500">
+                <p className="text-xs text-stone-500">
                   {translate("linkedinDailyLimit")}: {connection.dailyPostCount}/10
                 </p>
               </div>
             ) : (
-              <p className="text-sm text-zinc-400 mt-1">
+              <p className="text-sm text-stone-400 mt-1">
                 {translate("linkedinDescription")}
               </p>
             )}
@@ -161,7 +161,7 @@ export function LinkedInConnectionCard({ convexSiteUrl }: LinkedInConnectionCard
                   href={connection.profileUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1 text-xs text-zinc-400 hover:text-white transition-colors"
+                  className="flex items-center gap-1 text-xs text-stone-400 hover:text-stone-900 transition-colors"
                 >
                   Ver perfil <ExternalLink className="h-3 w-3" />
                 </a>
@@ -169,7 +169,7 @@ export function LinkedInConnectionCard({ convexSiteUrl }: LinkedInConnectionCard
               <button
                 onClick={handleDisconnect}
                 disabled={isDisconnecting}
-                className="text-xs text-zinc-500 hover:text-red-400 transition-colors disabled:opacity-50"
+                className="text-xs text-stone-500 hover:text-red-400 transition-colors disabled:opacity-50"
               >
                 {isDisconnecting ? (
                   <Loader2 className="h-3 w-3 animate-spin inline mr-1" />

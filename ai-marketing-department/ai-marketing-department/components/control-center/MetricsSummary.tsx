@@ -38,7 +38,7 @@ export function MetricsSummary({ metrics }: MetricsSummaryProps) {
         {[...Array(4)].map((_, i) => (
           <div
             key={i}
-            className="h-40 rounded-xl border border-gray-200 bg-gray-50 animate-pulse"
+            className="h-40 rounded-xl border border-stone-200 bg-stone-50 animate-pulse"
           />
         ))}
       </div>
@@ -66,8 +66,8 @@ export function MetricsSummary({ metrics }: MetricsSummaryProps) {
     },
     {
       icon: Target,
-      iconColor: "text-blue-400",
-      iconBg: "bg-blue-500/10",
+      iconColor: "text-orange-400",
+      iconBg: "bg-orange-500/10",
       value: metrics.successRate,
       formatter: (v: number) => `${v.toFixed(1)}%`,
       label: translate("successRateLabel"),
@@ -95,15 +95,15 @@ export function MetricsSummary({ metrics }: MetricsSummaryProps) {
                 <Icon className={`w-6 h-6 ${metric.iconColor}`} />
               </div>
             </div>
-            <p className="text-4xl font-bold text-gray-900 mb-2">
+            <p className="text-4xl font-bold text-stone-900 mb-2">
               <SimpleCounter
                 value={metric.value}
                 formatter={metric.formatter}
               />
             </p>
-            <p className="text-base text-gray-500">{metric.label}</p>
+            <p className="text-base text-stone-500">{metric.label}</p>
             {metric.sublabel && (
-              <p className="text-sm text-gray-400 mt-2">{metric.sublabel}</p>
+              <p className="text-sm text-stone-400 mt-2">{metric.sublabel}</p>
             )}
           </Card>
         );

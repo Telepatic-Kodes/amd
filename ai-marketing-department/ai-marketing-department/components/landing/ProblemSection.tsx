@@ -56,7 +56,7 @@ const itemVariants = {
 
 export function ProblemSection() {
   return (
-    <section className="py-24 bg-zinc-950/50">
+    <section className="py-24 bg-[#faf8f4]/50">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
@@ -71,7 +71,7 @@ export function ProblemSection() {
               El Marketing Tradicional es{" "}
               <span className="text-red-500">Ineficiente y Caro</span>
             </h2>
-            <p className="text-xl text-zinc-400 max-w-3xl mx-auto">
+            <p className="text-xl text-stone-400 max-w-3xl mx-auto">
               Las empresas gastan cientos de miles de dólares en equipos o
               agencias que no pueden escalar ni mantener la consistencia.
             </p>
@@ -91,7 +91,7 @@ export function ProblemSection() {
                   <CardContent className="p-8">
                     {/* Icon */}
                     <motion.div
-                      className={`inline-flex p-4 rounded-lg bg-zinc-900 mb-6 ${problem.color}`}
+                      className={`inline-flex p-4 rounded-lg bg-stone-100 mb-6 ${problem.color}`}
                       whileHover={{ scale: 1.1, rotate: 5 }}
                       transition={{ duration: 0.2 }}
                     >
@@ -109,7 +109,7 @@ export function ProblemSection() {
                     </div>
 
                     {/* Description */}
-                    <p className="text-zinc-400 leading-relaxed">
+                    <p className="text-stone-400 leading-relaxed">
                       {problem.description}
                     </p>
                   </CardContent>
@@ -128,7 +128,7 @@ export function ProblemSection() {
           >
             <Card className="inline-block">
               <CardContent className="px-12 py-8">
-                <p className="text-zinc-400 text-lg mb-2">
+                <p className="text-stone-400 text-lg mb-2">
                   Costo promedio anual de marketing tradicional:
                 </p>
                 <div className="text-5xl font-bold text-red-500">

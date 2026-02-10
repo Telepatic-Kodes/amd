@@ -61,12 +61,12 @@ export function AgentStatusGrid({
   if (!agentsByDepartment || !statusCounts) {
     return (
       <div>
-        <div className="mb-6 h-10 rounded-lg bg-gray-100 animate-pulse" />
+        <div className="mb-6 h-10 rounded-lg bg-stone-100 animate-pulse" />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
           {[...Array(6)].map((_, i) => (
             <div
               key={i}
-              className="h-24 rounded-lg border border-gray-200 bg-gray-50 animate-pulse"
+              className="h-24 rounded-lg border border-stone-200 bg-stone-50 animate-pulse"
             />
           ))}
         </div>
@@ -92,21 +92,21 @@ export function AgentStatusGrid({
   const renderAgentCard = (agent: Agent) => {
     const shouldPulse = statusPulse[agent.status];
     return (
-      <Card key={agent._id} className="p-3 min-h-[72px] hover:border-gray-300 transition-colors">
+      <Card key={agent._id} className="p-3 min-h-[72px] hover:border-stone-300 transition-colors">
         <div className="flex items-center gap-2 mb-2">
           <div
             className={`w-2 h-2 rounded-full ${statusColors[agent.status]} ${
               shouldPulse ? "animate-pulse" : ""
             }`}
           />
-          <span className="font-medium text-sm text-gray-900 truncate flex-1">
+          <span className="font-medium text-sm text-stone-900 truncate flex-1">
             {agent.name}
           </span>
           <Badge variant="default" className="text-xs">
             {agent.role}
           </Badge>
         </div>
-        <div className="text-xs text-gray-500">
+        <div className="text-xs text-stone-500">
           {departmentNames[agent.department] || agent.department}
         </div>
       </Card>
@@ -119,7 +119,7 @@ export function AgentStatusGrid({
       <div key={dept} className="mb-6">
         <button
           onClick={() => toggleDepartment(dept)}
-          className="flex items-center gap-2 mb-3 min-h-[44px] py-2 text-gray-900 font-semibold hover:text-gray-600 transition-colors"
+          className="flex items-center gap-2 mb-3 min-h-[44px] py-2 text-stone-900 font-semibold hover:text-stone-600 transition-colors"
         >
           {isCollapsed ? (
             <ChevronRight className="w-4 h-4" />
@@ -143,22 +143,22 @@ export function AgentStatusGrid({
   return (
     <div>
       {/* Status Summary Bar */}
-      <div className="mb-6 flex items-center gap-4 text-sm text-gray-500">
+      <div className="mb-6 flex items-center gap-4 text-sm text-stone-500">
         <span className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-green-400" />
           {statusCounts.active} {translate("agentsActive")}
         </span>
-        <span className="text-gray-300">|</span>
+        <span className="text-stone-300">|</span>
         <span className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-yellow-400" />
           {statusCounts.paused} {translate("agentsPaused")}
         </span>
-        <span className="text-gray-300">|</span>
+        <span className="text-stone-300">|</span>
         <span className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-red-400" />
           {statusCounts.error} {translate("agentsError")}
         </span>
-        <span className="text-gray-300">|</span>
+        <span className="text-stone-300">|</span>
         <span className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-orange-400" />
           {statusCounts.maintenance} {translate("agentsMaintenance")}
@@ -178,8 +178,8 @@ export function AgentStatusGrid({
                 onClick={() => setSelectedDepartment(dept)}
                 className={`px-4 py-3 min-h-[44px] rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                   isActive
-                    ? "bg-blue-50 text-blue-600 border border-blue-200"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900 border border-transparent"
+                    ? "bg-orange-50 text-orange-600 border border-orange-200"
+                    : "bg-stone-100 text-stone-600 hover:bg-stone-200 hover:text-stone-900 border border-transparent"
                 }`}
               >
                 {label}
@@ -203,7 +203,7 @@ export function AgentStatusGrid({
           // Show only selected department
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
             {agentsByDepartment[selectedDepartment]?.map(renderAgentCard) || (
-              <p className="text-gray-500 col-span-full">
+              <p className="text-stone-500 col-span-full">
                 No hay agentes en este departamento
               </p>
             )}

@@ -133,15 +133,15 @@ export default function OnboardingPage() {
   const currentLabel = stepLabels[step];
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-zinc-950 to-black">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-stone-100 to-black">
       {/* Header with Progress */}
-      <div className="pt-8 pb-8 px-4 border-b border-zinc-800">
+      <div className="pt-8 pb-8 px-4 border-b border-stone-200">
         <div className="max-w-2xl mx-auto">
           <div className="mb-4">
             <h1 className="text-3xl font-bold text-white mb-2">
               {currentLabel.title}
             </h1>
-            <p className="text-zinc-400 text-sm">
+            <p className="text-stone-400 text-sm">
               {currentLabel.subtitle}
             </p>
           </div>
@@ -154,13 +154,13 @@ export default function OnboardingPage() {
                 className={cn(
                   "flex-1 h-1.5 rounded-full transition-all duration-300",
                   i <= step
-                    ? "bg-indigo-500"
-                    : "bg-zinc-800"
+                    ? "bg-orange-500"
+                    : "bg-stone-200"
                 )}
               />
             ))}
           </div>
-          <p className="text-xs text-zinc-500 mt-3">
+          <p className="text-xs text-stone-500 mt-3">
             Paso {step + 1} de {TOTAL_STEPS}
           </p>
         </div>
@@ -186,7 +186,7 @@ export default function OnboardingPage() {
 
       {/* Navigation Footer */}
       {step < TOTAL_STEPS - 1 ? (
-        <div className="border-t border-zinc-800 p-4 bg-zinc-900/50 backdrop-blur">
+        <div className="border-t border-stone-200 p-4 bg-stone-100/50 backdrop-blur">
           <div className="max-w-2xl mx-auto flex items-center justify-between">
             <button
               onClick={back}
@@ -194,8 +194,8 @@ export default function OnboardingPage() {
               className={cn(
                 "flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition",
                 step === 0
-                  ? "text-zinc-700 cursor-not-allowed"
-                  : "text-zinc-400 hover:text-white hover:bg-white/5"
+                  ? "text-stone-700 cursor-not-allowed"
+                  : "text-stone-400 hover:text-stone-900 hover:bg-stone-100"
               )}
             >
               <ArrowLeft className="w-4 h-4" /> {translate("back")}
@@ -206,8 +206,8 @@ export default function OnboardingPage() {
               className={cn(
                 "flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold transition",
                 canNext()
-                  ? "bg-indigo-600 hover:bg-indigo-500 text-white"
-                  : "bg-zinc-800 text-zinc-600 cursor-not-allowed"
+                  ? "bg-orange-600 hover:bg-orange-500 text-white"
+                  : "bg-stone-200 text-stone-600 cursor-not-allowed"
               )}
             >
               {translate("next")} <ArrowRight className="w-4 h-4" />
@@ -216,11 +216,11 @@ export default function OnboardingPage() {
         </div>
       ) : (
         // Final Step: Launch Button in Footer
-        <div className="border-t border-zinc-800 p-4 bg-zinc-900/50 backdrop-blur">
+        <div className="border-t border-stone-200 p-4 bg-stone-100/50 backdrop-blur">
           <div className="max-w-2xl mx-auto flex items-center justify-between">
             <button
               onClick={back}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium text-zinc-400 hover:text-white hover:bg-white/5 transition"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium text-stone-400 hover:text-stone-900 hover:bg-stone-100 transition"
             >
               <ArrowLeft className="w-4 h-4" /> {translate("back")}
             </button>
@@ -230,7 +230,7 @@ export default function OnboardingPage() {
               className={cn(
                 "flex items-center gap-2 px-8 py-2.5 rounded-lg text-sm font-semibold transition",
                 loading
-                  ? "bg-zinc-800 text-zinc-600 cursor-not-allowed"
+                  ? "bg-stone-200 text-stone-600 cursor-not-allowed"
                   : "bg-green-600 hover:bg-green-500 text-white"
               )}
             >

@@ -61,9 +61,9 @@ const toastConfig: Record<ToastType, {
   },
   info: {
     icon: Info,
-    iconColor: "text-blue-400",
-    bgColor: "bg-blue-500/10",
-    borderColor: "border-blue-500/30",
+    iconColor: "text-orange-400",
+    bgColor: "bg-orange-500/10",
+    borderColor: "border-orange-500/30",
   },
   warning: {
     icon: AlertTriangle,
@@ -172,7 +172,7 @@ function ToastItem({
       transition={{ duration: 0.2, ease: "easeOut" }}
       className={cn(
         "pointer-events-auto flex items-start gap-3 p-4 rounded-xl border backdrop-blur-sm shadow-lg max-w-sm",
-        "bg-zinc-900/95",
+        "bg-stone-100/95",
         config.borderColor
       )}
     >
@@ -183,13 +183,13 @@ function ToastItem({
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-white">{toast.title}</p>
         {toast.description && (
-          <p className="text-xs text-zinc-400 mt-0.5">{toast.description}</p>
+          <p className="text-xs text-stone-400 mt-0.5">{toast.description}</p>
         )}
       </div>
 
       <button
         onClick={() => onRemove(toast.id)}
-        className="shrink-0 p-1 rounded-lg hover:bg-zinc-800 text-zinc-500 hover:text-white transition-colors"
+        className="shrink-0 p-1 rounded-lg hover:bg-stone-200 text-stone-500 hover:text-stone-900 transition-colors"
       >
         <X className="h-4 w-4" />
       </button>

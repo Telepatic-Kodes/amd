@@ -22,7 +22,7 @@ export function ComparisonTable() {
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
               AMD vs Alternativas
             </h2>
-            <p className="text-xl text-zinc-400 max-w-3xl mx-auto">
+            <p className="text-xl text-stone-400 max-w-3xl mx-auto">
               Compara el costo, tiempo, y resultados de AMD contra las opciones
               tradicionales.
             </p>
@@ -40,20 +40,20 @@ export function ComparisonTable() {
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
-                      <tr className="border-b border-zinc-800">
-                        <th className="text-left p-4 text-zinc-400 font-semibold">
+                      <tr className="border-b border-stone-200">
+                        <th className="text-left p-4 text-stone-400 font-semibold">
                           Característica
                         </th>
-                        <th className="text-center p-4 text-zinc-400 font-semibold">
+                        <th className="text-center p-4 text-stone-400 font-semibold">
                           Equipo Tradicional
                         </th>
-                        <th className="text-center p-4 text-zinc-400 font-semibold">
+                        <th className="text-center p-4 text-stone-400 font-semibold">
                           Agencia
                         </th>
-                        <th className="text-center p-4 text-zinc-400 font-semibold">
+                        <th className="text-center p-4 text-stone-400 font-semibold">
                           Freelancers
                         </th>
-                        <th className="text-center p-4 bg-indigo-500/10 text-indigo-400 font-bold">
+                        <th className="text-center p-4 bg-orange-500/10 text-orange-400 font-bold">
                           AMD
                         </th>
                       </tr>
@@ -62,7 +62,7 @@ export function ComparisonTable() {
                       {comparisonFeatures.map((feature, index) => (
                         <motion.tr
                           key={index}
-                          className="border-b border-zinc-800/50 hover:bg-zinc-900/20 transition-colors"
+                          className="border-b border-stone-200/50 hover:bg-stone-100/20 transition-colors"
                           initial={{ opacity: 0, x: -20 }}
                           whileInView={{ opacity: 1, x: 0 }}
                           viewport={{ once: true }}
@@ -71,18 +71,18 @@ export function ComparisonTable() {
                           <td className="p-4 text-white font-medium">
                             {feature.feature}
                           </td>
-                          <td className="p-4 text-center text-zinc-400">
+                          <td className="p-4 text-center text-stone-400">
                             {feature.traditional}
                           </td>
-                          <td className="p-4 text-center text-zinc-400">
+                          <td className="p-4 text-center text-stone-400">
                             {feature.agency}
                           </td>
-                          <td className="p-4 text-center text-zinc-400">
+                          <td className="p-4 text-center text-stone-400">
                             {feature.freelancers}
                           </td>
                           <td
                             className={cn(
-                              "p-4 text-center font-bold bg-indigo-500/5",
+                              "p-4 text-center font-bold bg-orange-500/5",
                               feature.amdHighlight
                                 ? "text-green-400"
                                 : "text-white"
@@ -109,13 +109,13 @@ export function ComparisonTable() {
           >
             <Card className="inline-block bg-gradient-to-r from-green-500/10 to-emerald-500/10 border-green-500/20">
               <CardContent className="px-12 py-8">
-                <p className="text-zinc-400 text-lg mb-2">
+                <p className="text-stone-400 text-lg mb-2">
                   Ahorro promedio anual con AMD:
                 </p>
                 <div className="text-5xl font-bold text-green-400">
                   $150k - $450k
                 </div>
-                <p className="text-zinc-500 mt-2 text-sm">
+                <p className="text-stone-500 mt-2 text-sm">
                   Basado en comparación con equipo tradicional
                 </p>
               </CardContent>

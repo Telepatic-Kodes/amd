@@ -32,7 +32,7 @@ export function LinkedInPostPreview({
   const isOverLimit = charCount > 3000;
 
   return (
-    <div className={cn("rounded-xl border border-zinc-700/50 bg-zinc-900/80 overflow-hidden", className)}>
+    <div className={cn("rounded-xl border border-stone-300/50 bg-stone-100/80 overflow-hidden", className)}>
       {/* Header */}
       <div className="px-4 py-3 flex items-center gap-3">
         {authorAvatar ? (
@@ -42,25 +42,25 @@ export function LinkedInPostPreview({
             className="h-12 w-12 rounded-full object-cover"
           />
         ) : (
-          <div className="h-12 w-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white font-bold text-lg">
+          <div className="h-12 w-12 rounded-full bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center text-white font-bold text-lg">
             {authorName.charAt(0).toUpperCase()}
           </div>
         )}
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold text-white truncate">{authorName}</p>
-          <p className="text-xs text-zinc-400 truncate">{authorTitle}</p>
-          <p className="text-xs text-zinc-500">Ahora · 🌐</p>
+          <p className="text-xs text-stone-400 truncate">{authorTitle}</p>
+          <p className="text-xs text-stone-500">Ahora · 🌐</p>
         </div>
       </div>
 
       {/* Body */}
       <div className="px-4 pb-3">
-        <div className="text-sm text-zinc-200 whitespace-pre-wrap break-words leading-relaxed">
+        <div className="text-sm text-stone-200 whitespace-pre-wrap break-words leading-relaxed">
           {displayText}
           {shouldTruncate && !expanded && (
             <button
               onClick={() => setExpanded(true)}
-              className="text-zinc-400 hover:text-blue-400 transition-colors ml-1"
+              className="text-stone-400 hover:text-orange-400 transition-colors ml-1"
             >
               {translate("linkedinSeeMore")}
             </button>
@@ -69,9 +69,9 @@ export function LinkedInPostPreview({
       </div>
 
       {/* Engagement bar */}
-      <div className="px-4 py-1 flex items-center gap-1 text-xs text-zinc-500 border-b border-zinc-800">
+      <div className="px-4 py-1 flex items-center gap-1 text-xs text-stone-500 border-b border-stone-200">
         <span className="flex items-center gap-1">
-          <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-blue-500 text-[10px]">👍</span>
+          <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-orange-500 text-[10px]">👍</span>
           <span>0</span>
         </span>
       </div>
@@ -86,7 +86,7 @@ export function LinkedInPostPreview({
         ].map(({ icon: Icon, label }) => (
           <button
             key={label}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs text-zinc-400 hover:bg-zinc-800 transition-colors cursor-default"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs text-stone-400 hover:bg-stone-200 transition-colors cursor-default"
             disabled
           >
             <Icon className="h-4 w-4" />
@@ -96,10 +96,10 @@ export function LinkedInPostPreview({
       </div>
 
       {/* Character count */}
-      <div className="px-4 py-2 border-t border-zinc-800 flex items-center justify-between">
+      <div className="px-4 py-2 border-t border-stone-200 flex items-center justify-between">
         <span className={cn(
           "text-xs font-mono",
-          isOverLimit ? "text-red-400" : charCount > 2800 ? "text-yellow-400" : "text-zinc-500"
+          isOverLimit ? "text-red-400" : charCount > 2800 ? "text-yellow-400" : "text-stone-500"
         )}>
           {charCount.toLocaleString()}/3.000 {translate("linkedinCharCount")}
         </span>

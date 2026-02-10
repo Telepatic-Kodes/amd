@@ -120,7 +120,7 @@ export function AreaChartComponent({
                 fontSize: '12px',
               }}
               formatter={(value) => (
-                <span className="text-gray-500">{value}</span>
+                <span className="text-stone-500">{value}</span>
               )}
             />
           )}

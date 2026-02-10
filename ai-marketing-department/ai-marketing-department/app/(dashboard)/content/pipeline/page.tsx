@@ -51,21 +51,21 @@ export default function PipelinePage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-indigo-500/10">
-            <Columns3 className="h-6 w-6 text-indigo-400" />
+          <div className="p-2 rounded-xl bg-orange-500/10">
+            <Columns3 className="h-6 w-6 text-orange-400" />
           </div>
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+            <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-white to-stone-400 bg-clip-text text-transparent">
               {translate("contentPipeline")}
             </h1>
-            <p className="text-zinc-400 mt-1">
+            <p className="text-stone-400 mt-1">
               {translate("pipelineDescription")}
             </p>
           </div>
         </div>
         <Link
           href="/content"
-          className="text-sm text-zinc-400 hover:text-white flex items-center gap-1 transition-colors"
+          className="text-sm text-stone-400 hover:text-stone-900 flex items-center gap-1 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
           {translate("listView")}

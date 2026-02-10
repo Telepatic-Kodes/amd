@@ -99,7 +99,7 @@ const statusLabel: Record<string, { text: string; color: string }> = {
   completed: { text: "Completado", color: "text-emerald-400" },
   failed: { text: "Fallido", color: "text-red-400" },
   running: { text: "En curso", color: "text-amber-400" },
-  pending: { text: "Pendiente", color: "text-gray-500" },
+  pending: { text: "Pendiente", color: "text-stone-500" },
 };
 
 const departmentLabels: Record<string, string> = {
@@ -113,13 +113,13 @@ const departmentLabels: Record<string, string> = {
 };
 
 const departmentBadgeColors: Record<string, string> = {
-  content: "bg-blue-500/10 text-blue-400",
+  content: "bg-orange-500/10 text-orange-400",
   social: "bg-purple-500/10 text-purple-400",
   demandgen: "bg-amber-500/10 text-amber-400",
   seo: "bg-green-500/10 text-green-400",
   brand: "bg-pink-500/10 text-pink-400",
   ops: "bg-cyan-500/10 text-cyan-400",
-  leadership: "bg-gray-500/10 text-gray-500",
+  leadership: "bg-stone-500/10 text-stone-500",
 };
 
 const typeIcons: Record<string, typeof Activity> = {
@@ -142,7 +142,7 @@ export function DashboardActivityFeed({ activities }: DashboardActivityFeedProps
       <div className="rounded-lg border border-[var(--border)] bg-[var(--surface-raised)]">
         {groups.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-10 text-center">
-            <Activity className="h-6 w-6 text-gray-400 mb-2" />
+            <Activity className="h-6 w-6 text-stone-400 mb-2" />
             <p className="text-sm text-[var(--text-tertiary)]">Sin actividad reciente</p>
           </div>
         ) : (
@@ -208,14 +208,14 @@ export function DashboardActivityFeed({ activities }: DashboardActivityFeedProps
 function ActivityFeedSkeleton() {
   return (
     <div className="space-y-3">
-      <div className="h-4 w-36 rounded bg-gray-100 animate-pulse" />
+      <div className="h-4 w-36 rounded bg-stone-100 animate-pulse" />
       <div className="rounded-lg border border-[var(--border)] bg-[var(--surface-raised)]">
         {[...Array(5)].map((_, i) => (
           <div key={i} className="flex items-start gap-3 px-4 py-3 border-b border-[var(--border)] last:border-0">
-            <div className="h-4 w-4 rounded bg-gray-100 animate-pulse shrink-0 mt-0.5" />
+            <div className="h-4 w-4 rounded bg-stone-100 animate-pulse shrink-0 mt-0.5" />
             <div className="flex-1 space-y-1.5">
-              <div className="h-4 w-3/4 rounded bg-gray-100 animate-pulse" />
-              <div className="h-3 w-1/3 rounded bg-gray-100 animate-pulse" />
+              <div className="h-4 w-3/4 rounded bg-stone-100 animate-pulse" />
+              <div className="h-3 w-1/3 rounded bg-stone-100 animate-pulse" />
             </div>
           </div>
         ))}

@@ -45,8 +45,8 @@ function PillSelector({
             onClick={() => onToggle(option)}
             className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
               isSelected
-                ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/40"
-                : "bg-gray-50 text-gray-400 border border-gray-200 hover:border-gray-300 hover:text-gray-600"
+                ? "bg-orange-500/20 text-orange-300 border border-orange-500/40"
+                : "bg-stone-50 text-stone-400 border border-stone-200 hover:border-stone-300 hover:text-stone-600"
             }`}
           >
             {option}
@@ -88,12 +88,12 @@ function DynamicList({
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleAdd())}
           placeholder={placeholder}
-          className="flex-1 px-4 py-2.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition text-sm"
+          className="flex-1 px-4 py-2.5 rounded-lg bg-stone-50 border border-stone-200 text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 transition text-sm"
         />
         <button
           type="button"
           onClick={handleAdd}
-          className="px-3 py-2.5 rounded-lg bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 transition"
+          className="px-3 py-2.5 rounded-lg bg-orange-500/10 text-orange-400 hover:bg-orange-500/20 transition"
         >
           <Plus className="w-4 h-4" />
         </button>
@@ -103,14 +103,14 @@ function DynamicList({
           {items.map((item, i) => (
             <div
               key={i}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-50/50 border border-gray-200/50 text-sm"
+              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#faf8f4]/50 border border-stone-200/50 text-sm"
             >
-              <Icon className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-              <span className="flex-1 text-gray-700">{item}</span>
+              <Icon className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+              <span className="flex-1 text-stone-700">{item}</span>
               <button
                 type="button"
                 onClick={() => onRemove(i)}
-                className="text-gray-400 hover:text-red-400 transition"
+                className="text-stone-400 hover:text-red-400 transition"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -140,18 +140,18 @@ export function BrandStepVoice({ data, onChange }: Props) {
   return (
     <div className="space-y-8 max-w-lg mx-auto">
       <div className="text-center space-y-2">
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+        <h2 className="text-3xl font-bold bg-gradient-to-r from-orange-400 to-purple-400 bg-clip-text text-transparent">
           Voz de Marca
         </h2>
-        <p className="text-gray-500">
+        <p className="text-stone-500">
           Define cómo habla tu marca al mundo.
         </p>
       </div>
 
       <div className="space-y-6">
         <div className="space-y-3">
-          <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-            <MessageSquare className="w-4 h-4 text-indigo-400" /> Tono
+          <label className="text-sm font-medium text-stone-700 flex items-center gap-2">
+            <MessageSquare className="w-4 h-4 text-orange-400" /> Tono
           </label>
           <PillSelector
             options={TONE_OPTIONS}
@@ -161,7 +161,7 @@ export function BrandStepVoice({ data, onChange }: Props) {
         </div>
 
         <div className="space-y-3">
-          <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+          <label className="text-sm font-medium text-stone-700 flex items-center gap-2">
             <MessageSquare className="w-4 h-4 text-purple-400" /> Personalidad
           </label>
           <PillSelector
@@ -172,7 +172,7 @@ export function BrandStepVoice({ data, onChange }: Props) {
         </div>
 
         <div className="space-y-3">
-          <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+          <label className="text-sm font-medium text-stone-700 flex items-center gap-2">
             <ThumbsUp className="w-4 h-4 text-green-400" /> Siempre hacer
           </label>
           <DynamicList
@@ -185,7 +185,7 @@ export function BrandStepVoice({ data, onChange }: Props) {
         </div>
 
         <div className="space-y-3">
-          <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+          <label className="text-sm font-medium text-stone-700 flex items-center gap-2">
             <ThumbsDown className="w-4 h-4 text-red-400" /> Nunca hacer
           </label>
           <DynamicList

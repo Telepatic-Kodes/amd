@@ -77,7 +77,7 @@ const CONTENT_STATUSES = [
 ];
 
 const typeColors: Record<string, string> = {
-  blog: "bg-blue-50 text-blue-700 border-blue-200",
+  blog: "bg-orange-50 text-orange-700 border-orange-200",
   social_linkedin: "bg-sky-50 text-sky-700 border-sky-200",
   social_twitter: "bg-cyan-50 text-cyan-700 border-cyan-200",
   social_instagram: "bg-pink-50 text-pink-700 border-pink-200",
@@ -86,7 +86,7 @@ const typeColors: Record<string, string> = {
   newsletter: "bg-emerald-50 text-emerald-700 border-emerald-200",
   ad_copy: "bg-orange-50 text-orange-700 border-orange-200",
   landing_page: "bg-yellow-50 text-yellow-700 border-yellow-200",
-  whitepaper: "bg-indigo-50 text-indigo-700 border-indigo-200",
+  whitepaper: "bg-orange-50 text-orange-700 border-orange-200",
   case_study: "bg-violet-50 text-violet-700 border-violet-200",
   video_script: "bg-red-50 text-red-700 border-red-200",
 };
@@ -140,7 +140,7 @@ function StatusActions({ content, onStatusChange }: { content: Doc<"content">; o
       <button
         onClick={() => handleStatusChange("review")}
         disabled={isLoading}
-        className="w-full px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-medium transition-colors flex items-center justify-center gap-2"
+        className="w-full px-3 py-1.5 rounded bg-orange-600 hover:bg-orange-700 disabled:opacity-50 text-white text-sm font-medium transition-colors flex items-center justify-center gap-2"
       >
         {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
         Enviar a Revisión
@@ -155,7 +155,7 @@ function StatusActions({ content, onStatusChange }: { content: Doc<"content">; o
         <button
           onClick={() => handleStatusChange("revision_needed")}
           disabled={isLoading}
-          className="flex-1 px-3 py-1.5 rounded border border-gray-300 hover:bg-gray-50 disabled:opacity-50 text-gray-700 text-sm font-medium transition-colors"
+          className="flex-1 px-3 py-1.5 rounded border border-stone-300 hover:bg-stone-50 disabled:opacity-50 text-stone-700 text-sm font-medium transition-colors"
         >
           Solicitar Cambios
         </button>
@@ -178,14 +178,14 @@ function StatusActions({ content, onStatusChange }: { content: Doc<"content">; o
         <button
           onClick={() => handleStatusChange("scheduled")}
           disabled={isLoading}
-          className="flex-1 px-3 py-1.5 rounded border border-gray-300 hover:bg-gray-50 disabled:opacity-50 text-gray-700 text-sm font-medium transition-colors"
+          className="flex-1 px-3 py-1.5 rounded border border-stone-300 hover:bg-stone-50 disabled:opacity-50 text-stone-700 text-sm font-medium transition-colors"
         >
           Programar
         </button>
         <button
           onClick={() => handleStatusChange("published")}
           disabled={isLoading}
-          className="flex-1 px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-medium transition-colors flex items-center justify-center gap-2"
+          className="flex-1 px-3 py-1.5 rounded bg-orange-600 hover:bg-orange-700 disabled:opacity-50 text-white text-sm font-medium transition-colors flex items-center justify-center gap-2"
         >
           {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
           Publicar Ahora
@@ -200,7 +200,7 @@ function StatusActions({ content, onStatusChange }: { content: Doc<"content">; o
       <button
         onClick={() => handleStatusChange("archived")}
         disabled={isLoading}
-        className="w-full px-3 py-1.5 rounded border border-gray-300 hover:bg-gray-50 disabled:opacity-50 text-gray-500 text-sm font-medium transition-colors"
+        className="w-full px-3 py-1.5 rounded border border-stone-300 hover:bg-stone-50 disabled:opacity-50 text-stone-500 text-sm font-medium transition-colors"
       >
         Archivar
       </button>
@@ -280,14 +280,14 @@ export default function ContentPage() {
     return (
       <div className="space-y-8">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-blue-50">
-            <FileText className="h-6 w-6 text-blue-600" />
+          <div className="p-2 rounded-xl bg-orange-50">
+            <FileText className="h-6 w-6 text-orange-600" />
           </div>
           <div>
-            <h1 className="text-5xl font-bold text-gray-900">
+            <h1 className="text-5xl font-bold text-stone-900">
               Content
             </h1>
-            <p className="text-gray-500 mt-1 text-lg">
+            <p className="text-stone-500 mt-1 text-lg">
               Create, edit and publish content.
             </p>
           </div>
@@ -302,14 +302,14 @@ export default function ContentPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-blue-50">
-            <FileText className="h-6 w-6 text-blue-600" />
+          <div className="p-2 rounded-xl bg-orange-50">
+            <FileText className="h-6 w-6 text-orange-600" />
           </div>
           <div>
-            <h1 className="text-5xl font-bold text-gray-900">
+            <h1 className="text-5xl font-bold text-stone-900">
               Contenido
             </h1>
-            <p className="text-gray-500 mt-1 text-lg">
+            <p className="text-stone-500 mt-1 text-lg">
               Gestiona tus {content.length} piezas de contenido.
             </p>
           </div>
@@ -324,7 +324,7 @@ export default function ContentPage() {
           </button>
           <Link
             href="/content/pipeline"
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors text-sm font-medium"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-orange-50 text-orange-700 hover:bg-orange-100 transition-colors text-sm font-medium"
           >
             <Columns3 className="h-4 w-4" />
             Vista Pipeline
@@ -339,20 +339,20 @@ export default function ContentPage() {
 
         {/* Search */}
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
           <input
             type="text"
             placeholder="Buscar contenido..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 bg-white py-2 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full rounded-lg border border-stone-300 bg-white py-2 pl-10 pr-4 text-sm text-stone-900 placeholder-stone-400 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
           />
         </div>
 
         {/* Advanced Filters Toggle Button */}
         <button
           onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-          className="px-6 py-3 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
+          className="px-6 py-3 rounded-lg border border-stone-300 bg-white text-stone-700 hover:bg-stone-50 transition-colors flex items-center gap-2"
         >
           <Filter className="h-4 w-4" />
           Filtros avanzados
@@ -360,14 +360,14 @@ export default function ContentPage() {
         </button>
 
         {/* View Mode Toggle */}
-        <div className="flex rounded-lg border border-gray-300 overflow-hidden">
+        <div className="flex rounded-lg border border-stone-300 overflow-hidden">
           <button
             onClick={() => setViewMode("grid")}
             className={cn(
               "p-2 transition-colors",
               viewMode === "grid"
-                ? "bg-blue-50 text-blue-600"
-                : "text-gray-400 hover:bg-gray-100"
+                ? "bg-orange-50 text-orange-600"
+                : "text-stone-400 hover:bg-stone-100"
             )}
             title="Grid view"
           >
@@ -378,8 +378,8 @@ export default function ContentPage() {
             className={cn(
               "p-2 transition-colors",
               viewMode === "list"
-                ? "bg-blue-50 text-blue-600"
-                : "text-gray-400 hover:bg-gray-100"
+                ? "bg-orange-50 text-orange-600"
+                : "text-stone-400 hover:bg-stone-100"
             )}
             title="List view"
           >
@@ -398,14 +398,14 @@ export default function ContentPage() {
             transition={{ duration: 0.2 }}
             className="overflow-hidden"
           >
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center p-4 rounded-lg border border-gray-200 bg-white">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center p-4 rounded-lg border border-stone-200 bg-white">
               {/* Type Filter */}
               <div className="relative flex-1">
-                <Filter className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                <Filter className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
                 <select
                   value={typeFilter}
                   onChange={(e) => setTypeFilter(e.target.value)}
-                  className="w-full appearance-none rounded-lg border border-gray-300 bg-white py-2 pl-10 pr-8 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full appearance-none rounded-lg border border-stone-300 bg-white py-2 pl-10 pr-8 text-sm text-stone-900 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
                 >
                   {CONTENT_TYPES.map((type) => (
                     <option key={type.value} value={type.value}>
@@ -413,7 +413,7 @@ export default function ContentPage() {
                     </option>
                   ))}
                 </select>
-                <ChevronDown className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                <ChevronDown className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400 pointer-events-none" />
               </div>
 
               {/* Status Filter */}
@@ -421,7 +421,7 @@ export default function ContentPage() {
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="w-full appearance-none rounded-lg border border-gray-300 bg-white py-2 pl-4 pr-8 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full appearance-none rounded-lg border border-stone-300 bg-white py-2 pl-4 pr-8 text-sm text-stone-900 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
                 >
                   {CONTENT_STATUSES.map((status) => (
                     <option key={status.value} value={status.value}>
@@ -429,7 +429,7 @@ export default function ContentPage() {
                     </option>
                   ))}
                 </select>
-                <ChevronDown className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                <ChevronDown className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400 pointer-events-none" />
               </div>
             </div>
           </motion.div>
@@ -490,7 +490,7 @@ export default function ContentPage() {
                         hover
                         className={cn(
                           "cursor-pointer transition-all h-full relative overflow-hidden",
-                          isSelected && "border-blue-500 ring-1 ring-blue-500"
+                          isSelected && "border-orange-500 ring-1 ring-orange-500"
                         )}
                       >
                         {/* Quick Actions on Hover */}
@@ -500,7 +500,7 @@ export default function ContentPage() {
                               e.stopPropagation();
                               copyToClipboard(item.body);
                             }}
-                            className="p-1.5 rounded-lg bg-white/90 backdrop-blur-sm hover:bg-gray-100 text-gray-400 hover:text-gray-700 shadow-sm transition-colors"
+                            className="p-1.5 rounded-lg bg-white/90 backdrop-blur-sm hover:bg-stone-100 text-stone-400 hover:text-stone-700 shadow-sm transition-colors"
                             title="Copy content"
                           >
                             <Copy className="h-3.5 w-3.5" />
@@ -510,7 +510,7 @@ export default function ContentPage() {
                               e.stopPropagation();
                               setSelectedContent(item.contentId);
                             }}
-                            className="p-1.5 rounded-lg bg-white/90 backdrop-blur-sm hover:bg-gray-100 text-gray-400 hover:text-gray-700 shadow-sm transition-colors"
+                            className="p-1.5 rounded-lg bg-white/90 backdrop-blur-sm hover:bg-stone-100 text-stone-400 hover:text-stone-700 shadow-sm transition-colors"
                             title="Preview"
                           >
                             <Eye className="h-3.5 w-3.5" />
@@ -520,7 +520,7 @@ export default function ContentPage() {
                               e.stopPropagation();
                               setEditingContent(item);
                             }}
-                            className="p-1.5 rounded-lg bg-white/90 backdrop-blur-sm hover:bg-gray-100 text-gray-400 hover:text-gray-700 shadow-sm transition-colors"
+                            className="p-1.5 rounded-lg bg-white/90 backdrop-blur-sm hover:bg-stone-100 text-stone-400 hover:text-stone-700 shadow-sm transition-colors"
                             title="Edit content"
                           >
                             <Edit2 className="h-3.5 w-3.5" />
@@ -539,7 +539,7 @@ export default function ContentPage() {
                             <div
                               className={cn(
                                 "flex h-10 w-10 items-center justify-center rounded-lg",
-                                typeColors[item.type] || "bg-gray-100 text-gray-500"
+                                typeColors[item.type] || "bg-stone-100 text-stone-500"
                               )}
                             >
                               <TypeIcon className="h-5 w-5" />
@@ -548,21 +548,21 @@ export default function ContentPage() {
                           </div>
 
                           {/* Title */}
-                          <h3 className="font-semibold text-gray-900 text-sm line-clamp-2 mb-2">
+                          <h3 className="font-semibold text-stone-900 text-sm line-clamp-2 mb-2">
                             {item.title}
                           </h3>
 
                           {/* Preview */}
-                          <p className="text-xs text-gray-500 line-clamp-3 mb-3">
+                          <p className="text-xs text-stone-500 line-clamp-3 mb-3">
                             {item.summary || item.body.slice(0, 150)}
                           </p>
 
                           {/* Footer */}
-                          <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                          <div className="flex items-center justify-between pt-3 border-t border-stone-100">
                             <Badge className={typeColors[item.type]}>
                               {formatTypeName(item.type)}
                             </Badge>
-                            <div className="flex items-center gap-1 text-xs text-gray-400">
+                            <div className="flex items-center gap-1 text-xs text-stone-400">
                               <Calendar className="h-3 w-3" />
                               <span>{formatDate(item.createdAt)}</span>
                             </div>
@@ -596,7 +596,7 @@ export default function ContentPage() {
                         hover
                         className={cn(
                           "cursor-pointer transition-all",
-                          isSelected && "border-blue-500 ring-1 ring-blue-500"
+                          isSelected && "border-orange-500 ring-1 ring-orange-500"
                         )}
                       >
                         <div
@@ -609,18 +609,18 @@ export default function ContentPage() {
                             <div
                               className={cn(
                                 "flex h-10 w-10 items-center justify-center rounded-lg shrink-0",
-                                typeColors[item.type] || "bg-gray-100 text-gray-500"
+                                typeColors[item.type] || "bg-stone-100 text-stone-500"
                               )}
                             >
                               <TypeIcon className="h-5 w-5" />
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
-                                <h3 className="font-medium text-gray-900 text-sm truncate">
+                                <h3 className="font-medium text-stone-900 text-sm truncate">
                                   {item.title}
                                 </h3>
                               </div>
-                              <p className="text-xs text-gray-400 truncate">
+                              <p className="text-xs text-stone-400 truncate">
                                 {item.summary || item.body.slice(0, 100)}
                               </p>
                             </div>
@@ -630,7 +630,7 @@ export default function ContentPage() {
                                   e.stopPropagation();
                                   copyToClipboard(item.body);
                                 }}
-                                className="p-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-400 hover:text-gray-700 transition-colors"
+                                className="p-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-400 hover:text-stone-700 transition-colors"
                                 title="Copy"
                               >
                                 <Copy className="h-3.5 w-3.5" />
@@ -640,7 +640,7 @@ export default function ContentPage() {
                                   e.stopPropagation();
                                   setSelectedContent(item.contentId);
                                 }}
-                                className="p-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-400 hover:text-gray-700 transition-colors"
+                                className="p-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-400 hover:text-stone-700 transition-colors"
                                 title="Preview"
                               >
                                 <Eye className="h-3.5 w-3.5" />
@@ -650,7 +650,7 @@ export default function ContentPage() {
                               {formatTypeName(item.type)}
                             </Badge>
                             <StatusBadge status={item.status} />
-                            <span className="text-xs text-gray-400 shrink-0">
+                            <span className="text-xs text-stone-400 shrink-0">
                               {formatDate(item.createdAt)}
                             </span>
                           </div>
@@ -677,13 +677,13 @@ export default function ContentPage() {
               <Card className="sticky top-6">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-                      <Sparkles className="h-4 w-4 text-blue-600" />
+                    <h3 className="text-xl font-semibold text-stone-900 flex items-center gap-2">
+                      <Sparkles className="h-4 w-4 text-orange-600" />
                       Detalles del Contenido
                     </h3>
                     <button
                       onClick={() => setSelectedContent(null)}
-                      className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700 transition-colors"
+                      className="p-1.5 rounded-lg hover:bg-stone-100 text-stone-400 hover:text-stone-700 transition-colors"
                     >
                       <X className="h-4 w-4" />
                     </button>
@@ -692,8 +692,8 @@ export default function ContentPage() {
                   <div className="space-y-4">
                     {/* Title */}
                     <div>
-                      <p className="text-xs text-gray-400 mb-1 uppercase tracking-wider">Título</p>
-                      <p className="text-gray-900 font-medium">
+                      <p className="text-xs text-stone-400 mb-1 uppercase tracking-wider">Título</p>
+                      <p className="text-stone-900 font-medium">
                         {selectedContentData.title}
                       </p>
                     </div>
@@ -701,19 +701,19 @@ export default function ContentPage() {
                     {/* Type & Status */}
                     <div className="flex gap-4">
                       <div>
-                        <p className="text-xs text-gray-400 mb-1 uppercase tracking-wider">Tipo</p>
+                        <p className="text-xs text-stone-400 mb-1 uppercase tracking-wider">Tipo</p>
                         <Badge className={typeColors[selectedContentData.type]}>
                           {formatTypeName(selectedContentData.type)}
                         </Badge>
                       </div>
                       <div>
-                        <p className="text-xs text-gray-400 mb-1 uppercase tracking-wider">Estado</p>
+                        <p className="text-xs text-stone-400 mb-1 uppercase tracking-wider">Estado</p>
                         <StatusBadge status={selectedContentData.status} />
                       </div>
                     </div>
 
                     {/* Status Actions */}
-                    <div className="pt-3 border-t border-gray-200">
+                    <div className="pt-3 border-t border-stone-200">
                       <StatusActions
                         content={selectedContentData}
                         onStatusChange={async (status) => {
@@ -734,18 +734,18 @@ export default function ContentPage() {
                     />
 
                     {/* Version History (Collapsible) */}
-                    <div className="pt-3 border-t border-gray-200">
+                    <div className="pt-3 border-t border-stone-200">
                       <button
                         onClick={() => setShowVersionHistory(!showVersionHistory)}
                         className="flex items-center justify-between w-full text-left"
                       >
                         <div className="flex items-center gap-2">
-                          <History className="h-4 w-4 text-gray-400" />
-                          <p className="text-sm font-medium text-gray-900">Historial de versiones</p>
+                          <History className="h-4 w-4 text-stone-400" />
+                          <p className="text-sm font-medium text-stone-900">Historial de versiones</p>
                         </div>
                         <ChevronDown
                           className={cn(
-                            "h-4 w-4 text-gray-400 transition-transform",
+                            "h-4 w-4 text-stone-400 transition-transform",
                             showVersionHistory && "rotate-180"
                           )}
                         />
@@ -777,7 +777,7 @@ export default function ContentPage() {
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         onClick={() => setEditingContent(selectedContentData)}
-                        className="flex-1 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors flex items-center justify-center gap-2"
+                        className="flex-1 px-4 py-2 rounded-lg bg-orange-600 hover:bg-orange-700 text-white font-medium transition-colors flex items-center justify-center gap-2"
                       >
                         <Edit2 className="h-4 w-4" />
                         Editar
@@ -796,17 +796,17 @@ export default function ContentPage() {
                     {/* Preview with copy button */}
                     <div>
                       <div className="flex items-center justify-between mb-1">
-                        <p className="text-xs text-gray-400 uppercase tracking-wider">Vista Previa</p>
+                        <p className="text-xs text-stone-400 uppercase tracking-wider">Vista Previa</p>
                         <button
                           onClick={() => copyToClipboard(selectedContentData.body)}
-                          className="text-xs text-blue-600 hover:text-blue-700 flex items-center gap-1 transition-colors"
+                          className="text-xs text-orange-600 hover:text-orange-700 flex items-center gap-1 transition-colors"
                         >
                           <Copy className="h-3 w-3" />
                           Copiar todo
                         </button>
                       </div>
-                      <div className="rounded-lg bg-gray-50 p-3 max-h-48 overflow-y-auto border border-gray-200">
-                        <p className="text-gray-700 text-sm whitespace-pre-wrap">
+                      <div className="rounded-lg bg-stone-50 p-3 max-h-48 overflow-y-auto border border-stone-200">
+                        <p className="text-stone-700 text-sm whitespace-pre-wrap">
                           {selectedContentData.body.slice(0, 500)}
                           {selectedContentData.body.length > 500 && "..."}
                         </p>
@@ -816,20 +816,20 @@ export default function ContentPage() {
                   {/* Metadata */}
                   {selectedContentData.metadata && (
                     <div>
-                      <p className="text-xs text-gray-400 mb-1">Metadatos</p>
+                      <p className="text-xs text-stone-400 mb-1">Metadatos</p>
                       <div className="grid grid-cols-2 gap-2">
                         {selectedContentData.metadata.wordCount && (
-                          <div className="rounded-lg bg-gray-50 p-2">
-                            <p className="text-xs text-gray-400">Palabras</p>
-                            <p className="text-gray-700 font-mono">
+                          <div className="rounded-lg bg-stone-50 p-2">
+                            <p className="text-xs text-stone-400">Palabras</p>
+                            <p className="text-stone-700 font-mono">
                               {selectedContentData.metadata.wordCount}
                             </p>
                           </div>
                         )}
                         {selectedContentData.metadata.readingTime && (
-                          <div className="rounded-lg bg-gray-50 p-2">
-                            <p className="text-xs text-gray-400">Lectura</p>
-                            <p className="text-gray-700 font-mono">
+                          <div className="rounded-lg bg-stone-50 p-2">
+                            <p className="text-xs text-stone-400">Lectura</p>
+                            <p className="text-stone-700 font-mono">
                               {selectedContentData.metadata.readingTime} min
                             </p>
                           </div>
@@ -841,7 +841,7 @@ export default function ContentPage() {
                   {/* Keywords */}
                   {selectedContentData.metadata?.targetKeywords && (
                     <div>
-                      <p className="text-xs text-gray-400 mb-1">Palabras Clave</p>
+                      <p className="text-xs text-stone-400 mb-1">Palabras Clave</p>
                       <div className="flex flex-wrap gap-1">
                         {selectedContentData.metadata.targetKeywords.map(
                           (keyword: string) => (
@@ -858,23 +858,23 @@ export default function ContentPage() {
                   {/* SEO */}
                   {selectedContentData.seo && (
                     <div>
-                      <p className="text-xs text-gray-400 mb-1">SEO</p>
-                      <div className="rounded-lg bg-gray-50 p-3 space-y-2">
+                      <p className="text-xs text-stone-400 mb-1">SEO</p>
+                      <div className="rounded-lg bg-stone-50 p-3 space-y-2">
                         <div>
-                          <p className="text-xs text-gray-400">Meta Title</p>
-                          <p className="text-gray-700 text-sm">
+                          <p className="text-xs text-stone-400">Meta Title</p>
+                          <p className="text-stone-700 text-sm">
                             {selectedContentData.seo.metaTitle}
                           </p>
                         </div>
                         <div>
-                          <p className="text-xs text-gray-400">Meta Description</p>
-                          <p className="text-gray-700 text-sm">
+                          <p className="text-xs text-stone-400">Meta Description</p>
+                          <p className="text-stone-700 text-sm">
                             {selectedContentData.seo.metaDescription}
                           </p>
                         </div>
                         <div>
-                          <p className="text-xs text-gray-400">Slug</p>
-                          <p className="text-gray-700 font-mono text-sm">
+                          <p className="text-xs text-stone-400">Slug</p>
+                          <p className="text-stone-700 font-mono text-sm">
                             /{selectedContentData.seo.slug}
                           </p>
                         </div>
@@ -885,12 +885,12 @@ export default function ContentPage() {
                   {/* Published URL */}
                   {selectedContentData.publishedUrl && (
                     <div>
-                      <p className="text-xs text-gray-400 mb-1">URL Publicada</p>
+                      <p className="text-xs text-stone-400 mb-1">URL Publicada</p>
                       <a
                         href={selectedContentData.publishedUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-600 hover:text-blue-700 text-sm flex items-center gap-1"
+                        className="text-orange-600 hover:text-orange-700 text-sm flex items-center gap-1"
                       >
                         <Eye className="h-3 w-3" />
                         Ver publicado
@@ -900,10 +900,10 @@ export default function ContentPage() {
 
                   {/* Dates */}
                   <div>
-                    <p className="text-xs text-gray-400 mb-1 uppercase tracking-wider">Creado</p>
+                    <p className="text-xs text-stone-400 mb-1 uppercase tracking-wider">Creado</p>
                     <div className="flex items-center gap-2 text-sm">
-                      <Calendar className="h-4 w-4 text-gray-400" />
-                      <span className="text-gray-700">
+                      <Calendar className="h-4 w-4 text-stone-400" />
+                      <span className="text-stone-700">
                         {formatDate(selectedContentData.createdAt)}
                       </span>
                     </div>

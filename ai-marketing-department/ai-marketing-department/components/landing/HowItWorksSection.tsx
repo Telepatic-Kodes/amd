@@ -30,7 +30,7 @@ const steps: TimelineItem[] = [
 
 export function HowItWorksSection() {
   return (
-    <section id="how-it-works" className="py-24 bg-zinc-950/50">
+    <section id="how-it-works" className="py-24 bg-[#faf8f4]/50">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
@@ -44,7 +44,7 @@ export function HowItWorksSection() {
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
               ¿Cómo Funciona?
             </h2>
-            <p className="text-xl text-zinc-400 max-w-3xl mx-auto">
+            <p className="text-xl text-stone-400 max-w-3xl mx-auto">
               Desde onboarding hasta ejecución continua, AMD se integra
               perfectamente en tu workflow de marketing.
             </p>

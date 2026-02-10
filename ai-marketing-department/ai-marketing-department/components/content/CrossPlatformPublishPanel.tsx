@@ -169,11 +169,11 @@ export function CrossPlatformPublishPanel({
   ];
 
   return (
-    <Card className={cn("border-zinc-800 bg-zinc-950/50", className)}>
+    <Card className={cn("border-stone-200 bg-[#faf8f4]/50", className)}>
       <CardHeader>
         <div className="flex items-center justify-between">
           <h3 className="flex items-center gap-2 text-sm font-semibold text-white">
-            <Share2 className="h-4 w-4 text-indigo-500" />
+            <Share2 className="h-4 w-4 text-orange-500" />
             {translate("crossPlatformPublish")}
           </h3>
         </div>
@@ -181,7 +181,7 @@ export function CrossPlatformPublishPanel({
       <CardContent className="p-4 pt-0 space-y-4">
         {/* Platform Selection */}
         <div>
-          <p className="text-xs text-zinc-500 mb-2 uppercase tracking-wider">
+          <p className="text-xs text-stone-500 mb-2 uppercase tracking-wider">
             {translate("selectPlatforms")}
           </p>
           <div className="space-y-2">
@@ -196,11 +196,11 @@ export function CrossPlatformPublishPanel({
                   className={cn(
                     "flex items-center gap-3 p-3 rounded-lg border transition-all cursor-pointer",
                     isConnected
-                      ? "hover:bg-zinc-900/50"
+                      ? "hover:bg-stone-100/50"
                       : "opacity-50 cursor-not-allowed",
                     isSelected && isConnected
                       ? `${platform.borderColor} ${platform.bgColor}`
-                      : "border-zinc-800"
+                      : "border-stone-200"
                   )}
                 >
                   <input
@@ -208,7 +208,7 @@ export function CrossPlatformPublishPanel({
                     checked={isSelected}
                     onChange={() => handlePlatformToggle(platform.id)}
                     disabled={!isConnected || isPublishing}
-                    className="w-4 h-4 rounded border-zinc-700 text-indigo-500 focus:ring-indigo-500 focus:ring-offset-0 disabled:opacity-50"
+                    className="w-4 h-4 rounded border-stone-300 text-orange-500 focus:ring-orange-500 focus:ring-offset-0 disabled:opacity-50"
                   />
                   <Icon className={cn("h-4 w-4", platform.color)} />
                   <span className="text-sm text-white flex-1">
@@ -220,7 +220,7 @@ export function CrossPlatformPublishPanel({
                       Conectado
                     </span>
                   ) : (
-                    <span className="text-xs text-zinc-500">
+                    <span className="text-xs text-stone-500">
                       {translate("notConnected")}
                     </span>
                   )}
@@ -233,7 +233,7 @@ export function CrossPlatformPublishPanel({
         {/* Side-by-side Preview */}
         {selectedPlatforms.length > 0 && (
           <div>
-            <p className="text-xs text-zinc-500 mb-2 uppercase tracking-wider">
+            <p className="text-xs text-stone-500 mb-2 uppercase tracking-wider">
               {translate("platformPreview")}
             </p>
             <PlatformPreviewGrid
@@ -247,7 +247,7 @@ export function CrossPlatformPublishPanel({
         {/* Instagram Image URL Input */}
         {selectedPlatforms.includes("instagram") && (
           <div>
-            <label className="text-xs text-zinc-500 mb-2 block uppercase tracking-wider">
+            <label className="text-xs text-stone-500 mb-2 block uppercase tracking-wider">
               URL de Imagen Instagram (HTTPS)
             </label>
             <input
@@ -256,9 +256,9 @@ export function CrossPlatformPublishPanel({
               onChange={(e) => setInstagramImageUrl(e.target.value)}
               placeholder="https://example.com/image.jpg"
               disabled={isPublishing}
-              className="w-full rounded-lg border border-zinc-800 bg-zinc-950/50 px-3 py-2 text-sm text-white placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 disabled:opacity-50"
+              className="w-full rounded-lg border border-stone-200 bg-[#faf8f4]/50 px-3 py-2 text-sm text-white placeholder-stone-500 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 disabled:opacity-50"
             />
-            <p className="text-xs text-zinc-500 mt-1">
+            <p className="text-xs text-stone-500 mt-1">
               Requerido para publicar en Instagram
             </p>
           </div>
@@ -271,8 +271,8 @@ export function CrossPlatformPublishPanel({
           className={cn(
             "w-full px-4 py-2.5 rounded-lg font-medium transition-all flex items-center justify-center gap-2",
             selectedPlatforms.length === 0 || isPublishing
-              ? "bg-zinc-800 text-zinc-500 cursor-not-allowed"
-              : "bg-indigo-600 hover:bg-indigo-700 text-white"
+              ? "bg-stone-200 text-stone-500 cursor-not-allowed"
+              : "bg-orange-600 hover:bg-orange-700 text-white"
           )}
         >
           {isPublishing ? (
@@ -289,8 +289,8 @@ export function CrossPlatformPublishPanel({
         </button>
 
         {/* Publish Status Summary */}
-        <div className="pt-3 border-t border-zinc-800">
-          <p className="text-xs text-zinc-500 mb-2">
+        <div className="pt-3 border-t border-stone-200">
+          <p className="text-xs text-stone-500 mb-2">
             Estado de publicación
           </p>
           <div className="flex items-center gap-2 text-xs">
@@ -313,7 +313,7 @@ export function CrossPlatformPublishPanel({
                 />
               ))}
             </div>
-            <span className="text-zinc-400">
+            <span className="text-stone-400">
               {selectedPlatforms.length === 0
                 ? "Selecciona plataformas"
                 : `${selectedPlatforms.length} seleccionada(s)`}

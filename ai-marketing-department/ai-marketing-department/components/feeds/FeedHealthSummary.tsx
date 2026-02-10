@@ -58,7 +58,7 @@ export function FeedHealthSummary({ status, loading = false }: FeedHealthSummary
         transition={{ delay: 0.3 }}
       >
         <Card className="p-6 animate-pulse">
-          <div className="h-32 rounded-lg bg-zinc-800" />
+          <div className="h-32 rounded-lg bg-stone-200" />
         </Card>
       </motion.div>
     );
@@ -71,7 +71,7 @@ export function FeedHealthSummary({ status, loading = false }: FeedHealthSummary
       transition={{ delay: 0.3 }}
     >
       <Link href="/feeds/health" className="block" data-tour="feed-health">
-        <Card className="p-6 hover:bg-zinc-900/70 transition-colors cursor-pointer">
+        <Card className="p-6 hover:bg-stone-100/70 transition-colors cursor-pointer">
           <div className="space-y-4">
             {/* Health Status */}
             <div className="flex items-start justify-between">
@@ -81,20 +81,20 @@ export function FeedHealthSummary({ status, loading = false }: FeedHealthSummary
                   <h3 className="text-xl font-semibold text-white">
                     {translate("feedHealthSummary")}
                   </h3>
-                  <p className="text-sm text-zinc-400 mt-1">{healthStatus.message}</p>
+                  <p className="text-sm text-stone-400 mt-1">{healthStatus.message}</p>
                 </div>
               </div>
               <Activity className={`w-5 h-5 ${feedStatus.errorFeeds === 0 ? "text-green-400" : "text-yellow-400"}`} />
             </div>
 
             {/* Stats Row */}
-            <div className="grid grid-cols-3 gap-4 pt-3 border-t border-zinc-800">
+            <div className="grid grid-cols-3 gap-4 pt-3 border-t border-stone-200">
               {/* Articles Today */}
               <div className="flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-blue-400 flex-shrink-0" />
+                <TrendingUp className="w-4 h-4 text-orange-400 flex-shrink-0" />
                 <div>
-                  <p className="text-2xl font-bold text-blue-400">{feedStatus.totalArticlesToday}</p>
-                  <p className="text-xs text-zinc-400">{translate("newArticles")}</p>
+                  <p className="text-2xl font-bold text-orange-400">{feedStatus.totalArticlesToday}</p>
+                  <p className="text-xs text-stone-400">{translate("newArticles")}</p>
                 </div>
               </div>
 
@@ -105,7 +105,7 @@ export function FeedHealthSummary({ status, loading = false }: FeedHealthSummary
                   <p className="text-2xl font-bold text-purple-400">
                     {minutesUntilSync > 0 ? minutesUntilSync : "<1"}
                   </p>
-                  <p className="text-xs text-zinc-400">
+                  <p className="text-xs text-stone-400">
                     {translate("nextSyncIn")} {translate("minutes")}
                   </p>
                 </div>
@@ -116,7 +116,7 @@ export function FeedHealthSummary({ status, loading = false }: FeedHealthSummary
                 <Activity className="w-4 h-4 text-green-400 flex-shrink-0" />
                 <div>
                   <p className="text-2xl font-bold text-green-400">{feedStatus.activeFeeds}</p>
-                  <p className="text-xs text-zinc-400">Activas</p>
+                  <p className="text-xs text-stone-400">Activas</p>
                 </div>
               </div>
             </div>
@@ -132,7 +132,7 @@ export function FeedHealthSummary({ status, loading = false }: FeedHealthSummary
             )}
 
             {/* CTA */}
-            <p className="text-xs text-indigo-400 pt-2 font-medium">Ver detalles →</p>
+            <p className="text-xs text-orange-400 pt-2 font-medium">Ver detalles →</p>
           </div>
         </Card>
       </Link>

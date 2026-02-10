@@ -17,11 +17,11 @@ export function ReportHistory({ onViewReport }: ReportHistoryProps) {
   if (!reports) {
     // Loading skeleton
     return (
-      <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-zinc-100 mb-4">{LABELS.reportHistory}</h3>
+      <div className="bg-stone-100 border border-stone-200 rounded-xl p-6">
+        <h3 className="text-lg font-semibold text-stone-100 mb-4">{LABELS.reportHistory}</h3>
         <div className="space-y-3">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="h-16 bg-zinc-800 rounded-lg animate-pulse" />
+            <div key={i} className="h-16 bg-stone-200 rounded-lg animate-pulse" />
           ))}
         </div>
       </div>
@@ -30,14 +30,14 @@ export function ReportHistory({ onViewReport }: ReportHistoryProps) {
 
   if (reports.length === 0) {
     return (
-      <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-zinc-100 mb-4">{LABELS.reportHistory}</h3>
+      <div className="bg-stone-100 border border-stone-200 rounded-xl p-6">
+        <h3 className="text-lg font-semibold text-stone-100 mb-4">{LABELS.reportHistory}</h3>
         <div className="flex flex-col items-center justify-center py-8 text-center">
-          <div className="w-16 h-16 rounded-full bg-zinc-800 flex items-center justify-center mb-4">
-            <FileText className="h-8 w-8 text-zinc-600" />
+          <div className="w-16 h-16 rounded-full bg-stone-200 flex items-center justify-center mb-4">
+            <FileText className="h-8 w-8 text-stone-600" />
           </div>
-          <p className="text-zinc-400 text-sm">{LABELS.noReports}</p>
-          <p className="text-zinc-500 text-xs mt-1">
+          <p className="text-stone-400 text-sm">{LABELS.noReports}</p>
+          <p className="text-stone-500 text-xs mt-1">
             Configura reportes en Ajustes.
           </p>
         </div>
@@ -46,8 +46,8 @@ export function ReportHistory({ onViewReport }: ReportHistoryProps) {
   }
 
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
-      <h3 className="text-lg font-semibold text-zinc-100 mb-4">{LABELS.reportHistory}</h3>
+    <div className="bg-stone-100 border border-stone-200 rounded-xl p-6">
+      <h3 className="text-lg font-semibold text-stone-100 mb-4">{LABELS.reportHistory}</h3>
       <div className="space-y-2">
         {reports.map((report) => {
           const typeLabel = report.type === "weekly" ? LABELS.weeklyReport : LABELS.monthlyReport;
@@ -66,14 +66,14 @@ export function ReportHistory({ onViewReport }: ReportHistoryProps) {
             <div
               key={report._id}
               onClick={() => onViewReport(report._id)}
-              className="flex items-center gap-3 p-3 hover:bg-zinc-800/50 rounded-lg cursor-pointer transition-colors group"
+              className="flex items-center gap-3 p-3 hover:bg-stone-200/50 rounded-lg cursor-pointer transition-colors group"
             >
               {/* Type Badge */}
               <Badge
                 variant={report.type === "weekly" ? "info" : "default"}
                 className={
                   report.type === "weekly"
-                    ? "bg-blue-500/10 text-blue-400 border-blue-500/20"
+                    ? "bg-orange-500/10 text-orange-400 border-orange-500/20"
                     : "bg-purple-500/10 text-purple-400 border-purple-500/20"
                 }
               >
@@ -82,8 +82,8 @@ export function ReportHistory({ onViewReport }: ReportHistoryProps) {
 
               {/* Title and Period */}
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-zinc-100 truncate">{report.title}</p>
-                <p className="text-xs text-zinc-500">
+                <p className="text-sm font-medium text-stone-100 truncate">{report.title}</p>
+                <p className="text-xs text-stone-500">
                   {periodStart} - {periodEnd}
                 </p>
               </div>
@@ -103,7 +103,7 @@ export function ReportHistory({ onViewReport }: ReportHistoryProps) {
                 )}
 
                 {/* View Button */}
-                <button className="text-indigo-400 hover:text-indigo-300 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                <button className="text-orange-400 hover:text-orange-300 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
                   {LABELS.viewReport}
                 </button>
               </div>

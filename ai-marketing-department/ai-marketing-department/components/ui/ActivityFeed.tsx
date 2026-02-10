@@ -53,8 +53,8 @@ const activityConfig: Record<ActivityType, {
   },
   task_started: {
     icon: PlayCircle,
-    color: "text-blue-400",
-    bgColor: "bg-blue-500/10",
+    color: "text-orange-400",
+    bgColor: "bg-orange-500/10",
   },
   content_generated: {
     icon: FileText,
@@ -63,8 +63,8 @@ const activityConfig: Record<ActivityType, {
   },
   agent_activated: {
     icon: Bot,
-    color: "text-indigo-400",
-    bgColor: "bg-indigo-500/10",
+    color: "text-orange-400",
+    bgColor: "bg-orange-500/10",
   },
   agent_paused: {
     icon: Clock,
@@ -129,7 +129,7 @@ function ActivityItemComponent({ activity, isLast }: ActivityItemProps) {
           <Icon className={cn("h-4 w-4", config.color)} />
         </div>
         {!isLast && (
-          <div className="w-px flex-1 bg-zinc-800 mt-2" />
+          <div className="w-px flex-1 bg-stone-200 mt-2" />
         )}
       </div>
 
@@ -141,17 +141,17 @@ function ActivityItemComponent({ activity, isLast }: ActivityItemProps) {
               {activity.title}
             </p>
             {activity.description && (
-              <p className="text-xs text-zinc-500 mt-0.5">
+              <p className="text-xs text-stone-500 mt-0.5">
                 {activity.description}
               </p>
             )}
             {activity.agent && (
-              <p className="text-xs text-zinc-600 mt-1 font-mono">
+              <p className="text-xs text-stone-600 mt-1 font-mono">
                 {activity.agent}
               </p>
             )}
           </div>
-          <span className="text-xs text-zinc-600 shrink-0">
+          <span className="text-xs text-stone-600 shrink-0">
             {formatRelativeTime(activity.timestamp)}
           </span>
         </div>
@@ -195,8 +195,8 @@ export function ActivityFeed({
             exit={{ opacity: 0 }}
             className="flex flex-col items-center justify-center py-8 text-center"
           >
-            <RefreshCw className="h-8 w-8 text-zinc-700 mb-2" />
-            <p className="text-sm text-zinc-500">{emptyMessage}</p>
+            <RefreshCw className="h-8 w-8 text-stone-700 mb-2" />
+            <p className="text-sm text-stone-500">{emptyMessage}</p>
           </motion.div>
         ) : null}
       </AnimatePresence>
@@ -229,7 +229,7 @@ export function CompactActivityFeed({
               initial={{ opacity: 0, y: -5 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 5 }}
-              className="flex items-center gap-2 p-2 rounded-lg bg-zinc-900/50 hover:bg-zinc-900 transition-colors"
+              className="flex items-center gap-2 p-2 rounded-lg bg-stone-100/50 hover:bg-stone-100 transition-colors"
             >
               <div className={cn(
                 "flex h-6 w-6 items-center justify-center rounded",
@@ -242,7 +242,7 @@ export function CompactActivityFeed({
                   {activity.title}
                 </p>
               </div>
-              <span className="text-[10px] text-zinc-600 shrink-0">
+              <span className="text-[10px] text-stone-600 shrink-0">
                 {formatRelativeTime(activity.timestamp)}
               </span>
             </motion.div>

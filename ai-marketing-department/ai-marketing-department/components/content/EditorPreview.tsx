@@ -31,7 +31,7 @@ export function EditorPreview({ content, className }: EditorPreviewProps) {
       Link.configure({
         openOnClick: true, // Allow clicking links in preview
         HTMLAttributes: {
-          class: "text-indigo-400 hover:text-indigo-300 underline cursor-pointer",
+          class: "text-orange-400 hover:text-orange-300 underline cursor-pointer",
         },
       }),
     ],
@@ -49,14 +49,14 @@ export function EditorPreview({ content, className }: EditorPreviewProps) {
           "prose-h1:text-4xl prose-h1:mb-6",
           "prose-h2:text-3xl prose-h2:mb-4",
           "prose-h3:text-2xl prose-h3:mb-3",
-          "prose-p:text-zinc-200 prose-p:mb-4",
+          "prose-p:text-stone-200 prose-p:mb-4",
           "prose-strong:text-white prose-strong:font-semibold",
-          "prose-em:text-zinc-300",
-          "prose-code:text-indigo-400 prose-code:bg-zinc-900 prose-code:rounded prose-code:px-1",
-          "prose-pre:bg-zinc-900 prose-pre:border prose-pre:border-zinc-800",
-          "prose-blockquote:border-l-indigo-500 prose-blockquote:text-zinc-300 prose-blockquote:italic",
-          "prose-ul:text-zinc-200 prose-ol:text-zinc-200",
-          "prose-li:text-zinc-200 prose-li:mb-2"
+          "prose-em:text-stone-300",
+          "prose-code:text-orange-400 prose-code:bg-stone-100 prose-code:rounded prose-code:px-1",
+          "prose-pre:bg-stone-100 prose-pre:border prose-pre:border-stone-200",
+          "prose-blockquote:border-l-orange-500 prose-blockquote:text-stone-300 prose-blockquote:italic",
+          "prose-ul:text-stone-200 prose-ol:text-stone-200",
+          "prose-li:text-stone-200 prose-li:mb-2"
         ),
       },
     },
@@ -67,7 +67,7 @@ export function EditorPreview({ content, className }: EditorPreviewProps) {
   }
 
   return (
-    <div className={cn("p-8 bg-zinc-950/50 rounded-lg", className)}>
+    <div className={cn("p-8 bg-[#faf8f4]/50 rounded-lg", className)}>
       <EditorContent editor={editor} />
     </div>
   );

@@ -138,7 +138,7 @@ export function BarChartComponent({
                 fontSize: '12px',
               }}
               formatter={(value) => (
-                <span className="text-gray-500">{value}</span>
+                <span className="text-stone-500">{value}</span>
               )}
             />
           )}
@@ -194,18 +194,18 @@ export function ProgressBarChart({
             <div key={item.name} className="space-y-1.5">
               {showLabels && (
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">{item.name}</span>
-                  <span className="text-gray-700 font-medium">
+                  <span className="text-stone-500">{item.name}</span>
+                  <span className="text-stone-700 font-medium">
                     {valueFormatter(item.value)}
                     {item.total && (
-                      <span className="text-gray-400 ml-1">
+                      <span className="text-stone-400 ml-1">
                         / {valueFormatter(item.total)}
                       </span>
                     )}
                   </span>
                 </div>
               )}
-              <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+              <div className="h-2 w-full overflow-hidden rounded-full bg-stone-200">
                 <div
                   className="h-full transition-all duration-500 ease-out rounded-full"
                   style={{

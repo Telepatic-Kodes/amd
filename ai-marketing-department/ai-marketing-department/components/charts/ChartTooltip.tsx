@@ -40,8 +40,8 @@ export function ChartTooltip({
             className="w-2 h-2 rounded-full"
             style={{ backgroundColor: entry.color }}
           />
-          <span className="text-gray-500">{entry.name}:</span>
-          <span className="text-gray-900 font-medium">
+          <span className="text-stone-500">{entry.name}:</span>
+          <span className="text-stone-900 font-medium">
             {valueFormatter(entry.value as number)}
           </span>
         </div>
@@ -69,8 +69,8 @@ export function SparklineTooltip({
   const value = payload[0].value as number;
 
   return (
-    <div className="bg-white border border-gray-200 rounded px-2 py-1 shadow-lg">
-      <span className="text-gray-900 text-xs font-medium">
+    <div className="bg-white border border-stone-200 rounded px-2 py-1 shadow-lg">
+      <span className="text-stone-900 text-xs font-medium">
         {valueFormatter(value)}
       </span>
     </div>

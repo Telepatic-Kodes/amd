@@ -49,7 +49,7 @@ export function Timeline({ items, orientation = "horizontal" }: TimelineProps) {
             {/* Timeline icon/line */}
             <div className="flex flex-col items-center">
               <motion.div
-                className="rounded-full bg-indigo-600 p-3 text-white"
+                className="rounded-full bg-orange-600 p-3 text-white"
                 whileHover={{ scale: 1.1, rotate: 5 }}
                 transition={{ duration: 0.2 }}
               >
@@ -61,7 +61,7 @@ export function Timeline({ items, orientation = "horizontal" }: TimelineProps) {
               </motion.div>
               {index < items.length - 1 && (
                 <motion.div
-                  className="w-0.5 h-full bg-zinc-800 mt-2"
+                  className="w-0.5 h-full bg-stone-200 mt-2"
                   initial={{ scaleY: 0 }}
                   whileInView={{ scaleY: 1 }}
                   viewport={{ once: true }}
@@ -74,7 +74,7 @@ export function Timeline({ items, orientation = "horizontal" }: TimelineProps) {
             {/* Content */}
             <div className="flex-1 pb-8">
               <h3 className="text-xl font-bold text-white mb-2">{item.title}</h3>
-              <p className="text-zinc-400">{item.description}</p>
+              <p className="text-stone-400">{item.description}</p>
             </div>
           </motion.div>
         ))}
@@ -87,7 +87,7 @@ export function Timeline({ items, orientation = "horizontal" }: TimelineProps) {
     <div className="relative">
       {/* Connecting line */}
       <motion.div
-        className="absolute top-6 left-0 right-0 h-0.5 bg-zinc-800 hidden md:block"
+        className="absolute top-6 left-0 right-0 h-0.5 bg-stone-200 hidden md:block"
         initial={{ scaleX: 0 }}
         whileInView={{ scaleX: 1 }}
         viewport={{ once: true }}
@@ -109,7 +109,7 @@ export function Timeline({ items, orientation = "horizontal" }: TimelineProps) {
           >
             {/* Icon */}
             <motion.div
-              className="relative z-10 rounded-full bg-indigo-600 p-3 text-white mb-4"
+              className="relative z-10 rounded-full bg-orange-600 p-3 text-white mb-4"
               whileHover={{ scale: 1.15, rotate: 10 }}
               transition={{ duration: 0.2 }}
             >
@@ -122,7 +122,7 @@ export function Timeline({ items, orientation = "horizontal" }: TimelineProps) {
 
             {/* Content */}
             <h3 className="text-xl font-bold text-white mb-2">{item.title}</h3>
-            <p className="text-zinc-400">{item.description}</p>
+            <p className="text-stone-400">{item.description}</p>
           </motion.div>
         ))}
       </motion.div>

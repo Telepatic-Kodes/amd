@@ -59,12 +59,12 @@ export function EmptyState({
         className
       )}
     >
-      <div className="rounded-full bg-zinc-800/50 p-4 mb-4">
-        <Icon className={cn("text-zinc-500", s.icon)} />
+      <div className="rounded-full bg-stone-200/50 p-4 mb-4">
+        <Icon className={cn("text-stone-500", s.icon)} />
       </div>
-      <h3 className={cn("font-medium text-zinc-300 mb-1", s.title)}>{title}</h3>
+      <h3 className={cn("font-medium text-stone-300 mb-1", s.title)}>{title}</h3>
       {description && (
-        <p className={cn("text-zinc-500 max-w-sm mb-4", s.description)}>
+        <p className={cn("text-stone-500 max-w-sm mb-4", s.description)}>
           {description}
         </p>
       )}
@@ -73,7 +73,7 @@ export function EmptyState({
           {action && (
             <button
               onClick={action.onClick}
-              className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium transition-colors"
+              className="px-4 py-2 rounded-lg bg-orange-600 hover:bg-orange-500 text-white text-sm font-medium transition-colors"
             >
               {action.label}
             </button>
@@ -81,7 +81,7 @@ export function EmptyState({
           {secondaryAction && (
             <button
               onClick={secondaryAction.onClick}
-              className="px-4 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-sm font-medium transition-colors"
+              className="px-4 py-2 rounded-lg bg-stone-200 hover:bg-stone-100 text-stone-300 text-sm font-medium transition-colors"
             >
               {secondaryAction.label}
             </button>
@@ -161,7 +161,7 @@ export function EmptyStateCard({
   return (
     <div
       className={cn(
-        "rounded-xl border border-zinc-800 bg-zinc-950/50",
+        "rounded-xl border border-stone-200 bg-[#faf8f4]/50",
         colSpan === 2 && "md:col-span-2",
         colSpan === 3 && "md:col-span-3",
         colSpan === 4 && "md:col-span-4 lg:col-span-4"

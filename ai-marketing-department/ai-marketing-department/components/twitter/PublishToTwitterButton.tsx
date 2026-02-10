@@ -171,7 +171,7 @@ export function PublishToTwitterButton({
         <CheckCircle2 className="h-4 w-4 text-green-400" />
         <span className="text-green-400">Publicado en Twitter</span>
         {lastPublish?.publishedAt && (
-          <span className="text-xs text-zinc-500">
+          <span className="text-xs text-stone-500">
             {new Date(lastPublish.publishedAt).toLocaleDateString("es-CL", {
               day: "numeric",
               month: "short",
@@ -216,7 +216,7 @@ export function PublishToTwitterButton({
         )}
 
         {isConnected && isThread && (
-          <span className="text-xs text-blue-400">
+          <span className="text-xs text-orange-400">
             Se publicará como hilo de {tweets.length} tweets
           </span>
         )}
@@ -243,7 +243,7 @@ export function PublishToTwitterButton({
           <div className="flex justify-end gap-2">
             <button
               onClick={() => setShowPreview(false)}
-              className="px-3 py-1.5 rounded-lg text-sm text-zinc-400 hover:bg-zinc-800 transition-colors"
+              className="px-3 py-1.5 rounded-lg text-sm text-stone-400 hover:bg-stone-200 transition-colors"
             >
               Cancelar
             </button>

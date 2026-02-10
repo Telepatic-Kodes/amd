@@ -47,7 +47,7 @@ const CAMPAIGN_STATUSES = [
 ];
 
 const typeColors: Record<string, string> = {
-  content: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+  content: "bg-orange-500/10 text-orange-400 border-orange-500/20",
   paid: "bg-green-500/10 text-green-400 border-green-500/20",
   email: "bg-purple-500/10 text-purple-400 border-purple-500/20",
   social: "bg-pink-500/10 text-pink-400 border-pink-500/20",
@@ -157,10 +157,10 @@ export default function CampaignsPage() {
     return (
       <div className="space-y-8">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-stone-400 bg-clip-text text-transparent">
             Campaigns
           </h1>
-          <p className="text-zinc-400 mt-2">
+          <p className="text-stone-400 mt-2">
             Manage and monitor your marketing campaigns.
           </p>
         </div>
@@ -169,7 +169,7 @@ export default function CampaignsPage() {
           {[...Array(4)].map((_, i) => (
             <div
               key={i}
-              className="h-32 rounded-xl border border-zinc-800 bg-zinc-950/50 animate-pulse"
+              className="h-32 rounded-xl border border-stone-200 bg-[#faf8f4]/50 animate-pulse"
             />
           ))}
         </div>
@@ -178,7 +178,7 @@ export default function CampaignsPage() {
           {[...Array(3)].map((_, i) => (
             <div
               key={i}
-              className="h-40 rounded-xl border border-zinc-800 bg-zinc-950/50 animate-pulse"
+              className="h-40 rounded-xl border border-stone-200 bg-[#faf8f4]/50 animate-pulse"
             />
           ))}
         </div>
@@ -195,10 +195,10 @@ export default function CampaignsPage() {
             <Rocket className="w-8 h-8 text-green-400" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-white to-stone-400 bg-clip-text text-transparent">
               Campaigns
             </h1>
-            <p className="text-zinc-500 text-sm">
+            <p className="text-stone-500 text-sm">
               {campaigns.length} campaigns • {stats?.active || 0} active
             </p>
           </div>
@@ -224,7 +224,7 @@ export default function CampaignsPage() {
               <p className="text-2xl font-bold text-white">
                 <SimpleCounter value={stats.active} />
               </p>
-              <p className="text-sm text-zinc-500">Active Campaigns</p>
+              <p className="text-sm text-stone-500">Active Campaigns</p>
               <div className="mt-2 h-8">
                 <Sparkline
                   data={generateSparklineData()}
@@ -244,8 +244,8 @@ export default function CampaignsPage() {
           >
             <Card className="p-4">
               <div className="flex items-center justify-between mb-3">
-                <div className="p-2 rounded-lg bg-blue-500/10">
-                  <Eye className="w-5 h-5 text-blue-400" />
+                <div className="p-2 rounded-lg bg-orange-500/10">
+                  <Eye className="w-5 h-5 text-orange-400" />
                 </div>
                 <TrendIndicator value={8.5} size="sm" />
               </div>
@@ -255,7 +255,7 @@ export default function CampaignsPage() {
                   formatter={(v) => formatNumber(Math.round(v))}
                 />
               </p>
-              <p className="text-sm text-zinc-500">Total Impressions</p>
+              <p className="text-sm text-stone-500">Total Impressions</p>
               <div className="mt-2 h-8">
                 <Sparkline
                   data={generateSparklineData()}
@@ -286,7 +286,7 @@ export default function CampaignsPage() {
                   formatter={(v) => `${v.toFixed(2)}%`}
                 />
               </p>
-              <p className="text-sm text-zinc-500">Average CTR</p>
+              <p className="text-sm text-stone-500">Average CTR</p>
               <div className="mt-2 h-8">
                 <Sparkline
                   data={generateSparklineData()}
@@ -323,10 +323,10 @@ export default function CampaignsPage() {
                   formatter={(v) => formatCurrency(Math.round(v))}
                 />
               </p>
-              <p className="text-sm text-zinc-500">
+              <p className="text-sm text-stone-500">
                 of {formatCurrency(stats.totalBudget)} budget
               </p>
-              <div className="mt-2 h-2 bg-zinc-800 rounded-full overflow-hidden">
+              <div className="mt-2 h-2 bg-stone-200 rounded-full overflow-hidden">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${Math.min((stats.totalSpent / stats.totalBudget) * 100, 100)}%` }}
@@ -343,23 +343,23 @@ export default function CampaignsPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
         {/* Search */}
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-500" />
           <input
             type="text"
             placeholder="Search campaigns..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-lg border border-zinc-800 bg-zinc-950/50 py-2 pl-10 pr-4 text-sm text-white placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="w-full rounded-lg border border-stone-200 bg-[#faf8f4]/50 py-2 pl-10 pr-4 text-sm text-white placeholder-stone-500 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
           />
         </div>
 
         {/* Type Filter */}
         <div className="relative">
-          <Filter className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+          <Filter className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-500" />
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            className="appearance-none rounded-lg border border-zinc-800 bg-zinc-950/50 py-2 pl-10 pr-8 text-sm text-white focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="appearance-none rounded-lg border border-stone-200 bg-[#faf8f4]/50 py-2 pl-10 pr-8 text-sm text-white focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
           >
             {CAMPAIGN_TYPES.map((type) => (
               <option key={type.value} value={type.value}>
@@ -367,7 +367,7 @@ export default function CampaignsPage() {
               </option>
             ))}
           </select>
-          <ChevronDown className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500 pointer-events-none" />
+          <ChevronDown className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-500 pointer-events-none" />
         </div>
 
         {/* Status Filter */}
@@ -375,7 +375,7 @@ export default function CampaignsPage() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="appearance-none rounded-lg border border-zinc-800 bg-zinc-950/50 py-2 pl-4 pr-8 text-sm text-white focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="appearance-none rounded-lg border border-stone-200 bg-[#faf8f4]/50 py-2 pl-4 pr-8 text-sm text-white focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
           >
             {CAMPAIGN_STATUSES.map((status) => (
               <option key={status.value} value={status.value}>
@@ -383,7 +383,7 @@ export default function CampaignsPage() {
               </option>
             ))}
           </select>
-          <ChevronDown className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500 pointer-events-none" />
+          <ChevronDown className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-500 pointer-events-none" />
         </div>
       </div>
 
@@ -445,7 +445,7 @@ export default function CampaignsPage() {
                       hover
                       className={cn(
                         "cursor-pointer transition-all",
-                        isSelected && "border-indigo-500 shadow-lg shadow-indigo-500/20"
+                        isSelected && "border-orange-500 shadow-lg shadow-orange-500/20"
                       )}
                     >
                       <div
@@ -463,7 +463,7 @@ export default function CampaignsPage() {
                                 ? "bg-green-500/10 text-green-400"
                                 : campaign.status === "paused"
                                 ? "bg-yellow-500/10 text-yellow-400"
-                                : "bg-zinc-500/10 text-zinc-400"
+                                : "bg-stone-500/10 text-stone-400"
                             )}
                           >
                             <TypeIcon className="h-6 w-6" />
@@ -476,7 +476,7 @@ export default function CampaignsPage() {
                                 <h3 className="font-semibold text-white">
                                   {campaign.name}
                                 </h3>
-                                <p className="text-sm text-zinc-400 line-clamp-1 mt-1">
+                                <p className="text-sm text-stone-400 line-clamp-1 mt-1">
                                   {campaign.description}
                                 </p>
                               </div>
@@ -488,36 +488,36 @@ export default function CampaignsPage() {
                               {campaign.metrics && (
                                 <>
                                   <div className="flex items-center gap-2">
-                                    <Eye className="h-4 w-4 text-zinc-500" />
+                                    <Eye className="h-4 w-4 text-stone-500" />
                                     <div>
-                                      <p className="text-xs text-zinc-500">Impressions</p>
+                                      <p className="text-xs text-stone-500">Impressions</p>
                                       <p className="text-sm font-medium text-white">
                                         {formatNumber(campaign.metrics.impressions)}
                                       </p>
                                     </div>
                                   </div>
                                   <div className="flex items-center gap-2">
-                                    <MousePointer className="h-4 w-4 text-zinc-500" />
+                                    <MousePointer className="h-4 w-4 text-stone-500" />
                                     <div>
-                                      <p className="text-xs text-zinc-500">Clicks</p>
+                                      <p className="text-xs text-stone-500">Clicks</p>
                                       <p className="text-sm font-medium text-white">
                                         {formatNumber(campaign.metrics.clicks)}
                                       </p>
                                     </div>
                                   </div>
                                   <div className="flex items-center gap-2">
-                                    <Target className="h-4 w-4 text-zinc-500" />
+                                    <Target className="h-4 w-4 text-stone-500" />
                                     <div>
-                                      <p className="text-xs text-zinc-500">Conversions</p>
+                                      <p className="text-xs text-stone-500">Conversions</p>
                                       <p className="text-sm font-medium text-white">
                                         {formatNumber(campaign.metrics.conversions)}
                                       </p>
                                     </div>
                                   </div>
                                   <div className="flex items-center gap-2">
-                                    <TrendingUp className="h-4 w-4 text-zinc-500" />
+                                    <TrendingUp className="h-4 w-4 text-stone-500" />
                                     <div>
-                                      <p className="text-xs text-zinc-500">CTR</p>
+                                      <p className="text-xs text-stone-500">CTR</p>
                                       <p className="text-sm font-medium text-white">
                                         {campaign.metrics.ctr.toFixed(2)}%
                                       </p>
@@ -528,12 +528,12 @@ export default function CampaignsPage() {
                             </div>
 
                             {/* Footer */}
-                            <div className="flex items-center justify-between mt-4 pt-4 border-t border-zinc-800">
+                            <div className="flex items-center justify-between mt-4 pt-4 border-t border-stone-200">
                               <div className="flex items-center gap-4">
                                 <Badge className={typeColors[campaign.type]}>
                                   {campaign.type}
                                 </Badge>
-                                <div className="flex items-center gap-1 text-xs text-zinc-500">
+                                <div className="flex items-center gap-1 text-xs text-stone-500">
                                   <Calendar className="h-3 w-3" />
                                   <span>{formatDate(campaign.startDate)}</span>
                                   {campaign.endDate && (
@@ -548,7 +548,7 @@ export default function CampaignsPage() {
                               {/* Budget Progress */}
                               {campaign.budget && (
                                 <div className="flex items-center gap-3">
-                                  <div className="w-24 h-2 bg-zinc-800 rounded-full overflow-hidden">
+                                  <div className="w-24 h-2 bg-stone-200 rounded-full overflow-hidden">
                                     <motion.div
                                       initial={{ width: 0 }}
                                       animate={{ width: `${Math.min(budgetPercent, 100)}%` }}
@@ -563,7 +563,7 @@ export default function CampaignsPage() {
                                       )}
                                     />
                                   </div>
-                                  <span className="text-xs text-zinc-400">
+                                  <span className="text-xs text-stone-400">
                                     {formatCurrency(campaign.budget.spent, campaign.budget.currency)} /{" "}
                                     {formatCurrency(campaign.budget.total, campaign.budget.currency)}
                                   </span>
@@ -596,7 +596,7 @@ export default function CampaignsPage() {
                   </h3>
                   <button
                     onClick={() => setSelectedCampaign(null)}
-                    className="text-zinc-500 hover:text-white text-sm"
+                    className="text-stone-500 hover:text-stone-900 text-sm"
                   >
                     Close
                   </button>
@@ -605,7 +605,7 @@ export default function CampaignsPage() {
                 <div className="space-y-4">
                   {/* Name */}
                   <div>
-                    <p className="text-xs text-zinc-500 mb-1">Name</p>
+                    <p className="text-xs text-stone-500 mb-1">Name</p>
                     <p className="text-white font-medium">
                       {selectedCampaignData.name}
                     </p>
@@ -613,8 +613,8 @@ export default function CampaignsPage() {
 
                   {/* Description */}
                   <div>
-                    <p className="text-xs text-zinc-500 mb-1">Description</p>
-                    <p className="text-zinc-300 text-sm">
+                    <p className="text-xs text-stone-500 mb-1">Description</p>
+                    <p className="text-stone-300 text-sm">
                       {selectedCampaignData.description}
                     </p>
                   </div>
@@ -622,13 +622,13 @@ export default function CampaignsPage() {
                   {/* Type & Status */}
                   <div className="flex gap-4">
                     <div>
-                      <p className="text-xs text-zinc-500 mb-1">Type</p>
+                      <p className="text-xs text-stone-500 mb-1">Type</p>
                       <Badge className={typeColors[selectedCampaignData.type]}>
                         {selectedCampaignData.type}
                       </Badge>
                     </div>
                     <div>
-                      <p className="text-xs text-zinc-500 mb-1">Status</p>
+                      <p className="text-xs text-stone-500 mb-1">Status</p>
                       <StatusBadge status={selectedCampaignData.status} />
                     </div>
                   </div>
@@ -636,8 +636,8 @@ export default function CampaignsPage() {
                   {/* Performance Sparkline */}
                   {selectedCampaignData.metrics && (
                     <div>
-                      <p className="text-xs text-zinc-500 mb-2">Performance (7 days)</p>
-                      <div className="rounded-lg bg-zinc-900/50 p-3">
+                      <p className="text-xs text-stone-500 mb-2">Performance (7 days)</p>
+                      <div className="rounded-lg bg-stone-100/50 p-3">
                         <Sparkline
                           data={generateSparklineData()}
                           height={60}
@@ -651,10 +651,10 @@ export default function CampaignsPage() {
                   {/* Budget */}
                   {selectedCampaignData.budget && (
                     <div>
-                      <p className="text-xs text-zinc-500 mb-1">Budget</p>
-                      <div className="rounded-lg bg-zinc-900/50 p-3">
+                      <p className="text-xs text-stone-500 mb-1">Budget</p>
+                      <div className="rounded-lg bg-stone-100/50 p-3">
                         <div className="flex justify-between text-sm mb-2">
-                          <span className="text-zinc-400">Spent</span>
+                          <span className="text-stone-400">Spent</span>
                           <span className="text-white font-medium">
                             {formatCurrency(
                               selectedCampaignData.budget.spent,
@@ -663,7 +663,7 @@ export default function CampaignsPage() {
                           </span>
                         </div>
                         <div className="flex justify-between text-sm mb-2">
-                          <span className="text-zinc-400">Total</span>
+                          <span className="text-stone-400">Total</span>
                           <span className="text-white font-medium">
                             {formatCurrency(
                               selectedCampaignData.budget.total,
@@ -671,7 +671,7 @@ export default function CampaignsPage() {
                             )}
                           </span>
                         </div>
-                        <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
+                        <div className="h-2 bg-stone-200 rounded-full overflow-hidden">
                           <motion.div
                             initial={{ width: 0 }}
                             animate={{
@@ -683,7 +683,7 @@ export default function CampaignsPage() {
                               )}%`,
                             }}
                             transition={{ duration: 0.5 }}
-                            className="h-full bg-indigo-500"
+                            className="h-full bg-orange-500"
                           />
                         </div>
                       </div>
@@ -693,36 +693,36 @@ export default function CampaignsPage() {
                   {/* Goals */}
                   {selectedCampaignData.goals && (
                     <div>
-                      <p className="text-xs text-zinc-500 mb-1">Goals</p>
+                      <p className="text-xs text-stone-500 mb-1">Goals</p>
                       <div className="grid grid-cols-2 gap-2">
                         {selectedCampaignData.goals.impressions && (
-                          <div className="rounded-lg bg-zinc-900/50 p-2">
-                            <p className="text-xs text-zinc-500">Impressions</p>
-                            <p className="text-zinc-300 font-mono">
+                          <div className="rounded-lg bg-stone-100/50 p-2">
+                            <p className="text-xs text-stone-500">Impressions</p>
+                            <p className="text-stone-300 font-mono">
                               {formatNumber(selectedCampaignData.goals.impressions)}
                             </p>
                           </div>
                         )}
                         {selectedCampaignData.goals.clicks && (
-                          <div className="rounded-lg bg-zinc-900/50 p-2">
-                            <p className="text-xs text-zinc-500">Clicks</p>
-                            <p className="text-zinc-300 font-mono">
+                          <div className="rounded-lg bg-stone-100/50 p-2">
+                            <p className="text-xs text-stone-500">Clicks</p>
+                            <p className="text-stone-300 font-mono">
                               {formatNumber(selectedCampaignData.goals.clicks)}
                             </p>
                           </div>
                         )}
                         {selectedCampaignData.goals.conversions && (
-                          <div className="rounded-lg bg-zinc-900/50 p-2">
-                            <p className="text-xs text-zinc-500">Conversions</p>
-                            <p className="text-zinc-300 font-mono">
+                          <div className="rounded-lg bg-stone-100/50 p-2">
+                            <p className="text-xs text-stone-500">Conversions</p>
+                            <p className="text-stone-300 font-mono">
                               {formatNumber(selectedCampaignData.goals.conversions)}
                             </p>
                           </div>
                         )}
                         {selectedCampaignData.goals.revenue && (
-                          <div className="rounded-lg bg-zinc-900/50 p-2">
-                            <p className="text-xs text-zinc-500">Revenue</p>
-                            <p className="text-zinc-300 font-mono">
+                          <div className="rounded-lg bg-stone-100/50 p-2">
+                            <p className="text-xs text-stone-500">Revenue</p>
+                            <p className="text-stone-300 font-mono">
                               {formatCurrency(selectedCampaignData.goals.revenue)}
                             </p>
                           </div>
@@ -733,10 +733,10 @@ export default function CampaignsPage() {
 
                   {/* Dates */}
                   <div>
-                    <p className="text-xs text-zinc-500 mb-1">Timeline</p>
+                    <p className="text-xs text-stone-500 mb-1">Timeline</p>
                     <div className="flex items-center gap-2 text-sm">
-                      <Calendar className="h-4 w-4 text-zinc-500" />
-                      <span className="text-zinc-300">
+                      <Calendar className="h-4 w-4 text-stone-500" />
+                      <span className="text-stone-300">
                         {formatDate(selectedCampaignData.startDate)}
                         {selectedCampaignData.endDate &&
                           ` - ${formatDate(selectedCampaignData.endDate)}`}

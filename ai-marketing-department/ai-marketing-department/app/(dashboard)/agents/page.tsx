@@ -47,7 +47,7 @@ const STATUSES = [
 
 const departmentColors: Record<string, string> = {
   leadership: "bg-purple-500/10 text-purple-400 border-purple-500/20",
-  content: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+  content: "bg-orange-500/10 text-orange-400 border-orange-500/20",
   social: "bg-pink-500/10 text-pink-400 border-pink-500/20",
   demandgen: "bg-orange-500/10 text-orange-400 border-orange-500/20",
   seo: "bg-green-500/10 text-green-400 border-green-500/20",
@@ -109,14 +109,14 @@ export default function AgentsPage() {
     return (
       <div className="space-y-8">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-indigo-500/10">
-            <Bot className="h-6 w-6 text-indigo-400" />
+          <div className="p-2 rounded-xl bg-orange-500/10">
+            <Bot className="h-6 w-6 text-orange-400" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-stone-400 bg-clip-text text-transparent">
               Agents
             </h1>
-            <p className="text-zinc-400 mt-1">
+            <p className="text-stone-400 mt-1">
               Manage and monitor your AI marketing team.
             </p>
           </div>
@@ -144,14 +144,14 @@ export default function AgentsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <div className="p-2 rounded-xl bg-indigo-500/10">
-          <Bot className="h-6 w-6 text-indigo-400" />
+        <div className="p-2 rounded-xl bg-orange-500/10">
+          <Bot className="h-6 w-6 text-orange-400" />
         </div>
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-stone-400 bg-clip-text text-transparent">
             Agents
           </h1>
-          <p className="text-zinc-400 mt-1">
+          <p className="text-stone-400 mt-1">
             Manage and monitor your AI marketing team of {agents.length} agents.
           </p>
         </div>
@@ -161,23 +161,23 @@ export default function AgentsPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
         {/* Search */}
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-500" />
           <input
             type="text"
             placeholder="Search agents..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-lg border border-zinc-800 bg-zinc-950/50 py-2 pl-10 pr-4 text-sm text-white placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="w-full rounded-lg border border-stone-200 bg-[#faf8f4]/50 py-2 pl-10 pr-4 text-sm text-white placeholder-stone-500 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
           />
         </div>
 
         {/* Department Filter */}
         <div className="relative">
-          <Filter className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+          <Filter className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-500" />
           <select
             value={departmentFilter}
             onChange={(e) => setDepartmentFilter(e.target.value)}
-            className="appearance-none rounded-lg border border-zinc-800 bg-zinc-950/50 py-2 pl-10 pr-8 text-sm text-white focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="appearance-none rounded-lg border border-stone-200 bg-[#faf8f4]/50 py-2 pl-10 pr-8 text-sm text-white focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
           >
             {DEPARTMENTS.map((dept) => (
               <option key={dept.value} value={dept.value}>
@@ -185,7 +185,7 @@ export default function AgentsPage() {
               </option>
             ))}
           </select>
-          <ChevronDown className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500 pointer-events-none" />
+          <ChevronDown className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-500 pointer-events-none" />
         </div>
 
         {/* Status Filter */}
@@ -193,7 +193,7 @@ export default function AgentsPage() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="appearance-none rounded-lg border border-zinc-800 bg-zinc-950/50 py-2 pl-4 pr-8 text-sm text-white focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="appearance-none rounded-lg border border-stone-200 bg-[#faf8f4]/50 py-2 pl-4 pr-8 text-sm text-white focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
           >
             {STATUSES.map((status) => (
               <option key={status.value} value={status.value}>
@@ -201,7 +201,7 @@ export default function AgentsPage() {
               </option>
             ))}
           </select>
-          <ChevronDown className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500 pointer-events-none" />
+          <ChevronDown className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-500 pointer-events-none" />
         </div>
       </div>
 
@@ -258,7 +258,7 @@ export default function AgentsPage() {
                         hover
                         className={cn(
                           "cursor-pointer transition-all h-full",
-                          isSelected && "border-indigo-500 shadow-lg shadow-indigo-500/20"
+                          isSelected && "border-orange-500 shadow-lg shadow-orange-500/20"
                         )}
                       >
                         <div
@@ -274,10 +274,10 @@ export default function AgentsPage() {
                                 className={cn(
                                   "relative flex h-10 w-10 items-center justify-center rounded-lg",
                                   agent.status === "active"
-                                    ? "bg-indigo-500/10 text-indigo-400"
+                                    ? "bg-orange-500/10 text-orange-400"
                                     : agent.status === "error"
                                     ? "bg-red-500/10 text-red-400"
-                                    : "bg-zinc-500/10 text-zinc-400"
+                                    : "bg-stone-500/10 text-stone-400"
                                 )}
                               >
                                 <RoleIcon className="h-5 w-5" />
@@ -293,7 +293,7 @@ export default function AgentsPage() {
                                 <h3 className="font-semibold text-white text-sm">
                                   {agent.name}
                                 </h3>
-                                <p className="text-xs text-zinc-500 font-mono">
+                                <p className="text-xs text-stone-500 font-mono">
                                   {agent.agentId}
                                 </p>
                               </div>
@@ -302,7 +302,7 @@ export default function AgentsPage() {
                           </div>
 
                           {/* Description */}
-                          <p className="text-xs text-zinc-400 mb-3 line-clamp-2">
+                          <p className="text-xs text-stone-400 mb-3 line-clamp-2">
                             {agent.description}
                           </p>
 
@@ -339,12 +339,12 @@ export default function AgentsPage() {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-6">
                     <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                      <Activity className="h-4 w-4 text-indigo-400" />
+                      <Activity className="h-4 w-4 text-orange-400" />
                       Agent Details
                     </h3>
                     <button
                       onClick={() => setSelectedAgent(null)}
-                      className="p-1.5 rounded-lg hover:bg-zinc-800 text-zinc-500 hover:text-white transition-colors"
+                      className="p-1.5 rounded-lg hover:bg-stone-200 text-stone-500 hover:text-stone-900 transition-colors"
                     >
                       <X className="h-4 w-4" />
                     </button>
@@ -353,7 +353,7 @@ export default function AgentsPage() {
                   <div className="space-y-4">
                     {/* Name & Status */}
                     <div>
-                      <p className="text-xs text-zinc-500 mb-1 uppercase tracking-wider">Name</p>
+                      <p className="text-xs text-stone-500 mb-1 uppercase tracking-wider">Name</p>
                       <p className="text-white font-medium">
                         {selectedAgentData.name}
                       </p>
@@ -361,16 +361,16 @@ export default function AgentsPage() {
 
                     {/* ID */}
                     <div>
-                      <p className="text-xs text-zinc-500 mb-1 uppercase tracking-wider">Agent ID</p>
-                      <p className="text-zinc-300 font-mono text-sm bg-zinc-900/50 rounded px-2 py-1 inline-block">
+                      <p className="text-xs text-stone-500 mb-1 uppercase tracking-wider">Agent ID</p>
+                      <p className="text-stone-300 font-mono text-sm bg-stone-100/50 rounded px-2 py-1 inline-block">
                         {selectedAgentData.agentId}
                       </p>
                     </div>
 
                     {/* Description */}
                     <div>
-                      <p className="text-xs text-zinc-500 mb-1 uppercase tracking-wider">Description</p>
-                      <p className="text-zinc-300 text-sm">
+                      <p className="text-xs text-stone-500 mb-1 uppercase tracking-wider">Description</p>
+                      <p className="text-stone-300 text-sm">
                         {selectedAgentData.description}
                       </p>
                     </div>
@@ -378,30 +378,30 @@ export default function AgentsPage() {
                     {/* Department & Role */}
                     <div className="flex gap-4">
                       <div>
-                        <p className="text-xs text-zinc-500 mb-1 uppercase tracking-wider">Department</p>
+                        <p className="text-xs text-stone-500 mb-1 uppercase tracking-wider">Department</p>
                         <Badge className={departmentColors[selectedAgentData.department]}>
                           {selectedAgentData.department}
                         </Badge>
                       </div>
                       <div>
-                        <p className="text-xs text-zinc-500 mb-1 uppercase tracking-wider">Role</p>
+                        <p className="text-xs text-stone-500 mb-1 uppercase tracking-wider">Role</p>
                         <RoleBadge role={selectedAgentData.role} />
                       </div>
                     </div>
 
                     {/* Status with actions */}
                     <div>
-                      <p className="text-xs text-zinc-500 mb-1 uppercase tracking-wider">Status</p>
+                      <p className="text-xs text-stone-500 mb-1 uppercase tracking-wider">Status</p>
                       <div className="flex items-center gap-2">
                         <StatusBadge status={selectedAgentData.status} />
                         <div className="flex gap-1 ml-auto">
-                          <button className="p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white transition-colors" title="Start">
+                          <button className="p-1.5 rounded-lg bg-stone-200 hover:bg-stone-100 text-stone-400 hover:text-stone-900 transition-colors" title="Start">
                             <Play className="h-3.5 w-3.5" />
                           </button>
-                          <button className="p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white transition-colors" title="Pause">
+                          <button className="p-1.5 rounded-lg bg-stone-200 hover:bg-stone-100 text-stone-400 hover:text-stone-900 transition-colors" title="Pause">
                             <Pause className="h-3.5 w-3.5" />
                           </button>
-                          <button className="p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white transition-colors" title="Configure">
+                          <button className="p-1.5 rounded-lg bg-stone-200 hover:bg-stone-100 text-stone-400 hover:text-stone-900 transition-colors" title="Configure">
                             <Settings2 className="h-3.5 w-3.5" />
                           </button>
                         </div>
@@ -410,10 +410,10 @@ export default function AgentsPage() {
 
                     {/* Model */}
                     <div>
-                      <p className="text-xs text-zinc-500 mb-1 uppercase tracking-wider">Model</p>
+                      <p className="text-xs text-stone-500 mb-1 uppercase tracking-wider">Model</p>
                       <div className="flex items-center gap-2">
                         <Zap className="h-4 w-4 text-yellow-500" />
-                        <p className="text-zinc-300 font-mono text-sm">
+                        <p className="text-stone-300 font-mono text-sm">
                           {selectedAgentData.config.model}
                         </p>
                       </div>
@@ -421,17 +421,17 @@ export default function AgentsPage() {
 
                     {/* Config */}
                     <div>
-                      <p className="text-xs text-zinc-500 mb-2 uppercase tracking-wider">Configuration</p>
+                      <p className="text-xs text-stone-500 mb-2 uppercase tracking-wider">Configuration</p>
                       <div className="grid grid-cols-2 gap-2 text-sm">
-                        <div className="rounded-lg bg-zinc-900/50 p-3 border border-zinc-800/50">
-                          <p className="text-xs text-zinc-500">Temperature</p>
-                          <p className="text-zinc-300 font-mono text-lg">
+                        <div className="rounded-lg bg-stone-100/50 p-3 border border-stone-200/50">
+                          <p className="text-xs text-stone-500">Temperature</p>
+                          <p className="text-stone-300 font-mono text-lg">
                             {selectedAgentData.config.temperature}
                           </p>
                         </div>
-                        <div className="rounded-lg bg-zinc-900/50 p-3 border border-zinc-800/50">
-                          <p className="text-xs text-zinc-500">Max Tokens</p>
-                          <p className="text-zinc-300 font-mono text-lg">
+                        <div className="rounded-lg bg-stone-100/50 p-3 border border-stone-200/50">
+                          <p className="text-xs text-stone-500">Max Tokens</p>
+                          <p className="text-stone-300 font-mono text-lg">
                             {selectedAgentData.config.maxTokens.toLocaleString()}
                           </p>
                         </div>
@@ -440,7 +440,7 @@ export default function AgentsPage() {
 
                     {/* Triggers */}
                     <div>
-                      <p className="text-xs text-zinc-500 mb-2 uppercase tracking-wider">Triggers</p>
+                      <p className="text-xs text-stone-500 mb-2 uppercase tracking-wider">Triggers</p>
                       <div className="flex flex-wrap gap-1.5">
                         {selectedAgentData.triggers.map((trigger: string) => (
                           <Badge key={trigger} variant="default" className="text-xs">

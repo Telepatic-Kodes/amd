@@ -21,9 +21,9 @@ export function Stepper({ currentStep }: StepperProps) {
               <div
                 className={cn(
                   "w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-xs font-semibold transition-all duration-300 border",
-                  done && "bg-indigo-600 border-indigo-500 text-white",
-                  active && "bg-indigo-600/20 border-indigo-500 text-indigo-400 ring-2 ring-indigo-500/30",
-                  !done && !active && "bg-zinc-900 border-zinc-700 text-zinc-500"
+                  done && "bg-orange-600 border-orange-500 text-white",
+                  active && "bg-orange-600/20 border-orange-500 text-orange-400 ring-2 ring-orange-500/30",
+                  !done && !active && "bg-stone-100 border-stone-300 text-stone-500"
                 )}
               >
                 {done ? <Check className="w-4 h-4" /> : i + 1}
@@ -31,7 +31,7 @@ export function Stepper({ currentStep }: StepperProps) {
               <span
                 className={cn(
                   "text-[10px] sm:text-xs font-medium hidden sm:block",
-                  active ? "text-indigo-400" : done ? "text-zinc-300" : "text-zinc-600"
+                  active ? "text-orange-400" : done ? "text-stone-300" : "text-stone-600"
                 )}
               >
                 {label}
@@ -41,7 +41,7 @@ export function Stepper({ currentStep }: StepperProps) {
               <div
                 className={cn(
                   "w-6 sm:w-12 h-px transition-colors duration-300 mb-4 sm:mb-5",
-                  i < currentStep ? "bg-indigo-600" : "bg-zinc-800"
+                  i < currentStep ? "bg-orange-600" : "bg-stone-200"
                 )}
               />
             )}

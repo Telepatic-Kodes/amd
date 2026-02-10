@@ -19,13 +19,13 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
           // Variants
           {
-            "bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500":
+            "bg-gradient-to-br from-orange-600 to-orange-700 text-white hover:from-orange-700 hover:to-orange-800 focus:ring-orange-500 shadow-sm":
               variant === "primary",
-            "bg-gray-100 text-gray-700 hover:bg-gray-200 focus:ring-gray-400":
+            "bg-stone-100 text-stone-700 hover:bg-stone-200 focus:ring-stone-400":
               variant === "secondary",
-            "border border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-gray-400":
+            "border border-stone-300 text-stone-700 hover:bg-stone-50 focus:ring-stone-400":
               variant === "outline",
-            "text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:ring-gray-400":
+            "text-stone-500 hover:text-stone-700 hover:bg-stone-100 focus:ring-stone-400":
               variant === "ghost",
           },
 

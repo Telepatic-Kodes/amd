@@ -58,7 +58,7 @@ export function NotificationCenter() {
         onClick={() => setOpen(!open)}
         className={cn(
           "relative p-1.5 rounded-md transition-colors",
-          "text-gray-400 hover:text-gray-600 hover:bg-white/[0.05]"
+          "text-stone-400 hover:text-stone-600 hover:bg-white/[0.05]"
         )}
       >
         <Bell className="h-4 w-4" />
@@ -70,7 +70,7 @@ export function NotificationCenter() {
       </button>
 
       {open && (
-        <div className="absolute left-full ml-2 top-0 w-72 rounded-lg border border-[var(--border)] bg-gray-50 shadow-xl z-50 overflow-hidden">
+        <div className="absolute left-full ml-2 top-0 w-72 rounded-lg border border-[var(--border)] bg-stone-50 shadow-xl z-50 overflow-hidden">
           {/* Header */}
           <div className="px-3 py-2 border-b border-[var(--border)] flex items-center justify-between">
             <span className="text-xs font-medium text-[var(--text-secondary)]">Notificaciones</span>
@@ -86,7 +86,7 @@ export function NotificationCenter() {
             {alertCount === 0 ? (
               <div className="py-8 text-center">
                 <CheckCircle className="h-5 w-5 text-emerald-500 mx-auto mb-2" />
-                <p className="text-xs text-gray-400">Todo funcionando correctamente</p>
+                <p className="text-xs text-stone-400">Todo funcionando correctamente</p>
               </div>
             ) : (
               <div className="divide-y divide-[var(--border)]">

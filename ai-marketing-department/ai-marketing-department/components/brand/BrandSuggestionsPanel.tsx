@@ -71,7 +71,7 @@ export function BrandSuggestionsPanel({ brandProfileId }: Props) {
     <div className="space-y-4">
       {/* Header + Generate button */}
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+        <h3 className="text-sm font-semibold text-stone-700 flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-purple-500" />
           Sugerencias IA
           {suggestions && suggestions.length > 0 && (
@@ -86,7 +86,7 @@ export function BrandSuggestionsPanel({ brandProfileId }: Props) {
           className={cn(
             "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition",
             generating
-              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+              ? "bg-stone-100 text-stone-400 cursor-not-allowed"
               : "bg-purple-50 text-purple-600 hover:bg-purple-100"
           )}
         >
@@ -113,11 +113,11 @@ export function BrandSuggestionsPanel({ brandProfileId }: Props) {
       {suggestions === undefined ? (
         <div className="space-y-2">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-20 rounded-lg bg-gray-100 animate-pulse" />
+            <div key={i} className="h-20 rounded-lg bg-stone-100 animate-pulse" />
           ))}
         </div>
       ) : suggestions.length === 0 ? (
-        <div className="text-center py-8 text-gray-400">
+        <div className="text-center py-8 text-stone-400">
           <Lightbulb className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p className="text-sm">Sin sugerencias pendientes</p>
           <p className="text-xs mt-1">Genera sugerencias para mejorar tu perfil de marca</p>
@@ -129,20 +129,20 @@ export function BrandSuggestionsPanel({ brandProfileId }: Props) {
             return (
               <div
                 key={suggestion._id}
-                className="p-3 rounded-lg border border-gray-200 bg-white hover:border-gray-300 transition-colors shadow-sm"
+                className="p-3 rounded-lg border border-stone-200 bg-white hover:border-stone-300 transition-colors shadow-sm"
               >
                 <div className="flex items-start gap-2">
-                  <span className="text-gray-400 mt-0.5">
+                  <span className="text-stone-400 mt-0.5">
                     {categoryIcons[suggestion.category] || categoryIcons.general}
                   </span>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-sm font-medium text-gray-900 truncate">
+                      <span className="text-sm font-medium text-stone-900 truncate">
                         {suggestion.title}
                       </span>
                       <Badge variant={priority.variant}>{priority.label}</Badge>
                     </div>
-                    <p className="text-xs text-gray-500 leading-relaxed">
+                    <p className="text-xs text-stone-500 leading-relaxed">
                       {suggestion.description}
                     </p>
                   </div>
@@ -156,7 +156,7 @@ export function BrandSuggestionsPanel({ brandProfileId }: Props) {
                   </button>
                   <button
                     onClick={() => handleDismiss(suggestion._id)}
-                    className="flex items-center gap-1 px-2 py-1 rounded text-xs text-gray-500 hover:bg-gray-100 transition-colors"
+                    className="flex items-center gap-1 px-2 py-1 rounded text-xs text-stone-500 hover:bg-stone-100 transition-colors"
                   >
                     <X className="w-3 h-3" /> Descartar
                   </button>

@@ -102,14 +102,14 @@ export default function ResultsPage() {
     return (
       <div className="space-y-8">
         <div>
-          <h1 className="text-3xl md:text-5xl font-bold text-gray-900">
+          <h1 className="text-3xl md:text-5xl font-bold text-stone-900">
             Resultados
           </h1>
-          <p className="text-gray-500 mt-2 md:mt-3 text-base md:text-lg">Cargando tus métricas...</p>
+          <p className="text-stone-500 mt-2 md:mt-3 text-base md:text-lg">Cargando tus métricas...</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="h-32 rounded-xl border border-gray-200 bg-white animate-pulse" />
+            <div key={i} className="h-32 rounded-xl border border-stone-200 bg-white animate-pulse" />
           ))}
         </div>
       </div>
@@ -121,10 +121,10 @@ export default function ResultsPage() {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-3xl md:text-5xl font-bold text-gray-900">
+          <h1 className="text-3xl md:text-5xl font-bold text-stone-900">
             Tus Resultados
           </h1>
-          <p className="text-gray-500 mt-2 md:mt-3 text-base md:text-lg">
+          <p className="text-stone-500 mt-2 md:mt-3 text-base md:text-lg">
             {hasEngagementData
               ? "Como esta performando tu contenido en LinkedIn."
               : "Sin datos — publica contenido en LinkedIn para ver metricas"}
@@ -142,21 +142,21 @@ export default function ResultsPage() {
         >
           <Card className="p-4 md:p-6 lg:p-8">
             <div className="flex items-center justify-between mb-4">
-              <div className="p-3 rounded-lg bg-blue-50">
-                <Eye className="w-6 h-6 text-blue-600" />
+              <div className="p-3 rounded-lg bg-orange-50">
+                <Eye className="w-6 h-6 text-orange-600" />
               </div>
             </div>
-            <p className="text-5xl font-bold text-gray-900 mb-2">
+            <p className="text-5xl font-bold text-stone-900 mb-2">
               {engagementStats && engagementStats.totalImpressions >= 1000 ? (
                 <>
                   <SimpleCounter value={Math.round(engagementStats.totalImpressions / 1000)} />
-                  <span className="text-3xl text-gray-400">K</span>
+                  <span className="text-3xl text-stone-400">K</span>
                 </>
               ) : (
                 <SimpleCounter value={engagementStats?.totalImpressions ?? 0} />
               )}
             </p>
-            <p className="text-base text-gray-500">Impresiones</p>
+            <p className="text-base text-stone-500">Impresiones</p>
           </Card>
         </motion.div>
 
@@ -172,10 +172,10 @@ export default function ResultsPage() {
                 <MousePointerClick className="w-6 h-6 text-green-600" />
               </div>
             </div>
-            <p className="text-5xl font-bold text-gray-900 mb-2">
+            <p className="text-5xl font-bold text-stone-900 mb-2">
               <SimpleCounter value={engagementStats?.totalInteractions ?? 0} />
             </p>
-            <p className="text-base text-gray-500">Interacciones</p>
+            <p className="text-base text-stone-500">Interacciones</p>
           </Card>
         </motion.div>
 
@@ -191,10 +191,10 @@ export default function ResultsPage() {
                 <Heart className="w-6 h-6 text-purple-600" />
               </div>
             </div>
-            <p className="text-5xl font-bold text-gray-900 mb-2">
+            <p className="text-5xl font-bold text-stone-900 mb-2">
               <SimpleCounter value={engagementStats?.totalShares ?? 0} />
             </p>
-            <p className="text-base text-gray-500">Compartidos</p>
+            <p className="text-base text-stone-500">Compartidos</p>
           </Card>
         </motion.div>
       </div>
@@ -210,8 +210,8 @@ export default function ResultsPage() {
         >
           <Card className="p-4 md:p-6">
             <div className="flex items-center justify-between mb-4 md:mb-6">
-              <h3 className="text-xl md:text-2xl font-semibold text-gray-900 flex items-center gap-3">
-                <TrendingUp className="w-5 h-5 md:w-6 md:h-6 text-blue-600" />
+              <h3 className="text-xl md:text-2xl font-semibold text-stone-900 flex items-center gap-3">
+                <TrendingUp className="w-5 h-5 md:w-6 md:h-6 text-orange-600" />
                 Tendencia (ultimos 7 dias)
               </h3>
               <Badge variant="default">Tareas</Badge>
@@ -226,7 +226,7 @@ export default function ResultsPage() {
                   showTooltip={true}
                 />
               ) : (
-                <div className="flex items-center justify-center h-full text-gray-400">
+                <div className="flex items-center justify-center h-full text-stone-400">
                   <div className="text-center">
                     <BarChart3 className="w-10 h-10 mx-auto mb-2" />
                     <p>Sin datos de tareas en este periodo</p>
@@ -244,22 +244,22 @@ export default function ResultsPage() {
           transition={{ delay: 0.4 }}
         >
           <Card className="p-4 md:p-6">
-            <h3 className="text-xl md:text-2xl font-semibold text-gray-900 mb-4 md:mb-6">Resumen</h3>
+            <h3 className="text-xl md:text-2xl font-semibold text-stone-900 mb-4 md:mb-6">Resumen</h3>
             <div className="space-y-4">
-              <div className="flex items-center justify-between pb-3 border-b border-gray-200">
-                <span className="text-gray-500">Campanas activas</span>
+              <div className="flex items-center justify-between pb-3 border-b border-stone-200">
+                <span className="text-stone-500">Campanas activas</span>
                 <span className="text-2xl font-bold text-green-600">
                   {campaigns?.filter((c: { status: string }) => c.status === "active").length || 0}
                 </span>
               </div>
-              <div className="flex items-center justify-between pb-3 border-b border-gray-200">
-                <span className="text-gray-500">Contenido publicado</span>
-                <span className="text-2xl font-bold text-blue-600">
+              <div className="flex items-center justify-between pb-3 border-b border-stone-200">
+                <span className="text-stone-500">Contenido publicado</span>
+                <span className="text-2xl font-bold text-orange-600">
                   {content?.filter((c: { status: string }) => c.status === "published").length || 0}
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-gray-500">CTR promedio</span>
+                <span className="text-stone-500">CTR promedio</span>
                 <span className="text-2xl font-bold text-purple-600">
                   {engagementStats?.ctr ?? "0.0"}%
                 </span>
@@ -277,8 +277,8 @@ export default function ResultsPage() {
       >
         <Card className="p-4 md:p-6">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-4 md:mb-6 gap-3">
-            <h3 className="text-xl md:text-2xl font-semibold text-gray-900">Top 5 Contenido</h3>
-            <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors">
+            <h3 className="text-xl md:text-2xl font-semibold text-stone-900">Top 5 Contenido</h3>
+            <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-orange-50 text-orange-700 hover:bg-orange-100 transition-colors">
               <Download className="w-4 h-4" />
               Exportar
             </button>
@@ -288,21 +288,21 @@ export default function ResultsPage() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Titulo</th>
-                    <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">Tipo</th>
-                    <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">Impresiones</th>
-                    <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">Interacciones</th>
-                    <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">Compartidos</th>
+                  <tr className="border-b border-stone-200">
+                    <th className="text-left py-3 px-4 text-sm font-medium text-stone-500">Titulo</th>
+                    <th className="text-right py-3 px-4 text-sm font-medium text-stone-500">Tipo</th>
+                    <th className="text-right py-3 px-4 text-sm font-medium text-stone-500">Impresiones</th>
+                    <th className="text-right py-3 px-4 text-sm font-medium text-stone-500">Interacciones</th>
+                    <th className="text-right py-3 px-4 text-sm font-medium text-stone-500">Compartidos</th>
                   </tr>
                 </thead>
                 <tbody>
                   {topContent.map((item) => (
                     <tr
                       key={item.id}
-                      className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
+                      className="border-b border-stone-100 hover:bg-stone-50 transition-colors"
                     >
-                      <td className="py-4 px-4 text-sm text-gray-900">
+                      <td className="py-4 px-4 text-sm text-stone-900">
                         <div>
                           <p className="font-medium">{item.title}</p>
                         </div>
@@ -310,7 +310,7 @@ export default function ResultsPage() {
                       <td className="py-4 px-4 text-right text-sm">
                         <Badge variant="default">{item.type}</Badge>
                       </td>
-                      <td className="py-4 px-4 text-right text-sm font-medium text-blue-600">
+                      <td className="py-4 px-4 text-right text-sm font-medium text-orange-600">
                         {item.impressions.toLocaleString()}
                       </td>
                       <td className="py-4 px-4 text-right text-sm font-medium text-green-600">
@@ -325,7 +325,7 @@ export default function ResultsPage() {
               </table>
             </div>
           ) : (
-            <div className="py-12 text-center text-gray-400">
+            <div className="py-12 text-center text-stone-400">
               <BarChart3 className="w-10 h-10 mx-auto mb-3" />
               <p className="text-base">Sin datos — publica contenido en LinkedIn para ver metricas</p>
             </div>
@@ -339,13 +339,13 @@ export default function ResultsPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6 }}
       >
-        <Card className="p-4 md:p-6 bg-blue-50 border-blue-200">
+        <Card className="p-4 md:p-6 bg-orange-50 border-orange-200">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
-              <h3 className="text-xl md:text-2xl font-semibold text-gray-900 mb-2">Necesitas un reporte detallado?</h3>
-              <p className="text-sm md:text-base text-gray-600">Descarga tu reporte completo de los ultimos 30 dias</p>
+              <h3 className="text-xl md:text-2xl font-semibold text-stone-900 mb-2">Necesitas un reporte detallado?</h3>
+              <p className="text-sm md:text-base text-stone-600">Descarga tu reporte completo de los ultimos 30 dias</p>
             </div>
-            <button className="px-6 py-3 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors min-h-[44px] w-full md:w-auto">
+            <button className="px-6 py-3 rounded-lg bg-orange-600 text-white font-medium hover:bg-orange-700 transition-colors min-h-[44px] w-full md:w-auto">
               <Download className="w-4 h-4 inline mr-2" />
               Exportar Reporte
             </button>

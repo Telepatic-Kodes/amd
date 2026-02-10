@@ -56,15 +56,15 @@ export function ContentDetailPlatformPublish({
   }
 
   return (
-    <Card className={cn("border-zinc-800 bg-zinc-950/50", className)}>
+    <Card className={cn("border-stone-200 bg-[#faf8f4]/50", className)}>
       <CardHeader>
         <div className="flex items-center justify-between">
           <h3 className="flex items-center gap-2 text-sm font-semibold text-white">
-            <Share2 className="h-4 w-4 text-indigo-500" />
+            <Share2 className="h-4 w-4 text-orange-500" />
             {translate("publishToPlatforms")}
           </h3>
           {/* Publish status summary */}
-          <div className="flex items-center gap-2 text-xs text-zinc-500">
+          <div className="flex items-center gap-2 text-xs text-stone-500">
             {publishedToLinkedIn || publishedToTwitter || publishedToInstagram ? (
               <>
                 <span>{translate("publishedTo")}:</span>
@@ -98,7 +98,7 @@ export function ContentDetailPlatformPublish({
       <CardContent className="p-4 pt-0 space-y-4">
         {/* LinkedIn Section */}
         <div className="space-y-2">
-          <div className="flex items-center gap-2 text-xs font-medium text-zinc-400">
+          <div className="flex items-center gap-2 text-xs font-medium text-stone-400">
             <Linkedin className="h-3.5 w-3.5 text-[#0A66C2]" />
             LinkedIn
           </div>
@@ -111,7 +111,7 @@ export function ContentDetailPlatformPublish({
 
         {/* Twitter Section */}
         <div className="space-y-2">
-          <div className="flex items-center gap-2 text-xs font-medium text-zinc-400">
+          <div className="flex items-center gap-2 text-xs font-medium text-stone-400">
             <Twitter className="h-3.5 w-3.5 text-[#1DA1F2]" />
             Twitter/X
           </div>
@@ -124,7 +124,7 @@ export function ContentDetailPlatformPublish({
 
         {/* Instagram Section */}
         <div className="space-y-2">
-          <div className="flex items-center gap-2 text-xs font-medium text-zinc-400">
+          <div className="flex items-center gap-2 text-xs font-medium text-stone-400">
             <Instagram className="h-3.5 w-3.5 text-[#E4405F]" />
             Instagram
           </div>

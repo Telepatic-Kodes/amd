@@ -98,7 +98,7 @@ export function FeedCard({ feed, onSelect, isSelected }: FeedCardProps) {
         hover
         className={cn(
           "cursor-pointer transition-all",
-          isSelected && "border-indigo-500 shadow-lg shadow-indigo-500/20"
+          isSelected && "border-orange-500 shadow-lg shadow-orange-500/20"
         )}
         onClick={onSelect}
       >
@@ -114,7 +114,7 @@ export function FeedCard({ feed, onSelect, isSelected }: FeedCardProps) {
               </div>
               <div>
                 <h3 className="font-semibold text-white text-sm">{feed.name}</h3>
-                <p className="text-xs text-zinc-500 truncate max-w-[200px]">{feed.url}</p>
+                <p className="text-xs text-stone-500 truncate max-w-[200px]">{feed.url}</p>
               </div>
             </div>
             <div className={cn(
@@ -129,16 +129,16 @@ export function FeedCard({ feed, onSelect, isSelected }: FeedCardProps) {
 
           {/* Stats */}
           <div className="grid grid-cols-3 gap-2 mb-3 text-xs">
-            <div className="rounded-lg bg-zinc-900/50 p-2 border border-zinc-800/50">
-              <p className="text-zinc-500">Items</p>
+            <div className="rounded-lg bg-stone-100/50 p-2 border border-stone-200/50">
+              <p className="text-stone-500">Items</p>
               <p className="text-white font-mono">{feed.itemCount ?? 0}</p>
             </div>
-            <div className="rounded-lg bg-zinc-900/50 p-2 border border-zinc-800/50">
-              <p className="text-zinc-500">Frequency</p>
+            <div className="rounded-lg bg-stone-100/50 p-2 border border-stone-200/50">
+              <p className="text-stone-500">Frequency</p>
               <p className="text-white font-mono">{feed.syncFrequency}</p>
             </div>
-            <div className="rounded-lg bg-zinc-900/50 p-2 border border-zinc-800/50">
-              <p className="text-zinc-500">Errors</p>
+            <div className="rounded-lg bg-stone-100/50 p-2 border border-stone-200/50">
+              <p className="text-stone-500">Errors</p>
               <p className={cn("font-mono", feed.consecutiveErrors > 0 ? "text-red-400" : "text-white")}>
                 {feed.consecutiveErrors}
               </p>
@@ -146,7 +146,7 @@ export function FeedCard({ feed, onSelect, isSelected }: FeedCardProps) {
           </div>
 
           {/* Last Sync */}
-          <div className="flex items-center gap-1 text-xs text-zinc-500 mb-3">
+          <div className="flex items-center gap-1 text-xs text-stone-500 mb-3">
             <Clock className="h-3 w-3" />
             Last sync: {formatLastSync(feed.lastSyncAt)}
           </div>
@@ -159,13 +159,13 @@ export function FeedCard({ feed, onSelect, isSelected }: FeedCardProps) {
           )}
 
           {/* Actions */}
-          <div className="flex items-center gap-2 pt-2 border-t border-zinc-800">
-            <Badge className="bg-zinc-800 text-zinc-400">{feed.category}</Badge>
+          <div className="flex items-center gap-2 pt-2 border-t border-stone-200">
+            <Badge className="bg-stone-200 text-stone-400">{feed.category}</Badge>
             <div className="flex gap-1 ml-auto">
               <button
                 onClick={(e) => { e.stopPropagation(); handleSync(); }}
                 disabled={isLoading || feed.status === "paused"}
-                className="p-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white transition-colors disabled:opacity-50 min-h-[44px] min-w-[44px]"
+                className="p-2 rounded-lg bg-stone-200 hover:bg-stone-100 text-stone-400 hover:text-stone-900 transition-colors disabled:opacity-50 min-h-[44px] min-w-[44px]"
                 title="Sync now"
               >
                 <RefreshCw className={cn("h-4 w-4", isLoading && "animate-spin")} />
@@ -173,7 +173,7 @@ export function FeedCard({ feed, onSelect, isSelected }: FeedCardProps) {
               <button
                 onClick={(e) => { e.stopPropagation(); handlePauseResume(); }}
                 disabled={isLoading}
-                className="p-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white transition-colors disabled:opacity-50 min-h-[44px] min-w-[44px]"
+                className="p-2 rounded-lg bg-stone-200 hover:bg-stone-100 text-stone-400 hover:text-stone-900 transition-colors disabled:opacity-50 min-h-[44px] min-w-[44px]"
                 title={feed.status === "active" ? "Pause" : "Resume"}
               >
                 {feed.status === "active" ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
@@ -183,7 +183,7 @@ export function FeedCard({ feed, onSelect, isSelected }: FeedCardProps) {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="p-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+                className="p-2 rounded-lg bg-stone-200 hover:bg-stone-100 text-stone-400 hover:text-stone-900 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
                 title="Open feed URL"
               >
                 <ExternalLink className="h-4 w-4" />
@@ -191,7 +191,7 @@ export function FeedCard({ feed, onSelect, isSelected }: FeedCardProps) {
               <button
                 onClick={(e) => { e.stopPropagation(); handleDelete(); }}
                 disabled={isLoading}
-                className="p-2 rounded-lg bg-zinc-800 hover:bg-red-900/50 text-zinc-400 hover:text-red-400 transition-colors disabled:opacity-50 min-h-[44px] min-w-[44px]"
+                className="p-2 rounded-lg bg-stone-200 hover:bg-red-900/50 text-stone-400 hover:text-red-400 transition-colors disabled:opacity-50 min-h-[44px] min-w-[44px]"
                 title="Delete feed"
               >
                 <Trash2 className="h-4 w-4" />

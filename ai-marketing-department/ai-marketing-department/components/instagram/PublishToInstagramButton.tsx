@@ -143,7 +143,7 @@ export function PublishToInstagramButton({
         <CheckCircle2 className="h-4 w-4 text-green-400" />
         <span className="text-green-400">Publicado en Instagram</span>
         {lastPublish?.publishedAt && (
-          <span className="text-xs text-zinc-500">
+          <span className="text-xs text-stone-500">
             {new Date(lastPublish.publishedAt).toLocaleDateString("es-CL", {
               day: "numeric",
               month: "short",
@@ -184,11 +184,11 @@ export function PublishToInstagramButton({
       </div>
 
       {showPreview && (
-        <div className="space-y-4 p-4 rounded-lg bg-zinc-900/50 border border-zinc-800">
+        <div className="space-y-4 p-4 rounded-lg bg-stone-100/50 border border-stone-200">
           {/* Image URL Input */}
           {!isCarousel && (
             <div className="space-y-2">
-              <label className="text-sm font-medium text-zinc-300">
+              <label className="text-sm font-medium text-stone-300">
                 URL de la imagen <span className="text-red-400">*</span>
               </label>
               <input
@@ -196,9 +196,9 @@ export function PublishToInstagramButton({
                 value={imageUrl}
                 onChange={(e) => setImageUrl(e.target.value)}
                 placeholder="https://ejemplo.com/imagen.jpg"
-                className="w-full px-3 py-2 rounded-lg bg-zinc-800 border border-zinc-700 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#FD1D1D]/50"
+                className="w-full px-3 py-2 rounded-lg bg-stone-200 border border-stone-300 text-white placeholder:text-stone-500 focus:outline-none focus:ring-2 focus:ring-[#FD1D1D]/50"
               />
-              <p className="text-xs text-zinc-500">
+              <p className="text-xs text-stone-500">
                 La imagen debe ser JPEG o PNG, entre 320x320 y 1440x1440 píxeles
               </p>
               {imageUrl && !imageUrl.startsWith("https://") && (
@@ -222,9 +222,9 @@ export function PublishToInstagramButton({
                   setCarouselUrls([""]);
                 }
               }}
-              className="w-4 h-4 rounded border-zinc-700 bg-zinc-800 text-[#FD1D1D] focus:ring-[#FD1D1D]/50"
+              className="w-4 h-4 rounded border-stone-300 bg-stone-200 text-[#FD1D1D] focus:ring-[#FD1D1D]/50"
             />
-            <label htmlFor="carousel-toggle" className="text-sm text-zinc-300">
+            <label htmlFor="carousel-toggle" className="text-sm text-stone-300">
               Agregar más imágenes (carrusel)
             </label>
           </div>
@@ -233,10 +233,10 @@ export function PublishToInstagramButton({
           {isCarousel && (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-zinc-300">
+                <p className="text-sm font-medium text-stone-300">
                   Imágenes del carrusel
                 </p>
-                <span className="text-xs text-zinc-500">
+                <span className="text-xs text-stone-500">
                   {carouselUrls.filter(u => u.trim()).length} de 10 imágenes
                 </span>
               </div>
@@ -247,12 +247,12 @@ export function PublishToInstagramButton({
                     value={url}
                     onChange={(e) => updateCarouselUrl(index, e.target.value)}
                     placeholder={`https://ejemplo.com/imagen${index + 1}.jpg`}
-                    className="flex-1 px-3 py-2 rounded-lg bg-zinc-800 border border-zinc-700 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#FD1D1D]/50"
+                    className="flex-1 px-3 py-2 rounded-lg bg-stone-200 border border-stone-300 text-white placeholder:text-stone-500 focus:outline-none focus:ring-2 focus:ring-[#FD1D1D]/50"
                   />
                   {carouselUrls.length > 1 && (
                     <button
                       onClick={() => removeCarouselImage(index)}
-                      className="px-2 py-2 rounded-lg bg-zinc-800 border border-zinc-700 text-zinc-400 hover:text-red-400 hover:border-red-500/30 transition-colors"
+                      className="px-2 py-2 rounded-lg bg-stone-200 border border-stone-300 text-stone-400 hover:text-red-400 hover:border-red-500/30 transition-colors"
                       aria-label="Eliminar imagen"
                     >
                       <X className="h-4 w-4" />
@@ -263,7 +263,7 @@ export function PublishToInstagramButton({
               {carouselUrls.length < 10 && (
                 <button
                   onClick={addCarouselImage}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg bg-zinc-800 border border-zinc-700 text-zinc-400 hover:text-white hover:border-zinc-600 transition-colors text-sm"
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg bg-stone-200 border border-stone-300 text-stone-400 hover:text-stone-900 hover:border-stone-600 transition-colors text-sm"
                 >
                   <Plus className="h-4 w-4" />
                   Agregar imagen
@@ -279,7 +279,7 @@ export function PublishToInstagramButton({
 
           {/* Preview */}
           <div className="mt-4">
-            <p className="text-sm font-medium text-zinc-300 mb-3">Vista previa:</p>
+            <p className="text-sm font-medium text-stone-300 mb-3">Vista previa:</p>
             {isCarousel ? (
               <InstagramCarouselPreview
                 imageUrls={carouselUrls.filter(url => url.trim().length > 0)}
@@ -306,10 +306,10 @@ export function PublishToInstagramButton({
           )}
 
           {/* Action Buttons */}
-          <div className="flex justify-end gap-2 pt-3 border-t border-zinc-800">
+          <div className="flex justify-end gap-2 pt-3 border-t border-stone-200">
             <button
               onClick={() => setShowPreview(false)}
-              className="px-3 py-1.5 rounded-lg text-sm text-zinc-400 hover:bg-zinc-800 transition-colors"
+              className="px-3 py-1.5 rounded-lg text-sm text-stone-400 hover:bg-stone-200 transition-colors"
             >
               Cancelar
             </button>

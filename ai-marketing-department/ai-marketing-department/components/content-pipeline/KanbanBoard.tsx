@@ -93,13 +93,13 @@ export function KanbanBoard({ columns, statusCounts }: KanbanBoardProps) {
     return (
       <div className="flex gap-4 overflow-x-auto pb-4">
         {[1, 2, 3, 4, 5, 6].map((i) => (
-          <div key={i} className="min-w-[280px] max-w-[320px] w-full bg-zinc-950/30 rounded-xl border border-zinc-800/50">
-            <div className="px-4 py-3 border-b border-zinc-800/50">
-              <div className="h-5 w-24 bg-zinc-800/50 rounded animate-pulse" />
+          <div key={i} className="min-w-[280px] max-w-[320px] w-full bg-stone-50/30 rounded-xl border border-stone-200/50">
+            <div className="px-4 py-3 border-b border-stone-200/50">
+              <div className="h-5 w-24 bg-stone-200/50 rounded animate-pulse" />
             </div>
             <div className="p-3 space-y-2">
               {[1, 2, 3].map((j) => (
-                <div key={j} className="h-28 bg-zinc-800/30 rounded-lg animate-pulse" />
+                <div key={j} className="h-28 bg-stone-200/30 rounded-lg animate-pulse" />
               ))}
             </div>
           </div>

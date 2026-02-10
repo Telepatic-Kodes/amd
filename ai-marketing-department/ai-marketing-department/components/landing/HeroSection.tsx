@@ -39,7 +39,7 @@ export function HeroSection() {
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-black">
       {/* Gradient background */}
       <motion.div
-        className="absolute inset-0 bg-gradient-to-b from-indigo-500/10 via-purple-500/5 to-black"
+        className="absolute inset-0 bg-gradient-to-b from-orange-500/10 via-purple-500/5 to-black"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
@@ -52,7 +52,7 @@ export function HeroSection() {
         <div className="max-w-5xl mx-auto text-center">
           {/* Badge */}
           <motion.div
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-sm font-medium mb-8"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-400 text-sm font-medium mb-8"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
@@ -69,14 +69,14 @@ export function HeroSection() {
             transition={{ duration: 0.6, delay: 0.4 }}
           >
             Tu Departamento de Marketing Completo,{" "}
-            <span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-orange-400 to-purple-400 bg-clip-text text-transparent">
               Operado por 37 Agentes de IA
             </span>
           </motion.h1>
 
           {/* Subheadline */}
           <motion.p
-            className="text-xl md:text-2xl text-zinc-400 mb-12 max-w-3xl mx-auto leading-relaxed"
+            className="text-xl md:text-2xl text-stone-400 mb-12 max-w-3xl mx-auto leading-relaxed"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.6 }}
@@ -120,17 +120,17 @@ export function HeroSection() {
               {Array.from({ length: 37 }).map((_, i) => (
                 <motion.div
                   key={i}
-                  className="aspect-square rounded-lg bg-zinc-900/50 border border-zinc-800 flex items-center justify-center hover:border-indigo-500/50 transition-all duration-300"
+                  className="aspect-square rounded-lg bg-stone-100/50 border border-stone-200 flex items-center justify-center hover:border-orange-500/50 transition-all duration-300"
                   variants={agentItemVariants}
                   whileHover={{ scale: 1.1, borderColor: "rgba(99, 102, 241, 0.5)" }}
                   transition={{ duration: 0.2 }}
                 >
-                  <Bot className="h-6 w-6 text-zinc-600 hover:text-indigo-500" />
+                  <Bot className="h-6 w-6 text-stone-600 hover:text-orange-500" />
                 </motion.div>
               ))}
             </motion.div>
             <motion.p
-              className="text-zinc-500 text-sm mt-6"
+              className="text-stone-500 text-sm mt-6"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 1.4 }}

@@ -128,20 +128,20 @@ export function ProductTour({ onComplete, onSkip }: ProductTourProps) {
           }}
         >
           {/* Tooltip card */}
-          <div className="bg-zinc-900 border border-zinc-700 rounded-xl shadow-2xl overflow-hidden">
+          <div className="bg-stone-100 border border-stone-300 rounded-xl shadow-2xl overflow-hidden">
             {/* Header with close button */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-stone-200">
               <div className="flex items-center gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-500/20 text-indigo-400 text-sm font-semibold">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-500/20 text-orange-400 text-sm font-semibold">
                   {currentStep + 1}
                 </div>
-                <span className="text-xs text-zinc-400 font-medium">
+                <span className="text-xs text-stone-400 font-medium">
                   Paso {currentStep + 1} de {TOUR_STEPS.length}
                 </span>
               </div>
               <button
                 onClick={handleSkip}
-                className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-zinc-400 hover:text-white hover:bg-white/5 transition-colors"
+                className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-stone-400 hover:text-stone-900 hover:bg-stone-100 transition-colors"
                 aria-label="Saltar tour"
               >
                 <X className="h-5 w-5" />
@@ -153,17 +153,17 @@ export function ProductTour({ onComplete, onSkip }: ProductTourProps) {
               <h3 className="text-lg font-semibold text-white mb-3">
                 {step.title}
               </h3>
-              <p className="text-sm text-zinc-300 leading-relaxed">
+              <p className="text-sm text-stone-300 leading-relaxed">
                 {step.content}
               </p>
             </div>
 
             {/* Footer with navigation */}
-            <div className="flex items-center justify-between px-6 py-4 border-t border-zinc-800 bg-zinc-950/50">
+            <div className="flex items-center justify-between px-6 py-4 border-t border-stone-200 bg-[#faf8f4]/50">
               {/* Skip button (always visible) */}
               <button
                 onClick={handleSkip}
-                className="min-h-[44px] px-4 text-sm font-medium text-zinc-400 hover:text-white transition-colors"
+                className="min-h-[44px] px-4 text-sm font-medium text-stone-400 hover:text-stone-900 transition-colors"
               >
                 Saltar tour
               </button>
@@ -174,7 +174,7 @@ export function ProductTour({ onComplete, onSkip }: ProductTourProps) {
                 <button
                   onClick={handlePrevious}
                   disabled={isFirstStep}
-                  className="min-h-[44px] min-w-[44px] flex items-center justify-center gap-2 px-4 rounded-lg border border-zinc-700 bg-zinc-800 text-white text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-700 transition-colors"
+                  className="min-h-[44px] min-w-[44px] flex items-center justify-center gap-2 px-4 rounded-lg border border-stone-300 bg-stone-200 text-white text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-stone-100 transition-colors"
                   aria-label="Paso anterior"
                 >
                   <ChevronLeft className="h-4 w-4" />
@@ -184,7 +184,7 @@ export function ProductTour({ onComplete, onSkip }: ProductTourProps) {
                 {/* Next/Finish button */}
                 <button
                   onClick={handleNext}
-                  className="min-h-[44px] min-w-[44px] flex items-center justify-center gap-2 px-6 rounded-lg bg-indigo-500 text-white text-sm font-medium hover:bg-indigo-600 transition-colors shadow-lg shadow-indigo-500/20"
+                  className="min-h-[44px] min-w-[44px] flex items-center justify-center gap-2 px-6 rounded-lg bg-orange-500 text-white text-sm font-medium hover:bg-orange-600 transition-colors shadow-lg shadow-orange-500/20"
                 >
                   <span>{isLastStep ? "Finalizar" : "Siguiente"}</span>
                   {!isLastStep && <ChevronRight className="h-4 w-4" />}
@@ -204,7 +204,7 @@ export function ProductTour({ onComplete, onSkip }: ProductTourProps) {
                   transform: "translateY(-50%)",
                   borderTop: "8px solid transparent",
                   borderBottom: "8px solid transparent",
-                  borderRight: "8px solid rgb(39, 39, 42)", // zinc-800
+                  borderRight: "8px solid rgb(39, 39, 42)", // stone-800
                 }),
                 ...(tooltipPosition.arrowDirection === "right" && {
                   right: "-8px",
