@@ -3,15 +3,15 @@ import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 const isPublicRoute = createRouteMatcher([
   '/sign-in(.*)',
   '/sign-up(.*)',
+  '/landing(.*)',
   '/api/clerk(.*)',
 ]);
 
-// TODO: Re-enable auth.protect() after dev preview
 export default clerkMiddleware(async (auth, request) => {
-  // Auth bypass for local development
-  // if (!isPublicRoute(request)) {
-  //   await auth.protect();
-  // }
+  // Protect all non-public routes — Clerk redirects unauthenticated users to sign-in
+  if (!isPublicRoute(request)) {
+    await auth.protect();
+  }
 });
 
 export const config = {

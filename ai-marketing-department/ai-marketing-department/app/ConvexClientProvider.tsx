@@ -8,8 +8,10 @@ import { ToastProvider } from "@/components/ui/Toast";
 
 const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
-// DEV BYPASS: skip Clerk auth in development
-const DEV_AUTH_BYPASS = process.env.NEXT_PUBLIC_DEV_AUTH_BYPASS === "true";
+// DEV BYPASS: skip Clerk auth in development only — never in production
+const DEV_AUTH_BYPASS =
+  process.env.NODE_ENV !== "production" &&
+  process.env.NEXT_PUBLIC_DEV_AUTH_BYPASS === "true";
 
 export default function ConvexClientProvider({
     children,
