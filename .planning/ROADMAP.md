@@ -21,11 +21,11 @@ Transform AMD from a tool into a platform. The CMO Autopilot makes AMD think and
 - Decimal phases (25.1, 25.2): Urgent insertions (marked with INSERTED)
 
 - [x] **Phase 25: CMO Autopilot — Strategy Engine** - Complete backend strategy engine: planning, delegation, multi-agent orchestration, autonomous content pipelines
-- [ ] **Phase 26: CMO Autopilot — Dashboard & Execution** - Strategy dashboard, launcher UI, execution monitoring, performance tracking, auto-adjustment
-- [ ] **Phase 27: Dark Mode & Theme System** - CSS variable-based theming, light/dark toggle, persistence, consistent across all components
-- [ ] **Phase 28: Public REST API** - API endpoints for content, agents, analytics; API key management; rate limiting; OpenAPI docs
-- [ ] **Phase 29: Webhooks & Event System** - Webhook registration, event notifications, delivery with retry, management UI
-- [ ] **Phase 30: Agent Customization UI** - User-configurable agent prompts, triggers, temperature, model selection from dashboard
+- [x] **Phase 26: CMO Autopilot — Dashboard & Execution** - Strategy dashboard, launcher UI, execution monitoring, performance tracking, auto-adjustment
+- [x] **Phase 27: Dark Mode & Theme System** - CSS variable-based theming, light/dark toggle, persistence, consistent across all components
+- [x] **Phase 28: Public REST API** - API endpoints for content, agents, analytics; API key management; rate limiting; OpenAPI docs
+- [x] **Phase 29: Webhooks & Event System** - Webhook registration, event notifications, delivery with retry, management UI
+- [x] **Phase 30: Agent Customization UI** - User-configurable agent prompts, triggers, temperature, model selection from dashboard
 
 ## Phase Details
 
@@ -183,11 +183,11 @@ Phase 27 (Dark Mode) can run in parallel with 25-26 if needed (no dependencies o
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 25. CMO Autopilot — Strategy Engine | 3/3 | Shipped | 2026-02-11 |
-| 26. CMO Autopilot — Dashboard & Execution | 0/3 | Pending | — |
-| 27. Dark Mode & Theme System | 0/2 | Pending | — |
-| 28. Public REST API | 0/3 | Pending | — |
-| 29. Webhooks & Event System | 0/2 | Pending | — |
-| 30. Agent Customization UI | 0/2 | Pending | — |
+| 26. CMO Autopilot — Dashboard & Execution | 3/3 | Shipped | 2026-02-11 |
+| 27. Dark Mode & Theme System | 2/2 | Shipped | 2026-02-11 |
+| 28. Public REST API | 3/3 | Shipped | 2026-02-11 |
+| 29. Webhooks & Event System | 2/2 | Shipped | 2026-02-11 |
+| 30. Agent Customization UI | 2/2 | Shipped | 2026-02-11 |
 
 ---
 

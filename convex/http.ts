@@ -374,6 +374,168 @@ http.route({
   }),
 });
 
+// ===========================================
+// API DOCUMENTATION
+// ===========================================
+
+http.route({
+  path: "/api/v1/docs",
+  method: "GET",
+  handler: httpAction(async () => {
+    const spec = {
+      openapi: "3.0.3",
+      info: {
+        title: "AMD — AI Marketing Department API",
+        version: "1.0.0",
+        description: "API pública para acceder a contenido, agentes, analítica y estrategias del departamento de marketing automatizado.",
+        contact: { name: "AMD Support", url: "https://amd.aiaiai.cl" },
+      },
+      servers: [{ url: "/api/v1", description: "API v1" }],
+      security: [{ bearerAuth: [] }],
+      components: {
+        securitySchemes: {
+          bearerAuth: {
+            type: "http",
+            scheme: "bearer",
+            description: "API token (amd_live_...). Crear en Settings > API Pública.",
+          },
+        },
+        schemas: {
+          Error: {
+            type: "object",
+            properties: {
+              error: { type: "string" },
+              meta: { type: "object", properties: { timestamp: { type: "number" } } },
+            },
+          },
+          Agent: {
+            type: "object",
+            properties: {
+              id: { type: "string" },
+              agentId: { type: "string" },
+              name: { type: "string" },
+              department: { type: "string" },
+              status: { type: "string", enum: ["active", "paused", "error", "maintenance"] },
+              description: { type: "string" },
+              model: { type: "string" },
+            },
+          },
+          Content: {
+            type: "object",
+            properties: {
+              id: { type: "string" },
+              type: { type: "string" },
+              title: { type: "string" },
+              status: { type: "string" },
+              createdAt: { type: "number" },
+              updatedAt: { type: "number" },
+            },
+          },
+          Strategy: {
+            type: "object",
+            properties: {
+              id: { type: "string" },
+              strategyId: { type: "string" },
+              status: { type: "string" },
+              goal: { type: "string" },
+              summary: { type: "string" },
+              totalTasks: { type: "number" },
+              completedTasks: { type: "number" },
+            },
+          },
+        },
+      },
+      paths: {
+        "/agents": {
+          get: {
+            summary: "Listar agentes",
+            description: "Retorna todos los agentes con filtros opcionales por departamento y estado.",
+            parameters: [
+              { name: "department", in: "query", schema: { type: "string" }, description: "Filtrar por departamento" },
+              { name: "status", in: "query", schema: { type: "string" }, description: "Filtrar por estado" },
+            ],
+            responses: {
+              "200": { description: "Lista de agentes", content: { "application/json": { schema: { type: "object", properties: { data: { type: "array", items: { $ref: "#/components/schemas/Agent" } } } } } } },
+              "401": { description: "No autenticado" },
+              "429": { description: "Rate limit excedido" },
+            },
+          },
+        },
+        "/content": {
+          get: {
+            summary: "Listar contenido",
+            description: "Retorna contenido con paginación.",
+            parameters: [
+              { name: "limit", in: "query", schema: { type: "number", default: 20 } },
+              { name: "status", in: "query", schema: { type: "string" } },
+            ],
+            responses: {
+              "200": { description: "Lista de contenido" },
+              "401": { description: "No autenticado" },
+            },
+          },
+          post: {
+            summary: "Crear contenido",
+            description: "Crea contenido nuevo. Requiere permiso write:content.",
+            requestBody: {
+              required: true,
+              content: { "application/json": { schema: { type: "object", required: ["type", "title", "body"], properties: { type: { type: "string" }, title: { type: "string" }, body: { type: "string" } } } } },
+            },
+            responses: {
+              "201": { description: "Contenido creado" },
+              "400": { description: "Datos inválidos" },
+              "401": { description: "No autenticado" },
+            },
+          },
+        },
+        "/analytics": {
+          get: {
+            summary: "Obtener analítica",
+            description: "Retorna resumen de métricas del dashboard.",
+            responses: {
+              "200": { description: "Métricas de analítica" },
+              "401": { description: "No autenticado" },
+            },
+          },
+        },
+        "/strategies": {
+          get: {
+            summary: "Listar estrategias",
+            description: "Retorna todas las estrategias de marketing.",
+            responses: {
+              "200": { description: "Lista de estrategias", content: { "application/json": { schema: { type: "object", properties: { data: { type: "array", items: { $ref: "#/components/schemas/Strategy" } } } } } } },
+              "401": { description: "No autenticado" },
+            },
+          },
+        },
+      },
+    };
+
+    return new Response(JSON.stringify(spec, null, 2), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+    });
+  }),
+});
+
+http.route({
+  path: "/api/v1/docs",
+  method: "OPTIONS",
+  handler: httpAction(async () => {
+    return new Response(null, {
+      status: 204,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Authorization, Content-Type",
+      },
+    });
+  }),
+});
+
 /**
  * LinkedIn OAuth: Start authorization flow
  * GET /linkedin/auth
