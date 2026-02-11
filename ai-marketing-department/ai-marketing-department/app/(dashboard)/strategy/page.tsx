@@ -221,7 +221,7 @@ export default function StrategyPage() {
                     onClick={async () => {
                       try {
                         await startExecution({ strategyDocId: selectedDoc._id });
-                        success("Ejecucion iniciada", "Los agentes comenzaron a trabajar");
+                        success("Ejecución iniciada", "Los agentes comenzaron a trabajar");
                       } catch (err: unknown) {
                         toastError("Error", err instanceof Error ? err.message : "Error");
                       }

@@ -68,12 +68,21 @@ export const callClaude = action({
 
     const data = await response.json();
 
+    // Safety check: validate Claude API response structure
+    if (!data.content || !Array.isArray(data.content) || data.content.length === 0) {
+      throw new Error("Claude API returned empty response — no content blocks");
+    }
+    const textBlock = data.content[0];
+    if (!textBlock || textBlock.type !== "text" || !textBlock.text) {
+      throw new Error("Claude API returned non-text response block");
+    }
+
     return {
-      content: data.content[0].text,
+      content: textBlock.text,
       usage: {
-        inputTokens: data.usage.input_tokens,
-        outputTokens: data.usage.output_tokens,
-        totalTokens: data.usage.input_tokens + data.usage.output_tokens,
+        inputTokens: data.usage?.input_tokens ?? 0,
+        outputTokens: data.usage?.output_tokens ?? 0,
+        totalTokens: (data.usage?.input_tokens ?? 0) + (data.usage?.output_tokens ?? 0),
       },
       model: data.model,
       stopReason: data.stop_reason,

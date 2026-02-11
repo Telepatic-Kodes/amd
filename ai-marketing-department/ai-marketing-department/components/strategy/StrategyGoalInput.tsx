@@ -11,7 +11,7 @@ const GOAL_SUGGESTIONS = [
   { icon: TrendingUp, text: "Aumentar engagement en LinkedIn un 30%", color: "text-blue-600 bg-blue-50" },
   { icon: Users, text: "Generar 50 leads cualificados este mes", color: "text-green-600 bg-green-50" },
   { icon: Target, text: "Posicionar marca como lider en mi industria", color: "text-purple-600 bg-purple-50" },
-  { icon: Megaphone, text: "Lanzar campana de contenido para nuevo producto", color: "text-orange-600 bg-orange-50" },
+  { icon: Megaphone, text: "Lanzar campaña de contenido para nuevo producto", color: "text-orange-600 bg-orange-50" },
 ];
 
 interface StrategyGoalInputProps {

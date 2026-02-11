@@ -43,7 +43,7 @@ Basado en el perfil de marca proporcionado, aquí está mi evaluación inicial c
 
 ## Recomendaciones
 - Iniciar con 2-3 piezas de contenido semanales alineadas con los temas estrategicos
-- Activar campanas de reconocimiento de marca en los canales seleccionados
+- Activar campañas de reconocimiento de marca en los canales seleccionados
 - Monitorear competidores para identificar brechas de contenido
 
 ## Próximos Pasos

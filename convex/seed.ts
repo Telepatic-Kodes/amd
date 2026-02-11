@@ -1612,3 +1612,308 @@ export const seedCampaigns = mutation({
     };
   },
 });
+
+// ===========================================
+// DEMO DATA — Tasks, Content, Executions
+// Populates the dashboard so it looks alive
+// ===========================================
+
+export const seedDemoData = mutation({
+  handler: async (ctx) => {
+    const now = Date.now();
+    const hour = 60 * 60 * 1000;
+    const day = 24 * hour;
+
+    // Lookup agent _ids by agentId string
+    const agentLookup = async (agentId: string) => {
+      const agent = await ctx.db
+        .query("agents")
+        .withIndex("by_agentId", (q) => q.eq("agentId", agentId))
+        .first();
+      if (!agent) throw new Error(`Agent ${agentId} not found — run seedAgents first`);
+      return agent._id;
+    };
+
+    // Resolve key agents
+    const cmo = await agentLookup("cmo-001");
+    const contentDir = await agentLookup("content-director");
+    const blogWriter = await agentLookup("content-002");
+    const wpAuthor = await agentLookup("content-003");
+    const publisher = await agentLookup("content-005");
+    const linkedinCreator = await agentLookup("social-001");
+    const twitterCreator = await agentLookup("social-002");
+    const seoStrategist = await agentLookup("seo-001");
+    const seoTech = await agentLookup("seo-003");
+    const brandDirector = await agentLookup("brand-director");
+    const adCreative = await agentLookup("brand-001");
+    const emailOps = await agentLookup("ops-001");
+    const newsletterWriter = await agentLookup("ops-002");
+    const demandDir = await agentLookup("demandgen-director");
+    const paidMedia = await agentLookup("demandgen-001");
+
+    // ── TASKS ─────────────────────────────────
+    const taskDefs = [
+      // Completed tasks (past week)
+      { taskId: "task-001", title: "Redactar artículo: IA en Marketing 2026", type: "write_blog", priority: "high" as const, status: "completed" as const, agentId: blogWriter, assignedBy: contentDir, created: now - 6 * day, started: now - 6 * day + 2 * hour, completed: now - 5 * day },
+      { taskId: "task-002", title: "Análisis SEO de competidores Q1", type: "seo_analysis", priority: "high" as const, status: "completed" as const, agentId: seoStrategist, created: now - 5 * day, started: now - 5 * day + hour, completed: now - 4 * day },
+      { taskId: "task-003", title: "Crear post LinkedIn: tendencias IA", type: "social_post", priority: "medium" as const, status: "completed" as const, agentId: linkedinCreator, created: now - 4 * day, started: now - 4 * day + hour, completed: now - 3 * day },
+      { taskId: "task-004", title: "Newsletter semanal #12", type: "newsletter", priority: "medium" as const, status: "completed" as const, agentId: newsletterWriter, created: now - 3 * day, started: now - 3 * day + 2 * hour, completed: now - 2 * day },
+      { taskId: "task-005", title: "Auditoría técnica SEO del sitio", type: "technical_seo", priority: "high" as const, status: "completed" as const, agentId: seoTech, created: now - 7 * day, started: now - 7 * day + hour, completed: now - 6 * day },
+      { taskId: "task-006", title: "Thread Twitter: caso de éxito cliente", type: "social_post", priority: "medium" as const, status: "completed" as const, agentId: twitterCreator, created: now - 2 * day, started: now - 2 * day + hour, completed: now - 1 * day },
+      { taskId: "task-007", title: "Diseñar creativos para campaña Q1", type: "ad_creative", priority: "high" as const, status: "completed" as const, agentId: adCreative, assignedBy: brandDirector, created: now - 4 * day, started: now - 4 * day + 3 * hour, completed: now - 3 * day },
+      { taskId: "task-008", title: "Optimizar email flows de nurturing", type: "email_optimization", priority: "medium" as const, status: "completed" as const, agentId: emailOps, created: now - 5 * day, started: now - 5 * day + 2 * hour, completed: now - 4 * day },
+      // Running tasks
+      { taskId: "task-009", title: "Whitepaper: Guía completa de AI Agents", type: "write_whitepaper", priority: "high" as const, status: "running" as const, agentId: wpAuthor, assignedBy: contentDir, created: now - 1 * day, started: now - 12 * hour },
+      { taskId: "task-010", title: "Análisis de rendimiento campañas paid", type: "campaign_analysis", priority: "high" as const, status: "running" as const, agentId: paidMedia, assignedBy: demandDir, created: now - 6 * hour, started: now - 4 * hour },
+      { taskId: "task-011", title: "Generar contenido LinkedIn semanal", type: "social_batch", priority: "medium" as const, status: "running" as const, agentId: linkedinCreator, created: now - 3 * hour, started: now - 2 * hour },
+      // Pending tasks
+      { taskId: "task-012", title: "Redactar caso de estudio: RetailTech", type: "write_case_study", priority: "medium" as const, status: "pending" as const, agentId: blogWriter, assignedBy: contentDir, created: now - 2 * hour },
+      { taskId: "task-013", title: "Publicar artículo IA en CMS", type: "publish_content", priority: "low" as const, status: "queued" as const, agentId: publisher, created: now - 1 * hour },
+      { taskId: "task-014", title: "Revisión estratégica mensual", type: "strategic_review", priority: "urgent" as const, status: "pending" as const, agentId: cmo, created: now - 30 * 60 * 1000 },
+      { taskId: "task-015", title: "Crear brief para landing page Q2", type: "landing_page_brief", priority: "medium" as const, status: "pending" as const, agentId: brandDirector, created: now - 4 * hour },
+    ];
+
+    const taskIds: Record<string, string> = {};
+    for (const t of taskDefs) {
+      const id = await ctx.db.insert("tasks", {
+        taskId: t.taskId,
+        title: t.title,
+        type: t.type,
+        priority: t.priority,
+        status: t.status,
+        agentId: t.agentId,
+        assignedBy: t.assignedBy,
+        input: { instruction: t.title },
+        retryCount: 0,
+        maxRetries: 3,
+        startedAt: t.started,
+        completedAt: t.completed,
+        createdAt: t.created,
+        updatedAt: t.completed || t.started || t.created,
+      });
+      taskIds[t.taskId] = id;
+    }
+
+    // ── EXECUTIONS (for completed tasks) ─────
+    const execDefs = [
+      { taskId: "task-001", agentId: blogWriter, tokens: { input: 2400, output: 3200, total: 5600 }, duration: 18000, cost: 0.028 },
+      { taskId: "task-002", agentId: seoStrategist, tokens: { input: 1800, output: 2100, total: 3900 }, duration: 12000, cost: 0.019 },
+      { taskId: "task-003", agentId: linkedinCreator, tokens: { input: 800, output: 1200, total: 2000 }, duration: 6500, cost: 0.010 },
+      { taskId: "task-004", agentId: newsletterWriter, tokens: { input: 1500, output: 2800, total: 4300 }, duration: 14000, cost: 0.022 },
+      { taskId: "task-005", agentId: seoTech, tokens: { input: 2200, output: 1800, total: 4000 }, duration: 11000, cost: 0.020 },
+      { taskId: "task-006", agentId: twitterCreator, tokens: { input: 600, output: 900, total: 1500 }, duration: 4800, cost: 0.008 },
+      { taskId: "task-007", agentId: adCreative, tokens: { input: 1200, output: 1600, total: 2800 }, duration: 9000, cost: 0.014 },
+      { taskId: "task-008", agentId: emailOps, tokens: { input: 1000, output: 1400, total: 2400 }, duration: 7500, cost: 0.012 },
+    ];
+
+    for (const e of execDefs) {
+      const task = taskDefs.find((t) => t.taskId === e.taskId)!;
+      await ctx.db.insert("executions", {
+        taskId: taskIds[e.taskId] as never,
+        agentId: e.agentId,
+        attempt: 1,
+        status: "success",
+        llmCalls: Math.ceil(e.tokens.total / 2000),
+        tokensUsed: e.tokens,
+        duration: e.duration,
+        cost: e.cost,
+        timestamp: task.completed!,
+      });
+    }
+
+    // Add a few more historical executions for richer analytics
+    const historicalExecs = [
+      { agentId: blogWriter, daysAgo: 10, tokens: { input: 2000, output: 2800, total: 4800 }, duration: 15000, cost: 0.024 },
+      { agentId: blogWriter, daysAgo: 15, tokens: { input: 1800, output: 2600, total: 4400 }, duration: 14000, cost: 0.022 },
+      { agentId: seoStrategist, daysAgo: 12, tokens: { input: 1600, output: 2000, total: 3600 }, duration: 11000, cost: 0.018 },
+      { agentId: linkedinCreator, daysAgo: 8, tokens: { input: 700, output: 1100, total: 1800 }, duration: 5800, cost: 0.009 },
+      { agentId: linkedinCreator, daysAgo: 14, tokens: { input: 900, output: 1300, total: 2200 }, duration: 7000, cost: 0.011 },
+      { agentId: twitterCreator, daysAgo: 9, tokens: { input: 500, output: 800, total: 1300 }, duration: 4200, cost: 0.007 },
+      { agentId: newsletterWriter, daysAgo: 10, tokens: { input: 1400, output: 2600, total: 4000 }, duration: 13000, cost: 0.020 },
+      { agentId: emailOps, daysAgo: 11, tokens: { input: 900, output: 1200, total: 2100 }, duration: 6800, cost: 0.011 },
+      { agentId: adCreative, daysAgo: 13, tokens: { input: 1100, output: 1500, total: 2600 }, duration: 8500, cost: 0.013 },
+      { agentId: paidMedia, daysAgo: 7, tokens: { input: 1300, output: 1800, total: 3100 }, duration: 10000, cost: 0.016 },
+      { agentId: cmo, daysAgo: 14, tokens: { input: 3000, output: 4000, total: 7000 }, duration: 22000, cost: 0.035 },
+      { agentId: seoTech, daysAgo: 14, tokens: { input: 2000, output: 1600, total: 3600 }, duration: 10500, cost: 0.018 },
+    ];
+
+    // Create placeholder tasks for historical executions
+    for (const h of historicalExecs) {
+      const histTaskId = await ctx.db.insert("tasks", {
+        taskId: `hist-${Math.random().toString(36).slice(2, 8)}`,
+        title: "Tarea histórica",
+        type: "historical",
+        priority: "medium",
+        status: "completed",
+        agentId: h.agentId,
+        input: {},
+        retryCount: 0,
+        maxRetries: 3,
+        startedAt: now - h.daysAgo * day,
+        completedAt: now - h.daysAgo * day + h.duration,
+        createdAt: now - h.daysAgo * day,
+        updatedAt: now - h.daysAgo * day + h.duration,
+      });
+      await ctx.db.insert("executions", {
+        taskId: histTaskId,
+        agentId: h.agentId,
+        attempt: 1,
+        status: "success",
+        llmCalls: Math.ceil(h.tokens.total / 2000),
+        tokensUsed: h.tokens,
+        duration: h.duration,
+        cost: h.cost,
+        timestamp: now - h.daysAgo * day + h.duration,
+      });
+    }
+
+    // ── CONTENT ───────────────────────────────
+    const contentDefs = [
+      {
+        contentId: "cnt-001",
+        type: "blog" as const,
+        title: "Cómo la IA está transformando el marketing digital en 2026",
+        body: "La inteligencia artificial ha dejado de ser una promesa para convertirse en la columna vertebral del marketing moderno. En este artículo exploramos las 5 tendencias clave que están redefiniendo la industria...\n\n## 1. Agentes autónomos de marketing\nLos equipos de marketing ya no dependen de herramientas aisladas. Los agentes de IA pueden ejecutar campañas completas, desde la investigación de keywords hasta la publicación y medición de resultados.\n\n## 2. Personalización hipersegmentada\nCon modelos de lenguaje avanzados, cada pieza de contenido puede adaptarse al contexto, historial y preferencias del usuario en tiempo real.\n\n## 3. Contenido generativo a escala\nLa producción de contenido ya no es un cuello de botella. Los equipos pueden generar artículos, posts sociales y newsletters en minutos manteniendo la voz de marca.\n\n## 4. Analytics predictivo\nLos modelos de IA pueden predecir qué contenido tendrá mejor rendimiento antes de publicarlo, optimizando recursos y maximizando ROI.\n\n## 5. Orquestación multi-agente\nEl futuro del marketing es un equipo de agentes especializados que colaboran entre sí, cada uno con un rol definido y la capacidad de transferir tareas automáticamente.",
+        summary: "Las 5 tendencias clave de IA en marketing para 2026",
+        status: "published" as const,
+        createdBy: blogWriter,
+        metadata: { wordCount: 180, readingTime: 4, targetKeywords: ["IA marketing", "marketing digital 2026", "agentes IA"], tone: "professional" },
+        seo: { metaTitle: "IA en Marketing Digital 2026: 5 Tendencias Clave", metaDescription: "Descubre cómo la inteligencia artificial está transformando el marketing digital. 5 tendencias que todo marketer debe conocer en 2026.", slug: "ia-marketing-digital-2026" },
+        publishedAt: now - 5 * day,
+        created: now - 6 * day,
+      },
+      {
+        contentId: "cnt-002",
+        type: "social_linkedin" as const,
+        title: "Post LinkedIn: El futuro del marketing es autónomo",
+        body: "🚀 El futuro del marketing no es más herramientas. Es mejor orquestación.\n\nDespués de implementar un equipo de 37 agentes de IA para manejar nuestro marketing, aprendimos 3 cosas:\n\n1️⃣ Los agentes especializados superan a los generalistas\nUn agente que solo escribe para LinkedIn > un agente que hace \"todo\"\n\n2️⃣ La transferencia de contexto es clave\nCuando el SEO Strategist pasa un brief al Blog Writer, el contexto viaja completo\n\n3️⃣ Los humanos definen estrategia, la IA ejecuta\nEl CMO Agent coordina, pero las decisiones de alto nivel siguen siendo humanas\n\n¿Estás usando IA como herramienta o como equipo?\n\n#AIMarketing #MarketingAutomation #FutureOfWork",
+        status: "published" as const,
+        createdBy: linkedinCreator,
+        metadata: { wordCount: 95, targetKeywords: ["AI marketing", "marketing automation"], hashtags: ["AIMarketing", "MarketingAutomation", "FutureOfWork"], tone: "professional" },
+        publishedAt: now - 3 * day,
+        created: now - 4 * day,
+      },
+      {
+        contentId: "cnt-003",
+        type: "newsletter" as const,
+        title: "Newsletter #12: Resumen semanal de marketing IA",
+        body: "# Newsletter Semanal #12\n\n## Lo más destacado esta semana\n\n### Nuevo artículo publicado\nNuestro análisis sobre tendencias de IA en marketing 2026 ya está live y acumulando tráfico orgánico.\n\n### Campaña LinkedIn en marcha\nLa campaña de thought leadership alcanzó 89K impresiones en solo 2 semanas.\n\n### Auditoría SEO completada\nIdentificamos 12 oportunidades de mejora en Core Web Vitals.\n\n## Próxima semana\n- Whitepaper sobre AI Agents (en progreso)\n- Caso de estudio RetailTech\n- Optimización de landing pages Q2\n\n## Métricas clave\n- 📈 Tráfico orgánico: +18% vs semana anterior\n- 💬 Engagement LinkedIn: 4.2% (vs 2.1% benchmark)\n- 📧 Open rate newsletter: 34.5%\n- 💰 CAC: $42 (target: $50)",
+        summary: "Resumen semanal: tendencias IA, campaña LinkedIn, auditoría SEO",
+        status: "published" as const,
+        createdBy: newsletterWriter,
+        metadata: { wordCount: 140, readingTime: 3, tone: "friendly" },
+        publishedAt: now - 2 * day,
+        created: now - 3 * day,
+      },
+      {
+        contentId: "cnt-004",
+        type: "social_twitter" as const,
+        title: "Thread: Caso de éxito — cómo duplicamos el tráfico orgánico",
+        body: "🧵 Cómo duplicamos el tráfico orgánico en 90 días usando agentes de IA (thread)\n\n1/ El problema: nuestro blog generaba 5K visitas/mes pero no convertía. El contenido era genérico y no apuntaba a keywords con intención de compra.\n\n2/ La solución: desplegamos 3 agentes especializados trabajando en cadena:\n→ SEO Strategist identifica oportunidades\n→ Blog Writer produce contenido optimizado\n→ Content Publisher formatea y publica\n\n3/ Resultados a 90 días:\n📈 Tráfico orgánico: 5K → 11.2K/mes\n🎯 Keywords en top 10: 12 → 47\n💰 Leads orgánicos: 23 → 68/mes\n\n4/ La clave no fue más contenido, sino mejor contenido con SEO integrado desde el día 0.\n\n5/ ¿Quieres replicar esto? DM abiertos 🤝",
+        status: "published" as const,
+        createdBy: twitterCreator,
+        metadata: { wordCount: 120, hashtags: ["SEO", "ContentMarketing", "AIAgents"], tone: "casual" },
+        publishedAt: now - 1 * day,
+        created: now - 2 * day,
+      },
+      {
+        contentId: "cnt-005",
+        type: "blog" as const,
+        title: "Guía completa: Cómo implementar AI Agents en tu equipo de marketing",
+        body: "## Introducción\n\nLa implementación de agentes de IA en equipos de marketing ya no es ciencia ficción. Esta guía paso a paso te mostrará cómo construir tu propio departamento de marketing automatizado...\n\n## Paso 1: Definir la estructura departamental\nAntes de crear agentes, necesitas mapear tu estructura organizacional actual...\n\n## Paso 2: Configurar el agente CMO\nEl CMO Agent es el cerebro del sistema. Se encarga de coordinar la estrategia global...\n\n(Contenido en progreso — el whitepaper completo tendrá ~5,000 palabras)",
+        summary: "Guía paso a paso para implementar agentes de IA en marketing",
+        status: "draft" as const,
+        createdBy: wpAuthor,
+        metadata: { wordCount: 85, readingTime: 15, targetKeywords: ["AI agents marketing", "marketing automation guide"], tone: "technical" },
+        created: now - 1 * day,
+      },
+      {
+        contentId: "cnt-006",
+        type: "ad_copy" as const,
+        title: "Copy para Google Ads — Campaña Q1 Lead Gen",
+        body: "Headline 1: Automatiza tu Marketing con IA\nHeadline 2: 37 Agentes de IA Trabajando 24/7\nHeadline 3: Duplica tu ROI de Marketing\n\nDescription 1: Deja que los agentes de IA manejen tu contenido, SEO, y paid media. Resultados en 30 días. Prueba gratis.\nDescription 2: El primer departamento de marketing completamente autónomo. De estrategia a ejecución, todo automatizado.\n\nCTA: Comenzar Gratis\nDisplay URL: tuempresa.com/marketing-ia",
+        status: "approved" as const,
+        createdBy: adCreative,
+        metadata: { wordCount: 60, tone: "persuasive", targetAudience: "CMOs y Directores de Marketing" },
+        created: now - 3 * day,
+      },
+      {
+        contentId: "cnt-007",
+        type: "email" as const,
+        title: "Email nurturing: Bienvenida a nuevos suscriptores",
+        body: "Asunto: Tu equipo de marketing acaba de crecer (sin contratar a nadie)\n\nHola {{nombre}},\n\nGracias por unirte. Estás a punto de descubrir cómo la IA puede multiplicar la productividad de tu equipo de marketing.\n\nEn los próximos 5 emails te mostraremos:\n✅ Cómo funciona un departamento de marketing autónomo\n✅ Casos reales de empresas que triplicaron su output\n✅ Cómo empezar sin riesgo\n\n¿Listo para el futuro del marketing?\n\nP.D. Si tienes dudas, responde este email directamente.",
+        summary: "Email de bienvenida para secuencia de nurturing",
+        status: "review" as const,
+        createdBy: emailOps,
+        metadata: { wordCount: 80, tone: "friendly", targetAudience: "Nuevos suscriptores" },
+        created: now - 2 * day,
+      },
+      {
+        contentId: "cnt-008",
+        type: "social_linkedin" as const,
+        title: "Post LinkedIn: Métricas que importan en AI Marketing",
+        body: "📊 Deja de medir vanity metrics.\n\nEn AI Marketing, las métricas que importan son:\n\n• Costo por pieza de contenido generada\n• Tiempo desde brief hasta publicación\n• Tasa de aprobación a la primera\n• ROI por canal automatizado\n\n¿Cuál es tu métrica north star?",
+        status: "scheduled" as const,
+        createdBy: linkedinCreator,
+        metadata: { wordCount: 45, hashtags: ["Metrics", "AIMarketing"], tone: "professional" },
+        scheduledFor: now + 2 * day,
+        created: now - 1 * day,
+      },
+    ];
+
+    for (const c of contentDefs) {
+      await ctx.db.insert("content", {
+        contentId: c.contentId,
+        type: c.type,
+        title: c.title,
+        body: c.body,
+        summary: c.summary,
+        status: c.status,
+        createdBy: c.createdBy,
+        metadata: c.metadata,
+        seo: c.seo,
+        publishedAt: c.publishedAt,
+        scheduledFor: c.scheduledFor,
+        createdAt: c.created,
+        updatedAt: c.publishedAt || c.created,
+      });
+    }
+
+    // ── KEYWORDS ──────────────────────────────
+    const keywordDefs = [
+      { keyword: "IA marketing", volume: 12100, difficulty: 45, currentPosition: 8, previousPosition: 15, status: "targeting" as const },
+      { keyword: "marketing automation IA", volume: 6600, difficulty: 38, currentPosition: 5, previousPosition: 12, status: "targeting" as const },
+      { keyword: "agentes IA marketing", volume: 3200, difficulty: 28, currentPosition: 3, previousPosition: 7, status: "targeting" as const },
+      { keyword: "content marketing AI", volume: 8800, difficulty: 52, currentPosition: 14, previousPosition: 22, status: "targeting" as const },
+      { keyword: "automatizar marketing digital", volume: 4400, difficulty: 35, currentPosition: 6, previousPosition: 11, status: "targeting" as const },
+      { keyword: "AI marketing tools 2026", volume: 9900, difficulty: 48, currentPosition: 18, status: "tracking" as const },
+      { keyword: "marketing department AI", volume: 2400, difficulty: 22, currentPosition: 2, previousPosition: 4, status: "ranking" as const },
+    ];
+
+    for (const k of keywordDefs) {
+      await ctx.db.insert("keywords", {
+        ...k,
+        lastChecked: now - 6 * hour,
+        history: [
+          { position: k.previousPosition || k.currentPosition + 5, date: now - 30 * day },
+          { position: Math.ceil((k.previousPosition || k.currentPosition + 5) * 0.85), date: now - 20 * day },
+          { position: Math.ceil(k.currentPosition * 1.1), date: now - 10 * day },
+          { position: k.currentPosition, date: now },
+        ],
+        createdAt: now - 30 * day,
+        updatedAt: now,
+      });
+    }
+
+    return {
+      success: true,
+      message: "Demo data seeded successfully",
+      counts: {
+        tasks: taskDefs.length,
+        executions: execDefs.length + historicalExecs.length,
+        content: contentDefs.length,
+        keywords: keywordDefs.length,
+      },
+    };
+  },
+});

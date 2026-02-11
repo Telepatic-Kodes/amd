@@ -81,6 +81,9 @@ async function callClaudeForAudit(
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const data: any = await response.json();
+  if (!data.content?.[0]?.text) {
+    throw new Error("Claude API returned empty or invalid response");
+  }
   const raw: string = data.content[0].text;
   const tokensUsed: number = (data.usage?.input_tokens || 0) + (data.usage?.output_tokens || 0);
   const cost: number = ((data.usage?.input_tokens || 0) * 3 + (data.usage?.output_tokens || 0) * 15) / 1_000_000;

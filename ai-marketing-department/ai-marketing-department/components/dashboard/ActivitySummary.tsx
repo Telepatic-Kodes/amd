@@ -30,8 +30,8 @@ const statusConfig: Record<string, { icon: typeof CheckCircle; color: string }> 
 };
 
 function humanizeDescription(desc: string): string {
-  if (desc === "Ejecución exitosa") return "Ejecucion completada";
-  if (desc === "Ejecución fallida") return "Ejecucion fallida";
+  if (desc === "Ejecución exitosa") return "Ejecución completada";
+  if (desc === "Ejecución fallida") return "Ejecución fallida";
   if (desc.match(/^scheduled_/i)) return "Tarea programada";
   if (desc.match(/^manual_/i)) return "Tarea manual";
   if (desc.match(/^[a-z_]+-\d{3}\s*-\s*\d{4}-/i)) return "Tarea ejecutada";

@@ -78,8 +78,8 @@ export function CommandPalette() {
       { id: "nav-agents", label: "Agentes", description: "37 agentes IA", icon: Bot, section: "Paginas", action: () => navigate("/agents") },
       { id: "nav-results", label: "Resultados", description: "Metricas y analytics", icon: BarChart3, section: "Paginas", action: () => navigate("/results") },
       { id: "nav-brand", label: "Marca", description: "Perfil e identidad de marca", icon: Palette, section: "Paginas", action: () => navigate("/brand") },
-      { id: "nav-campaigns", label: "Campanas", description: "Campanas multicanal", icon: Megaphone, section: "Paginas", action: () => navigate("/campaigns") },
-      { id: "nav-settings", label: "Configuracion", description: "Configuracion avanzada", icon: Settings, section: "Paginas", action: () => navigate("/settings") },
+      { id: "nav-campaigns", label: "Campañas", description: "Campañas multicanal", icon: Megaphone, section: "Paginas", action: () => navigate("/campaigns") },
+      { id: "nav-settings", label: "Configuración", description: "Configuración avanzada", icon: Settings, section: "Paginas", action: () => navigate("/settings") },
     ];
 
     const actions: CommandItem[] = [

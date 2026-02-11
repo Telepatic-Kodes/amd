@@ -120,7 +120,7 @@ export function AgentSlideOver({ agent, recentActivity, recentExecutions, onClos
           {/* Description */}
           {agent.description && (
             <div>
-              <h3 className="text-xs font-medium text-[var(--text-tertiary)] uppercase tracking-wider mb-1.5">Descripcion</h3>
+              <h3 className="text-xs font-medium text-[var(--text-tertiary)] uppercase tracking-wider mb-1.5">Descripción</h3>
               <p className="text-sm text-[var(--text-secondary)] leading-relaxed">{agent.description}</p>
             </div>
           )}
@@ -128,7 +128,7 @@ export function AgentSlideOver({ agent, recentActivity, recentExecutions, onClos
           {/* Config summary */}
           {agent.config && (
             <div>
-              <h3 className="text-xs font-medium text-[var(--text-tertiary)] uppercase tracking-wider mb-1.5">Configuracion</h3>
+              <h3 className="text-xs font-medium text-[var(--text-tertiary)] uppercase tracking-wider mb-1.5">Configuración</h3>
               <div className="rounded-md border border-[var(--border)] bg-[var(--surface-raised)] p-3 space-y-1.5">
                 {Boolean(agent.config.model) && (
                   <div className="flex items-center justify-between text-xs">

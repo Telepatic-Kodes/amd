@@ -118,7 +118,7 @@ export function StrategyExecutionMonitor({ strategyId }: StrategyExecutionMonito
       >
         <div className="flex items-center gap-3">
           <Activity className="h-4 w-4 text-orange-500" />
-          <h3 className="text-sm font-medium text-stone-900">Monitor de Ejecucion</h3>
+          <h3 className="text-sm font-medium text-stone-900">Monitor de Ejecución</h3>
           {stats && (
             <div className="flex items-center gap-2">
               {stats.running > 0 && (

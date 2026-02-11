@@ -180,7 +180,7 @@ export default function OrgPage() {
                 {/* Description */}
                 {selectedAgent.description && (
                   <div>
-                    <p className="text-xs text-stone-500 mb-1">Descripcion</p>
+                    <p className="text-xs text-stone-500 mb-1">Descripción</p>
                     <p className="text-sm text-stone-600">{selectedAgent.description}</p>
                   </div>
                 )}
@@ -188,7 +188,7 @@ export default function OrgPage() {
                 {/* Config */}
                 {selectedAgent.config && (
                   <div className="space-y-2">
-                    <p className="text-xs text-stone-500">Configuracion</p>
+                    <p className="text-xs text-stone-500">Configuración</p>
                     <div className="grid grid-cols-2 gap-2">
                       <div className="flex items-center gap-2 p-2 rounded-lg bg-stone-100">
                         <Cpu className="w-4 h-4 text-stone-500" />

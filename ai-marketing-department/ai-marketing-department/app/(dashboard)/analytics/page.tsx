@@ -551,7 +551,7 @@ export default function AnalyticsPage() {
                 <Activity className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-xs text-stone-500">Costo Promedio/Ejecucion</p>
+                <p className="text-xs text-stone-500">Costo Promedio/Ejecución</p>
                 <p className="text-lg font-semibold text-stone-900">
                   {overview.totalExecutions > 0
                     ? formatCurrency(overview.totalCost / overview.totalExecutions)
@@ -569,7 +569,7 @@ export default function AnalyticsPage() {
                 <Zap className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-xs text-stone-500">Tokens Promedio/Ejecucion</p>
+                <p className="text-xs text-stone-500">Tokens Promedio/Ejecución</p>
                 <p className="text-lg font-semibold text-stone-900">
                   {overview.totalExecutions > 0
                     ? formatNumber(overview.totalTokens / overview.totalExecutions)

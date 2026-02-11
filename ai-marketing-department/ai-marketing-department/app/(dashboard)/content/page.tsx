@@ -332,10 +332,10 @@ export default function ContentPage() {
           </div>
           <div>
             <h1 className="text-3xl md:text-5xl font-bold text-stone-900">
-              Content
+              Contenido
             </h1>
             <p className="text-stone-500 mt-1 text-lg">
-              Create, edit and publish content.
+              Cargando contenido...
             </p>
           </div>
         </div>

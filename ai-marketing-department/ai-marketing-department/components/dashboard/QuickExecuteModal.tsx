@@ -98,7 +98,7 @@ export function QuickExecuteModal({ agentId, agentName, onClose }: QuickExecuteM
               disabled={state === "executing"}
               className="w-full rounded-md border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm text-[var(--text-primary)] focus:outline-none focus:ring-1 focus:ring-emerald-500/50"
             >
-              <option value="manual_execution">Ejecucion manual</option>
+              <option value="manual_execution">Ejecución manual</option>
               <option value="write_blog">Escribir blog</option>
               <option value="analyze_keywords">Analizar keywords</option>
               <option value="create_social">Crear post social</option>

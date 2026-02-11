@@ -380,7 +380,7 @@ export default function AgentsPage() {
 
                     {/* Description */}
                     <div>
-                      <p className="text-xs text-stone-500 mb-1 uppercase tracking-wider">Descripcion</p>
+                      <p className="text-xs text-stone-500 mb-1 uppercase tracking-wider">Descripción</p>
                       <p className="text-stone-600 text-sm">
                         {selectedAgentData.description}
                       </p>
@@ -436,7 +436,7 @@ export default function AgentsPage() {
 
                     {/* Config */}
                     <div>
-                      <p className="text-xs text-stone-500 mb-2 uppercase tracking-wider">Configuracion</p>
+                      <p className="text-xs text-stone-500 mb-2 uppercase tracking-wider">Configuración</p>
                       <div className="grid grid-cols-2 gap-2 text-sm">
                         <div className="rounded-lg bg-stone-50 p-3 border border-stone-200">
                           <p className="text-xs text-stone-500">Temperatura</p>

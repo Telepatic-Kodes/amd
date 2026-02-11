@@ -106,9 +106,12 @@ export const enrichFeedItem = internalAction({
     }
 
     const data = await response.json();
-    const tokensUsed = data.usage.input_tokens + data.usage.output_tokens;
+    const tokensUsed = (data.usage?.input_tokens ?? 0) + (data.usage?.output_tokens ?? 0);
 
-    // 4. Parse structured output (guaranteed valid by structured outputs)
+    // 4. Parse structured output
+    if (!data.content?.[0]?.text) {
+      throw new Error("Claude API returned empty or invalid response");
+    }
     const enrichment = JSON.parse(data.content[0].text);
 
     // 5. Store enrichment data

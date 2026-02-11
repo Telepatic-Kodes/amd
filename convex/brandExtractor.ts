@@ -93,6 +93,9 @@ async function callClaudeForExtraction(
   }
 
   const data = await response.json();
+  if (!data.content?.[0]?.text) {
+    throw new Error("Claude API returned empty or invalid response");
+  }
   const raw = data.content[0].text;
 
   try {

@@ -24,7 +24,7 @@ const GOALS = [
   { id: "content", label: "Marketing de Contenido", icon: PenTool, desc: "Crear y distribuir contenido valioso" },
   { id: "social", label: "Crecimiento Social", icon: Users, desc: "Crecer y enganchar a tu audiencia" },
   { id: "seo", label: "SEO / Posicionamiento", icon: Search, desc: "Mejorar trafico organico y rankings" },
-  { id: "paid", label: "Publicidad Pagada", icon: Megaphone, desc: "Optimizar campanas publicitarias" },
+  { id: "paid", label: "Publicidad Pagada", icon: Megaphone, desc: "Optimizar campañas publicitarias" },
 ];
 
 interface OnboardingGoalsModeProps {

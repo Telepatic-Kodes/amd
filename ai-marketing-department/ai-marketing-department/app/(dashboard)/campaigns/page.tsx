@@ -165,10 +165,10 @@ export default function CampaignsPage() {
       <div className="space-y-8">
         <div>
           <h1 className="text-3xl font-bold text-stone-900">
-            Campanas
+            Campañas
           </h1>
           <p className="text-stone-400 mt-2">
-            Gestiona y monitorea tus campanas de marketing.
+            Gestiona y monitorea tus campañas de marketing.
           </p>
         </div>
         {/* Skeleton Stats */}
@@ -203,10 +203,10 @@ export default function CampaignsPage() {
           </div>
           <div>
             <h1 className="text-2xl font-bold text-stone-900">
-              Campanas
+              Campañas
             </h1>
             <p className="text-stone-500 text-sm">
-              {campaigns.length} campanas • {stats?.active || 0} activas
+              {campaigns.length} campañas • {stats?.active || 0} activas
             </p>
           </div>
         </div>
@@ -231,7 +231,7 @@ export default function CampaignsPage() {
               <p className="text-2xl font-bold text-stone-900">
                 <SimpleCounter value={stats.active} />
               </p>
-              <p className="text-sm text-stone-500">Campanas Activas</p>
+              <p className="text-sm text-stone-500">Campañas Activas</p>
               <div className="mt-2 h-8">
                 <Sparkline
                   data={generateSparklineData()}
@@ -588,7 +588,7 @@ export default function CampaignsPage() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-lg font-semibold text-stone-900">
-                    Detalles de Campana
+                    Detalles de Campaña
                   </h3>
                   <button
                     onClick={() => setSelectedCampaign(null)}
@@ -609,7 +609,7 @@ export default function CampaignsPage() {
 
                   {/* Description */}
                   <div>
-                    <p className="text-xs text-stone-500 mb-1">Descripcion</p>
+                    <p className="text-xs text-stone-500 mb-1">Descripción</p>
                     <p className="text-stone-600 text-sm">
                       {selectedCampaignData.description}
                     </p>

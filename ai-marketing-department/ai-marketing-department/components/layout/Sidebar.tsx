@@ -31,7 +31,7 @@ const mainNavigation = [
     { name: translate("controlCenter"), href: "/control-center", icon: Activity, label: "Monitorea tus agentes en tiempo real", badgeKey: "control" as const },
     { name: translate("content"), href: "/content", icon: FileText, label: "Crea y gestiona contenido", badgeKey: "content" as const },
     { name: translate("analytics"), href: "/results", icon: BarChart3, label: "Ve tus resultados", badgeKey: null },
-    { name: translate("settings"), href: "/settings", icon: Settings, label: "Configuracion avanzada", badgeKey: null },
+    { name: translate("settings"), href: "/settings", icon: Settings, label: "Configuración avanzada", badgeKey: null },
 ];
 
 function ThemeToggle() {

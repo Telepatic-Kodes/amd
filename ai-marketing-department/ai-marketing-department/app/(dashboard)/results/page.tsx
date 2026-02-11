@@ -252,7 +252,7 @@ export default function ResultsPage() {
             <h3 className="text-xl md:text-2xl font-semibold text-stone-900 mb-4 md:mb-6">Resumen</h3>
             <div className="space-y-4">
               <div className="flex items-center justify-between pb-3 border-b border-stone-200">
-                <span className="text-stone-500">Campanas activas</span>
+                <span className="text-stone-500">Campañas activas</span>
                 <span className="text-2xl font-bold text-green-600">
                   {campaigns?.filter((c: { status: string }) => c.status === "active").length || 0}
                 </span>
