@@ -46,24 +46,34 @@ export const viewport: Viewport = {
   themeColor: "#faf8f4",
 };
 
+const devAuthBypass =
+  process.env.NODE_ENV !== "production" &&
+  process.env.NEXT_PUBLIC_DEV_AUTH_BYPASS === "true";
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const content = (
+    <html lang="es">
+      <body
+        className={`${playfair.variable} ${dmSans.variable} ${jetbrains.variable} antialiased font-[family-name:var(--font-dm-sans)]`}
+      >
+        <ConvexClientProvider>
+          {children}
+        </ConvexClientProvider>
+        <Analytics />
+        <SpeedInsights />
+      </body>
+    </html>
+  );
+
+  if (devAuthBypass) return content;
+
   return (
     <ClerkProvider appearance={{ cssLayerName: 'clerk' }}>
-      <html lang="es">
-        <body
-          className={`${playfair.variable} ${dmSans.variable} ${jetbrains.variable} antialiased font-[family-name:var(--font-dm-sans)]`}
-        >
-          <ConvexClientProvider>
-            {children}
-          </ConvexClientProvider>
-          <Analytics />
-          <SpeedInsights />
-        </body>
-      </html>
+      {content}
     </ClerkProvider>
   );
 }
