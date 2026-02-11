@@ -1,5 +1,37 @@
 # Project Milestones: AI Marketing Department (AMD)
 
+## v4.0 Production Readiness (Shipped: 2026-02-11)
+
+**Delivered:** Production-hardened AMD with Vercel deployment, CI/CD pipeline, error resilience, performance optimization, security hardening, monitoring, and onboarding polish.
+
+**Phases completed:** 19-24 (15 plans total)
+
+**Key accomplishments:**
+
+- Vercel production deployment with SSL, custom domain, preview environments
+- GitHub Actions CI/CD pipeline (lint, typecheck, test, deploy with rollback)
+- Global error boundaries with Spanish error messages and recovery options
+- Skeleton screens and loading states on all pages
+- Lighthouse audit >90, Core Web Vitals optimized (LCP <2.5s, CLS <0.1)
+- Bundle size <200KB gzipped with dynamic imports and code splitting
+- Rate limiting on AI agent endpoints
+- Sentry error tracking with source maps and user context
+- CSP headers, HSTS enforcement, secret audit
+- Audit logging for auth events, content actions, agent executions
+- 4-step onboarding flow (Welcome → Brand → First content → Success)
+- Keyboard shortcuts (Cmd+K command palette, N for new, ? for help)
+- WCAG 2.1 AA accessibility compliance
+- Mobile viewport testing (iPhone SE, iPhone 14, iPad)
+
+**Stats:**
+
+- 6 phases, 15 plans, 83 requirements met (100% coverage)
+- Average plan duration: ~4 min
+
+**What's next:** v5.0 Autonomy & Platform — CMO Autopilot, Dark Mode, Public API, Webhooks
+
+---
+
 ## v3.0 Intelligence & Scale (Shipped: 2026-02-07)
 
 **Delivered:** Multi-user, multi-platform marketing intelligence system with Clerk authentication, LinkedIn/Twitter/Instagram publishing, analytics dashboards, team collaboration with RBAC, version history, and automated reports via email.

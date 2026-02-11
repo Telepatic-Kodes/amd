@@ -1,24 +1,24 @@
 # Project State: AMD
 
 **Started:** 2026-01-30
-**Current Milestone:** v4.0 Production Readiness
-**Status:** v4.0 SHIPPED — all phases complete
+**Current Milestone:** v5.0 Autonomy & Platform
+**Status:** Planning complete — ready to execute Phase 25
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-02-09)
+See: .planning/PROJECT.md (updated 2026-02-11)
 
 **Core Value:** Non-technical users can manage a complete marketing department in minutes, not hours.
-**Current Focus:** v4.0 shipped — ready for production
+**Current Focus:** v5.0 — CMO Autopilot, Dark Mode, Public API, Webhooks, Agent Customization
 
 ## Current Position
 
-Phase: 24 of 24 — ALL PHASES COMPLETE
-Plan: All plans executed
-Status: v4.0 milestone shipped
-Last activity: 2026-02-11 -- Phase 22 shipped (Performance Optimization)
+Phase: 25 of 30 — Starting
+Plan: None yet (Phase 25 needs planning via /gsd:plan-phase)
+Status: v5.0 milestone initialized
+Last activity: 2026-02-11 — v5.0 roadmap and requirements defined
 
-Progress: [████████████████████] 100% (Phases 19-24 of 24 done)
+Progress: [░░░░░░░░░░░░░░░░░░░░] 0% (Phases 25-30, 0 of 6 done)
 
 ## Performance Metrics
 
@@ -37,6 +37,11 @@ Progress: [████████████████████] 100% (P
 - Total phases: 6
 - Average duration: ~5.2 min/plan
 
+**v4.0 Velocity (Archive):**
+- Total plans completed: 15
+- Total phases: 6
+- Average duration: ~4 min/plan
+
 ## Accumulated Context
 
 ### Decisions
@@ -49,23 +54,22 @@ None.
 
 ### Blockers/Concerns
 
-**External Dependencies (critical path):**
-- Instagram App Review: 1-2 weeks approval (submit in Phase 19)
-- Clerk DNS propagation: 24-48 hours (start in Phase 19)
-- Custom domain DNS: 1-48 hours (start in Phase 19)
-- LinkedIn/Twitter OAuth production: 1-3 days (submit in Phase 19)
-
-**Carry forward from v3.0:**
+**Carry forward from v4.0:**
 - Pre-existing TypeScript error in convex/topicSuggestions.ts:189
 - Twitter Analytics requires Basic tier ($200/mo) -- deferred
 - Instagram App Review 60-90 day timeline (pending from v3.0)
 
+**v5.0 specific:**
+- CMO Engine has ~24K lines of uncommitted code (cmoEngine.ts) — needs audit before Phase 25
+- StrategyDashboard.tsx and StrategyLauncher.tsx are uncommitted — evaluate and integrate in Phase 26
+- Dark mode requires auditing all 10+ pages — track coverage systematically
+
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: v4.0 shipped — all 24 phases complete
+Stopped at: v5.0 roadmap and requirements defined
 Resume file: None
-Next action: Plan v5.0 milestone or maintain
+Next action: Execute Phase 25 (CMO Autopilot — Strategy Engine) via /gsd:plan-phase or /gsd:execute-phase
 
 ---
 
@@ -74,6 +78,7 @@ Next action: Plan v5.0 milestone or maintain
 - v1.0 UX Simplification -- shipped 2026-01-30 (8 phases, 19 plans)
 - v2.0 UX/UI Excellence -- shipped 2026-02-05 (4 phases, 6 plans)
 - v3.0 Intelligence & Scale -- shipped 2026-02-07 (6 phases, 20 plans)
+- v4.0 Production Readiness -- shipped 2026-02-11 (6 phases, 15 plans)
 
 See .planning/MILESTONES.md for full details.
 

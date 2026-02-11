@@ -2,7 +2,7 @@
 
 ## What This Is
 
-AMD is a system of 37 AI agents organized in 6 departments that automate marketing workflows. The dashboard lets non-technical users manage a complete marketing department — from brand configuration and agent management, to multi-platform content publishing (LinkedIn, Twitter/X, Instagram), team collaboration with role-based permissions, analytics with real engagement data, and automated performance reports. Three milestones shipped: v1.0 simplified the interface, v2.0 made the system fully operational, and v3.0 added multi-user auth, multi-platform intelligence, and team collaboration.
+AMD is a system of 37 AI agents organized in 6 departments that automate marketing workflows. The dashboard lets non-technical users manage a complete marketing department — from brand configuration and agent management, to multi-platform content publishing (LinkedIn, Twitter/X, Instagram), team collaboration with role-based permissions, analytics with real engagement data, and automated performance reports. Four milestones shipped: v1.0 simplified the interface, v2.0 made the system fully operational, v3.0 added multi-user auth, multi-platform intelligence, and team collaboration, and v4.0 hardened everything for production.
 
 ## Core Value
 
@@ -37,35 +37,37 @@ When tradeoffs arise, prioritize reducing friction and cognitive load over advan
 
 ### Active
 
-- [ ] Vercel production deployment with environment configs and domain setup
-- [ ] Full CI/CD pipeline (GitHub Actions: lint, typecheck, tests, staging preview, production deploy with rollback)
-- [ ] Error resilience (error boundaries, retry logic, graceful degradation, Sentry monitoring)
-- [ ] Performance optimization (page load, image optimization, caching, API response times)
-- [ ] Full UX audit (every page, every state, mobile breakpoints, empty states, loading skeletons, accessibility, translations)
+- [ ] CMO Autopilot: autonomous strategy engine with multi-agent orchestration
+- [ ] Dark mode / theme system with CSS variables and Tailwind dark mode
+- [ ] Public REST API with key management, rate limiting, and OpenAPI docs
+- [ ] Webhooks & event system for external integrations
+- [ ] Agent customization UI for power users
 
 ### Out of Scope
 
-- TikTok / YouTube publishing — Focus on LinkedIn, Twitter/X, Instagram for v3.0; consider for v4.0
-- Collaborative real-time editing — Requires CRDT; high complexity, defer to v4.0+
-- Multilingual (i18n framework) — Spanish-only continues; i18n deferred
-- Dark mode / theming — Deferred, not core to UX clarity problem
+- TikTok / YouTube publishing — Evaluate after v5.0 API enables integrations
+- Collaborative real-time editing — Requires CRDT; high complexity, defer to v6.0+
+- Multilingual (i18n framework) — Market expansion after revenue validation
 - Custom workflow builder — Sensible defaults preferred over configuration
 - Video post publishing — Platform video APIs add significant complexity
-- Agent customization UI — Stays in backend configuration
+- Stripe billing — Consider as v5.1 insertion once API usage data exists
+- A/B content testing — Needs sufficient content volume from CMO Autopilot first
 
 ## Context
 
-**What Exists (v3.0 Shipped):**
+**What Exists (v4.0 Shipped):**
 - Backend: 37 pre-configured AI agents in Convex (fully functional)
 - Frontend: Next.js 16 + React 19 + Tailwind 4 (complete dashboard)
 - Database: Convex real-time backend with Clerk authentication
 - Auth: Clerk multi-user with 6-role RBAC
 - Publishing: LinkedIn, Twitter/X, Instagram with cross-platform batch publish
 - Analytics: Internal metrics + LinkedIn engagement + automated reports
+- Production: Vercel deployment, CI/CD pipeline, Sentry monitoring, security hardening
+- Performance: Lighthouse >90, Core Web Vitals optimized, <200KB gzipped bundle
 - Codebase: ~223,000 LOC TypeScript/React
 - User Base: Non-technical marketers using simplified interface
 
-**Key Insights Across 3 Milestones:**
+**Key Insights Across 4 Milestones:**
 - Spanish-first UI dramatically improved user comprehension and confidence
 - 1-click feed templates eliminated #1 friction point
 - Defense-in-depth auth (every Convex function checks independently) is the right pattern
@@ -109,23 +111,24 @@ When tradeoffs arise, prioritize reducing friction and cognitive load over advan
 | Dark theme email templates | Match dashboard UI for brand consistency | Good |
 | AI narrative optional | User setting (default: true) for cost control | Good |
 
-## Current Milestone: v4.0 Production Readiness
+## Current Milestone: v5.0 Autonomy & Platform
 
-**Goal:** Take AMD from "works in dev" to "ready for real paying clients" — deploy, harden, optimize, and polish every surface.
+**Goal:** Transform AMD from a tool into a platform — autonomous strategy execution, premium theming, and external integration APIs that justify paying subscriptions.
 
 **Target features:**
-- Vercel production deployment with domain, SSL, environment configs
-- Full CI/CD pipeline (GitHub Actions: lint + typecheck + test + staging preview + production deploy + rollback)
-- Error resilience (error boundaries, retry logic, Sentry free tier, graceful degradation)
-- Performance optimization (Lighthouse >90, image optimization, caching, lazy loading)
-- Full UX audit (every page, every state, every breakpoint — no rough edges for real users)
+- CMO Autopilot: autonomous strategy engine with multi-agent orchestration and content pipelines
+- Dark mode / theme system with CSS variables, light/dark toggle, system preference detection
+- Public REST API with key management, rate limiting, OpenAPI documentation
+- Webhooks & event system for external integrations (CRM, Slack, custom workflows)
+- Agent customization UI for power users (prompts, triggers, temperature, model)
 
 ## Previous Milestones
 
 - v1.0 UX Simplification (shipped 2026-01-30, 8 phases, 19 plans, 29 requirements)
 - v2.0 UX/UI Excellence (shipped 2026-02-05, 4 phases, 6 plans, 24 requirements)
 - v3.0 Intelligence & Scale (shipped 2026-02-07, 6 phases, 20 plans, 41 requirements)
+- v4.0 Production Readiness (shipped 2026-02-11, 6 phases, 15 plans, 83 requirements)
 
 ---
 
-*Last updated: 2026-02-09 after v4.0 milestone initialization*
+*Last updated: 2026-02-11 after v5.0 milestone initialization*

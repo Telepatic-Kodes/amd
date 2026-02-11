@@ -1,222 +1,223 @@
-# Roadmap: AMD v4.0 Production Readiness
+# Roadmap: AMD v5.0 Autonomy & Platform
 
 ## Overview
 
-Take AMD from "works in dev" to "ready for real paying clients" across 6 phases. Phase 19 deploys production infrastructure and kicks off external approval processes (DNS, OAuth apps) whose 1-2 week wait times overlap with Phases 20-21 execution. Phases 20-21 build defensive UX (error handling, loading states, empty states). Phase 22 optimizes performance. Phase 23 layers security hardening and monitoring. Phase 24 adds onboarding and accessibility polish as the final quality gate before launch.
+Transform AMD from a tool into a platform. The CMO Autopilot makes AMD think and act autonomously — planning strategy, delegating to agents, executing content pipelines without human intervention. Dark Mode signals premium SaaS quality. Public API + Webhooks unlock agency/enterprise adoption by enabling external integrations. Agent Customization gives power users control without breaking simplicity for beginners.
+
+**Target audience:** Paying customers. Every feature must justify subscription value.
 
 ## Milestones
 
 - v1.0 UX Simplification - Phases 1-8 (shipped 2026-01-30)
 - v2.0 UX/UI Excellence - Phases 9-12 (shipped 2026-02-05)
 - v3.0 Intelligence & Scale - Phases 13-18 (shipped 2026-02-07)
-- **v4.0 Production Readiness** - Phases 19-24 (in progress)
+- v4.0 Production Readiness - Phases 19-24 (shipped 2026-02-11)
+- **v5.0 Autonomy & Platform** - Phases 25-30 (in progress)
 
 ## Phases
 
 **Phase Numbering:**
-- Integer phases (19, 20, 21...): Planned milestone work
-- Decimal phases (20.1, 20.2): Urgent insertions (marked with INSERTED)
+- Integer phases (25, 26, 27...): Planned milestone work
+- Decimal phases (25.1, 25.2): Urgent insertions (marked with INSERTED)
 
-- [x] **Phase 19: Environment Setup & Infrastructure** - Deploy production stack, submit OAuth apps, build CI/CD pipeline and testing foundation
-- [x] **Phase 20: Error Handling & Validation** - Global error handling, form validation, toast system, session management
-- [x] **Phase 21: Loading States & UX Polish** - Skeleton screens, progress indicators, empty states, page transitions
-- [x] **Phase 22: Performance Optimization** - Lighthouse audit, code splitting, image optimization, Core Web Vitals, mobile verification
-- [x] **Phase 23: Security & Monitoring** - Rate limiting, CSP headers, Sentry, audit logging, data export
-- [x] **Phase 24: Onboarding & Polish** - Onboarding flow, accessibility audit, keyboard shortcuts, smart defaults
+- [ ] **Phase 25: CMO Autopilot — Strategy Engine** - Complete backend strategy engine: planning, delegation, multi-agent orchestration, autonomous content pipelines
+- [ ] **Phase 26: CMO Autopilot — Dashboard & Execution** - Strategy dashboard, launcher UI, execution monitoring, performance tracking, auto-adjustment
+- [ ] **Phase 27: Dark Mode & Theme System** - CSS variable-based theming, light/dark toggle, persistence, consistent across all components
+- [ ] **Phase 28: Public REST API** - API endpoints for content, agents, analytics; API key management; rate limiting; OpenAPI docs
+- [ ] **Phase 29: Webhooks & Event System** - Webhook registration, event notifications, delivery with retry, management UI
+- [ ] **Phase 30: Agent Customization UI** - User-configurable agent prompts, triggers, temperature, model selection from dashboard
 
 ## Phase Details
 
-### Phase 19: Environment Setup & Infrastructure
+### Phase 25: CMO Autopilot — Strategy Engine
 
-**Goal:** Production infrastructure is deployed and automated, with all external approval processes started so their wait times overlap with subsequent phases
+**Goal:** The CMO agent can autonomously create marketing strategies, decompose them into tasks, delegate to department agents, and orchestrate multi-step content pipelines without human intervention
 
-**Depends on:** Phase 18 (v3.0 complete)
+**Depends on:** Phase 24 (v4.0 shipped, production-ready platform)
 
-**Requirements:** DEPLOY-01, DEPLOY-02, DEPLOY-03, DEPLOY-04, DEPLOY-05, DEPLOY-06, DEPLOY-07, DEPLOY-08, OAUTH-01, OAUTH-02, OAUTH-03, OAUTH-04, OAUTH-05, CICD-01, CICD-02, CICD-03, CICD-04, CICD-05, CICD-06, CICD-07, TEST-01, TEST-02, TEST-03, TEST-04, TEST-05, TEST-06, TEST-07
+**Requirements:** CMO-01, CMO-02, CMO-03, CMO-04, CMO-05, CMO-06, CMO-07, CMO-08
 
 **Success Criteria** (what must be TRUE):
-1. App is accessible at production URL on Vercel with SSL, and preview deployments generate per PR
-2. Clerk production instance is live with `pk_live_` keys and custom domain DNS verified
-3. OAuth production apps for LinkedIn, Twitter, and Instagram are submitted (Instagram approval pending is acceptable)
-4. Pushing to main triggers automated lint + typecheck + test + deploy (Convex then Vercel) via GitHub Actions
-5. `npm test` runs Vitest suite with critical path tests for brand onboarding, content creation, OAuth flows, and auth enforcement
+1. CMO agent accepts a high-level goal ("Aumentar engagement en LinkedIn 20%") and produces a multi-week strategy with phases, tasks, and assigned agents
+2. Strategy decomposition creates concrete tasks for individual agents (content briefs, social posts, SEO audits) with dependencies and ordering
+3. Multi-agent orchestration chains execute sequentially: research → brief → draft → review → publish, with handoff between agents
+4. Autonomous content pipeline generates 5+ pieces of content from a single strategy without human input
+5. Strategy state persists in Convex with full audit trail (who created, when, what decisions, results)
 
-**Plans:** 4 plans
+**Plans:** 3 plans
 
 Plans:
-- [ ] 19-01-PLAN.md -- Vercel + Convex + Clerk production deployment, env var docs, startup validation
-- [ ] 19-02-PLAN.md -- OAuth production apps with environment-driven callback URLs
-- [ ] 19-03-PLAN.md -- GitHub Actions CI/CD, Husky pre-commit hooks, Dependabot
-- [ ] 19-04-PLAN.md -- Vitest + React Testing Library setup with critical path tests
+- [ ] 25-01-PLAN.md -- Strategy data model (Convex schema), strategy creation mutation, goal decomposition with Claude
+- [ ] 25-02-PLAN.md -- Multi-agent orchestration engine: task dependency graph, execution order, handoff chains
+- [ ] 25-03-PLAN.md -- Autonomous content pipeline: strategy → briefs → content → review → publish (end-to-end)
 
 ---
 
-### Phase 20: Error Handling & Validation
+### Phase 26: CMO Autopilot — Dashboard & Execution
 
-**Goal:** Every failure the user encounters produces a clear, actionable Spanish message with recovery options instead of raw errors or white screens
+**Goal:** Users can create, monitor, and adjust strategies through an intuitive dashboard that shows real-time execution progress and performance results
 
-**Depends on:** Phase 19 (production environment needed for realistic error scenarios)
+**Depends on:** Phase 25 (strategy engine functional in backend)
 
-**Requirements:** ERR-01, ERR-02, ERR-03, ERR-04, ERR-05, ERR-06, ERR-07, ERR-08, TOAST-01, TOAST-02, TOAST-03, TOAST-04, SESS-01, SESS-02, SESS-03
+**Requirements:** CMO-09, CMO-10, CMO-11, CMO-12, CMO-13, CMO-14, CMO-15
 
 **Success Criteria** (what must be TRUE):
-1. Any page crash shows a styled error boundary with a "Reintentar" button instead of a white screen
-2. Form submissions show inline Spanish validation errors (Zod client-side) and server rejects invalid data (Convex server-side)
-3. Network disconnection shows an offline banner with retry; AI agent failures explain the specific reason (rate limit, timeout)
-4. All mutations produce toast notifications: success auto-dismisses in 3-5s, errors persist until dismissed
-5. After 28 minutes of inactivity, a warning modal appears; drafts auto-save before session expiry; multi-tab logout syncs
+1. Strategy Dashboard shows active strategies with progress bars, agent assignments, and timeline visualization
+2. Strategy Launcher accepts natural language goals and converts them to strategies with 1-click confirmation
+3. Real-time execution view shows which agents are working, what stage each task is in, and estimated completion
+4. Performance tracking compares strategy goals vs. actual results (engagement, content produced, publishing rate)
+5. Users can pause, resume, or adjust a running strategy without losing progress
 
-**Plans:** TBD
+**Plans:** 3 plans
 
 Plans:
-- [ ] 20-01: Global error handler + React Error Boundaries on all pages + Spanish error message dictionary
-- [ ] 20-02: Zod validation schemas (client + server) + input sanitization (sanitize-html) + AI agent error messages
-- [ ] 20-03: Sonner toast system + session timeout (idle detection, warning modal, auto-save, multi-tab sync)
+- [ ] 26-01-PLAN.md -- Strategy Dashboard component: strategy list, progress visualization, agent assignment view
+- [ ] 26-02-PLAN.md -- Strategy Launcher: natural language input → strategy preview → confirm → execute
+- [ ] 26-03-PLAN.md -- Execution monitoring: real-time progress, pause/resume controls, performance vs. goals comparison
 
 ---
 
-### Phase 21: Loading States & UX Polish
+### Phase 27: Dark Mode & Theme System
 
-**Goal:** Users always see visual feedback during data loading and clear guidance when there is no data yet, eliminating blank screens and confusion
+**Goal:** Users can toggle between light and dark themes with a single click, and the theme persists across sessions with consistent styling on every component
 
-**Depends on:** Phase 20 (error handling ensures loading failures are caught gracefully)
+**Depends on:** Phase 24 (all components must be production-ready before theming)
 
-**Requirements:** LOAD-01, LOAD-02, LOAD-03, LOAD-04, EMPTY-01, EMPTY-02, EMPTY-03, EMPTY-04
+**Requirements:** THEME-01, THEME-02, THEME-03, THEME-04, THEME-05, THEME-06
 
 **Success Criteria** (what must be TRUE):
-1. Every page shows a skeleton screen matching its final layout during data fetch (no blank white screens)
-2. Agent execution shows a progress indicator with stage updates in Spanish ("Analizando brief...", "Generando contenido...")
-3. All form submit buttons show a spinner and disable during submission (no double-submit possible)
-4. Content library, Agents, Analytics, and Campaigns pages each show an illustrated empty state with a clear CTA when no data exists
+1. CSS variable-based theme system with light (default) and dark themes, no hardcoded colors in components
+2. Toggle in settings and header persists selection in localStorage + Convex user preferences
+3. All 10+ pages render correctly in dark mode with proper contrast ratios (WCAG AA)
+4. Charts (Recharts), modals, dropdowns, toasts, and third-party components respect the active theme
+5. System preference detection (`prefers-color-scheme`) as default, user override takes priority
 
-**Plans:** TBD
+**Plans:** 2 plans
 
 Plans:
-- [ ] 21-01: Skeleton screens for all pages + button loading states + page transition animations (Framer Motion)
-- [ ] 21-02: Agent execution progress indicator + empty states for all 4 key pages
+- [ ] 27-01-PLAN.md -- CSS variable extraction, Tailwind dark mode config, theme provider context, toggle component
+- [ ] 27-02-PLAN.md -- Component-by-component dark mode audit: pages, charts, modals, toasts, third-party elements
 
 ---
 
-### Phase 22: Performance Optimization
+### Phase 28: Public REST API
 
-**Goal:** Pages load fast enough that users never wait, meeting Core Web Vitals targets and working correctly across all mobile viewports
+**Goal:** External systems can programmatically access AMD's content, agents, and analytics through a documented, authenticated REST API
 
-**Depends on:** Phase 21 (skeleton screens and loading states must exist before measuring perceived performance)
+**Depends on:** Phase 24 (production security hardening), Phase 25 (strategy API useful for external orchestration)
 
-**Requirements:** PERF-01, PERF-02, PERF-03, PERF-04, PERF-05, PERF-06, MOB-01, MOB-02, MOB-03, MOB-04
+**Requirements:** API-01, API-02, API-03, API-04, API-05, API-06, API-07, API-08
 
 **Success Criteria** (what must be TRUE):
-1. Lighthouse audit shows LCP <2.5s, FCP <1.8s, CLS <0.1 on all main pages
-2. Bundle size is under 200KB gzipped (verified with @next/bundle-analyzer)
-3. Heavy components (agent modals, charts, rich text editor) load via dynamic imports, not in the initial bundle
-4. All images use next/image with lazy loading and blur placeholders
-5. App works correctly on iPhone SE (375px), iPhone 14 (393px), and iPad (768px) with no horizontal scroll, proper keyboard types, and 44x44px touch targets
+1. API endpoints exist for: content CRUD, agent listing/execution, analytics read, strategy creation
+2. API key authentication system with create/revoke/rotate from settings, scoped permissions (read/write/admin)
+3. Rate limiting per API key (100 req/min default, configurable per plan)
+4. OpenAPI 3.0 specification auto-generated from route definitions, browsable at `/api/docs`
+5. API responses follow consistent JSON format: `{ data, meta, error }` with pagination support
 
-**Plans:** TBD
+**Plans:** 3 plans
 
 Plans:
-- [ ] 22-01: Lighthouse baseline audit + code splitting (dynamic imports) + bundle analysis + image optimization
-- [ ] 22-02: Core Web Vitals fixes + Vercel Analytics/Speed Insights + mobile viewport testing (3 breakpoints)
+- [ ] 28-01-PLAN.md -- API key system: generation, storage (Convex), scoped permissions, middleware authentication
+- [ ] 28-02-PLAN.md -- Core API endpoints: /api/v1/content, /api/v1/agents, /api/v1/analytics, /api/v1/strategies
+- [ ] 28-03-PLAN.md -- API documentation: OpenAPI spec generation, /api/docs page, rate limiting per key, usage tracking
 
 ---
 
-### Phase 23: Security & Monitoring
+### Phase 29: Webhooks & Event System
 
-**Goal:** Production is hardened against abuse and fully observable, with error tracking, audit logs, and data export for compliance
+**Goal:** External systems receive real-time notifications when important events happen in AMD, enabling integration with CRMs, Slack, custom workflows
 
-**Depends on:** Phase 19 (production environment), Phase 20 (error boundaries needed for Sentry integration)
+**Depends on:** Phase 28 (API infrastructure: key auth, rate limiting)
 
-**Requirements:** SEC-01, SEC-02, SEC-03, SEC-04, SEC-05, SEC-06, MON-01, MON-02, MON-03, MON-04, MON-05, DATA-01, DATA-02, DATA-03
+**Requirements:** HOOK-01, HOOK-02, HOOK-03, HOOK-04, HOOK-05, HOOK-06
 
 **Success Criteria** (what must be TRUE):
-1. Sentry captures unhandled exceptions with source maps and user context, and alerts fire when error rate exceeds 1%
-2. AI agent endpoints have rate limiting (prevents abuse of expensive Claude API calls)
-3. CSP headers are configured and HSTS is enforced; no secrets are exposed via NEXT_PUBLIC_ prefix (verified by audit)
-4. Authentication events, content actions, and agent executions are logged in an audit trail
-5. User can export their data (profile as JSON, content as CSV+JSON) from settings
+1. Webhook registration system: users configure URLs for specific event types from settings
+2. Events emitted for: content.published, content.status_changed, agent.execution_completed, strategy.completed, report.generated
+3. Webhook delivery with exponential backoff retry (3 attempts) and delivery status tracking
+4. Webhook payloads are signed (HMAC-SHA256) with a per-webhook secret for security verification
+5. Webhook management UI shows delivery history, success/failure rate, and test ping functionality
 
-**Plans:** TBD
+**Plans:** 2 plans
 
 Plans:
-- [ ] 23-01: Sentry setup (Next.js SDK, source maps, user context, alert thresholds) + Vercel security headers (HSTS, CSP)
-- [ ] 23-02: Rate limiting on AI endpoints + Clerk webhook verification + NEXT_PUBLIC_ secret audit + dependency scanning
-- [ ] 23-03: Audit logging (auth events, content actions, agent executions) + data export (JSON + CSV) + AI agent analytics
+- [ ] 29-01-PLAN.md -- Event system architecture, webhook registration (Convex schema), HMAC signing, delivery engine with retries
+- [ ] 29-02-PLAN.md -- Webhook management UI: registration form, event type selector, delivery history, test ping, status indicators
 
 ---
 
-### Phase 24: Onboarding & Polish
+### Phase 30: Agent Customization UI
 
-**Goal:** New users reach their first success moment within 5 minutes, and the app meets accessibility standards for all users
+**Goal:** Power users can customize agent behavior (prompts, temperature, triggers, model) directly from the dashboard without touching backend code
 
-**Depends on:** Phase 21 (loading states and empty states needed for onboarding flow), Phase 22 (performance must be optimized before final polish)
+**Depends on:** Phase 25 (CMO engine provides context for why customization matters)
 
-**Requirements:** ONB-01, ONB-02, ONB-03, ONB-04, A11Y-01, A11Y-02, A11Y-03, A11Y-04, A11Y-05
+**Requirements:** AGENT-01, AGENT-02, AGENT-03, AGENT-04, AGENT-05
 
 **Success Criteria** (what must be TRUE):
-1. New user completes 4-step onboarding (Welcome + Brand setup + First content + Success moment) and lands on a populated dashboard
-2. Complex features show contextual tooltips on hover/click explaining what they do in Spanish
-3. Cmd+K opens a command palette; keyboard shortcuts N (new content) and ? (help) work globally
-4. All interactive elements are reachable via Tab/Enter/Escape with visible focus indicators
-5. Color contrast passes 4.5:1 for normal text, touch targets are 44x44px minimum, and screen readers can navigate with ARIA labels
+1. Agent detail page shows editable system prompt with syntax highlighting and character count
+2. Temperature, max tokens, and model (Sonnet/Haiku) are configurable per agent with safe defaults
+3. Trigger configuration UI: enable/disable triggers (manual, cron, webhook, handoff) with schedule picker
+4. Changes create a version history; users can revert to any previous agent configuration
+5. "Restaurar Defaults" button resets agent to its original pre-configured state
 
-**Plans:** TBD
+**Plans:** 2 plans
 
 Plans:
-- [ ] 24-01: 4-step onboarding flow (Welcome, Brand setup, First content, Success) + smart defaults (remember last agent, default voice)
-- [ ] 24-02: Accessibility audit (keyboard nav, focus indicators, ARIA labels, contrast, touch targets) + contextual tooltips + keyboard shortcuts (Cmd+K, N, ?)
+- [ ] 30-01-PLAN.md -- Agent configuration schema (Convex), edit mutations with version history, permission guards (owner/admin only)
+- [ ] 30-02-PLAN.md -- Agent customization UI: prompt editor, parameter controls, trigger toggles, version history, reset defaults
 
 ---
 
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 19 > 20 > 21 > 22 > 23 > 24
+Phases execute in numeric order: 25 > 26 > 27 > 28 > 29 > 30
+Phase 27 (Dark Mode) can run in parallel with 25-26 if needed (no dependencies on CMO).
 
-**External Dependencies (started in Phase 19, resolved by Phase 22-23):**
-- Clerk DNS propagation: 24-48 hours
-- Custom domain DNS: 1-48 hours
-- LinkedIn/Twitter OAuth: 1-3 days
-- Instagram/Meta OAuth: 1-2 weeks (may extend)
+**Priority tiers:**
+- **MUST-HAVE:** Phases 25, 26, 27, 28, 29
+- **NICE-TO-HAVE:** Phase 30
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 19. Environment Setup & Infrastructure | 4/4 | Shipped | 2026-02-09 |
-| 20. Error Handling & Validation | 3/3 | Shipped | 2026-02-10 |
-| 21. Loading States & UX Polish | 2/2 | Shipped | 2026-02-10 |
-| 22. Performance Optimization | 1/1 | Shipped | 2026-02-11 |
-| 23. Security & Monitoring | 3/3 | Shipped | 2026-02-10 |
-| 24. Onboarding & Polish | 2/2 | Shipped | 2026-02-10 |
+| 25. CMO Autopilot — Strategy Engine | 0/3 | Pending | — |
+| 26. CMO Autopilot — Dashboard & Execution | 0/3 | Pending | — |
+| 27. Dark Mode & Theme System | 0/2 | Pending | — |
+| 28. Public REST API | 0/3 | Pending | — |
+| 29. Webhooks & Event System | 0/2 | Pending | — |
+| 30. Agent Customization UI | 0/2 | Pending | — |
 
 ---
 
 ## Coverage
 
-**83/83 v1 requirements mapped (100%)**
+**~55 v5.0 requirements mapped (100%)**
 
 | Category | Count | Phase |
 |----------|-------|-------|
-| Deployment & Infrastructure (DEPLOY) | 8 | 19 |
-| OAuth Production Apps (OAUTH) | 5 | 19 |
-| CI/CD Pipeline (CICD) | 7 | 19 |
-| Testing Foundation (TEST) | 7 | 19 |
-| Error Handling & Validation (ERR) | 8 | 20 |
-| Toast Notifications (TOAST) | 4 | 20 |
-| Session Management (SESS) | 3 | 20 |
-| Loading States & UX Polish (LOAD) | 4 | 21 |
-| Empty States (EMPTY) | 4 | 21 |
-| Performance Optimization (PERF) | 6 | 22 |
-| Mobile Responsiveness (MOB) | 4 | 22 |
-| Security Hardening (SEC) | 6 | 23 |
-| Production Monitoring (MON) | 5 | 23 |
-| Data Export & Compliance (DATA) | 3 | 23 |
-| Onboarding & Help (ONB) | 4 | 24 |
-| Accessibility (A11Y) | 5 | 24 |
+| CMO Autopilot Engine (CMO) | 8 | 25 |
+| CMO Dashboard & Execution (CMO) | 7 | 26 |
+| Theme System (THEME) | 6 | 27 |
+| Public API (API) | 8 | 28 |
+| Webhooks & Events (HOOK) | 6 | 29 |
+| Agent Customization (AGENT) | 5 | 30 |
 
 No orphaned requirements. No duplicate assignments.
 
+## Deferred to v6.0+
+
+- TikTok / YouTube publishing — Evaluate after v5.0 API enables integrations
+- i18n (English) — Market expansion after revenue validation
+- Collaborative real-time editing — CRDT complexity; defer
+- Stripe billing — Consider as v5.1 insertion once API usage data exists
+- A/B content testing — Needs sufficient content volume from CMO Autopilot first
+- Video post publishing — Platform video APIs remain complex
+
 ---
 
-*Roadmap created: 2026-02-09*
-*Milestone: v4.0 Production Readiness*
-*Phases: 19-24 (6 phases, 16 plans estimated)*
-*Requirements: 83 mapped to 6 phases*
+*Roadmap created: 2026-02-11*
+*Milestone: v5.0 Autonomy & Platform*
+*Phases: 25-30 (6 phases, 15 plans estimated)*
+*Requirements: ~55 mapped to 6 phases*
