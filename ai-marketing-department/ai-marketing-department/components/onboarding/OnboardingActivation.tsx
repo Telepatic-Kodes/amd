@@ -32,7 +32,7 @@ interface OnboardingActivationProps {
   onComplete: () => void;
 }
 
-const DEMO_CONTENT = `# Analisis Estrategico Inicial
+const DEMO_CONTENT = `# Análisis Estratégico Inicial
 
 Basado en el perfil de marca proporcionado, aquí está mi evaluación inicial como CMO:
 

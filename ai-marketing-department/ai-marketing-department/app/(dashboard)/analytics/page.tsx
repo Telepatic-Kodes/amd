@@ -124,7 +124,7 @@ export default function AnalyticsPage() {
             Analiticas
           </h1>
           <p className="text-stone-400 mt-2">
-            Metricas de rendimiento e inteligencia de tu equipo de marketing IA.
+            Métricas de rendimiento e inteligencia de tu equipo de marketing IA.
           </p>
         </div>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -229,7 +229,7 @@ export default function AnalyticsPage() {
           Analiticas
         </h1>
         <p className="text-stone-400 mt-2">
-          Metricas de rendimiento e inteligencia de tu equipo de marketing IA.
+          Métricas de rendimiento e inteligencia de tu equipo de marketing IA.
         </p>
       </div>
 

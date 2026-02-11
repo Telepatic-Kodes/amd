@@ -8,8 +8,8 @@ const DEPARTMENTS = [
   { id: "social", label: "Social", icon: Users, agents: 5, desc: "Gestion de redes sociales y engagement" },
   { id: "seo", label: "SEO", icon: Search, agents: 5, desc: "Optimización de búsqueda y analytics" },
   { id: "demandgen", label: "Demand Gen", icon: TrendingUp, agents: 6, desc: "Leads, ads, campañas de email" },
-  { id: "brand", label: "Marca", icon: Palette, agents: 5, desc: "Estrategia de marca y diseno" },
-  { id: "ops", label: "Ops", icon: Settings, agents: 5, desc: "Automatizacion, datos y reportes" },
+  { id: "brand", label: "Marca", icon: Palette, agents: 5, desc: "Estrategia de marca y diseño" },
+  { id: "ops", label: "Ops", icon: Settings, agents: 5, desc: "Automatización, datos y reportes" },
   { id: "leadership", label: "Liderazgo", icon: Crown, agents: 5, desc: "CMO, estrategas y coordinadores" },
 ];
 

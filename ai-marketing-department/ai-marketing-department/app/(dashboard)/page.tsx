@@ -193,7 +193,7 @@ export default function DashboardPage() {
       setShowMigrationBanner(false);
       const total = counts.content + counts.tasks + counts.campaigns + counts.onboarding + counts.guidance + counts.linkedin;
       success(
-        "Migracion completada",
+        "Migración completada",
         `${total} registros migrados`
       );
     } catch (err: unknown) {
@@ -214,7 +214,7 @@ export default function DashboardPage() {
   // Greeting
   const userName = currentUser?.name || "usuario";
   const hour = currentTime.getHours();
-  const greeting = hour < 12 ? "Buenos dias" : hour < 18 ? "Buenas tardes" : "Buenas noches";
+  const greeting = hour < 12 ? "Buenos días" : hour < 18 ? "Buenas tardes" : "Buenas noches";
   const dateStr = currentTime.toLocaleDateString("es-CL", {
     weekday: "long",
     day: "numeric",

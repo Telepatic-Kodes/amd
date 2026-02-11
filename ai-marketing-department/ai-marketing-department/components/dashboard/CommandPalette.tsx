@@ -72,14 +72,14 @@ export function CommandPalette() {
   // Build command items
   const items = useMemo<CommandItem[]>(() => {
     const pages: CommandItem[] = [
-      { id: "nav-home", label: "Inicio", description: "Dashboard principal", icon: Home, section: "Paginas", action: () => navigate("/") },
-      { id: "nav-control", label: "Centro de Control", description: "Monitorea agentes", icon: Activity, section: "Paginas", action: () => navigate("/control-center") },
-      { id: "nav-content", label: "Contenido", description: "Gestiona contenido", icon: FileText, section: "Paginas", action: () => navigate("/content") },
-      { id: "nav-agents", label: "Agentes", description: "37 agentes IA", icon: Bot, section: "Paginas", action: () => navigate("/agents") },
-      { id: "nav-results", label: "Resultados", description: "Metricas y analytics", icon: BarChart3, section: "Paginas", action: () => navigate("/results") },
-      { id: "nav-brand", label: "Marca", description: "Perfil e identidad de marca", icon: Palette, section: "Paginas", action: () => navigate("/brand") },
-      { id: "nav-campaigns", label: "Campañas", description: "Campañas multicanal", icon: Megaphone, section: "Paginas", action: () => navigate("/campaigns") },
-      { id: "nav-settings", label: "Configuración", description: "Configuración avanzada", icon: Settings, section: "Paginas", action: () => navigate("/settings") },
+      { id: "nav-home", label: "Inicio", description: "Dashboard principal", icon: Home, section: "Páginas", action: () => navigate("/") },
+      { id: "nav-control", label: "Centro de Control", description: "Monitorea agentes", icon: Activity, section: "Páginas", action: () => navigate("/control-center") },
+      { id: "nav-content", label: "Contenido", description: "Gestiona contenido", icon: FileText, section: "Páginas", action: () => navigate("/content") },
+      { id: "nav-agents", label: "Agentes", description: "37 agentes IA", icon: Bot, section: "Páginas", action: () => navigate("/agents") },
+      { id: "nav-results", label: "Resultados", description: "Métricas y analytics", icon: BarChart3, section: "Páginas", action: () => navigate("/results") },
+      { id: "nav-brand", label: "Marca", description: "Perfil e identidad de marca", icon: Palette, section: "Páginas", action: () => navigate("/brand") },
+      { id: "nav-campaigns", label: "Campañas", description: "Campañas multicanal", icon: Megaphone, section: "Páginas", action: () => navigate("/campaigns") },
+      { id: "nav-settings", label: "Configuración", description: "Configuración avanzada", icon: Settings, section: "Páginas", action: () => navigate("/settings") },
     ];
 
     const actions: CommandItem[] = [

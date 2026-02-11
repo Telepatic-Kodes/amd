@@ -821,10 +821,10 @@ export default function SettingsPage() {
                 <CardHeader>
                   <h3 className="flex items-center gap-2 font-semibold text-lg text-stone-900">
                     <FileText className="h-5 w-5 text-orange-600" />
-                    Reportes Automaticos
+                    Reportes Automáticos
                   </h3>
                   <p className="text-sm text-stone-500 mt-1">
-                    Configura reportes automaticos semanales y mensuales.
+                    Configura reportes automáticos semanales y mensuales.
                   </p>
                 </CardHeader>
                 <CardContent className="p-6 pt-0">

@@ -92,12 +92,19 @@ function formatDate(timestamp: number) {
   });
 }
 
-// Generate mock sparkline data for demo
-function generateSparklineData(length: number = 7) {
+// Generate deterministic sparkline data based on a seed string (campaign ID)
+function generateSparklineData(seed: string, length: number = 7) {
+  // Simple hash for deterministic randomness
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    hash = ((hash << 5) - hash + seed.charCodeAt(i)) | 0;
+  }
   const data = [];
-  let value = Math.random() * 100 + 50;
+  let value = Math.abs(hash % 100) + 50;
   for (let i = 0; i < length; i++) {
-    value = Math.max(10, value + (Math.random() - 0.45) * 20);
+    hash = ((hash << 5) - hash + i * 7) | 0;
+    const delta = (Math.abs(hash) % 40) - 18;
+    value = Math.max(10, value + delta);
     data.push({ value: Math.round(value) });
   }
   return data;
@@ -234,7 +241,7 @@ export default function CampaignsPage() {
               <p className="text-sm text-stone-500">Campañas Activas</p>
               <div className="mt-2 h-8">
                 <Sparkline
-                  data={generateSparklineData()}
+                  data={generateSparklineData("active-campaigns")}
                   height={32}
                   color={chartColors.success}
                   showTooltip={false}
@@ -265,7 +272,7 @@ export default function CampaignsPage() {
               <p className="text-sm text-stone-500">Impresiones Totales</p>
               <div className="mt-2 h-8">
                 <Sparkline
-                  data={generateSparklineData()}
+                  data={generateSparklineData("impressions")}
                   height={32}
                   color={chartColors.departments.social}
                   showTooltip={false}
@@ -296,7 +303,7 @@ export default function CampaignsPage() {
               <p className="text-sm text-stone-500">CTR Promedio</p>
               <div className="mt-2 h-8">
                 <Sparkline
-                  data={generateSparklineData()}
+                  data={generateSparklineData("ctr-avg")}
                   height={32}
                   color={chartColors.departments.brand}
                   showTooltip={false}
@@ -632,10 +639,10 @@ export default function CampaignsPage() {
                   {/* Performance Sparkline */}
                   {selectedCampaignData.metrics && (
                     <div>
-                      <p className="text-xs text-stone-500 mb-2">Rendimiento (7 dias)</p>
+                      <p className="text-xs text-stone-500 mb-2">Rendimiento (7 días)</p>
                       <div className="rounded-lg bg-stone-50 p-3">
                         <Sparkline
-                          data={generateSparklineData()}
+                          data={generateSparklineData(selectedCampaignData.campaignId || "detail")}
                           height={60}
                           color={chartColors.primary}
                           showArea
