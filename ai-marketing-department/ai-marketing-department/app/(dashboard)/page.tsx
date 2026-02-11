@@ -23,6 +23,11 @@ const TemplatePickerModal = dynamic(
   { ssr: false }
 );
 
+const DashboardExecuteModal = dynamic(
+  () => import("@/components/dashboard/DashboardExecuteModal").then((m) => m.DashboardExecuteModal),
+  { ssr: false }
+);
+
 export default function DashboardPage() {
   const { success, error } = useToast();
   const [synced, setSynced] = useState(false);
@@ -52,8 +57,9 @@ export default function DashboardPage() {
   const allTemplates = useQuery(api.contentTemplates.listTemplates, {});
   const activeStrategy = useQuery(api.cmoEngine.getActiveStrategy);
 
-  // Template modal state
+  // Modal states
   const [showTemplateModal, setShowTemplateModal] = useState(false);
+  const [showExecuteModal, setShowExecuteModal] = useState(false);
   const [templateModalPreselect, setTemplateModalPreselect] = useState<string | undefined>(undefined);
 
   // Top 4 templates by usage
@@ -150,7 +156,7 @@ export default function DashboardPage() {
           }
         })
         .catch((err) => {
-          error("Error al sincronizar perfil. Intenta recargar la pagina.", err.message);
+          error("Error al sincronizar perfil. Intenta recargar la página.", err.message);
         });
     }
   }, [synced, syncUser, error]);
@@ -173,7 +179,7 @@ export default function DashboardPage() {
       if (welcomed && !shownWelcome) {
         localStorage.setItem("amd_welcome_shown", "true");
         const userName = currentUser.name || "usuario";
-        success(`Bienvenido, ${userName}`, "Tu perfil se sincronizo correctamente");
+        success(`Bienvenido, ${userName}`, "Tu perfil se sincronizó correctamente");
       }
     }
   }, [currentUser, synced, success]);
@@ -192,7 +198,7 @@ export default function DashboardPage() {
       );
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Error desconocido";
-      error("Error en la migracion", message);
+      error("Error en la migración", message);
     } finally {
       setMigrating(false);
     }
@@ -285,13 +291,13 @@ export default function DashboardPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Link
-            href="/control-center"
+          <button
+            onClick={() => setShowExecuteModal(true)}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-orange-600 text-white hover:bg-orange-500 transition-colors"
           >
             <Zap className="h-3.5 w-3.5" />
             Ejecutar Agente
-          </Link>
+          </button>
           <Link
             href="/control-center"
             className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-stone-300 text-stone-700 hover:bg-stone-50 transition-colors"
@@ -321,7 +327,7 @@ export default function DashboardPage() {
             href="/results"
           />
           <HeroMetric
-            label="Tasa Exito"
+            label="Tasa Éxito"
             value={analytics.overview.successRate}
             isPercentage
             sparkColor="#16a34a"
@@ -451,6 +457,11 @@ export default function DashboardPage() {
           }}
           preselectedTemplateId={templateModalPreselect}
         />
+      )}
+
+      {/* Agent Execute Modal */}
+      {showExecuteModal && (
+        <DashboardExecuteModal onClose={() => setShowExecuteModal(false)} />
       )}
     </div>
   );

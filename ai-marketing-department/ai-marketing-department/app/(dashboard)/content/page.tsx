@@ -424,7 +424,7 @@ export default function ContentPage() {
                 ? "bg-orange-50 text-orange-600"
                 : "text-stone-400 hover:bg-stone-100"
             )}
-            title="Grid view"
+            title="Vista cuadrícula"
           >
             <LayoutGrid className="h-4 w-4" />
           </button>
@@ -436,7 +436,7 @@ export default function ContentPage() {
                 ? "bg-orange-50 text-orange-600"
                 : "text-stone-400 hover:bg-stone-100"
             )}
-            title="List view"
+            title="Vista lista"
           >
             <List className="h-4 w-4" />
           </button>
@@ -556,7 +556,7 @@ export default function ContentPage() {
                               copyToClipboard(item.body);
                             }}
                             className="p-1.5 rounded-lg bg-white/90 backdrop-blur-sm hover:bg-stone-100 text-stone-400 hover:text-stone-700 shadow-sm transition-colors"
-                            title="Copy content"
+                            title="Copiar contenido"
                           >
                             <Copy className="h-3.5 w-3.5" />
                           </button>
@@ -566,7 +566,7 @@ export default function ContentPage() {
                               setSelectedContent(item.contentId);
                             }}
                             className="p-1.5 rounded-lg bg-white/90 backdrop-blur-sm hover:bg-stone-100 text-stone-400 hover:text-stone-700 shadow-sm transition-colors"
-                            title="Preview"
+                            title="Vista previa"
                           >
                             <Eye className="h-3.5 w-3.5" />
                           </button>
@@ -576,7 +576,7 @@ export default function ContentPage() {
                               setEditingContent(item);
                             }}
                             className="p-1.5 rounded-lg bg-white/90 backdrop-blur-sm hover:bg-stone-100 text-stone-400 hover:text-stone-700 shadow-sm transition-colors"
-                            title="Edit content"
+                            title="Editar contenido"
                           >
                             <Edit2 className="h-3.5 w-3.5" />
                           </button>
@@ -688,7 +688,7 @@ export default function ContentPage() {
                                   copyToClipboard(item.body);
                                 }}
                                 className="p-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-400 hover:text-stone-700 transition-colors"
-                                title="Copy"
+                                title="Copiar"
                               >
                                 <Copy className="h-3.5 w-3.5" />
                               </button>
@@ -698,7 +698,7 @@ export default function ContentPage() {
                                   setSelectedContent(item.contentId);
                                 }}
                                 className="p-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-400 hover:text-stone-700 transition-colors"
-                                title="Preview"
+                                title="Vista previa"
                               >
                                 <Eye className="h-3.5 w-3.5" />
                               </button>

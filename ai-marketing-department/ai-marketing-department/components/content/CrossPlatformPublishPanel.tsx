@@ -169,10 +169,10 @@ export function CrossPlatformPublishPanel({
   ];
 
   return (
-    <Card className={cn("border-stone-200 bg-[#faf8f4]/50", className)}>
+    <Card className={cn("border-stone-200 bg-white", className)}>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <h3 className="flex items-center gap-2 text-sm font-semibold text-white">
+          <h3 className="flex items-center gap-2 text-sm font-semibold text-stone-900">
             <Share2 className="h-4 w-4 text-orange-500" />
             {translate("crossPlatformPublish")}
           </h3>
@@ -211,7 +211,7 @@ export function CrossPlatformPublishPanel({
                     className="w-4 h-4 rounded border-stone-300 text-orange-500 focus:ring-orange-500 focus:ring-offset-0 disabled:opacity-50"
                   />
                   <Icon className={cn("h-4 w-4", platform.color)} />
-                  <span className="text-sm text-white flex-1">
+                  <span className="text-sm text-stone-900 flex-1">
                     {platform.label}
                   </span>
                   {isConnected ? (
@@ -257,7 +257,7 @@ export function CrossPlatformPublishPanel({
               onChange={(e) => setInstagramImageUrl(e.target.value)}
               placeholder="https://example.com/image.jpg"
               disabled={isPublishing}
-              className="w-full rounded-lg border border-stone-200 bg-[#faf8f4]/50 px-3 py-2 text-sm text-white placeholder-stone-500 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 disabled:opacity-50"
+              className="w-full rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm text-stone-900 placeholder-stone-500 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 disabled:opacity-50"
             />
             <p className="text-xs text-stone-500 mt-1">
               Requerido para publicar en Instagram

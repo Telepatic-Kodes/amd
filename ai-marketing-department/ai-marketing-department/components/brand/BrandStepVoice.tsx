@@ -103,7 +103,7 @@ function DynamicList({
           {items.map((item, i) => (
             <div
               key={i}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#faf8f4]/50 border border-stone-200/50 text-sm"
+              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-stone-50 border border-stone-200/50 text-sm"
             >
               <Icon className="w-3.5 h-3.5 text-stone-400 shrink-0" />
               <span className="flex-1 text-stone-700">{item}</span>

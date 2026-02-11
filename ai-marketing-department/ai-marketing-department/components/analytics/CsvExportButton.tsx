@@ -37,7 +37,7 @@ export function CsvExportButton({ startDate, endDate }: CsvExportButtonProps) {
       // Show success toast (if toast system exists)
       if (typeof window !== "undefined" && window.showToast) {
         window.showToast({
-          title: "Exito",
+          title: "Éxito",
           description: "Datos exportados correctamente",
           variant: "success",
         });

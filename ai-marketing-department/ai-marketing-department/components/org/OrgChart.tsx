@@ -4,7 +4,6 @@ import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, ChevronRight, Users } from "lucide-react";
 import { AgentNode, AgentNodeSkeleton } from "./AgentNode";
-import { cn } from "@/lib/utils";
 
 interface Agent {
   _id: string;
@@ -22,7 +21,7 @@ interface OrgChartProps {
   selectedAgentId?: string;
 }
 
-const departmentLabels: Record<string, string> = {
+const _departmentLabels: Record<string, string> = {
   leadership: "Leadership",
   content: "Content",
   social: "Social Media",
@@ -160,7 +159,7 @@ export function OrgChart({ agents, onAgentSelect, selectedAgentId }: OrgChartPro
               {deptSpecialists.length > 0 && (
                 <button
                   onClick={() => toggleDepartment(dept)}
-                  className="mt-2 flex items-center gap-1 px-2 py-1 text-xs text-stone-500 hover:text-stone-300 transition-colors rounded-md hover:bg-stone-200/50"
+                  className="mt-2 flex items-center gap-1 px-2 py-1 text-xs text-stone-500 hover:text-stone-400 transition-colors rounded-md hover:bg-stone-200/50"
                 >
                   {isExpanded ? (
                     <ChevronDown className="w-3 h-3" />

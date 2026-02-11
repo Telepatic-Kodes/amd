@@ -6,7 +6,6 @@ import { api } from "@convex/_generated/api";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
-  Users,
   Crown,
   Briefcase,
   User,
@@ -25,24 +24,30 @@ import { Card, CardContent } from "@/components/ui/Card";
 import { StatusBadge, RoleBadge, Badge } from "@/components/ui/Badge";
 import { SkeletonGrid } from "@/components/ui/Skeleton";
 import { EmptyAgents, EmptySearchResults } from "@/components/ui/EmptyState";
+import dynamic from "next/dynamic";
+
+const AgentConfigModal = dynamic(
+  () => import("@/components/agents/AgentConfigModal").then((m) => m.AgentConfigModal),
+  { ssr: false }
+);
 
 const DEPARTMENTS = [
-  { value: "", label: "All Departments" },
-  { value: "leadership", label: "Leadership" },
-  { value: "content", label: "Content" },
-  { value: "social", label: "Social Media" },
+  { value: "", label: "Todos los Departamentos" },
+  { value: "leadership", label: "Liderazgo" },
+  { value: "content", label: "Contenido" },
+  { value: "social", label: "Redes Sociales" },
   { value: "demandgen", label: "Demand Gen" },
   { value: "seo", label: "SEO" },
-  { value: "brand", label: "Brand & Creative" },
-  { value: "ops", label: "Marketing Ops" },
+  { value: "brand", label: "Marca & Creatividad" },
+  { value: "ops", label: "Operaciones" },
 ];
 
 const STATUSES = [
-  { value: "", label: "All Statuses" },
-  { value: "active", label: "Active" },
-  { value: "paused", label: "Paused" },
-  { value: "error", label: "Error" },
-  { value: "maintenance", label: "Maintenance" },
+  { value: "", label: "Todos los Estados" },
+  { value: "active", label: "Activo" },
+  { value: "paused", label: "Pausado" },
+  { value: "error", label: "Con Error" },
+  { value: "maintenance", label: "Mantenimiento" },
 ];
 
 const departmentColors: Record<string, string> = {
@@ -66,6 +71,7 @@ export default function AgentsPage() {
   const [departmentFilter, setDepartmentFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [selectedAgent, setSelectedAgent] = useState<string | null>(null);
+  const [configuringAgent, setConfiguringAgent] = useState<string | null>(null);
 
   const agents = useQuery(api.functions.listAgents, {
     department: departmentFilter || undefined,
@@ -113,11 +119,11 @@ export default function AgentsPage() {
             <Bot className="h-6 w-6 text-orange-400" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-stone-400 bg-clip-text text-transparent">
-              Agents
+            <h1 className="text-3xl font-bold text-stone-900">
+              Agentes
             </h1>
             <p className="text-stone-400 mt-1">
-              Manage and monitor your AI marketing team.
+              Gestiona y monitorea tu equipo de marketing IA.
             </p>
           </div>
         </div>
@@ -148,11 +154,11 @@ export default function AgentsPage() {
           <Bot className="h-6 w-6 text-orange-400" />
         </div>
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-stone-400 bg-clip-text text-transparent">
-            Agents
+          <h1 className="text-3xl font-bold text-stone-900">
+            Agentes
           </h1>
           <p className="text-stone-400 mt-1">
-            Manage and monitor your AI marketing team of {agents.length} agents.
+            Gestiona y monitorea tu equipo de {agents.length} agentes de marketing IA.
           </p>
         </div>
       </div>
@@ -165,10 +171,10 @@ export default function AgentsPage() {
           <input
             type="text"
             inputMode="search"
-            placeholder="Search agents..."
+            placeholder="Buscar agentes..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-lg border border-stone-200 bg-[#faf8f4]/50 py-2 pl-10 pr-4 text-sm text-white placeholder-stone-500 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+            className="w-full rounded-lg border border-stone-200 bg-white py-2 pl-10 pr-4 text-sm text-stone-900 placeholder-stone-500 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
           />
         </div>
 
@@ -178,7 +184,7 @@ export default function AgentsPage() {
           <select
             value={departmentFilter}
             onChange={(e) => setDepartmentFilter(e.target.value)}
-            className="appearance-none rounded-lg border border-stone-200 bg-[#faf8f4]/50 py-2 pl-10 pr-8 text-sm text-white focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+            className="appearance-none rounded-lg border border-stone-200 bg-white py-2 pl-10 pr-8 text-sm text-stone-900 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
           >
             {DEPARTMENTS.map((dept) => (
               <option key={dept.value} value={dept.value}>
@@ -194,7 +200,7 @@ export default function AgentsPage() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="appearance-none rounded-lg border border-stone-200 bg-[#faf8f4]/50 py-2 pl-4 pr-8 text-sm text-white focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+            className="appearance-none rounded-lg border border-stone-200 bg-white py-2 pl-4 pr-8 text-sm text-stone-900 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
           >
             {STATUSES.map((status) => (
               <option key={status.value} value={status.value}>
@@ -209,13 +215,13 @@ export default function AgentsPage() {
       {/* Stats Summary */}
       <div className="flex flex-wrap gap-2">
         <Badge variant="success">
-          {agents.filter((a: { status: string }) => a.status === "active").length} Active
+          {agents.filter((a: { status: string }) => a.status === "active").length} Activos
         </Badge>
         <Badge variant="warning">
-          {agents.filter((a: { status: string }) => a.status === "paused").length} Paused
+          {agents.filter((a: { status: string }) => a.status === "paused").length} Pausados
         </Badge>
         <Badge variant="error">
-          {agents.filter((a: { status: string }) => a.status === "error").length} Errors
+          {agents.filter((a: { status: string }) => a.status === "error").length} Errores
         </Badge>
       </div>
 
@@ -248,7 +254,7 @@ export default function AgentsPage() {
                 animate="show"
                 className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
               >
-                {filteredAgents.map((agent, index) => {
+                {filteredAgents.map((agent, _index) => {
                   const RoleIcon = roleIcons[agent.role] || Bot;
                   const isSelected = selectedAgent === agent.agentId;
 
@@ -295,7 +301,7 @@ export default function AgentsPage() {
                                 )}
                               </div>
                               <div>
-                                <h3 className="font-semibold text-white text-sm">
+                                <h3 className="font-semibold text-stone-900 text-sm">
                                   {agent.name}
                                 </h3>
                                 <p className="text-xs text-stone-500 font-mono">
@@ -343,9 +349,9 @@ export default function AgentsPage() {
               <Card className="sticky top-6">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                    <h3 className="text-lg font-semibold text-stone-900 flex items-center gap-2">
                       <Activity className="h-4 w-4 text-orange-400" />
-                      Agent Details
+                      Detalles del Agente
                     </h3>
                     <button
                       onClick={() => setSelectedAgent(null)}
@@ -358,24 +364,24 @@ export default function AgentsPage() {
                   <div className="space-y-4">
                     {/* Name & Status */}
                     <div>
-                      <p className="text-xs text-stone-500 mb-1 uppercase tracking-wider">Name</p>
-                      <p className="text-white font-medium">
+                      <p className="text-xs text-stone-500 mb-1 uppercase tracking-wider">Nombre</p>
+                      <p className="text-stone-900 font-medium">
                         {selectedAgentData.name}
                       </p>
                     </div>
 
                     {/* ID */}
                     <div>
-                      <p className="text-xs text-stone-500 mb-1 uppercase tracking-wider">Agent ID</p>
-                      <p className="text-stone-300 font-mono text-sm bg-stone-100/50 rounded px-2 py-1 inline-block">
+                      <p className="text-xs text-stone-500 mb-1 uppercase tracking-wider">ID del Agente</p>
+                      <p className="text-stone-600 font-mono text-sm bg-stone-50 rounded px-2 py-1 inline-block">
                         {selectedAgentData.agentId}
                       </p>
                     </div>
 
                     {/* Description */}
                     <div>
-                      <p className="text-xs text-stone-500 mb-1 uppercase tracking-wider">Description</p>
-                      <p className="text-stone-300 text-sm">
+                      <p className="text-xs text-stone-500 mb-1 uppercase tracking-wider">Descripcion</p>
+                      <p className="text-stone-600 text-sm">
                         {selectedAgentData.description}
                       </p>
                     </div>
@@ -383,30 +389,34 @@ export default function AgentsPage() {
                     {/* Department & Role */}
                     <div className="flex gap-4">
                       <div>
-                        <p className="text-xs text-stone-500 mb-1 uppercase tracking-wider">Department</p>
+                        <p className="text-xs text-stone-500 mb-1 uppercase tracking-wider">Departamento</p>
                         <Badge className={departmentColors[selectedAgentData.department]}>
                           {selectedAgentData.department}
                         </Badge>
                       </div>
                       <div>
-                        <p className="text-xs text-stone-500 mb-1 uppercase tracking-wider">Role</p>
+                        <p className="text-xs text-stone-500 mb-1 uppercase tracking-wider">Rol</p>
                         <RoleBadge role={selectedAgentData.role} />
                       </div>
                     </div>
 
                     {/* Status with actions */}
                     <div>
-                      <p className="text-xs text-stone-500 mb-1 uppercase tracking-wider">Status</p>
+                      <p className="text-xs text-stone-500 mb-1 uppercase tracking-wider">Estado</p>
                       <div className="flex items-center gap-2">
                         <StatusBadge status={selectedAgentData.status} />
                         <div className="flex gap-1 ml-auto">
-                          <button className="p-1.5 rounded-lg bg-stone-200 hover:bg-stone-100 text-stone-400 hover:text-stone-900 transition-colors" title="Start">
+                          <button className="p-1.5 rounded-lg bg-stone-200 hover:bg-stone-100 text-stone-400 hover:text-stone-900 transition-colors" title="Iniciar">
                             <Play className="h-3.5 w-3.5" />
                           </button>
-                          <button className="p-1.5 rounded-lg bg-stone-200 hover:bg-stone-100 text-stone-400 hover:text-stone-900 transition-colors" title="Pause">
+                          <button className="p-1.5 rounded-lg bg-stone-200 hover:bg-stone-100 text-stone-400 hover:text-stone-900 transition-colors" title="Pausar">
                             <Pause className="h-3.5 w-3.5" />
                           </button>
-                          <button className="p-1.5 rounded-lg bg-stone-200 hover:bg-stone-100 text-stone-400 hover:text-stone-900 transition-colors" title="Configure">
+                          <button
+                            onClick={() => setConfiguringAgent(selectedAgentData.agentId)}
+                            className="p-1.5 rounded-lg bg-stone-200 hover:bg-stone-100 text-stone-400 hover:text-stone-900 transition-colors"
+                            title="Configurar"
+                          >
                             <Settings2 className="h-3.5 w-3.5" />
                           </button>
                         </div>
@@ -415,10 +425,10 @@ export default function AgentsPage() {
 
                     {/* Model */}
                     <div>
-                      <p className="text-xs text-stone-500 mb-1 uppercase tracking-wider">Model</p>
+                      <p className="text-xs text-stone-500 mb-1 uppercase tracking-wider">Modelo</p>
                       <div className="flex items-center gap-2">
                         <Zap className="h-4 w-4 text-yellow-500" />
-                        <p className="text-stone-300 font-mono text-sm">
+                        <p className="text-stone-600 font-mono text-sm">
                           {selectedAgentData.config.model}
                         </p>
                       </div>
@@ -426,17 +436,17 @@ export default function AgentsPage() {
 
                     {/* Config */}
                     <div>
-                      <p className="text-xs text-stone-500 mb-2 uppercase tracking-wider">Configuration</p>
+                      <p className="text-xs text-stone-500 mb-2 uppercase tracking-wider">Configuracion</p>
                       <div className="grid grid-cols-2 gap-2 text-sm">
-                        <div className="rounded-lg bg-stone-100/50 p-3 border border-stone-200/50">
-                          <p className="text-xs text-stone-500">Temperature</p>
-                          <p className="text-stone-300 font-mono text-lg">
+                        <div className="rounded-lg bg-stone-50 p-3 border border-stone-200">
+                          <p className="text-xs text-stone-500">Temperatura</p>
+                          <p className="text-stone-600 font-mono text-lg">
                             {selectedAgentData.config.temperature}
                           </p>
                         </div>
-                        <div className="rounded-lg bg-stone-100/50 p-3 border border-stone-200/50">
+                        <div className="rounded-lg bg-stone-50 p-3 border border-stone-200">
                           <p className="text-xs text-stone-500">Max Tokens</p>
-                          <p className="text-stone-300 font-mono text-lg">
+                          <p className="text-stone-600 font-mono text-lg">
                             {selectedAgentData.config.maxTokens.toLocaleString()}
                           </p>
                         </div>
@@ -445,7 +455,7 @@ export default function AgentsPage() {
 
                     {/* Triggers */}
                     <div>
-                      <p className="text-xs text-stone-500 mb-2 uppercase tracking-wider">Triggers</p>
+                      <p className="text-xs text-stone-500 mb-2 uppercase tracking-wider">Disparadores</p>
                       <div className="flex flex-wrap gap-1.5">
                         {selectedAgentData.triggers.map((trigger: string) => (
                           <Badge key={trigger} variant="default" className="text-xs">
@@ -461,6 +471,18 @@ export default function AgentsPage() {
           )}
         </AnimatePresence>
       </div>
+
+      {/* Agent Config Modal */}
+      {configuringAgent && (() => {
+        const agentToConfig = agents?.find((a: { agentId: string }) => a.agentId === configuringAgent);
+        if (!agentToConfig) return null;
+        return (
+          <AgentConfigModal
+            agent={agentToConfig}
+            onClose={() => setConfiguringAgent(null)}
+          />
+        );
+      })()}
     </div>
   );
 }

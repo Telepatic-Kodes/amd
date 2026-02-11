@@ -49,7 +49,7 @@ export function ScheduleModal({ contentId, isOpen, onClose, onSchedule }: Schedu
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
             <Calendar className="h-5 w-5 text-orange-400" />
-            <h3 className="text-lg font-semibold text-white">{translate("schedulePublication")}</h3>
+            <h3 className="text-lg font-semibold text-stone-900">{translate("schedulePublication")}</h3>
           </div>
           <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-stone-200 text-stone-500 hover:text-stone-900 transition-colors">
             <X className="h-4 w-4" />
@@ -67,7 +67,7 @@ export function ScheduleModal({ contentId, isOpen, onClose, onSchedule }: Schedu
               value={date}
               min={today}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full rounded-lg border border-stone-300 bg-stone-200 px-4 py-2.5 text-white focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 [color-scheme:dark]"
+              className="w-full rounded-lg border border-stone-300 bg-white px-4 py-2.5 text-stone-900 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
             />
           </div>
           <div>
@@ -76,7 +76,7 @@ export function ScheduleModal({ contentId, isOpen, onClose, onSchedule }: Schedu
               type="time"
               value={time}
               onChange={(e) => setTime(e.target.value)}
-              className="w-full rounded-lg border border-stone-300 bg-stone-200 px-4 py-2.5 text-white focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 [color-scheme:dark]"
+              className="w-full rounded-lg border border-stone-300 bg-white px-4 py-2.5 text-stone-900 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
             />
           </div>
         </div>
@@ -86,7 +86,7 @@ export function ScheduleModal({ contentId, isOpen, onClose, onSchedule }: Schedu
 
         {/* Actions */}
         <div className="flex gap-3">
-          <button onClick={onClose} className="flex-1 px-4 py-2.5 rounded-lg border border-stone-300 text-stone-300 hover:bg-stone-200 transition-colors font-medium text-sm">
+          <button onClick={onClose} className="flex-1 px-4 py-2.5 rounded-lg border border-stone-300 text-stone-600 hover:bg-stone-200 transition-colors font-medium text-sm">
             {translate("cancel")}
           </button>
           <button onClick={handleSchedule} className="flex-1 px-4 py-2.5 rounded-lg bg-orange-500 hover:bg-orange-600 text-white transition-colors font-medium text-sm">

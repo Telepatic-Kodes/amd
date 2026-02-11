@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useMutation } from "convex/react";
 import { api } from "@convex/_generated/api";
-import { Id } from "@convex/_generated/dataModel";
+import { Doc, Id } from "@convex/_generated/dataModel";
 import { useToast } from "@/components/ui/Toast";
 import { translate, translateStatus } from "@/lib/language";
 import { statusColors } from "@/lib/contentTypes";
@@ -20,7 +20,7 @@ const PIPELINE_COLUMNS = [
 ];
 
 interface KanbanBoardProps {
-  columns: Record<string, any[]> | undefined;
+  columns: Record<string, Doc<"content">[]> | undefined;
   statusCounts: Record<string, number> | undefined;
 }
 

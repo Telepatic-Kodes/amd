@@ -4,7 +4,6 @@ import { memo } from "react";
 import { AlertCircle, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
-  stripHtmlTags,
   countWords,
   countCharacters,
   calculateReadingTime,
@@ -66,22 +65,22 @@ const EditorStatusBarComponent = ({
   return (
     <div
       className={cn(
-        "flex items-center justify-between px-4 py-3 border-t border-stone-200 bg-[#faf8f4]/50",
+        "flex items-center justify-between px-4 py-3 border-t border-stone-200 bg-white",
         className
       )}
     >
       {/* Metrics */}
       <div className="flex items-center gap-4 text-xs text-stone-400">
         <span>
-          <span className="font-medium text-white">{charCount.toLocaleString()}</span> characters
+          <span className="font-medium text-stone-900">{charCount.toLocaleString()}</span> caracteres
         </span>
         <span className="text-stone-700">•</span>
         <span>
-          <span className="font-medium text-white">{wordCount.toLocaleString()}</span> words
+          <span className="font-medium text-stone-900">{wordCount.toLocaleString()}</span> palabras
         </span>
         <span className="text-stone-700">•</span>
         <span>
-          <span className="font-medium text-white">{readingTime}</span> min read
+          <span className="font-medium text-stone-900">{readingTime}</span> min lectura
         </span>
       </div>
 
@@ -90,7 +89,7 @@ const EditorStatusBarComponent = ({
         {validation.isValid && !validation.warning ? (
           <div className="flex items-center gap-1.5 text-xs text-green-400">
             <CheckCircle2 className="h-3.5 w-3.5" />
-            <span>Ready</span>
+            <span>Listo</span>
           </div>
         ) : validation.warning ? (
           <div className="flex items-center gap-1.5 text-xs text-amber-400">

@@ -120,7 +120,7 @@ export default function AnalyticsPage() {
     return (
       <div className="space-y-8">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-stone-400 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold text-stone-900">
             Analiticas
           </h1>
           <p className="text-stone-400 mt-2">
@@ -225,7 +225,7 @@ export default function AnalyticsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-stone-400 bg-clip-text text-transparent">
+        <h1 className="text-3xl font-bold text-stone-900">
           Analiticas
         </h1>
         <p className="text-stone-400 mt-2">
@@ -254,7 +254,7 @@ export default function AnalyticsPage() {
           icon={CheckCircle2}
           iconBg="bg-green-500/10"
           iconColor="text-green-400"
-          title="Tasa de Exito"
+          title="Tasa de Éxito"
           value={overview.successRate}
           isPercentage
           badge={`${overview.successRate.toFixed(1)}%`}
@@ -289,7 +289,7 @@ export default function AnalyticsPage() {
         {/* Stacked Bar Chart - Tasks by Day */}
         <Card>
           <CardHeader>
-            <h3 className="flex items-center gap-2 font-semibold text-lg text-white">
+            <h3 className="flex items-center gap-2 font-semibold text-lg text-stone-900">
               <BarChart3 className="h-5 w-5 text-orange-500" />
               Tareas por Dia
             </h3>
@@ -320,7 +320,7 @@ export default function AnalyticsPage() {
         {/* Area Chart - Trends */}
         <Card>
           <CardHeader>
-            <h3 className="flex items-center gap-2 font-semibold text-lg text-white">
+            <h3 className="flex items-center gap-2 font-semibold text-lg text-stone-900">
               <TrendingUp className="h-5 w-5 text-green-500" />
               Tendencias de Rendimiento
             </h3>
@@ -348,7 +348,7 @@ export default function AnalyticsPage() {
       {/* Content Performance Section */}
       <Card>
         <CardHeader>
-          <h3 className="flex items-center gap-2 font-semibold text-lg text-white">
+          <h3 className="flex items-center gap-2 font-semibold text-lg text-stone-900">
             <Trophy className="h-5 w-5 text-yellow-500" />
             Rendimiento de Contenido
           </h3>
@@ -364,7 +364,7 @@ export default function AnalyticsPage() {
       {/* Content Insights Section (AL-04) */}
       <Card>
         <CardHeader>
-          <h3 className="flex items-center gap-2 font-semibold text-lg text-white">
+          <h3 className="flex items-center gap-2 font-semibold text-lg text-stone-900">
             <Lightbulb className="h-5 w-5 text-amber-400" />
             Insights de Contenido
           </h3>
@@ -382,7 +382,7 @@ export default function AnalyticsPage() {
         {/* Top Agents - Horizontal Bar */}
         <Card>
           <CardHeader>
-            <h3 className="flex items-center gap-2 font-semibold text-lg text-white">
+            <h3 className="flex items-center gap-2 font-semibold text-lg text-stone-900">
               <Bot className="h-5 w-5 text-cyan-500" />
               Top Agentes por Ejecuciones
             </h3>
@@ -397,12 +397,12 @@ export default function AnalyticsPage() {
                         <span className="flex items-center justify-center w-5 h-5 rounded-full bg-stone-200 text-xs font-medium text-stone-400">
                           {index + 1}
                         </span>
-                        <span className="text-stone-300 truncate max-w-[150px]">
+                        <span className="text-stone-600 truncate max-w-[150px]">
                           {agent.name}
                         </span>
                       </div>
                       <div className="flex items-center gap-3">
-                        <span className="text-white font-medium">{agent.executions}</span>
+                        <span className="text-stone-900 font-medium">{agent.executions}</span>
                         <Badge
                           variant={agent.successRate >= 80 ? 'success' : agent.successRate >= 50 ? 'warning' : 'error'}
                           className="min-w-[60px] justify-center"
@@ -432,7 +432,7 @@ export default function AnalyticsPage() {
         {/* Cost Distribution Donut */}
         <Card>
           <CardHeader>
-            <h3 className="flex items-center gap-2 font-semibold text-lg text-white">
+            <h3 className="flex items-center gap-2 font-semibold text-lg text-stone-900">
               <DollarSign className="h-5 w-5 text-amber-500" />
               Distribucion de Costos
             </h3>
@@ -453,7 +453,7 @@ export default function AnalyticsPage() {
             ) : (
               <div className="flex flex-col items-center justify-center h-[240px] text-stone-500 text-sm">
                 <DollarSign className="h-8 w-8 mb-2 text-stone-600" />
-                <p>Sin datos de costos en este periodo</p>
+                <p>Sin datos de costos en este período</p>
               </div>
             )}
           </CardContent>
@@ -463,7 +463,7 @@ export default function AnalyticsPage() {
       {/* Recent Executions Table */}
       <Card>
         <CardHeader>
-          <h3 className="flex items-center gap-2 font-semibold text-lg text-white">
+          <h3 className="flex items-center gap-2 font-semibold text-lg text-stone-900">
             <Clock className="h-5 w-5 text-orange-500" />
             Ejecuciones Recientes
           </h3>
@@ -494,16 +494,16 @@ export default function AnalyticsPage() {
                         <Badge
                           variant={exec.status === "success" ? "success" : "error"}
                         >
-                          {exec.status === "success" ? "Exito" : "Error"}
+                          {exec.status === "success" ? "Éxito" : "Error"}
                         </Badge>
                       </td>
-                      <td className="py-3 text-sm text-stone-300 font-mono">
+                      <td className="py-3 text-sm text-stone-600 font-mono">
                         {formatDuration(exec.duration)}
                       </td>
-                      <td className="py-3 text-sm text-stone-300 font-mono">
+                      <td className="py-3 text-sm text-stone-600 font-mono">
                         {formatNumber(exec.tokens)}
                       </td>
-                      <td className="py-3 text-sm text-stone-300 font-mono">
+                      <td className="py-3 text-sm text-stone-600 font-mono">
                         {formatCurrency(exec.cost)}
                       </td>
                       <td className="py-3 text-sm text-stone-400 truncate max-w-[150px]">
@@ -536,7 +536,7 @@ export default function AnalyticsPage() {
               </div>
               <div>
                 <p className="text-xs text-stone-500">Duracion Promedio</p>
-                <p className="text-lg font-semibold text-white">
+                <p className="text-lg font-semibold text-stone-900">
                   {formatDuration(overview.avgDuration)}
                 </p>
               </div>
@@ -552,7 +552,7 @@ export default function AnalyticsPage() {
               </div>
               <div>
                 <p className="text-xs text-stone-500">Costo Promedio/Ejecucion</p>
-                <p className="text-lg font-semibold text-white">
+                <p className="text-lg font-semibold text-stone-900">
                   {overview.totalExecutions > 0
                     ? formatCurrency(overview.totalCost / overview.totalExecutions)
                     : "$0.00"}
@@ -570,7 +570,7 @@ export default function AnalyticsPage() {
               </div>
               <div>
                 <p className="text-xs text-stone-500">Tokens Promedio/Ejecucion</p>
-                <p className="text-lg font-semibold text-white">
+                <p className="text-lg font-semibold text-stone-900">
                   {overview.totalExecutions > 0
                     ? formatNumber(overview.totalTokens / overview.totalExecutions)
                     : "0"}
@@ -634,7 +634,7 @@ function MetricCard({
           )}
         </div>
         <div className="mt-4">
-          <h2 className="text-3xl font-bold text-white">
+          <h2 className="text-3xl font-bold text-stone-900">
             {isCurrency ? (
               <CurrencyCounter value={value} />
             ) : isPercentage ? (

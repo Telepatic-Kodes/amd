@@ -77,7 +77,7 @@ export function FeedCard({ feed, onSelect, isSelected }: FeedCardProps) {
   };
 
   const handleDelete = async () => {
-    if (!confirm(`Delete "${feed.name}" and all its items?`)) return;
+    if (!confirm(`¿Eliminar "${feed.name}" y todos sus elementos?`)) return;
     setIsLoading(true);
     try {
       await deleteFeed({ feedId: feed._id });
@@ -87,9 +87,9 @@ export function FeedCard({ feed, onSelect, isSelected }: FeedCardProps) {
   };
 
   const formatLastSync = (timestamp?: number) => {
-    if (!timestamp) return "Never";
+    if (!timestamp) return "Nunca";
     const date = new Date(timestamp);
-    return date.toLocaleString();
+    return date.toLocaleString("es-CL");
   };
 
   return (
@@ -113,7 +113,7 @@ export function FeedCard({ feed, onSelect, isSelected }: FeedCardProps) {
                 <Rss className={cn("h-5 w-5", statusConfig[feed.status].color)} />
               </div>
               <div>
-                <h3 className="font-semibold text-white text-sm">{feed.name}</h3>
+                <h3 className="font-semibold text-stone-900 text-sm">{feed.name}</h3>
                 <p className="text-xs text-stone-500 truncate max-w-[200px]">{feed.url}</p>
               </div>
             </div>
@@ -130,16 +130,16 @@ export function FeedCard({ feed, onSelect, isSelected }: FeedCardProps) {
           {/* Stats */}
           <div className="grid grid-cols-3 gap-2 mb-3 text-xs">
             <div className="rounded-lg bg-stone-100/50 p-2 border border-stone-200/50">
-              <p className="text-stone-500">Items</p>
-              <p className="text-white font-mono">{feed.itemCount ?? 0}</p>
+              <p className="text-stone-500">Elementos</p>
+              <p className="text-stone-900 font-mono">{feed.itemCount ?? 0}</p>
             </div>
             <div className="rounded-lg bg-stone-100/50 p-2 border border-stone-200/50">
-              <p className="text-stone-500">Frequency</p>
-              <p className="text-white font-mono">{feed.syncFrequency}</p>
+              <p className="text-stone-500">Frecuencia</p>
+              <p className="text-stone-900 font-mono">{feed.syncFrequency}</p>
             </div>
             <div className="rounded-lg bg-stone-100/50 p-2 border border-stone-200/50">
-              <p className="text-stone-500">Errors</p>
-              <p className={cn("font-mono", feed.consecutiveErrors > 0 ? "text-red-400" : "text-white")}>
+              <p className="text-stone-500">Errores</p>
+              <p className={cn("font-mono", feed.consecutiveErrors > 0 ? "text-red-400" : "text-stone-900")}>
                 {feed.consecutiveErrors}
               </p>
             </div>
@@ -148,7 +148,7 @@ export function FeedCard({ feed, onSelect, isSelected }: FeedCardProps) {
           {/* Last Sync */}
           <div className="flex items-center gap-1 text-xs text-stone-500 mb-3">
             <Clock className="h-3 w-3" />
-            Last sync: {formatLastSync(feed.lastSyncAt)}
+            Última sync: {formatLastSync(feed.lastSyncAt)}
           </div>
 
           {/* Error message if any */}
@@ -166,7 +166,7 @@ export function FeedCard({ feed, onSelect, isSelected }: FeedCardProps) {
                 onClick={(e) => { e.stopPropagation(); handleSync(); }}
                 disabled={isLoading || feed.status === "paused"}
                 className="p-2 rounded-lg bg-stone-200 hover:bg-stone-100 text-stone-400 hover:text-stone-900 transition-colors disabled:opacity-50 min-h-[44px] min-w-[44px]"
-                title="Sync now"
+                title="Sincronizar ahora"
               >
                 <RefreshCw className={cn("h-4 w-4", isLoading && "animate-spin")} />
               </button>
@@ -174,7 +174,7 @@ export function FeedCard({ feed, onSelect, isSelected }: FeedCardProps) {
                 onClick={(e) => { e.stopPropagation(); handlePauseResume(); }}
                 disabled={isLoading}
                 className="p-2 rounded-lg bg-stone-200 hover:bg-stone-100 text-stone-400 hover:text-stone-900 transition-colors disabled:opacity-50 min-h-[44px] min-w-[44px]"
-                title={feed.status === "active" ? "Pause" : "Resume"}
+                title={feed.status === "active" ? "Pausar" : "Reanudar"}
               >
                 {feed.status === "active" ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
               </button>
@@ -184,7 +184,7 @@ export function FeedCard({ feed, onSelect, isSelected }: FeedCardProps) {
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
                 className="p-2 rounded-lg bg-stone-200 hover:bg-stone-100 text-stone-400 hover:text-stone-900 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
-                title="Open feed URL"
+                title="Abrir URL del feed"
               >
                 <ExternalLink className="h-4 w-4" />
               </a>
@@ -192,7 +192,7 @@ export function FeedCard({ feed, onSelect, isSelected }: FeedCardProps) {
                 onClick={(e) => { e.stopPropagation(); handleDelete(); }}
                 disabled={isLoading}
                 className="p-2 rounded-lg bg-stone-200 hover:bg-red-900/50 text-stone-400 hover:text-red-400 transition-colors disabled:opacity-50 min-h-[44px] min-w-[44px]"
-                title="Delete feed"
+                title="Eliminar feed"
               >
                 <Trash2 className="h-4 w-4" />
               </button>

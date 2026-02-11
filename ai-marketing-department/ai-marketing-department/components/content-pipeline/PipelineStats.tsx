@@ -17,7 +17,7 @@ interface PipelineStatsProps {
 }
 
 const statConfig = [
-  { key: "draft", label: "draftColumn", bg: "bg-stone-400/10 text-stone-300" },
+  { key: "draft", label: "draftColumn", bg: "bg-stone-400/10 text-stone-500" },
   { key: "review", label: "reviewColumn", bg: "bg-yellow-400/10 text-yellow-400" },
   { key: "revision_needed", label: "revisionColumn", bg: "bg-orange-400/10 text-orange-400" },
   { key: "approved", label: "approvedColumn", bg: "bg-green-400/10 text-green-400" },

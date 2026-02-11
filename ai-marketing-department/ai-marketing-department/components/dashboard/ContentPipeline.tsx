@@ -159,7 +159,7 @@ export function ContentPipeline({ counts, contentItems }: ContentPipelineProps) 
                     onClick={() => router.push(`/content?status=${expandedStage}`)}
                     className="w-full text-center py-1 text-[10px] text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] transition-colors"
                   >
-                    +{(itemsByStatus[expandedStage]?.length ?? 0) - 4} mas →
+                    +{(itemsByStatus[expandedStage]?.length ?? 0) - 4} más →
                   </button>
                 )}
               </div>

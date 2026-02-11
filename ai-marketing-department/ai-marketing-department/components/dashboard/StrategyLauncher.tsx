@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@convex/_generated/api";
+import Link from "next/link";
 import {
   Rocket,
   CheckCircle2,
@@ -10,16 +11,21 @@ import {
   Loader2,
   Brain,
   Shield,
+  Send,
+  Sparkles,
+  ArrowRight,
 } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 
 export function StrategyLauncher() {
   const { success, error: toastError } = useToast();
   const [launching, setLaunching] = useState(false);
+  const [goal, setGoal] = useState("");
 
   const brandProfile = useQuery(api.brandProfile.getBrandProfile);
   const brandMaturity = useQuery(api.brandMaturity.computeBrandMaturity);
   const launchStrategy = useMutation(api.cmoEngine.launchStrategy);
+  const launchFromGoal = useMutation(api.cmoEngine.launchStrategyFromGoal);
 
   const isProfileComplete = brandProfile?.status === "complete";
   const maturityScore = brandMaturity?.score ?? 0;
@@ -59,11 +65,20 @@ export function StrategyLauncher() {
     if (!brandProfile || !allRequiredPassed) return;
     setLaunching(true);
     try {
-      await launchStrategy({ brandProfileId: brandProfile._id });
-      success(
-        "Marketing Autopilot activado",
-        "El CMO esta analizando tu marca y generando la estrategia..."
-      );
+      if (goal.trim()) {
+        await launchFromGoal({ goal: goal.trim(), brandProfileId: brandProfile._id });
+        success(
+          "CMO activado",
+          `Generando estrategia para: "${goal.trim().slice(0, 50)}..."`
+        );
+      } else {
+        await launchStrategy({ brandProfileId: brandProfile._id });
+        success(
+          "Marketing Autopilot activado",
+          "El CMO está analizando tu marca y generando la estrategia..."
+        );
+      }
+      setGoal("");
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Error desconocido";
       toastError("Error al activar", msg);
@@ -83,33 +98,62 @@ export function StrategyLauncher() {
             </h2>
           </div>
           <p className="text-xs text-stone-500 mb-4 max-w-md">
-            El CMO Agent analiza tu perfil de marca y genera automaticamente una
-            estrategia completa: pilares de contenido, calendario semanal,
-            campanas de ads, SEO y email marketing.
+            Define un objetivo o deja que el CMO analice tu marca y genere
+            automaticamente una estrategia completa.
           </p>
 
-          {/* Pre-launch checklist */}
-          <div className="space-y-1.5 mb-4">
-            {checks.map((check) => (
-              <div key={check.label} className="flex items-center gap-2">
-                {check.passed ? (
-                  <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
+          {/* Goal Input */}
+          {allRequiredPassed && (
+            <div className="flex items-center gap-2 rounded-lg border border-stone-200 bg-white focus-within:border-orange-300 focus-within:ring-2 focus-within:ring-orange-100 transition-all mb-4">
+              <Sparkles className="h-4 w-4 text-orange-400 ml-3 shrink-0" />
+              <input
+                type="text"
+                value={goal}
+                onChange={(e) => setGoal(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && !launching && handleLaunch()}
+                placeholder="Ej: Aumentar engagement en LinkedIn 30%..."
+                disabled={launching}
+                className="flex-1 py-2.5 pr-2 text-sm text-stone-900 placeholder:text-stone-400 bg-transparent outline-none disabled:opacity-50"
+              />
+              <button
+                onClick={handleLaunch}
+                disabled={launching}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 mr-1.5 text-xs font-medium rounded-md bg-orange-600 text-white hover:bg-orange-500 disabled:opacity-40 disabled:cursor-not-allowed transition-all shrink-0"
+              >
+                {launching ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
                 ) : (
-                  <XCircle className="h-3.5 w-3.5 text-stone-300" />
+                  <Send className="h-3.5 w-3.5" />
                 )}
-                <span
-                  className={`text-xs ${
-                    check.passed ? "text-stone-700" : "text-stone-400"
-                  }`}
-                >
-                  {check.label}
-                  {check.required && !check.passed && (
-                    <span className="text-red-400 ml-1">(requerido)</span>
+                {goal.trim() ? "Lanzar" : "Autopilot"}
+              </button>
+            </div>
+          )}
+
+          {/* Pre-launch checklist */}
+          {!allRequiredPassed && (
+            <div className="space-y-1.5 mb-4">
+              {checks.map((check) => (
+                <div key={check.label} className="flex items-center gap-2">
+                  {check.passed ? (
+                    <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
+                  ) : (
+                    <XCircle className="h-3.5 w-3.5 text-stone-400" />
                   )}
-                </span>
-              </div>
-            ))}
-          </div>
+                  <span
+                    className={`text-xs ${
+                      check.passed ? "text-stone-700" : "text-stone-400"
+                    }`}
+                  >
+                    {check.label}
+                    {check.required && !check.passed && (
+                      <span className="text-red-400 ml-1">(requerido)</span>
+                    )}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="shrink-0">
@@ -117,23 +161,34 @@ export function StrategyLauncher() {
         </div>
       </div>
 
-      <button
-        onClick={handleLaunch}
-        disabled={launching || !allRequiredPassed}
-        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-orange-600 text-white hover:bg-orange-500 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-      >
-        {launching ? (
-          <>
-            <Loader2 className="h-4 w-4 animate-spin" />
-            Generando estrategia...
-          </>
-        ) : (
-          <>
-            <Rocket className="h-4 w-4" />
-            Activar Marketing Autopilot
-          </>
+      <div className="flex items-center gap-3">
+        {!allRequiredPassed && (
+          <button
+            onClick={handleLaunch}
+            disabled={launching || !allRequiredPassed}
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-orange-600 text-white hover:bg-orange-500 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+          >
+            {launching ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Generando...
+              </>
+            ) : (
+              <>
+                <Rocket className="h-4 w-4" />
+                Activar
+              </>
+            )}
+          </button>
         )}
-      </button>
+        <Link
+          href="/strategy"
+          className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-orange-600 hover:text-orange-800 transition-colors"
+        >
+          Ver todas las estrategias
+          <ArrowRight className="h-3 w-3" />
+        </Link>
+      </div>
 
       {!allRequiredPassed && (
         <p className="text-[10px] text-stone-400 mt-2">

@@ -19,7 +19,6 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useState } from "react";
-import { translate } from "@/lib/language";
 
 interface SetupStep {
   key: string;
@@ -106,7 +105,7 @@ export function SetupProgress() {
   );
 
   return (
-    <div className="rounded-xl border border-stone-200 bg-[#faf8f4]/50 overflow-hidden">
+    <div className="rounded-xl border border-stone-200 bg-white overflow-hidden">
       {/* Progress Header */}
       <button
         onClick={() => setExpanded(!expanded)}
@@ -117,7 +116,7 @@ export function SetupProgress() {
             <Sparkles className="w-4 h-4 text-orange-400" />
           </div>
           <div className="text-left">
-            <p className="text-sm font-medium text-white">
+            <p className="text-sm font-medium text-stone-900">
               Progreso de Configuración
             </p>
             <p className="text-xs text-stone-500">
@@ -184,7 +183,7 @@ export function SetupProgress() {
                     )}
                     <StepIcon className={`w-4 h-4 flex-shrink-0 ${completed ? "text-stone-500" : isNext ? "text-orange-400" : "text-stone-500"}`} />
                     <div className="flex-1 min-w-0">
-                      <p className={`text-sm ${completed ? "line-through text-stone-500" : "text-white"}`}>
+                      <p className={`text-sm ${completed ? "line-through text-stone-500" : "text-stone-900"}`}>
                         {step.label}
                       </p>
                       <p className="text-xs text-stone-500 truncate">

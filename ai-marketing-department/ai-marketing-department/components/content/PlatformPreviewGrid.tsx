@@ -137,7 +137,7 @@ export function PlatformPreviewGrid({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Icon className={cn("h-4 w-4", platform.color)} />
-                <span className="text-sm font-semibold text-white">
+                <span className="text-sm font-semibold text-stone-900">
                   {platform.name}
                 </span>
               </div>
@@ -149,8 +149,8 @@ export function PlatformPreviewGrid({
             </div>
 
             {/* Preview Text */}
-            <div className="rounded-lg bg-[#faf8f4]/50 p-3 border border-stone-200/50 max-h-40 overflow-y-auto">
-              <p className="text-sm text-stone-300 whitespace-pre-wrap">
+            <div className="rounded-lg bg-white p-3 border border-stone-200/50 max-h-40 overflow-y-auto">
+              <p className="text-sm text-stone-600 whitespace-pre-wrap">
                 {adaptedContent.text.slice(0, 300)}
                 {adaptedContent.text.length > 300 && "..."}
               </p>

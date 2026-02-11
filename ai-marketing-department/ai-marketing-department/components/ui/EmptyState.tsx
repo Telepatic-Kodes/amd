@@ -93,7 +93,7 @@ export function EmptyState({
 }
 
 // Pre-built empty states for common scenarios
-export function EmptyContent({ className, onAction }: { className?: string; onAction?: () => void }) {
+export function EmptyContent({ className, onAction }: { className?: string; onAction?: () => void; onTemplateAction?: () => void }) {
   return (
     <EmptyState
       icon={FileText}
@@ -176,7 +176,7 @@ export function EmptyStateCard({
   return (
     <div
       className={cn(
-        "rounded-xl border border-stone-200 bg-[#faf8f4]/50",
+        "rounded-xl border border-stone-200 bg-white",
         colSpan === 2 && "md:col-span-2",
         colSpan === 3 && "md:col-span-3",
         colSpan === 4 && "md:col-span-4 lg:col-span-4"

@@ -21,19 +21,19 @@ interface FeedHealthSummaryProps {
   loading?: boolean;
 }
 
-export function FeedHealthSummary({ status, loading = false }: FeedHealthSummaryProps) {
-  // Default mock data
-  const defaultStatus: FeedHealthStatus = {
-    totalFeeds: 12,
-    activeFeeds: 10,
-    pausedFeeds: 1,
-    errorFeeds: 1,
-    totalArticlesToday: 45,
-    lastSyncTime: Date.now() - 10 * 60 * 1000, // 10 minutes ago
-    nextSyncTime: Date.now() + 50 * 60 * 1000, // 50 minutes from now
-  };
+// Default mock data computed at module level to avoid impure Date.now() during render
+const DEFAULT_STATUS: FeedHealthStatus = {
+  totalFeeds: 12,
+  activeFeeds: 10,
+  pausedFeeds: 1,
+  errorFeeds: 1,
+  totalArticlesToday: 45,
+  lastSyncTime: Date.now() - 10 * 60 * 1000,
+  nextSyncTime: Date.now() + 50 * 60 * 1000,
+};
 
-  const feedStatus = status || defaultStatus;
+export function FeedHealthSummary({ status, loading = false }: FeedHealthSummaryProps) {
+  const feedStatus = status || DEFAULT_STATUS;
 
   // Determine health status
   const healthStatus = {
@@ -48,6 +48,7 @@ export function FeedHealthSummary({ status, loading = false }: FeedHealthSummary
   };
 
   // Calculate minutes until next sync
+  // eslint-disable-next-line react-hooks/purity -- Date.now() is intentional for relative time display
   const minutesUntilSync = feedStatus.nextSyncTime ? Math.round((feedStatus.nextSyncTime - Date.now()) / 60000) : 0;
 
   if (loading) {
@@ -78,7 +79,7 @@ export function FeedHealthSummary({ status, loading = false }: FeedHealthSummary
               <div className="flex items-center gap-3">
                 <div className="text-3xl">{healthStatus.icon}</div>
                 <div>
-                  <h3 className="text-xl font-semibold text-white">
+                  <h3 className="text-xl font-semibold text-stone-900">
                     {translate("feedHealthSummary")}
                   </h3>
                   <p className="text-sm text-stone-400 mt-1">{healthStatus.message}</p>

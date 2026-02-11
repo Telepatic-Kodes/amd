@@ -129,7 +129,7 @@ export function QuickExecuteModal({ agentId, agentName, onClose }: QuickExecuteM
                   ) : i === stageIndex ? (
                     <Loader2 className="h-3.5 w-3.5 text-emerald-400 animate-spin shrink-0" />
                   ) : (
-                    <Circle className="h-3.5 w-3.5 text-stone-300 shrink-0" />
+                    <Circle className="h-3.5 w-3.5 text-stone-400 shrink-0" />
                   )}
                   <span className={cn(
                     "text-xs transition-colors",

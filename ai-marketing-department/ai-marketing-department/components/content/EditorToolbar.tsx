@@ -114,7 +114,7 @@ const EditorToolbarComponent = ({
       role="toolbar"
       aria-label="Text formatting toolbar"
       className={cn(
-        "flex flex-wrap gap-1 p-2 border-b border-stone-200 bg-[#faf8f4]/50",
+        "flex flex-wrap gap-1 p-2 border-b border-stone-200 bg-white",
         className
       )}
     >

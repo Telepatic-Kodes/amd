@@ -137,7 +137,7 @@ export async function parsePdf(file: File): Promise<ParsedContent> {
 
     // Importar pdf-parse dinámicamente - usar default para CJS
     const pdfParseModule = await import("pdf-parse");
-    // @ts-ignore - El módulo tiene diferentes estructuras en browser vs Node
+    // @ts-expect-error - El módulo tiene diferentes estructuras en browser vs Node
     const pdfParse = pdfParseModule.default || pdfParseModule;
 
     // Parsear el PDF
@@ -188,7 +188,6 @@ export async function parseDocx(file: File): Promise<ParsedContent> {
 
     // Importar mammoth dinámicamente - usar default
     const mammothModule = await import("mammoth");
-    // @ts-ignore - El módulo tiene diferentes estructuras en browser vs Node
     const mammoth = mammothModule.default || mammothModule;
 
     // Convertir a HTML con mammoth (preserva formato)

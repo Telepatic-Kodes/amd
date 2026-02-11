@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { X, Upload, FileText, Check, AlertCircle, Edit3 } from "lucide-react";
+import { useState } from "react";
+import { X, FileText, Check, AlertCircle, Edit3 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FileDropZone } from "./FileDropZone";
 import { RichTextEditor } from "./RichTextEditor";
@@ -35,7 +35,7 @@ export function FileImportModal({
   isOpen,
   onClose,
   onImport,
-  defaultTitle = "",
+  defaultTitle: _defaultTitle = "",
 }: FileImportModalProps) {
   const [step, setStep] = useState<"upload" | "preview">("upload");
   const [parsedContent, setParsedContent] = useState<ParsedContent | null>(null);
@@ -44,17 +44,19 @@ export function FileImportModal({
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
 
-  // Reset state when modal opens/closes
-  useEffect(() => {
-    if (!isOpen) {
-      setStep("upload");
-      setParsedContent(null);
-      setEditedTitle("");
-      setEditedBody("");
-      setError(null);
-      setIsEditing(false);
-    }
-  }, [isOpen]);
+  const resetState = () => {
+    setStep("upload");
+    setParsedContent(null);
+    setEditedTitle("");
+    setEditedBody("");
+    setError(null);
+    setIsEditing(false);
+  };
+
+  const handleClose = () => {
+    resetState();
+    onClose();
+  };
 
   /**
    * Handle file processed from FileDropZone
@@ -111,12 +113,7 @@ export function FileImportModal({
       metadata: parsedContent?.metadata || {},
     });
 
-    // Reset and close
-    setStep("upload");
-    setParsedContent(null);
-    setEditedTitle("");
-    setEditedBody("");
-    setError(null);
+    resetState();
     onClose();
   };
 
@@ -124,11 +121,7 @@ export function FileImportModal({
    * Go back to upload step
    */
   const handleCancel = () => {
-    setStep("upload");
-    setParsedContent(null);
-    setEditedTitle("");
-    setEditedBody("");
-    setError(null);
+    resetState();
   };
 
   /**
@@ -150,7 +143,7 @@ export function FileImportModal({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-          onClick={onClose}
+          onClick={handleClose}
         >
           <motion.div
             initial={{ scale: 0.95, opacity: 0 }}
@@ -161,11 +154,11 @@ export function FileImportModal({
           >
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-stone-200">
-              <h2 className="text-xl font-semibold text-stone-100">
+              <h2 className="text-xl font-semibold text-stone-900">
                 Importar desde archivo
               </h2>
               <button
-                onClick={onClose}
+                onClick={handleClose}
                 className="p-2 hover:bg-stone-200 rounded-lg transition-colors"
                 aria-label="Cerrar"
               >
@@ -178,7 +171,7 @@ export function FileImportModal({
               {/* Step 1: Upload */}
               {step === "upload" && (
                 <div className="space-y-4">
-                  <p className="text-stone-400 text-sm">
+                  <p className="text-stone-600 text-sm">
                     Arrastra un archivo PDF, DOCX o TXT para importar contenido.
                     El contenido extraído se mostrará para que puedas editarlo antes de importar.
                   </p>
@@ -205,7 +198,7 @@ export function FileImportModal({
                   <div className="flex items-start gap-3 p-4 bg-stone-200/50 border border-stone-300 rounded-lg">
                     <FileText className="w-6 h-6 text-orange-400 flex-shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-stone-200 truncate">
+                      <p className="text-sm font-medium text-stone-900 truncate">
                         {parsedContent.metadata.fileName}
                       </p>
                       <p className="text-xs text-stone-400 mt-1">
@@ -216,7 +209,7 @@ export function FileImportModal({
 
                   {/* Title field */}
                   <div>
-                    <label className="block text-sm font-medium text-stone-300 mb-2">
+                    <label className="block text-sm font-medium text-stone-600 mb-2">
                       Título
                       <span className="text-red-400 ml-1">*</span>
                     </label>
@@ -225,14 +218,14 @@ export function FileImportModal({
                       value={editedTitle}
                       onChange={(e) => setEditedTitle(e.target.value)}
                       placeholder="Título del contenido..."
-                      className="w-full px-4 py-2 bg-stone-200 border border-stone-300 rounded-lg text-stone-100 placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                      className="w-full px-4 py-2 bg-white border border-stone-300 rounded-lg text-stone-900 placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                     />
                   </div>
 
                   {/* Content preview/edit */}
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <label className="block text-sm font-medium text-stone-300">
+                      <label className="block text-sm font-medium text-stone-600">
                         Contenido
                         <span className="text-red-400 ml-1">*</span>
                       </label>
@@ -242,7 +235,7 @@ export function FileImportModal({
                           "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors",
                           isEditing
                             ? "bg-orange-600 text-white"
-                            : "bg-stone-200 text-stone-300 hover:bg-stone-100"
+                            : "bg-stone-200 text-stone-600 hover:bg-stone-100"
                         )}
                       >
                         <Edit3 className="w-3.5 h-3.5" />
@@ -286,8 +279,8 @@ export function FileImportModal({
             <div className="flex items-center justify-end gap-3 p-6 border-t border-stone-200">
               {step === "upload" ? (
                 <button
-                  onClick={onClose}
-                  className="px-4 py-2 bg-stone-200 hover:bg-stone-100 text-stone-300 rounded-lg transition-colors font-medium min-h-[44px]"
+                  onClick={handleClose}
+                  className="px-4 py-2 bg-stone-200 hover:bg-stone-100 text-stone-600 rounded-lg transition-colors font-medium min-h-[44px]"
                 >
                   Cancelar
                 </button>
@@ -295,7 +288,7 @@ export function FileImportModal({
                 <>
                   <button
                     onClick={handleCancel}
-                    className="px-4 py-2 bg-stone-200 hover:bg-stone-100 text-stone-300 rounded-lg transition-colors font-medium min-h-[44px]"
+                    className="px-4 py-2 bg-stone-200 hover:bg-stone-100 text-stone-600 rounded-lg transition-colors font-medium min-h-[44px]"
                   >
                     Volver
                   </button>

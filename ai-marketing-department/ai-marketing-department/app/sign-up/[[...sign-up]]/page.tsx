@@ -28,12 +28,12 @@ export default function SignUpPage() {
             },
             elements: {
               formButtonPrimary: 'bg-orange-600 hover:bg-orange-700 text-white',
-              card: 'bg-stone-100 border border-stone-200',
+              card: 'bg-stone-900 border border-stone-700',
               headerTitle: 'text-white',
               headerSubtitle: 'text-stone-400',
-              socialButtonsBlockButton: 'bg-stone-200 border-stone-300 text-white hover:bg-stone-100',
+              socialButtonsBlockButton: 'bg-stone-800 border-stone-600 text-stone-200 hover:bg-stone-700',
               formFieldLabel: 'text-stone-300',
-              formFieldInput: 'bg-stone-200 border-stone-300 text-white',
+              formFieldInput: 'bg-stone-800 border-stone-600 text-white',
               footerActionLink: 'text-orange-500 hover:text-orange-400',
             },
           }}

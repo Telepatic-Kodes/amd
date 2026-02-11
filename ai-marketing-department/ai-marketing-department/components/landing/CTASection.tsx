@@ -17,9 +17,6 @@ export function CTASection() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // TODO: Integrate with Convex to save lead
-    console.log("Lead submitted:", formData);
-
     // For now, just show success message
     setSubmitted(true);
 
@@ -130,7 +127,7 @@ export function CTASection() {
                         onChange={(e) =>
                           setFormData({ ...formData, name: e.target.value })
                         }
-                        className="w-full px-4 py-3 bg-stone-100 border border-stone-300 rounded-lg text-white placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                        className="w-full px-4 py-3 bg-stone-100 border border-stone-300 rounded-lg text-stone-900 placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
                       />
                       <input
                         type="email"
@@ -141,7 +138,7 @@ export function CTASection() {
                         onChange={(e) =>
                           setFormData({ ...formData, email: e.target.value })
                         }
-                        className="w-full px-4 py-3 bg-stone-100 border border-stone-300 rounded-lg text-white placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                        className="w-full px-4 py-3 bg-stone-100 border border-stone-300 rounded-lg text-stone-900 placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
                       />
                       <input
                         type="text"
@@ -151,7 +148,7 @@ export function CTASection() {
                         onChange={(e) =>
                           setFormData({ ...formData, company: e.target.value })
                         }
-                        className="w-full px-4 py-3 bg-stone-100 border border-stone-300 rounded-lg text-white placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                        className="w-full px-4 py-3 bg-stone-100 border border-stone-300 rounded-lg text-stone-900 placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
                       />
                     </div>
 

@@ -3,10 +3,10 @@
 import { AlertCircle } from "lucide-react";
 
 export default function GlobalError({
-  error,
+  _error,
   reset,
 }: {
-  error: Error & { digest?: string };
+  _error: Error & { digest?: string };
   reset: () => void;
 }) {
   return (

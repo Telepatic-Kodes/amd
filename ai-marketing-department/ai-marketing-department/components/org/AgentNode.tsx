@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Crown, Briefcase, User, Zap } from "lucide-react";
+import { Crown, Briefcase, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Agent {

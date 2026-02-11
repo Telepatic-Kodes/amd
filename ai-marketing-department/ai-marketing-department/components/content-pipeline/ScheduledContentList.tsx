@@ -3,7 +3,7 @@
 import { Id } from "@convex/_generated/dataModel";
 import { Calendar, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { typeColors, typeIcons, formatTypeName } from "@/lib/contentTypes";
+import { typeColors, typeIcons } from "@/lib/contentTypes";
 import { translate } from "@/lib/language";
 
 interface ScheduledItem {
@@ -29,7 +29,7 @@ export function ScheduledContentList({ scheduledContent, onPublishNow, onUnsched
       <div className="bg-stone-50/30 border border-stone-200/50 rounded-xl p-6">
         <div className="flex items-center gap-2 mb-4">
           <Calendar className="h-5 w-5 text-orange-400" />
-          <h3 className="text-lg font-semibold text-white">{translate("scheduledContentTitle")}</h3>
+          <h3 className="text-lg font-semibold text-stone-900">{translate("scheduledContentTitle")}</h3>
         </div>
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
@@ -44,7 +44,7 @@ export function ScheduledContentList({ scheduledContent, onPublishNow, onUnsched
     <div className="bg-stone-50/30 border border-stone-200/50 rounded-xl p-6">
       <div className="flex items-center gap-2 mb-4">
         <Calendar className="h-5 w-5 text-orange-400" />
-        <h3 className="text-lg font-semibold text-white">{translate("scheduledContentTitle")}</h3>
+        <h3 className="text-lg font-semibold text-stone-900">{translate("scheduledContentTitle")}</h3>
         {scheduledContent.length > 0 && (
           <span className="text-xs text-stone-500 bg-stone-200 px-2 py-0.5 rounded-full">{scheduledContent.length}</span>
         )}
@@ -65,7 +65,7 @@ export function ScheduledContentList({ scheduledContent, onPublishNow, onUnsched
                   <TypeIcon className="h-4 w-4" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-white truncate">{item.title}</p>
+                  <p className="text-sm font-medium text-stone-900 truncate">{item.title}</p>
                   <p className="text-xs text-orange-400">
                     {item.scheduledFor
                       ? new Date(item.scheduledFor).toLocaleDateString("es-CL", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })

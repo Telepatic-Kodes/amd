@@ -22,18 +22,18 @@ import { AddFeedForm } from "@/components/feeds/AddFeedForm";
 import { FeedItemsList } from "@/components/feeds/FeedItemsList";
 
 const STATUSES = [
-  { value: "", label: "All Statuses" },
-  { value: "active", label: "Active" },
-  { value: "paused", label: "Paused" },
-  { value: "error", label: "Error" },
+  { value: "", label: "Todos los Estados" },
+  { value: "active", label: "Activo" },
+  { value: "paused", label: "Pausado" },
+  { value: "error", label: "Con Error" },
 ];
 
 const CATEGORIES = [
-  { value: "", label: "All Categories" },
-  { value: "industry", label: "Industry" },
-  { value: "competitor", label: "Competitor" },
-  { value: "technical", label: "Technical" },
-  { value: "news", label: "News" },
+  { value: "", label: "Todas las Categorias" },
+  { value: "industry", label: "Industria" },
+  { value: "competitor", label: "Competencia" },
+  { value: "technical", label: "Tecnico" },
+  { value: "news", label: "Noticias" },
   { value: "blog", label: "Blog" },
 ];
 
@@ -97,11 +97,11 @@ export default function FeedsPage() {
             <Rss className="h-6 w-6 text-orange-400" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-stone-400 bg-clip-text text-transparent">
-              RSS Feeds
+            <h1 className="text-3xl font-bold text-stone-900">
+              Fuentes RSS
             </h1>
             <p className="text-stone-400 mt-1">
-              Manage your content sources.
+              Gestiona tus fuentes de contenido.
             </p>
           </div>
         </div>
@@ -119,11 +119,11 @@ export default function FeedsPage() {
             <Rss className="h-6 w-6 text-orange-400" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-stone-400 bg-clip-text text-transparent">
-              RSS Feeds
+            <h1 className="text-3xl font-bold text-stone-900">
+              Fuentes RSS
             </h1>
             <p className="text-stone-400 mt-1">
-              {feeds.length} feeds configured
+              {feeds.length} feeds configurados
             </p>
           </div>
         </div>
@@ -138,10 +138,10 @@ export default function FeedsPage() {
           <input
             type="text"
             inputMode="search"
-            placeholder="Search feeds..."
+            placeholder="Buscar feeds..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-lg border border-stone-200 bg-[#faf8f4]/50 py-2 pl-10 pr-4 text-sm text-white placeholder-stone-500 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+            className="w-full rounded-lg border border-stone-200 bg-white py-2 pl-10 pr-4 text-sm text-stone-900 placeholder-stone-500 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
           />
         </div>
 
@@ -151,7 +151,7 @@ export default function FeedsPage() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="appearance-none rounded-lg border border-stone-200 bg-[#faf8f4]/50 py-2 pl-10 pr-8 text-sm text-white focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+            className="appearance-none rounded-lg border border-stone-200 bg-white py-2 pl-10 pr-8 text-sm text-stone-900 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
           >
             {STATUSES.map((status) => (
               <option key={status.value} value={status.value}>
@@ -167,7 +167,7 @@ export default function FeedsPage() {
           <select
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
-            className="appearance-none rounded-lg border border-stone-200 bg-[#faf8f4]/50 py-2 pl-4 pr-8 text-sm text-white focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+            className="appearance-none rounded-lg border border-stone-200 bg-white py-2 pl-4 pr-8 text-sm text-stone-900 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
           >
             {CATEGORIES.map((cat) => (
               <option key={cat.value} value={cat.value}>
@@ -182,13 +182,13 @@ export default function FeedsPage() {
       {/* Stats Summary */}
       <div className="flex flex-wrap gap-2">
         <Badge variant="success">
-          {feeds.filter((f) => f.status === "active").length} Active
+          {feeds.filter((f) => f.status === "active").length} Activos
         </Badge>
         <Badge variant="warning">
-          {feeds.filter((f) => f.status === "paused").length} Paused
+          {feeds.filter((f) => f.status === "paused").length} Pausados
         </Badge>
         <Badge variant="error">
-          {feeds.filter((f) => f.status === "error").length} Errors
+          {feeds.filter((f) => f.status === "error").length} Errores
         </Badge>
       </div>
 
@@ -202,9 +202,9 @@ export default function FeedsPage() {
           {filteredFeeds.length === 0 ? (
             <div className="text-center py-12 text-stone-500">
               {feeds.length === 0 ? (
-                <p>No feeds configured yet. Add your first feed to get started.</p>
+                <p>No hay feeds configurados. Agrega tu primer feed para comenzar.</p>
               ) : (
-                <p>No feeds match your filters.</p>
+                <p>No hay feeds que coincidan con tus filtros.</p>
               )}
             </div>
           ) : (
@@ -242,9 +242,9 @@ export default function FeedsPage() {
               <Card className="sticky top-6">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                    <h3 className="text-lg font-semibold text-stone-900 flex items-center gap-2">
                       <Activity className="h-4 w-4 text-orange-400" />
-                      Feed Items
+                      Elementos del Feed
                     </h3>
                     <button
                       onClick={() => setSelectedFeedId(null)}
@@ -255,7 +255,7 @@ export default function FeedsPage() {
                   </div>
 
                   <div className="mb-4">
-                    <h4 className="text-white font-medium">{selectedFeed.name}</h4>
+                    <h4 className="text-stone-900 font-medium">{selectedFeed.name}</h4>
                     <p className="text-xs text-stone-500 truncate">{selectedFeed.url}</p>
                   </div>
 
@@ -270,7 +270,7 @@ export default function FeedsPage() {
       {/* Recent Items Section (when no feed selected) */}
       {!selectedFeedId && feeds.length > 0 && (
         <div className="mt-8">
-          <h2 className="text-xl font-semibold text-white mb-4">Recent Items</h2>
+          <h2 className="text-xl font-semibold text-stone-900 mb-4">Elementos Recientes</h2>
           <FeedItemsList limit={10} />
         </div>
       )}

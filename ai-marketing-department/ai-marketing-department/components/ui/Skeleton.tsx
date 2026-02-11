@@ -22,7 +22,7 @@ export function SkeletonCard({ className }: SkeletonProps) {
   return (
     <div
       className={cn(
-        "rounded-xl border border-stone-200 bg-[#faf8f4]/50 p-6",
+        "rounded-xl border border-stone-200 bg-white p-6",
         className
       )}
     >
@@ -41,7 +41,7 @@ export function SkeletonStat({ className }: SkeletonProps) {
   return (
     <div
       className={cn(
-        "rounded-xl border border-stone-200 bg-[#faf8f4]/50 p-6",
+        "rounded-xl border border-stone-200 bg-white p-6",
         className
       )}
     >
@@ -59,7 +59,7 @@ export function SkeletonChart({ className, height = 200 }: SkeletonProps & { hei
   return (
     <div
       className={cn(
-        "rounded-xl border border-stone-200 bg-[#faf8f4]/50 p-6",
+        "rounded-xl border border-stone-200 bg-white p-6",
         className
       )}
     >
@@ -87,7 +87,7 @@ export function SkeletonDonut({ className, size = 200 }: SkeletonProps & { size?
   return (
     <div
       className={cn(
-        "rounded-xl border border-stone-200 bg-[#faf8f4]/50 p-6 flex items-center justify-center",
+        "rounded-xl border border-stone-200 bg-white p-6 flex items-center justify-center",
         className
       )}
     >
@@ -105,7 +105,7 @@ export function SkeletonTable({ rows = 5, className }: SkeletonProps & { rows?: 
   return (
     <div
       className={cn(
-        "rounded-xl border border-stone-200 bg-[#faf8f4]/50 p-6",
+        "rounded-xl border border-stone-200 bg-white p-6",
         className
       )}
     >

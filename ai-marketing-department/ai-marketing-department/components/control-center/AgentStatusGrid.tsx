@@ -166,17 +166,17 @@ export function AgentStatusGrid({
           <div className="w-2 h-2 rounded-full bg-green-400" />
           {statusCounts.active} {translate("agentsActive")}
         </span>
-        <span className="text-stone-300">|</span>
+        <span className="text-stone-400">|</span>
         <span className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-yellow-400" />
           {statusCounts.paused} {translate("agentsPaused")}
         </span>
-        <span className="text-stone-300">|</span>
+        <span className="text-stone-400">|</span>
         <span className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-red-400" />
           {statusCounts.error} {translate("agentsError")}
         </span>
-        <span className="text-stone-300">|</span>
+        <span className="text-stone-400">|</span>
         <span className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-orange-400" />
           {statusCounts.maintenance} {translate("agentsMaintenance")}

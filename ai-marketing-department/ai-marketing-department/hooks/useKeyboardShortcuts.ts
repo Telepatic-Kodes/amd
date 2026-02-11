@@ -98,6 +98,14 @@ export function useKeyboardShortcuts(onToggleHelp: () => void) {
             e.preventDefault();
             navigate("/brand");
             break;
+          case "a":
+            e.preventDefault();
+            navigate("/agents");
+            break;
+          case "t":
+            e.preventDefault();
+            navigate("/strategy");
+            break;
         }
       }
     };

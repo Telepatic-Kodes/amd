@@ -18,7 +18,7 @@ export function ReportHistory({ onViewReport }: ReportHistoryProps) {
     // Loading skeleton
     return (
       <div className="bg-stone-100 border border-stone-200 rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-stone-100 mb-4">{LABELS.reportHistory}</h3>
+        <h3 className="text-lg font-semibold text-stone-900 mb-4">{LABELS.reportHistory}</h3>
         <div className="space-y-3">
           {[...Array(3)].map((_, i) => (
             <div key={i} className="h-16 bg-stone-200 rounded-lg animate-pulse" />
@@ -31,7 +31,7 @@ export function ReportHistory({ onViewReport }: ReportHistoryProps) {
   if (reports.length === 0) {
     return (
       <div className="bg-stone-100 border border-stone-200 rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-stone-100 mb-4">{LABELS.reportHistory}</h3>
+        <h3 className="text-lg font-semibold text-stone-900 mb-4">{LABELS.reportHistory}</h3>
         <div className="flex flex-col items-center justify-center py-8 text-center">
           <div className="w-16 h-16 rounded-full bg-stone-200 flex items-center justify-center mb-4">
             <FileText className="h-8 w-8 text-stone-600" />
@@ -47,7 +47,7 @@ export function ReportHistory({ onViewReport }: ReportHistoryProps) {
 
   return (
     <div className="bg-stone-100 border border-stone-200 rounded-xl p-6">
-      <h3 className="text-lg font-semibold text-stone-100 mb-4">{LABELS.reportHistory}</h3>
+      <h3 className="text-lg font-semibold text-stone-900 mb-4">{LABELS.reportHistory}</h3>
       <div className="space-y-2">
         {reports.map((report) => {
           const typeLabel = report.type === "weekly" ? LABELS.weeklyReport : LABELS.monthlyReport;
@@ -82,7 +82,7 @@ export function ReportHistory({ onViewReport }: ReportHistoryProps) {
 
               {/* Title and Period */}
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-stone-100 truncate">{report.title}</p>
+                <p className="text-sm font-medium text-stone-900 truncate">{report.title}</p>
                 <p className="text-xs text-stone-500">
                   {periodStart} - {periodEnd}
                 </p>

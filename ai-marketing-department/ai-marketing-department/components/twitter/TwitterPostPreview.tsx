@@ -33,6 +33,7 @@ export function TwitterPostPreview({
       {/* Header */}
       <div className="px-4 py-3 flex items-start gap-3">
         {authorAvatar ? (
+          /* eslint-disable-next-line @next/next/no-img-element */
           <img
             src={authorAvatar}
             alt={authorName}
@@ -46,7 +47,7 @@ export function TwitterPostPreview({
         )}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1">
-            <p className="text-sm font-bold text-white truncate">{authorName}</p>
+            <p className="text-sm font-bold text-stone-900 truncate">{authorName}</p>
             {isThread && (
               <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-orange-500/10 text-orange-400 border border-orange-500/30 shrink-0">
                 {tweetNumber}/{totalTweets}
@@ -62,7 +63,7 @@ export function TwitterPostPreview({
 
       {/* Body */}
       <div className="px-4 pb-3">
-        <div className="text-[15px] text-stone-100 whitespace-pre-wrap break-words leading-relaxed">
+        <div className="text-[15px] text-stone-700 whitespace-pre-wrap break-words leading-relaxed">
           {text}
         </div>
       </div>

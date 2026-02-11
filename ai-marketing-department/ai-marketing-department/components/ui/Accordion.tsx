@@ -35,13 +35,13 @@ export function Accordion({ items, allowMultiple = false }: AccordionProps) {
         return (
           <div
             key={item.id}
-            className="border border-stone-200 rounded-lg bg-[#faf8f4]/50 overflow-hidden transition-all duration-200 hover:border-stone-300"
+            className="border border-stone-200 rounded-lg bg-white overflow-hidden transition-all duration-200 hover:border-stone-300"
           >
             <button
               onClick={() => toggleItem(item.id)}
               className="w-full flex items-center justify-between p-6 text-left"
             >
-              <h3 className="text-lg font-semibold text-white pr-4">
+              <h3 className="text-lg font-semibold text-stone-900 pr-4">
                 {item.question}
               </h3>
               <ChevronDown

@@ -53,7 +53,7 @@ function DepartmentCard({
   agents,
   lastActivityByAgent,
   recentExecutionsByAgent,
-  activityByAgent,
+  activityByAgent: _activityByAgent,
   onSelectAgent,
 }: {
   dept: string;
@@ -153,7 +153,7 @@ function DepartmentCard({
               </>
             ) : (
               <>
-                <ChevronDown className="h-3 w-3" /> {team.length} agentes mas
+                <ChevronDown className="h-3 w-3" /> {team.length} agentes más
               </>
             )}
           </button>

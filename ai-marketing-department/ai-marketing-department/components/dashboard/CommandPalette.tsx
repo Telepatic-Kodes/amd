@@ -14,8 +14,13 @@ import {
   Bot,
   Plus,
   Zap,
+  Palette,
+  Moon,
+  Sun,
+  Megaphone,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTheme } from "@/hooks/useTheme";
 
 interface CommandItem {
   id: string;
@@ -33,6 +38,7 @@ export function CommandPalette() {
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const agents = useQuery(api.functions.listAgents, {});
+  const { resolved: currentTheme, toggleTheme } = useTheme();
 
   // Keyboard shortcut: Cmd+K / Ctrl+K
   useEffect(() => {
@@ -69,13 +75,24 @@ export function CommandPalette() {
       { id: "nav-home", label: "Inicio", description: "Dashboard principal", icon: Home, section: "Paginas", action: () => navigate("/") },
       { id: "nav-control", label: "Centro de Control", description: "Monitorea agentes", icon: Activity, section: "Paginas", action: () => navigate("/control-center") },
       { id: "nav-content", label: "Contenido", description: "Gestiona contenido", icon: FileText, section: "Paginas", action: () => navigate("/content") },
+      { id: "nav-agents", label: "Agentes", description: "37 agentes IA", icon: Bot, section: "Paginas", action: () => navigate("/agents") },
       { id: "nav-results", label: "Resultados", description: "Metricas y analytics", icon: BarChart3, section: "Paginas", action: () => navigate("/results") },
+      { id: "nav-brand", label: "Marca", description: "Perfil e identidad de marca", icon: Palette, section: "Paginas", action: () => navigate("/brand") },
+      { id: "nav-campaigns", label: "Campanas", description: "Campanas multicanal", icon: Megaphone, section: "Paginas", action: () => navigate("/campaigns") },
       { id: "nav-settings", label: "Configuracion", description: "Configuracion avanzada", icon: Settings, section: "Paginas", action: () => navigate("/settings") },
     ];
 
     const actions: CommandItem[] = [
       { id: "act-content", label: "Crear Contenido", description: "Nuevo contenido", icon: Plus, section: "Acciones", action: () => navigate("/content") },
       { id: "act-task", label: "Nueva Tarea", description: "Crear tarea manual", icon: Plus, section: "Acciones", action: () => navigate("/control-center") },
+      {
+        id: "act-theme",
+        label: currentTheme === "dark" ? "Cambiar a modo claro" : "Cambiar a modo oscuro",
+        description: "Alternar tema",
+        icon: currentTheme === "dark" ? Sun : Moon,
+        section: "Acciones",
+        action: () => { toggleTheme(); setOpen(false); },
+      },
     ];
 
     const agentItems: CommandItem[] = (agents || []).map((a: Record<string, unknown>) => ({
@@ -151,7 +168,7 @@ export function CommandPalette() {
       />
 
       {/* Palette */}
-      <div className="relative w-full max-w-lg rounded-xl border border-[var(--border)] bg-stone-50 shadow-2xl overflow-hidden" role="combobox" aria-expanded="true" aria-haspopup="listbox">
+      <div className="relative w-full max-w-lg rounded-xl border border-[var(--border)] bg-[var(--surface)] shadow-2xl overflow-hidden" role="combobox" aria-expanded="true" aria-haspopup="listbox">
         {/* Search input */}
         <div className="flex items-center gap-3 border-b border-[var(--border)] px-4 py-3">
           <Search className="h-4 w-4 text-stone-400 shrink-0" aria-hidden="true" />

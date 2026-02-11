@@ -7,6 +7,7 @@ describe("Auth Enforcement — Critical Path", () => {
   beforeEach(() => {
     process.env = { ...originalEnv };
     // Default: non-production environment
+    // @ts-expect-error -- NODE_ENV is readonly in types but writable at runtime for testing
     process.env.NODE_ENV = "development";
     delete process.env.VERCEL_ENV;
   });
@@ -28,6 +29,7 @@ describe("Auth Enforcement — Critical Path", () => {
   });
 
   it("throws in production with Clerk test keys", () => {
+    // @ts-expect-error -- NODE_ENV is readonly in types but writable at runtime for testing
     process.env.NODE_ENV = "production";
     process.env.VERCEL_ENV = "production";
     process.env.NEXT_PUBLIC_CONVEX_URL = "https://my-app.convex.cloud";
@@ -39,6 +41,7 @@ describe("Auth Enforcement — Critical Path", () => {
   });
 
   it("throws in production with localhost Convex URL", () => {
+    // @ts-expect-error -- NODE_ENV is readonly in types but writable at runtime for testing
     process.env.NODE_ENV = "production";
     process.env.VERCEL_ENV = "production";
     process.env.NEXT_PUBLIC_CONVEX_URL = "http://localhost:3210";
@@ -49,6 +52,7 @@ describe("Auth Enforcement — Critical Path", () => {
   });
 
   it("passes in production with valid config", () => {
+    // @ts-expect-error -- NODE_ENV is readonly in types but writable at runtime for testing
     process.env.NODE_ENV = "production";
     process.env.VERCEL_ENV = "production";
     process.env.NEXT_PUBLIC_CONVEX_URL = "https://my-app.convex.cloud";

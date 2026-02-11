@@ -39,7 +39,7 @@ export function TeamManagement() {
     return (
       <Card>
         <CardHeader>
-          <h3 className="text-lg font-semibold text-white">{translate("team")}</h3>
+          <h3 className="text-lg font-semibold text-stone-900">{translate("team")}</h3>
           <p className="text-sm text-stone-400">{translate("teamManagement")}</p>
         </CardHeader>
         <CardContent className="p-6 pt-0">
@@ -58,7 +58,7 @@ export function TeamManagement() {
     return (
       <Card>
         <CardHeader>
-          <h3 className="text-lg font-semibold text-white">{translate("team")}</h3>
+          <h3 className="text-lg font-semibold text-stone-900">{translate("team")}</h3>
           <p className="text-sm text-stone-400">{translate("teamManagement")}</p>
         </CardHeader>
         <CardContent className="p-6 pt-0">
@@ -73,7 +73,7 @@ export function TeamManagement() {
   return (
     <Card>
       <CardHeader>
-        <h3 className="text-lg font-semibold text-white">{translate("team")}</h3>
+        <h3 className="text-lg font-semibold text-stone-900">{translate("team")}</h3>
         <p className="text-sm text-stone-400">Gestiona los roles de tu equipo</p>
       </CardHeader>
       <CardContent className="p-6 pt-0">
@@ -114,6 +114,7 @@ export function TeamManagement() {
                       <td className="py-3">
                         <div className="flex items-center gap-3">
                           {user.imageUrl ? (
+                            /* eslint-disable-next-line @next/next/no-img-element */
                             <img
                               src={user.imageUrl}
                               alt={user.name || user.email}
@@ -126,7 +127,7 @@ export function TeamManagement() {
                             </div>
                           )}
                           <div>
-                            <p className="text-sm font-medium text-white">
+                            <p className="text-sm font-medium text-stone-900">
                               {user.name || "Usuario"}
                               {isCurrentUser && (
                                 <span className="ml-2 text-xs text-stone-500">(Tú)</span>
@@ -153,7 +154,7 @@ export function TeamManagement() {
                             value={user.role}
                             onChange={(e) => handleRoleChange(user._id, e.target.value)}
                             disabled={isDisabled}
-                            className="appearance-none rounded-lg border border-stone-200 bg-[#faf8f4]/50 py-1.5 pl-3 pr-8 text-sm text-white disabled:opacity-50 disabled:cursor-not-allowed focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                            className="appearance-none rounded-lg border border-stone-200 bg-white py-1.5 pl-3 pr-8 text-sm text-stone-900 disabled:opacity-50 disabled:cursor-not-allowed focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
                           >
                             {/* Show current role even if it's "owner" */}
                             {user.role === "owner" && (
@@ -208,6 +209,7 @@ export function TeamManagement() {
                   {/* User Info */}
                   <div className="flex items-center gap-3">
                     {user.imageUrl ? (
+                      /* eslint-disable-next-line @next/next/no-img-element */
                       <img
                         src={user.imageUrl}
                         alt={user.name || user.email}
@@ -220,7 +222,7 @@ export function TeamManagement() {
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-white truncate">
+                      <p className="text-sm font-medium text-stone-900 truncate">
                         {user.name || "Usuario"}
                         {isCurrentUser && (
                           <span className="ml-2 text-xs text-stone-500">(Tú)</span>
@@ -243,7 +245,7 @@ export function TeamManagement() {
                         value={user.role}
                         onChange={(e) => handleRoleChange(user._id, e.target.value)}
                         disabled={isDisabled}
-                        className="w-full appearance-none rounded-lg border border-stone-200 bg-[#faf8f4]/50 py-2 pl-3 pr-8 text-sm text-white disabled:opacity-50 disabled:cursor-not-allowed focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                        className="w-full appearance-none rounded-lg border border-stone-200 bg-white py-2 pl-3 pr-8 text-sm text-stone-900 disabled:opacity-50 disabled:cursor-not-allowed focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
                       >
                         {user.role === "owner" && (
                           <option value="owner">{ROLE_LABELS.owner}</option>

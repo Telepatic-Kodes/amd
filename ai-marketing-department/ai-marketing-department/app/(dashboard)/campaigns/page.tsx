@@ -36,21 +36,21 @@ const Sparkline = dynamic(
 import { chartColors } from "@/components/charts/theme";
 
 const CAMPAIGN_TYPES = [
-  { value: "", label: "All Types" },
-  { value: "content", label: "Content" },
-  { value: "paid", label: "Paid" },
+  { value: "", label: "Todos los Tipos" },
+  { value: "content", label: "Contenido" },
+  { value: "paid", label: "Pago" },
   { value: "email", label: "Email" },
   { value: "social", label: "Social" },
-  { value: "integrated", label: "Integrated" },
+  { value: "integrated", label: "Integrada" },
 ];
 
 const CAMPAIGN_STATUSES = [
-  { value: "", label: "All Statuses" },
-  { value: "planning", label: "Planning" },
-  { value: "active", label: "Active" },
-  { value: "paused", label: "Paused" },
-  { value: "completed", label: "Completed" },
-  { value: "cancelled", label: "Cancelled" },
+  { value: "", label: "Todos los Estados" },
+  { value: "planning", label: "Planificando" },
+  { value: "active", label: "Activa" },
+  { value: "paused", label: "Pausada" },
+  { value: "completed", label: "Completada" },
+  { value: "cancelled", label: "Cancelada" },
 ];
 
 const typeColors: Record<string, string> = {
@@ -85,7 +85,7 @@ function formatNumber(num: number) {
 }
 
 function formatDate(timestamp: number) {
-  return new Date(timestamp).toLocaleDateString("en-US", {
+  return new Date(timestamp).toLocaleDateString("es-CL", {
     month: "short",
     day: "numeric",
     year: "numeric",
@@ -164,11 +164,11 @@ export default function CampaignsPage() {
     return (
       <div className="space-y-8">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-stone-400 bg-clip-text text-transparent">
-            Campaigns
+          <h1 className="text-3xl font-bold text-stone-900">
+            Campanas
           </h1>
           <p className="text-stone-400 mt-2">
-            Manage and monitor your marketing campaigns.
+            Gestiona y monitorea tus campanas de marketing.
           </p>
         </div>
         {/* Skeleton Stats */}
@@ -176,7 +176,7 @@ export default function CampaignsPage() {
           {[...Array(4)].map((_, i) => (
             <div
               key={i}
-              className="h-32 rounded-xl border border-stone-200 bg-[#faf8f4]/50 animate-pulse"
+              className="h-32 rounded-xl border border-stone-200 bg-white animate-pulse"
             />
           ))}
         </div>
@@ -185,7 +185,7 @@ export default function CampaignsPage() {
           {[...Array(3)].map((_, i) => (
             <div
               key={i}
-              className="h-40 rounded-xl border border-stone-200 bg-[#faf8f4]/50 animate-pulse"
+              className="h-40 rounded-xl border border-stone-200 bg-white animate-pulse"
             />
           ))}
         </div>
@@ -202,11 +202,11 @@ export default function CampaignsPage() {
             <Rocket className="w-8 h-8 text-green-400" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-white to-stone-400 bg-clip-text text-transparent">
-              Campaigns
+            <h1 className="text-2xl font-bold text-stone-900">
+              Campanas
             </h1>
             <p className="text-stone-500 text-sm">
-              {campaigns.length} campaigns • {stats?.active || 0} active
+              {campaigns.length} campanas • {stats?.active || 0} activas
             </p>
           </div>
         </div>
@@ -228,10 +228,10 @@ export default function CampaignsPage() {
                 </div>
                 <TrendIndicator value={12} size="sm" />
               </div>
-              <p className="text-2xl font-bold text-white">
+              <p className="text-2xl font-bold text-stone-900">
                 <SimpleCounter value={stats.active} />
               </p>
-              <p className="text-sm text-stone-500">Active Campaigns</p>
+              <p className="text-sm text-stone-500">Campanas Activas</p>
               <div className="mt-2 h-8">
                 <Sparkline
                   data={generateSparklineData()}
@@ -256,13 +256,13 @@ export default function CampaignsPage() {
                 </div>
                 <TrendIndicator value={8.5} size="sm" />
               </div>
-              <p className="text-2xl font-bold text-white">
+              <p className="text-2xl font-bold text-stone-900">
                 <SimpleCounter
                   value={stats.totalImpressions}
                   formatter={(v) => formatNumber(Math.round(v))}
                 />
               </p>
-              <p className="text-sm text-stone-500">Total Impressions</p>
+              <p className="text-sm text-stone-500">Impresiones Totales</p>
               <div className="mt-2 h-8">
                 <Sparkline
                   data={generateSparklineData()}
@@ -287,13 +287,13 @@ export default function CampaignsPage() {
                 </div>
                 <TrendIndicator value={-2.1} size="sm" />
               </div>
-              <p className="text-2xl font-bold text-white">
+              <p className="text-2xl font-bold text-stone-900">
                 <SimpleCounter
                   value={stats.avgCtr}
                   formatter={(v) => `${v.toFixed(2)}%`}
                 />
               </p>
-              <p className="text-sm text-stone-500">Average CTR</p>
+              <p className="text-sm text-stone-500">CTR Promedio</p>
               <div className="mt-2 h-8">
                 <Sparkline
                   data={generateSparklineData()}
@@ -324,14 +324,14 @@ export default function CampaignsPage() {
                   strokeWidth={3}
                 />
               </div>
-              <p className="text-2xl font-bold text-white">
+              <p className="text-2xl font-bold text-stone-900">
                 <SimpleCounter
                   value={stats.totalSpent}
                   formatter={(v) => formatCurrency(Math.round(v))}
                 />
               </p>
               <p className="text-sm text-stone-500">
-                of {formatCurrency(stats.totalBudget)} budget
+                de {formatCurrency(stats.totalBudget)} presupuesto
               </p>
               <div className="mt-2 h-2 bg-stone-200 rounded-full overflow-hidden">
                 <motion.div
@@ -354,10 +354,10 @@ export default function CampaignsPage() {
           <input
             type="text"
             inputMode="search"
-            placeholder="Search campaigns..."
+            placeholder="Buscar campañas..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-lg border border-stone-200 bg-[#faf8f4]/50 py-2 pl-10 pr-4 text-sm text-white placeholder-stone-500 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+            className="w-full rounded-lg border border-stone-200 bg-white py-2 pl-10 pr-4 text-sm text-stone-900 placeholder-stone-500 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
           />
         </div>
 
@@ -367,7 +367,7 @@ export default function CampaignsPage() {
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            className="appearance-none rounded-lg border border-stone-200 bg-[#faf8f4]/50 py-2 pl-10 pr-8 text-sm text-white focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+            className="appearance-none rounded-lg border border-stone-200 bg-white py-2 pl-10 pr-8 text-sm text-stone-900 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
           >
             {CAMPAIGN_TYPES.map((type) => (
               <option key={type.value} value={type.value}>
@@ -383,7 +383,7 @@ export default function CampaignsPage() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="appearance-none rounded-lg border border-stone-200 bg-[#faf8f4]/50 py-2 pl-4 pr-8 text-sm text-white focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+            className="appearance-none rounded-lg border border-stone-200 bg-white py-2 pl-4 pr-8 text-sm text-stone-900 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
           >
             {CAMPAIGN_STATUSES.map((status) => (
               <option key={status.value} value={status.value}>
@@ -398,13 +398,13 @@ export default function CampaignsPage() {
       {/* Stats Summary */}
       <div className="flex flex-wrap gap-2">
         <Badge variant="success">
-          {campaigns.filter((c: { status: string }) => c.status === "active").length} Active
+          {campaigns.filter((c: { status: string }) => c.status === "active").length} Activas
         </Badge>
         <Badge variant="default">
-          {campaigns.filter((c: { status: string }) => c.status === "planning").length} Planning
+          {campaigns.filter((c: { status: string }) => c.status === "planning").length} En Planificación
         </Badge>
         <Badge variant="info">
-          {campaigns.filter((c: { status: string }) => c.status === "completed").length} Completed
+          {campaigns.filter((c: { status: string }) => c.status === "completed").length} Completadas
         </Badge>
       </div>
 
@@ -469,7 +469,7 @@ export default function CampaignsPage() {
                           <div className="flex-1 min-w-0">
                             <div className="flex items-start justify-between gap-4">
                               <div>
-                                <h3 className="font-semibold text-white">
+                                <h3 className="font-semibold text-stone-900">
                                   {campaign.name}
                                 </h3>
                                 <p className="text-sm text-stone-400 line-clamp-1 mt-1">
@@ -486,8 +486,8 @@ export default function CampaignsPage() {
                                   <div className="flex items-center gap-2">
                                     <Eye className="h-4 w-4 text-stone-500" />
                                     <div>
-                                      <p className="text-xs text-stone-500">Impressions</p>
-                                      <p className="text-sm font-medium text-white">
+                                      <p className="text-xs text-stone-500">Impresiones</p>
+                                      <p className="text-sm font-medium text-stone-900">
                                         {formatNumber(campaign.metrics.impressions)}
                                       </p>
                                     </div>
@@ -496,7 +496,7 @@ export default function CampaignsPage() {
                                     <MousePointer className="h-4 w-4 text-stone-500" />
                                     <div>
                                       <p className="text-xs text-stone-500">Clicks</p>
-                                      <p className="text-sm font-medium text-white">
+                                      <p className="text-sm font-medium text-stone-900">
                                         {formatNumber(campaign.metrics.clicks)}
                                       </p>
                                     </div>
@@ -504,8 +504,8 @@ export default function CampaignsPage() {
                                   <div className="flex items-center gap-2">
                                     <Target className="h-4 w-4 text-stone-500" />
                                     <div>
-                                      <p className="text-xs text-stone-500">Conversions</p>
-                                      <p className="text-sm font-medium text-white">
+                                      <p className="text-xs text-stone-500">Conversiones</p>
+                                      <p className="text-sm font-medium text-stone-900">
                                         {formatNumber(campaign.metrics.conversions)}
                                       </p>
                                     </div>
@@ -514,7 +514,7 @@ export default function CampaignsPage() {
                                     <TrendingUp className="h-4 w-4 text-stone-500" />
                                     <div>
                                       <p className="text-xs text-stone-500">CTR</p>
-                                      <p className="text-sm font-medium text-white">
+                                      <p className="text-sm font-medium text-stone-900">
                                         {campaign.metrics.ctr.toFixed(2)}%
                                       </p>
                                     </div>
@@ -587,30 +587,30 @@ export default function CampaignsPage() {
             <Card className="sticky top-6">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-semibold text-white">
-                    Campaign Details
+                  <h3 className="text-lg font-semibold text-stone-900">
+                    Detalles de Campana
                   </h3>
                   <button
                     onClick={() => setSelectedCampaign(null)}
                     className="text-stone-500 hover:text-stone-900 text-sm"
                   >
-                    Close
+                    Cerrar
                   </button>
                 </div>
 
                 <div className="space-y-4">
                   {/* Name */}
                   <div>
-                    <p className="text-xs text-stone-500 mb-1">Name</p>
-                    <p className="text-white font-medium">
+                    <p className="text-xs text-stone-500 mb-1">Nombre</p>
+                    <p className="text-stone-900 font-medium">
                       {selectedCampaignData.name}
                     </p>
                   </div>
 
                   {/* Description */}
                   <div>
-                    <p className="text-xs text-stone-500 mb-1">Description</p>
-                    <p className="text-stone-300 text-sm">
+                    <p className="text-xs text-stone-500 mb-1">Descripcion</p>
+                    <p className="text-stone-600 text-sm">
                       {selectedCampaignData.description}
                     </p>
                   </div>
@@ -618,13 +618,13 @@ export default function CampaignsPage() {
                   {/* Type & Status */}
                   <div className="flex gap-4">
                     <div>
-                      <p className="text-xs text-stone-500 mb-1">Type</p>
+                      <p className="text-xs text-stone-500 mb-1">Tipo</p>
                       <Badge className={typeColors[selectedCampaignData.type]}>
                         {selectedCampaignData.type}
                       </Badge>
                     </div>
                     <div>
-                      <p className="text-xs text-stone-500 mb-1">Status</p>
+                      <p className="text-xs text-stone-500 mb-1">Estado</p>
                       <StatusBadge status={selectedCampaignData.status} />
                     </div>
                   </div>
@@ -632,8 +632,8 @@ export default function CampaignsPage() {
                   {/* Performance Sparkline */}
                   {selectedCampaignData.metrics && (
                     <div>
-                      <p className="text-xs text-stone-500 mb-2">Performance (7 days)</p>
-                      <div className="rounded-lg bg-stone-100/50 p-3">
+                      <p className="text-xs text-stone-500 mb-2">Rendimiento (7 dias)</p>
+                      <div className="rounded-lg bg-stone-50 p-3">
                         <Sparkline
                           data={generateSparklineData()}
                           height={60}
@@ -647,11 +647,11 @@ export default function CampaignsPage() {
                   {/* Budget */}
                   {selectedCampaignData.budget && (
                     <div>
-                      <p className="text-xs text-stone-500 mb-1">Budget</p>
-                      <div className="rounded-lg bg-stone-100/50 p-3">
+                      <p className="text-xs text-stone-500 mb-1">Presupuesto</p>
+                      <div className="rounded-lg bg-stone-50 p-3">
                         <div className="flex justify-between text-sm mb-2">
-                          <span className="text-stone-400">Spent</span>
-                          <span className="text-white font-medium">
+                          <span className="text-stone-400">Gastado</span>
+                          <span className="text-stone-900 font-medium">
                             {formatCurrency(
                               selectedCampaignData.budget.spent,
                               selectedCampaignData.budget.currency
@@ -660,7 +660,7 @@ export default function CampaignsPage() {
                         </div>
                         <div className="flex justify-between text-sm mb-2">
                           <span className="text-stone-400">Total</span>
-                          <span className="text-white font-medium">
+                          <span className="text-stone-900 font-medium">
                             {formatCurrency(
                               selectedCampaignData.budget.total,
                               selectedCampaignData.budget.currency
@@ -689,36 +689,36 @@ export default function CampaignsPage() {
                   {/* Goals */}
                   {selectedCampaignData.goals && (
                     <div>
-                      <p className="text-xs text-stone-500 mb-1">Goals</p>
+                      <p className="text-xs text-stone-500 mb-1">Objetivos</p>
                       <div className="grid grid-cols-2 gap-2">
                         {selectedCampaignData.goals.impressions && (
-                          <div className="rounded-lg bg-stone-100/50 p-2">
-                            <p className="text-xs text-stone-500">Impressions</p>
-                            <p className="text-stone-300 font-mono">
+                          <div className="rounded-lg bg-stone-50 p-2">
+                            <p className="text-xs text-stone-500">Impresiones</p>
+                            <p className="text-stone-600 font-mono">
                               {formatNumber(selectedCampaignData.goals.impressions)}
                             </p>
                           </div>
                         )}
                         {selectedCampaignData.goals.clicks && (
-                          <div className="rounded-lg bg-stone-100/50 p-2">
+                          <div className="rounded-lg bg-stone-50 p-2">
                             <p className="text-xs text-stone-500">Clicks</p>
-                            <p className="text-stone-300 font-mono">
+                            <p className="text-stone-600 font-mono">
                               {formatNumber(selectedCampaignData.goals.clicks)}
                             </p>
                           </div>
                         )}
                         {selectedCampaignData.goals.conversions && (
-                          <div className="rounded-lg bg-stone-100/50 p-2">
-                            <p className="text-xs text-stone-500">Conversions</p>
-                            <p className="text-stone-300 font-mono">
+                          <div className="rounded-lg bg-stone-50 p-2">
+                            <p className="text-xs text-stone-500">Conversiones</p>
+                            <p className="text-stone-600 font-mono">
                               {formatNumber(selectedCampaignData.goals.conversions)}
                             </p>
                           </div>
                         )}
                         {selectedCampaignData.goals.revenue && (
-                          <div className="rounded-lg bg-stone-100/50 p-2">
-                            <p className="text-xs text-stone-500">Revenue</p>
-                            <p className="text-stone-300 font-mono">
+                          <div className="rounded-lg bg-stone-50 p-2">
+                            <p className="text-xs text-stone-500">Ingresos</p>
+                            <p className="text-stone-600 font-mono">
                               {formatCurrency(selectedCampaignData.goals.revenue)}
                             </p>
                           </div>
@@ -729,10 +729,10 @@ export default function CampaignsPage() {
 
                   {/* Dates */}
                   <div>
-                    <p className="text-xs text-stone-500 mb-1">Timeline</p>
+                    <p className="text-xs text-stone-500 mb-1">Periodo</p>
                     <div className="flex items-center gap-2 text-sm">
                       <Calendar className="h-4 w-4 text-stone-500" />
-                      <span className="text-stone-300">
+                      <span className="text-stone-600">
                         {formatDate(selectedCampaignData.startDate)}
                         {selectedCampaignData.endDate &&
                           ` - ${formatDate(selectedCampaignData.endDate)}`}

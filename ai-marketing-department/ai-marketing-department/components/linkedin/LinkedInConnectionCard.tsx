@@ -40,7 +40,7 @@ export function LinkedInConnectionCard({ convexSiteUrl }: LinkedInConnectionCard
       showError(translate("linkedinPublishError"), linkedinError);
       window.history.replaceState({}, "", window.location.pathname);
     }
-  }, []);
+  }, [success, showError]);
 
   const handleConnect = () => {
     // Redirect to Convex HTTP Action that starts OAuth
@@ -102,7 +102,7 @@ export function LinkedInConnectionCard({ convexSiteUrl }: LinkedInConnectionCard
             <Linkedin className="h-5 w-5 text-[#0A66C2]" />
           </div>
           <div>
-            <h4 className="font-medium text-white flex items-center gap-2">
+            <h4 className="font-medium text-stone-900 flex items-center gap-2">
               LinkedIn
               <span className={cn("inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full", config.bg, config.color)}>
                 <StatusIcon className="h-3 w-3" />
@@ -111,7 +111,7 @@ export function LinkedInConnectionCard({ convexSiteUrl }: LinkedInConnectionCard
             </h4>
             {connection ? (
               <div className="mt-1 space-y-1">
-                <p className="text-sm text-stone-300">{connection.displayName}</p>
+                <p className="text-sm text-stone-500">{connection.displayName}</p>
                 {connection.email && (
                   <p className="text-xs text-stone-500">{connection.email}</p>
                 )}

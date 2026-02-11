@@ -51,13 +51,13 @@ const departmentColors: Record<string, string> = {
 };
 
 const departmentLabels: Record<string, string> = {
-  leadership: "Leadership",
-  content: "Content",
-  social: "Social Media",
+  leadership: "Liderazgo",
+  content: "Contenido",
+  social: "Redes Sociales",
   demandgen: "Demand Gen",
   seo: "SEO",
-  brand: "Brand & Creative",
-  ops: "Marketing Ops",
+  brand: "Marca & Creatividad",
+  ops: "Operaciones",
 };
 
 export default function OrgPage() {
@@ -82,11 +82,11 @@ export default function OrgPage() {
             <Network className="w-8 h-8 text-orange-400" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-white to-stone-400 bg-clip-text text-transparent">
-              Organizational Chart
+            <h1 className="text-2xl font-bold text-stone-900">
+              Organigrama
             </h1>
             <p className="text-stone-500 text-sm">
-              37 AI Agents - Hierarchical Structure
+              37 Agentes de IA - Estructura Jerarquica
             </p>
           </div>
         </div>
@@ -95,23 +95,23 @@ export default function OrgPage() {
         {stats && (
           <div className="hidden md:flex items-center gap-6">
             <div className="text-center">
-              <p className="text-2xl font-bold text-white">{stats.total}</p>
+              <p className="text-2xl font-bold text-stone-900">{stats.total}</p>
               <p className="text-xs text-stone-500">Total</p>
             </div>
             <div className="w-px h-10 bg-stone-200" />
             <div className="text-center">
               <p className="text-2xl font-bold text-green-400">{stats.active}</p>
-              <p className="text-xs text-stone-500">Active</p>
+              <p className="text-xs text-stone-500">Activos</p>
             </div>
             <div className="w-px h-10 bg-stone-200" />
             <div className="text-center">
               <p className="text-2xl font-bold text-orange-400">{stats.directors}</p>
-              <p className="text-xs text-stone-500">Directors</p>
+              <p className="text-xs text-stone-500">Directores</p>
             </div>
             <div className="w-px h-10 bg-stone-200" />
             <div className="text-center">
               <p className="text-2xl font-bold text-purple-400">{stats.departments}</p>
-              <p className="text-xs text-stone-500">Depts</p>
+              <p className="text-xs text-stone-500">Deptos</p>
             </div>
           </div>
         )}
@@ -141,7 +141,7 @@ export default function OrgPage() {
           >
             <Card className="sticky top-6">
               <CardHeader className="flex flex-row items-center justify-between">
-                <h3 className="font-semibold text-white">Agent Details</h3>
+                <h3 className="font-semibold text-stone-900">Detalles del Agente</h3>
                 <button
                   onClick={() => setSelectedAgent(null)}
                   className="p-1 rounded-lg hover:bg-stone-200 text-stone-500 hover:text-stone-900 transition-colors"
@@ -163,7 +163,7 @@ export default function OrgPage() {
                     {selectedAgent.role === "specialist" && <User className="w-6 h-6" />}
                   </div>
                   <div>
-                    <h4 className="font-semibold text-white">{selectedAgent.name}</h4>
+                    <h4 className="font-semibold text-stone-900">{selectedAgent.name}</h4>
                     <p className="text-xs text-stone-500">{selectedAgent.agentId}</p>
                   </div>
                 </div>
@@ -180,21 +180,21 @@ export default function OrgPage() {
                 {/* Description */}
                 {selectedAgent.description && (
                   <div>
-                    <p className="text-xs text-stone-500 mb-1">Description</p>
-                    <p className="text-sm text-stone-300">{selectedAgent.description}</p>
+                    <p className="text-xs text-stone-500 mb-1">Descripcion</p>
+                    <p className="text-sm text-stone-600">{selectedAgent.description}</p>
                   </div>
                 )}
 
                 {/* Config */}
                 {selectedAgent.config && (
                   <div className="space-y-2">
-                    <p className="text-xs text-stone-500">Configuration</p>
+                    <p className="text-xs text-stone-500">Configuracion</p>
                     <div className="grid grid-cols-2 gap-2">
                       <div className="flex items-center gap-2 p-2 rounded-lg bg-stone-100">
                         <Cpu className="w-4 h-4 text-stone-500" />
                         <div>
-                          <p className="text-[10px] text-stone-500">Model</p>
-                          <p className="text-xs text-white truncate">
+                          <p className="text-[10px] text-stone-500">Modelo</p>
+                          <p className="text-xs text-stone-900 truncate">
                             {selectedAgent.config.model?.split("-").slice(-2).join("-") || "claude"}
                           </p>
                         </div>
@@ -203,7 +203,7 @@ export default function OrgPage() {
                         <Zap className="w-4 h-4 text-stone-500" />
                         <div>
                           <p className="text-[10px] text-stone-500">Temp</p>
-                          <p className="text-xs text-white">
+                          <p className="text-xs text-stone-900">
                             {selectedAgent.config.temperature || 0.7}
                           </p>
                         </div>
@@ -215,7 +215,7 @@ export default function OrgPage() {
                 {/* Triggers */}
                 {selectedAgent.triggers && selectedAgent.triggers.length > 0 && (
                   <div>
-                    <p className="text-xs text-stone-500 mb-2">Triggers</p>
+                    <p className="text-xs text-stone-500 mb-2">Disparadores</p>
                     <div className="flex flex-wrap gap-1">
                       {selectedAgent.triggers.map((trigger) => (
                         <span

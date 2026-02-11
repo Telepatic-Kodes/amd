@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
 
-const STEPS = ["Welcome", "Goals", "Channels", "Feeds", "Agents", "Launch"];
+const STEPS = ["Bienvenida", "Objetivos", "Canales", "Feeds", "Agentes", "Lanzar"];
 
 interface StepperProps {
   currentStep: number;
@@ -31,7 +31,7 @@ export function Stepper({ currentStep }: StepperProps) {
               <span
                 className={cn(
                   "text-[10px] sm:text-xs font-medium hidden sm:block",
-                  active ? "text-orange-400" : done ? "text-stone-300" : "text-stone-600"
+                  active ? "text-orange-400" : done ? "text-stone-600" : "text-stone-500"
                 )}
               >
                 {label}

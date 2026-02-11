@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { AlertTriangle, CheckCircle, XCircle, FileEdit, Bot, ChevronRight } from "lucide-react";
+import { AlertTriangle, CheckCircle, XCircle, FileEdit, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface AttentionItem {
@@ -62,8 +62,8 @@ export function NeedsAttention({
   if (failedExecutions > 0) {
     items.push({
       type: "error",
-      label: `${failedExecutions} ejecucion${failedExecutions > 1 ? "es" : ""} fallida${failedExecutions > 1 ? "s" : ""}`,
-      detail: "En las ultimas 24 horas",
+      label: `${failedExecutions} ejecución${failedExecutions > 1 ? "es" : ""} fallida${failedExecutions > 1 ? "s" : ""}`,
+      detail: "En las últimas 24 horas",
       href: "/results",
     });
   }
@@ -71,7 +71,7 @@ export function NeedsAttention({
   if (contentInReview > 0) {
     items.push({
       type: "warning",
-      label: `${contentInReview} contenido${contentInReview > 1 ? "s" : ""} en revision`,
+      label: `${contentInReview} contenido${contentInReview > 1 ? "s" : ""} en revisión`,
       detail: "Esperando aprobacion",
       href: "/content?status=review",
     });

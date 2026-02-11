@@ -48,7 +48,7 @@ export function InstagramCarouselPreview({
               </div>
             )}
           </div>
-          <span className="text-sm font-semibold text-white">{authorUsername}</span>
+          <span className="text-sm font-semibold text-stone-900">{authorUsername}</span>
         </div>
         <MoreHorizontal className="h-5 w-5 text-stone-400" />
       </div>
@@ -117,17 +117,17 @@ export function InstagramCarouselPreview({
       {/* Action Bar */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-stone-200">
         <div className="flex items-center gap-4">
-          <Heart className="h-6 w-6 text-stone-300 hover:text-red-500 cursor-pointer transition-colors" />
-          <MessageCircle className="h-6 w-6 text-stone-300 hover:text-stone-100 cursor-pointer transition-colors" />
-          <Send className="h-6 w-6 text-stone-300 hover:text-stone-100 cursor-pointer transition-colors" />
+          <Heart className="h-6 w-6 text-stone-500 hover:text-red-500 cursor-pointer transition-colors" />
+          <MessageCircle className="h-6 w-6 text-stone-500 hover:text-stone-700 cursor-pointer transition-colors" />
+          <Send className="h-6 w-6 text-stone-500 hover:text-stone-700 cursor-pointer transition-colors" />
         </div>
-        <Bookmark className="h-6 w-6 text-stone-300 hover:text-stone-100 cursor-pointer transition-colors" />
+        <Bookmark className="h-6 w-6 text-stone-500 hover:text-stone-700 cursor-pointer transition-colors" />
       </div>
 
       {/* Caption */}
       <div className="px-4 py-3">
-        <p className="text-sm text-stone-300">
-          <span className="font-semibold text-white">{authorUsername}</span>{" "}
+        <p className="text-sm text-stone-500">
+          <span className="font-semibold text-stone-900">{authorUsername}</span>{" "}
           {truncatedCaption}
           {caption.length > 125 && (
             <span className="text-stone-500 ml-1 cursor-pointer hover:text-stone-400">

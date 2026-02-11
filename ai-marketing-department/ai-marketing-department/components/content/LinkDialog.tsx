@@ -16,18 +16,19 @@ export function LinkDialog({ editor, isOpen, onClose }: LinkDialogProps) {
   const [url, setUrl] = useState("");
   const [error, setError] = useState("");
 
+  /* eslint-disable react-hooks/set-state-in-effect -- Intentional: sync editor link state when dialog opens */
   useEffect(() => {
     if (isOpen && editor) {
-      // Get current link if editing existing link
       const { href } = editor.getAttributes("link");
       setUrl(href || "");
       setError("");
     }
   }, [isOpen, editor]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const validateUrl = (value: string): boolean => {
     if (!value) {
-      setError("URL cannot be empty");
+      setError("La URL no puede estar vacía");
       return false;
     }
 
@@ -110,8 +111,8 @@ export function LinkDialog({ editor, isOpen, onClose }: LinkDialogProps) {
             <div className="flex items-center justify-between p-4 border-b border-stone-200">
               <div className="flex items-center gap-2">
                 <Link2 className="h-5 w-5 text-orange-400" />
-                <h3 className="text-lg font-semibold text-white">
-                  {hasExistingLink ? "Edit Link" : "Insert Link"}
+                <h3 className="text-lg font-semibold text-stone-900">
+                  {hasExistingLink ? "Editar Enlace" : "Insertar Enlace"}
                 </h3>
               </div>
               <button
@@ -139,8 +140,8 @@ export function LinkDialog({ editor, isOpen, onClose }: LinkDialogProps) {
                   placeholder="https://example.com"
                   autoFocus
                   className={cn(
-                    "w-full rounded-lg border bg-[#faf8f4]/50 py-2 px-3",
-                    "text-sm text-white placeholder-stone-500",
+                    "w-full rounded-lg border bg-white py-2 px-3",
+                    "text-sm text-stone-900 placeholder-stone-500",
                     "focus:outline-none focus:ring-2",
                     error
                       ? "border-red-500 focus:ring-red-500/50"
@@ -151,33 +152,33 @@ export function LinkDialog({ editor, isOpen, onClose }: LinkDialogProps) {
                   <p className="text-xs text-red-400 mt-1">{error}</p>
                 )}
                 <p className="text-xs text-stone-500 mt-1">
-                  Supports http://, https://, mailto:, and tel: links
+                  Soporta enlaces http://, https://, mailto: y tel:
                 </p>
               </div>
             </div>
 
             {/* Footer */}
-            <div className="flex gap-3 p-4 border-t border-stone-200 bg-[#faf8f4]/50">
+            <div className="flex gap-3 p-4 border-t border-stone-200 bg-white">
               {hasExistingLink && (
                 <button
                   onClick={handleRemove}
                   className="flex items-center gap-2 px-4 py-2 rounded-lg border border-red-500/50 text-red-400 hover:bg-red-500/10 transition-colors"
                 >
                   <Trash2 className="h-4 w-4" />
-                  Remove
+                  Quitar
                 </button>
               )}
               <button
                 onClick={onClose}
                 className="flex-1 py-2 rounded-lg border border-stone-200 text-stone-400 hover:bg-stone-200 transition-colors"
               >
-                Cancel
+                Cancelar
               </button>
               <button
                 onClick={handleSave}
                 className="flex-1 py-2 rounded-lg bg-orange-500 hover:bg-orange-600 text-white font-medium transition-colors"
               >
-                {hasExistingLink ? "Update" : "Insert"}
+                {hasExistingLink ? "Actualizar" : "Insertar"}
               </button>
             </div>
           </motion.div>

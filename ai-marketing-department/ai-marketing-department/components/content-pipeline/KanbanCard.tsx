@@ -49,7 +49,7 @@ export function KanbanCard({ content, onAction }: KanbanCardProps) {
         <div className={cn("flex h-6 w-6 items-center justify-center rounded shrink-0", typeColors[content.type] || "bg-stone-500/10 text-stone-400")}>
           <TypeIcon className="h-3.5 w-3.5" />
         </div>
-        <h4 className="text-sm font-medium text-white line-clamp-1 flex-1">{content.title}</h4>
+        <h4 className="text-sm font-medium text-stone-900 line-clamp-1 flex-1">{content.title}</h4>
       </div>
 
       {/* Summary */}

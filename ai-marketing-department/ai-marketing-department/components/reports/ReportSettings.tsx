@@ -19,7 +19,7 @@ export function ReportSettings() {
     try {
       await updateSettings({ emailEnabled: enabled });
       success(LABELS.settingsSaved);
-    } catch (error) {
+    } catch (_error) {
       showError(LABELS.reportError);
     }
   };
@@ -28,7 +28,7 @@ export function ReportSettings() {
     try {
       await updateSettings({ frequency });
       success(LABELS.settingsSaved);
-    } catch (error) {
+    } catch (_error) {
       showError(LABELS.reportError);
     }
   };
@@ -37,7 +37,7 @@ export function ReportSettings() {
     try {
       await updateSettings({ includeNarrative: enabled });
       success(LABELS.settingsSaved);
-    } catch (error) {
+    } catch (_error) {
       showError(LABELS.reportError);
     }
   };
@@ -46,7 +46,7 @@ export function ReportSettings() {
     try {
       await updateSettings({ recipientEmail: email });
       success(LABELS.settingsSaved);
-    } catch (error) {
+    } catch (_error) {
       showError(LABELS.reportError);
     }
   };
@@ -56,7 +56,7 @@ export function ReportSettings() {
     try {
       await generateReport({ type });
       success(LABELS.reportGenerated);
-    } catch (error) {
+    } catch (_error) {
       showError(LABELS.reportError);
     } finally {
       setGenerating(null);
@@ -77,12 +77,12 @@ export function ReportSettings() {
   return (
     <div className="bg-stone-100 border border-stone-200 rounded-xl p-6 space-y-6">
       {/* Title */}
-      <h3 className="text-lg font-semibold text-stone-100">{LABELS.reportSettings}</h3>
+      <h3 className="text-lg font-semibold text-stone-900">{LABELS.reportSettings}</h3>
 
       {/* Email Delivery Toggle */}
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-medium text-stone-300">{LABELS.emailDelivery}</p>
+          <p className="text-sm font-medium text-stone-600">{LABELS.emailDelivery}</p>
           <p className="text-xs text-stone-500">{LABELS.emailDeliveryDesc}</p>
         </div>
         <button
@@ -101,7 +101,7 @@ export function ReportSettings() {
 
       {/* Frequency Selector */}
       <div>
-        <p className="text-sm font-medium text-stone-300 mb-2">{LABELS.reportFrequency}</p>
+        <p className="text-sm font-medium text-stone-600 mb-2">{LABELS.reportFrequency}</p>
         <div className="flex gap-2">
           {(["weekly", "monthly", "both"] as const).map((freq) => (
             <button
@@ -122,7 +122,7 @@ export function ReportSettings() {
       {/* AI Insights Toggle */}
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-medium text-stone-300">{LABELS.includeAiInsights}</p>
+          <p className="text-sm font-medium text-stone-600">{LABELS.includeAiInsights}</p>
           <p className="text-xs text-stone-500">{LABELS.includeAiInsightsDesc}</p>
         </div>
         <button
@@ -141,7 +141,7 @@ export function ReportSettings() {
 
       {/* Recipient Email */}
       <div>
-        <label className="block text-sm font-medium text-stone-300 mb-2">
+        <label className="block text-sm font-medium text-stone-600 mb-2">
           {LABELS.recipientEmail}
         </label>
         <input
@@ -151,14 +151,14 @@ export function ReportSettings() {
           onChange={(e) => handleEmailChange(e.target.value)}
           onBlur={(e) => handleEmailChange(e.target.value)}
           placeholder={settings.recipientEmail || "tu@correo.com"}
-          className="w-full bg-stone-200 border border-stone-300 text-stone-100 placeholder-stone-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-orange-500"
+          className="w-full bg-stone-50 border border-stone-300 text-stone-900 placeholder-stone-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-orange-500"
         />
         <p className="text-xs text-stone-500 mt-1">{LABELS.recipientEmailDesc}</p>
       </div>
 
       {/* Manual Trigger Section */}
       <div className="border-t border-stone-200 pt-4 mt-4">
-        <p className="text-sm font-medium text-stone-300 mb-3">{LABELS.generateNow}</p>
+        <p className="text-sm font-medium text-stone-600 mb-3">{LABELS.generateNow}</p>
         <div className="flex gap-2">
           <button
             onClick={() => handleGenerateNow("weekly")}

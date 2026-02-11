@@ -3,7 +3,7 @@
 import { useQuery } from "convex/react";
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
-import { X, Download, Sparkles, FileText } from "lucide-react";
+import { X, Download, Sparkles } from "lucide-react";
 import { LABELS } from "@/lib/language";
 import { Badge } from "@/components/ui/Badge";
 
@@ -40,7 +40,7 @@ export function ReportPreview({ reportId, onClose }: ReportPreviewProps) {
           <div className="flex items-center gap-3">
             {report ? (
               <>
-                <h2 className="text-lg font-semibold text-stone-100">{report.title}</h2>
+                <h2 className="text-lg font-semibold text-stone-900">{report.title}</h2>
                 <Badge
                   variant={report.type === "weekly" ? "info" : "default"}
                   className={
@@ -81,23 +81,23 @@ export function ReportPreview({ reportId, onClose }: ReportPreviewProps) {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-4">
               <div className="bg-stone-200 rounded-lg p-3">
                 <p className="text-xs text-stone-500">Contenido publicado</p>
-                <p className="text-xl font-bold text-stone-100">{report.metrics.contentPublished}</p>
+                <p className="text-xl font-bold text-stone-900">{report.metrics.contentPublished}</p>
               </div>
               <div className="bg-stone-200 rounded-lg p-3">
                 <p className="text-xs text-stone-500">Tokens</p>
-                <p className="text-xl font-bold text-stone-100">
+                <p className="text-xl font-bold text-stone-900">
                   {Math.round(report.metrics.totalTokens / 1000)}K
                 </p>
               </div>
               <div className="bg-stone-200 rounded-lg p-3">
                 <p className="text-xs text-stone-500">Costo</p>
-                <p className="text-xl font-bold text-stone-100">
+                <p className="text-xl font-bold text-stone-900">
                   ${report.metrics.totalCost.toFixed(2)}
                 </p>
               </div>
               <div className="bg-stone-200 rounded-lg p-3">
                 <p className="text-xs text-stone-500">Tasa de éxito</p>
-                <p className="text-xl font-bold text-stone-100">
+                <p className="text-xl font-bold text-stone-900">
                   {report.metrics.successRate.toFixed(1)}%
                 </p>
               </div>
@@ -110,7 +110,7 @@ export function ReportPreview({ reportId, onClose }: ReportPreviewProps) {
                   <Sparkles className="h-4 w-4 text-orange-400" />
                   <h3 className="text-sm font-semibold text-orange-400">Análisis del CMO</h3>
                 </div>
-                <p className="text-sm text-stone-300 whitespace-pre-wrap">{report.narrative}</p>
+                <p className="text-sm text-stone-600 whitespace-pre-wrap">{report.narrative}</p>
               </div>
             )}
 
@@ -135,7 +135,7 @@ export function ReportPreview({ reportId, onClose }: ReportPreviewProps) {
               </button>
               <button
                 onClick={onClose}
-                className="px-4 py-2 bg-stone-200 hover:bg-stone-100 text-white text-sm font-medium rounded-lg transition-colors"
+                className="px-4 py-2 bg-stone-200 hover:bg-stone-300 text-stone-900 text-sm font-medium rounded-lg transition-colors"
               >
                 {LABELS.close}
               </button>

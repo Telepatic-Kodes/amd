@@ -3,10 +3,10 @@
 import { AlertCircle } from "lucide-react";
 
 export default function RootError({
-  error,
+  _error,
   reset,
 }: {
-  error: Error & { digest?: string };
+  _error: Error & { digest?: string };
   reset: () => void;
 }) {
   return (
@@ -27,6 +27,7 @@ export default function RootError({
           >
             Reintentar
           </button>
+          {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- Error boundary needs full page reload */}
           <a
             href="/"
             className="text-sm text-stone-500 hover:text-stone-700 transition-colors"

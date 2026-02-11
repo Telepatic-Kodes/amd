@@ -190,7 +190,7 @@ export function OnboardingGoalsMode({
                 </div>
               </div>
               <p className="text-xs text-stone-500">
-                Ejecuta al CMO Agent con tu informacion real. Genera un analisis personalizado en vivo.
+                Ejecuta al CMO Agent con tu información real. Genera un análisis personalizado en vivo.
               </p>
             </button>
           </div>

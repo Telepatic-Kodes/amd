@@ -17,11 +17,13 @@ import {
   AlertCircle,
   Bot,
   Zap,
-  Linkedin,
   Sparkles,
   Share2,
   Users,
   FileText,
+  Sun,
+  Moon,
+  Monitor,
 } from "lucide-react";
 import { LinkedInConnectionCard } from "@/components/linkedin/LinkedInConnectionCard";
 import { TwitterConnectionCard } from "@/components/twitter/TwitterConnectionCard";
@@ -34,11 +36,13 @@ import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { SimpleCounter } from "@/components/ui/AnimatedCounter";
+import { useTheme } from "@/hooks/useTheme";
 
 const SETTING_CATEGORIES = [
   { id: "integrations", label: "Integraciones", icon: Key },
   { id: "platforms", label: "Plataformas", icon: Share2 },
   { id: "team", label: "Equipo", icon: Users },
+  { id: "appearance", label: "Apariencia", icon: Palette },
   { id: "notifications", label: "Notificaciones", icon: Bell },
   { id: "agents", label: "Agentes", icon: Bot },
   { id: "reports", label: "Reportes", icon: FileText },
@@ -51,6 +55,7 @@ export default function SettingsPage() {
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
 
   const toast = useToast();
+  const { theme, setTheme, resolved } = useTheme();
   const settings = useQuery(api.functions.listSettings);
   const currentUser = useQuery(api.users.getCurrentUser);
   const updateSetting = useMutation(api.functions.updateSetting);
@@ -80,7 +85,7 @@ export default function SettingsPage() {
       await updateSetting({ key, value, description });
       setSaveStatus("saved");
       setTimeout(() => setSaveStatus("idle"), 2000);
-    } catch (error) {
+    } catch (_error) {
       setSaveStatus("error");
       setTimeout(() => setSaveStatus("idle"), 3000);
     }
@@ -359,6 +364,89 @@ export default function SettingsPage() {
                         : undefined
                     }
                   />
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
+
+          {activeCategory === "appearance" && (
+            <motion.div
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.2 }}
+              className="space-y-6"
+            >
+              <Card>
+                <CardHeader>
+                  <h3 className="flex items-center gap-2 font-semibold text-lg text-stone-900">
+                    <Palette className="h-5 w-5 text-orange-600" />
+                    Tema de la Aplicacion
+                  </h3>
+                  <p className="text-sm text-stone-500 mt-1">
+                    Elige entre modo claro, oscuro o automático según tu sistema.
+                  </p>
+                </CardHeader>
+                <CardContent className="p-6 pt-0">
+                  <div className="grid grid-cols-3 gap-4">
+                    {/* Light */}
+                    <button
+                      onClick={() => setTheme("light")}
+                      className={cn(
+                        "flex flex-col items-center gap-3 p-4 rounded-xl border-2 transition-all",
+                        theme === "light"
+                          ? "border-orange-500 bg-orange-50 shadow-sm"
+                          : "border-stone-200 bg-white hover:border-stone-300"
+                      )}
+                    >
+                      <div className="w-12 h-12 rounded-full bg-amber-50 border border-stone-200 flex items-center justify-center">
+                        <Sun className="w-6 h-6 text-amber-500" />
+                      </div>
+                      <span className="text-sm font-medium text-stone-900">Claro</span>
+                      {theme === "light" && (
+                        <span className="text-xs text-orange-600 font-medium">Activo</span>
+                      )}
+                    </button>
+
+                    {/* Dark */}
+                    <button
+                      onClick={() => setTheme("dark")}
+                      className={cn(
+                        "flex flex-col items-center gap-3 p-4 rounded-xl border-2 transition-all",
+                        theme === "dark"
+                          ? "border-orange-500 bg-orange-50 shadow-sm"
+                          : "border-stone-200 bg-white hover:border-stone-300"
+                      )}
+                    >
+                      <div className="w-12 h-12 rounded-full bg-stone-800 border border-stone-600 flex items-center justify-center">
+                        <Moon className="w-6 h-6 text-stone-300" />
+                      </div>
+                      <span className="text-sm font-medium text-stone-900">Oscuro</span>
+                      {theme === "dark" && (
+                        <span className="text-xs text-orange-600 font-medium">Activo</span>
+                      )}
+                    </button>
+
+                    {/* System */}
+                    <button
+                      onClick={() => setTheme("system")}
+                      className={cn(
+                        "flex flex-col items-center gap-3 p-4 rounded-xl border-2 transition-all",
+                        theme === "system"
+                          ? "border-orange-500 bg-orange-50 shadow-sm"
+                          : "border-stone-200 bg-white hover:border-stone-300"
+                      )}
+                    >
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-50 to-stone-800 border border-stone-300 flex items-center justify-center">
+                        <Monitor className="w-6 h-6 text-stone-500" />
+                      </div>
+                      <span className="text-sm font-medium text-stone-900">Sistema</span>
+                      {theme === "system" && (
+                        <span className="text-xs text-orange-600 font-medium">
+                          Activo ({resolved === "dark" ? "oscuro" : "claro"})
+                        </span>
+                      )}
+                    </button>
+                  </div>
                 </CardContent>
               </Card>
             </motion.div>
@@ -660,7 +748,7 @@ export default function SettingsPage() {
                               await upgradeAllAgents({ model: "claude-opus-4-5-20251101" });
                               setSaveStatus("saved");
                               setTimeout(() => setSaveStatus("idle"), 2000);
-                            } catch (error) {
+                            } catch (_error) {
                               setSaveStatus("error");
                               setTimeout(() => setSaveStatus("idle"), 3000);
                             }
@@ -679,7 +767,7 @@ export default function SettingsPage() {
                               await upgradeAllAgents({ model: "claude-sonnet-4-20250514" });
                               setSaveStatus("saved");
                               setTimeout(() => setSaveStatus("idle"), 2000);
-                            } catch (error) {
+                            } catch (_error) {
                               setSaveStatus("error");
                               setTimeout(() => setSaveStatus("idle"), 3000);
                             }
@@ -852,7 +940,7 @@ export default function SettingsPage() {
                               "Configuración restablecida",
                               `Se eliminaron ${result.deleted} configuraciones.`
                             );
-                          } catch (err: unknown) {
+                          } catch (_err: unknown) {
                             toast.error(
                               "Error al restablecer",
                               "No se pudo restablecer la configuración. Intenta de nuevo."

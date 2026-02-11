@@ -56,10 +56,10 @@ export function ContentDetailPlatformPublish({
   }
 
   return (
-    <Card className={cn("border-stone-200 bg-[#faf8f4]/50", className)}>
+    <Card className={cn("border-stone-200 bg-white", className)}>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <h3 className="flex items-center gap-2 text-sm font-semibold text-white">
+          <h3 className="flex items-center gap-2 text-sm font-semibold text-stone-900">
             <Share2 className="h-4 w-4 text-orange-500" />
             {translate("publishToPlatforms")}
           </h3>

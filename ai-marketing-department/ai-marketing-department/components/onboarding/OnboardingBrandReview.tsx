@@ -16,7 +16,7 @@ import { BrandStepVisual } from "@/components/brand/BrandStepVisual";
 const TOTAL_STEPS = 6;
 
 const stepLabels = [
-  { title: "Informacion basica", subtitle: "Nombre, industria y descripcion" },
+  { title: "Información básica", subtitle: "Nombre, industria y descripción" },
   { title: "Voz de marca", subtitle: "Tono, personalidad y reglas" },
   { title: "Audiencia", subtitle: "Segmentos y pain points" },
   { title: "Estrategia", subtitle: "Temas, canales y frecuencia" },

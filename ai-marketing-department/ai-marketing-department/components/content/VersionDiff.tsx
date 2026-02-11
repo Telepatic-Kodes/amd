@@ -4,7 +4,6 @@ import { useQuery } from "convex/react";
 import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
 import { X } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { translate } from "@/lib/language";
 
 interface VersionDiffProps {
@@ -50,7 +49,7 @@ export function VersionDiff({ versionAId, versionBId, onClose }: VersionDiffProp
       <div className="bg-stone-100 rounded-xl border border-stone-300 w-full max-w-6xl my-8">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-stone-200">
-          <h2 className="text-xl font-semibold text-white">
+          <h2 className="text-xl font-semibold text-stone-900">
             {translate("version")} {versionA.version} vs {translate("version")} {versionB.version}
           </h2>
           <button
@@ -78,11 +77,11 @@ export function VersionDiff({ versionAId, versionBId, onClose }: VersionDiffProp
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="rounded-lg bg-stone-200/50 p-4 border border-stone-300">
                       <p className="text-xs text-stone-500 mb-2">Versión {versionA.version}</p>
-                      <p className="text-sm text-white">{versionA.title}</p>
+                      <p className="text-sm text-stone-900">{versionA.title}</p>
                     </div>
                     <div className="rounded-lg bg-amber-500/5 p-4 border border-amber-500/20">
                       <p className="text-xs text-amber-400 mb-2">Versión {versionB.version}</p>
-                      <p className="text-sm text-white">{versionB.title}</p>
+                      <p className="text-sm text-stone-900">{versionB.title}</p>
                     </div>
                   </div>
                 </div>
@@ -97,11 +96,11 @@ export function VersionDiff({ versionAId, versionBId, onClose }: VersionDiffProp
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="rounded-lg bg-stone-200/50 p-4 border border-stone-300 max-h-96 overflow-y-auto">
                       <p className="text-xs text-stone-500 mb-2">Versión {versionA.version}</p>
-                      <p className="text-sm text-stone-300 whitespace-pre-wrap">{versionA.body}</p>
+                      <p className="text-sm text-stone-600 whitespace-pre-wrap">{versionA.body}</p>
                     </div>
                     <div className="rounded-lg bg-amber-500/5 p-4 border border-amber-500/20 max-h-96 overflow-y-auto">
                       <p className="text-xs text-amber-400 mb-2">Versión {versionB.version}</p>
-                      <p className="text-sm text-stone-300 whitespace-pre-wrap">{versionB.body}</p>
+                      <p className="text-sm text-stone-600 whitespace-pre-wrap">{versionB.body}</p>
                     </div>
                   </div>
                 </div>
@@ -116,11 +115,11 @@ export function VersionDiff({ versionAId, versionBId, onClose }: VersionDiffProp
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="rounded-lg bg-stone-200/50 p-4 border border-stone-300">
                       <p className="text-xs text-stone-500 mb-2">Versión {versionA.version}</p>
-                      <p className="text-sm text-stone-300">{versionA.summary || "(Sin resumen)"}</p>
+                      <p className="text-sm text-stone-600">{versionA.summary || "(Sin resumen)"}</p>
                     </div>
                     <div className="rounded-lg bg-amber-500/5 p-4 border border-amber-500/20">
                       <p className="text-xs text-amber-400 mb-2">Versión {versionB.version}</p>
-                      <p className="text-sm text-stone-300">{versionB.summary || "(Sin resumen)"}</p>
+                      <p className="text-sm text-stone-600">{versionB.summary || "(Sin resumen)"}</p>
                     </div>
                   </div>
                 </div>
@@ -135,11 +134,11 @@ export function VersionDiff({ versionAId, versionBId, onClose }: VersionDiffProp
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="rounded-lg bg-stone-200/50 p-4 border border-stone-300">
                       <p className="text-xs text-stone-500 mb-2">Versión {versionA.version}</p>
-                      <p className="text-sm text-white font-medium">{versionA.status}</p>
+                      <p className="text-sm text-stone-900 font-medium">{versionA.status}</p>
                     </div>
                     <div className="rounded-lg bg-amber-500/5 p-4 border border-amber-500/20">
                       <p className="text-xs text-amber-400 mb-2">Versión {versionB.version}</p>
-                      <p className="text-sm text-white font-medium">{versionB.status}</p>
+                      <p className="text-sm text-stone-900 font-medium">{versionB.status}</p>
                     </div>
                   </div>
                 </div>
@@ -157,7 +156,7 @@ export function VersionDiff({ versionAId, versionBId, onClose }: VersionDiffProp
         <div className="p-6 border-t border-stone-200 flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-lg bg-stone-200 hover:bg-stone-100 text-white font-medium transition-colors"
+            className="px-4 py-2 rounded-lg bg-stone-200 hover:bg-stone-100 text-stone-900 font-medium transition-colors"
           >
             Cerrar
           </button>

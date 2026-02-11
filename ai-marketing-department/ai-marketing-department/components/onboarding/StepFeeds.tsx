@@ -60,7 +60,7 @@ export function StepFeeds({ feeds, industry, onChange }: Props) {
                   "flex items-start gap-3 p-4 rounded-xl border text-left transition-all duration-200",
                   isSelected
                     ? "border-orange-500 bg-orange-500/10 ring-1 ring-orange-500/30"
-                    : "border-stone-200 bg-[#faf8f4]/50 hover:border-stone-300"
+                    : "border-stone-200 bg-white hover:border-stone-300"
                 )}
               >
                 {/* Checkbox */}

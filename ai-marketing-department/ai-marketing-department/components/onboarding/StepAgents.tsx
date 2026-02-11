@@ -4,13 +4,13 @@ import { cn } from "@/lib/utils";
 import { PenTool, Users, Search, TrendingUp, Palette, Settings, Crown } from "lucide-react";
 
 const DEPARTMENTS = [
-  { id: "content", label: "Content", icon: PenTool, agents: 6, desc: "Blog, copywriting, editorial" },
-  { id: "social", label: "Social", icon: Users, agents: 5, desc: "Social media management & engagement" },
-  { id: "seo", label: "SEO", icon: Search, agents: 5, desc: "Search optimization & analytics" },
-  { id: "demandgen", label: "Demand Gen", icon: TrendingUp, agents: 6, desc: "Leads, ads, email campaigns" },
-  { id: "brand", label: "Brand", icon: Palette, agents: 5, desc: "Brand strategy & design" },
-  { id: "ops", label: "Ops", icon: Settings, agents: 5, desc: "Automation, data & reporting" },
-  { id: "leadership", label: "Leadership", icon: Crown, agents: 5, desc: "CMO, strategists & coordinators" },
+  { id: "content", label: "Contenido", icon: PenTool, agents: 6, desc: "Blog, copywriting, editorial" },
+  { id: "social", label: "Social", icon: Users, agents: 5, desc: "Gestion de redes sociales y engagement" },
+  { id: "seo", label: "SEO", icon: Search, agents: 5, desc: "Optimización de búsqueda y analytics" },
+  { id: "demandgen", label: "Demand Gen", icon: TrendingUp, agents: 6, desc: "Leads, ads, campanas de email" },
+  { id: "brand", label: "Marca", icon: Palette, agents: 5, desc: "Estrategia de marca y diseno" },
+  { id: "ops", label: "Ops", icon: Settings, agents: 5, desc: "Automatizacion, datos y reportes" },
+  { id: "leadership", label: "Liderazgo", icon: Crown, agents: 5, desc: "CMO, estrategas y coordinadores" },
 ];
 
 interface Props {
@@ -28,10 +28,10 @@ export function StepAgents({ selected, onChange }: Props) {
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
       <div className="text-center space-y-2">
-        <h2 className="text-2xl font-bold text-white">Activate Departments</h2>
-        <p className="text-stone-400 text-sm">
-          Choose which teams to activate.{" "}
-          <span className="text-orange-400 font-medium">{totalAgents} agents</span> selected.
+        <h2 className="text-2xl font-bold text-stone-900">Activar Departamentos</h2>
+        <p className="text-stone-500 text-sm">
+          Elige que equipos activar.{" "}
+          <span className="text-orange-400 font-medium">{totalAgents} agentes</span> seleccionados.
         </p>
       </div>
 
@@ -46,16 +46,16 @@ export function StepAgents({ selected, onChange }: Props) {
                 "flex items-start gap-3 p-4 rounded-xl border text-left transition-all duration-200",
                 active
                   ? "border-orange-500 bg-orange-500/10 ring-1 ring-orange-500/30"
-                  : "border-stone-200 bg-[#faf8f4]/50 hover:border-stone-300"
+                  : "border-stone-200 bg-white hover:border-stone-300"
               )}
             >
               <div className={cn("p-2 rounded-lg", active ? "bg-orange-600" : "bg-stone-200")}>
-                <Icon className="w-5 h-5 text-white" />
+                <Icon className={cn("w-5 h-5", active ? "text-white" : "text-stone-500")} />
               </div>
               <div className="flex-1">
                 <div className="flex items-center justify-between">
-                  <p className="font-semibold text-sm text-white">{label}</p>
-                  <span className="text-[10px] text-stone-500">{agents} agents</span>
+                  <p className="font-semibold text-sm text-stone-900">{label}</p>
+                  <span className="text-[10px] text-stone-500">{agents} agentes</span>
                 </div>
                 <p className="text-xs text-stone-500 mt-0.5">{desc}</p>
               </div>

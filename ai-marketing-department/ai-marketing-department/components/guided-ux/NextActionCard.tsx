@@ -145,7 +145,7 @@ export function NextActionCard() {
                   {translate("whatNext")}
                 </span>
               </div>
-              <p className="text-sm font-medium text-white truncate">
+              <p className="text-sm font-medium text-stone-900 truncate">
                 {action.title}
               </p>
               <p className="text-xs text-stone-400 mt-0.5 truncate">

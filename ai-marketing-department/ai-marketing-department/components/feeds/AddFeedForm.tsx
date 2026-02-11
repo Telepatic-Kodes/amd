@@ -8,9 +8,9 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const CATEGORIES = ["industry", "competitor", "technical", "news", "blog"];
 const FREQUENCIES = [
-  { value: "hourly", label: "Hourly" },
-  { value: "daily", label: "Daily" },
-  { value: "weekly", label: "Weekly" },
+  { value: "hourly", label: "Cada hora" },
+  { value: "daily", label: "Diario" },
+  { value: "weekly", label: "Semanal" },
 ];
 
 export function AddFeedForm({ onSuccess }: { onSuccess?: () => void }) {
@@ -39,7 +39,7 @@ export function AddFeedForm({ onSuccess }: { onSuccess?: () => void }) {
       setIsOpen(false);
       onSuccess?.();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to add feed");
+      setError(err instanceof Error ? err.message : "Error al agregar feed");
     } finally {
       setIsLoading(false);
     }
@@ -57,7 +57,7 @@ export function AddFeedForm({ onSuccess }: { onSuccess?: () => void }) {
             className="flex items-center gap-2 px-4 py-2 rounded-lg bg-orange-500 hover:bg-orange-600 text-white font-medium transition-colors"
           >
             <Plus className="h-4 w-4" />
-            Add Feed
+            Agregar Feed
           </motion.button>
         ) : (
           <motion.form
@@ -65,10 +65,10 @@ export function AddFeedForm({ onSuccess }: { onSuccess?: () => void }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             onSubmit={handleSubmit}
-            className="p-4 rounded-lg border border-stone-200 bg-[#faf8f4]/50 space-y-4"
+            className="p-4 rounded-lg border border-stone-200 bg-white space-y-4"
           >
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-white font-medium">Add New Feed</h3>
+              <h3 className="text-stone-900 font-medium">Agregar Nuevo Feed</h3>
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
@@ -86,7 +86,7 @@ export function AddFeedForm({ onSuccess }: { onSuccess?: () => void }) {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="col-span-2">
-                <label className="block text-xs text-stone-500 mb-1">Feed URL</label>
+                <label className="block text-xs text-stone-500 mb-1">URL del Feed</label>
                 <input
                   type="url"
                   inputMode="url"
@@ -94,28 +94,28 @@ export function AddFeedForm({ onSuccess }: { onSuccess?: () => void }) {
                   onChange={(e) => setUrl(e.target.value)}
                   placeholder="https://example.com/feed.xml"
                   required
-                  className="w-full rounded-lg border border-stone-200 bg-stone-100 py-2 px-3 text-sm text-white placeholder-stone-500 focus:border-orange-500 focus:outline-none"
+                  className="w-full rounded-lg border border-stone-200 bg-white py-2 px-3 text-sm text-stone-900 placeholder-stone-400 focus:border-orange-500 focus:outline-none"
                 />
               </div>
 
               <div className="col-span-2">
-                <label className="block text-xs text-stone-500 mb-1">Name</label>
+                <label className="block text-xs text-stone-500 mb-1">Nombre</label>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="My Feed"
+                  placeholder="Mi Feed"
                   required
-                  className="w-full rounded-lg border border-stone-200 bg-stone-100 py-2 px-3 text-sm text-white placeholder-stone-500 focus:border-orange-500 focus:outline-none"
+                  className="w-full rounded-lg border border-stone-200 bg-white py-2 px-3 text-sm text-stone-900 placeholder-stone-400 focus:border-orange-500 focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs text-stone-500 mb-1">Category</label>
+                <label className="block text-xs text-stone-500 mb-1">Categoría</label>
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full rounded-lg border border-stone-200 bg-stone-100 py-2 px-3 text-sm text-white focus:border-orange-500 focus:outline-none"
+                  className="w-full rounded-lg border border-stone-200 bg-white py-2 px-3 text-sm text-stone-900 focus:border-orange-500 focus:outline-none"
                 >
                   {CATEGORIES.map((cat) => (
                     <option key={cat} value={cat}>{cat}</option>
@@ -124,11 +124,11 @@ export function AddFeedForm({ onSuccess }: { onSuccess?: () => void }) {
               </div>
 
               <div>
-                <label className="block text-xs text-stone-500 mb-1">Sync Frequency</label>
+                <label className="block text-xs text-stone-500 mb-1">Frecuencia de Sincronización</label>
                 <select
                   value={syncFrequency}
                   onChange={(e) => setSyncFrequency(e.target.value as typeof syncFrequency)}
-                  className="w-full rounded-lg border border-stone-200 bg-stone-100 py-2 px-3 text-sm text-white focus:border-orange-500 focus:outline-none"
+                  className="w-full rounded-lg border border-stone-200 bg-white py-2 px-3 text-sm text-stone-900 focus:border-orange-500 focus:outline-none"
                 >
                   {FREQUENCIES.map((freq) => (
                     <option key={freq.value} value={freq.value}>{freq.label}</option>
@@ -143,7 +143,7 @@ export function AddFeedForm({ onSuccess }: { onSuccess?: () => void }) {
                 onClick={() => setIsOpen(false)}
                 className="flex-1 py-2 rounded-lg border border-stone-200 text-stone-400 hover:bg-stone-200 transition-colors"
               >
-                Cancel
+                Cancelar
               </button>
               <button
                 type="submit"
@@ -151,7 +151,7 @@ export function AddFeedForm({ onSuccess }: { onSuccess?: () => void }) {
                 className="flex-1 py-2 rounded-lg bg-orange-500 hover:bg-orange-600 text-white font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
-                Add Feed
+                Agregar Feed
               </button>
             </div>
           </motion.form>

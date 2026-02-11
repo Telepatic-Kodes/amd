@@ -73,7 +73,7 @@ export const pauseFeed = mutation({
   args: {
     feedId: v.string(),
   },
-  handler: async (ctx, args) => {
+  handler: async (_ctx, _args) => {
     // Implementation would update feed status
     // await ctx.db.patch(feedId, { status: "paused" });
     return { success: true };
@@ -87,7 +87,7 @@ export const resumeFeed = mutation({
   args: {
     feedId: v.string(),
   },
-  handler: async (ctx, args) => {
+  handler: async (_ctx, _args) => {
     // Implementation would update feed status
     // await ctx.db.patch(feedId, { status: "active" });
     return { success: true };
@@ -101,7 +101,7 @@ export const deleteFeed = mutation({
   args: {
     feedId: v.string(),
   },
-  handler: async (ctx, args) => {
+  handler: async (_ctx, _args) => {
     // Implementation would delete feed
     // await ctx.db.delete(feedId);
     return { success: true };
@@ -116,7 +116,7 @@ export const updateSyncFrequency = mutation({
     feedId: v.string(),
     syncFrequency: v.union(v.literal("hourly"), v.literal("daily"), v.literal("weekly")),
   },
-  handler: async (ctx, args) => {
+  handler: async (_ctx, _args) => {
     // Implementation would update sync frequency
     // await ctx.db.patch(args.feedId, { syncFrequency: args.syncFrequency });
     return { success: true };
@@ -130,7 +130,7 @@ export const triggerFeedSync = mutation({
   args: {
     feedId: v.string(),
   },
-  handler: async (ctx, args) => {
+  handler: async (_ctx, _args) => {
     // Implementation would trigger sync
     // This might call an action that fetches the feed
     return { success: true, syncing: true };

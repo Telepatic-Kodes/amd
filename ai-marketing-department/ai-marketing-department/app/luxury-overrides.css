@@ -368,6 +368,57 @@
   }
 }
 
+  /* === DARK MODE OVERRIDES === */
+  .dark .luxury-glass {
+    background: rgba(28, 25, 23, 0.85);
+    border-color: var(--border);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+
+  @supports (backdrop-filter: blur(12px)) {
+    .dark .luxury-glass {
+      background: rgba(28, 25, 23, 0.6);
+    }
+  }
+
+  .dark .luxury-card {
+    background: var(--card-bg);
+    border-color: var(--card-border);
+    box-shadow:
+      0 1px 3px rgba(0, 0, 0, 0.15),
+      0 4px 16px rgba(0, 0, 0, 0.1);
+  }
+
+  @media (hover: hover) {
+    .dark .luxury-card:hover {
+      box-shadow:
+        0 2px 6px rgba(0, 0, 0, 0.2),
+        0 8px 24px rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  .dark .luxury-metric,
+  .dark .luxury-metric-sm {
+    color: var(--text-primary);
+  }
+
+  .dark .luxury-section-heading {
+    color: #a8a29e;
+  }
+
+  .dark .luxury-progress-track {
+    background: #292524;
+  }
+
+  .dark .luxury-today-highlight {
+    background: rgba(251, 146, 60, 0.08);
+    border-color: rgba(251, 146, 60, 0.2);
+  }
+
+  .dark .luxury-chart-legend {
+    color: #a8a29e;
+  }
+
 /* === SCROLLBAR STYLING ===
    Outside @layer — scrollbar pseudo-elements break in CSS layers. */
 
@@ -396,4 +447,22 @@
 
 *::-webkit-scrollbar-thumb:hover {
   background: #a8a29e;
+}
+
+/* Dark mode scrollbars */
+.dark * {
+  scrollbar-color: #44403c #1c1917;
+}
+
+.dark *::-webkit-scrollbar-track {
+  background: #1c1917;
+}
+
+.dark *::-webkit-scrollbar-thumb {
+  background: #44403c;
+  border-color: #1c1917;
+}
+
+.dark *::-webkit-scrollbar-thumb:hover {
+  background: #57534e;
 }

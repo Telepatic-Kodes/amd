@@ -3,7 +3,6 @@
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@convex/_generated/api";
 import { cn } from "@/lib/utils";
-import { translate } from "@/lib/language";
 import { useToast } from "@/components/ui/Toast";
 import {
   Instagram,
@@ -114,7 +113,7 @@ export function InstagramConnectionCard({ convexSiteUrl }: InstagramConnectionCa
             <Instagram className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h4 className="font-medium text-white flex items-center gap-2">
+            <h4 className="font-medium text-stone-900 flex items-center gap-2">
               Instagram Business
               <span className={cn("inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full", config.bg, config.color)}>
                 <StatusIcon className="h-3 w-3" />
@@ -123,7 +122,7 @@ export function InstagramConnectionCard({ convexSiteUrl }: InstagramConnectionCa
             </h4>
             {connection ? (
               <div className="mt-1 space-y-1">
-                <p className="text-sm text-stone-300">@{connection.username}</p>
+                <p className="text-sm text-stone-500">@{connection.username}</p>
                 {connection.facebookPageName && (
                   <p className="text-xs text-stone-400">
                     Página: {connection.facebookPageName}
@@ -193,7 +192,7 @@ export function InstagramConnectionCard({ convexSiteUrl }: InstagramConnectionCa
         >
           <div className="flex items-center gap-2">
             <Info className="h-4 w-4 text-orange-400" />
-            <span className="text-sm font-medium text-stone-300">
+            <span className="text-sm font-medium text-stone-600">
               Requisitos de Instagram Business API
             </span>
           </div>
@@ -211,13 +210,13 @@ export function InstagramConnectionCard({ convexSiteUrl }: InstagramConnectionCa
             </p>
             <ul className="text-xs text-stone-400 space-y-1.5 ml-4">
               <li className="list-decimal">
-                Una cuenta de Instagram de tipo <span className="text-stone-300 font-medium">Business o Creator</span>
+                Una cuenta de Instagram de tipo <span className="text-stone-600 font-medium">Business o Creator</span>
               </li>
               <li className="list-decimal">
-                Vinculada a una <span className="text-stone-300 font-medium">Página de Facebook</span>
+                Vinculada a una <span className="text-stone-600 font-medium">Página de Facebook</span>
               </li>
               <li className="list-decimal">
-                Aprobación de <span className="text-stone-300 font-medium">Meta App Review</span> (60-90 días)
+                Aprobación de <span className="text-stone-600 font-medium">Meta App Review</span> (60-90 días)
               </li>
             </ul>
             <a

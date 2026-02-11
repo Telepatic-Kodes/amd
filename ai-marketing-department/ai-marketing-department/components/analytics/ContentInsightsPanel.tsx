@@ -59,7 +59,7 @@ export function ContentInsightsPanel({ data, isLoading }: ContentInsightsPanelPr
       <div className="text-center py-12">
         <p className="text-stone-500 text-sm">
           Sin datos suficientes para generar insights. Necesitas contenido publicado con
-          metricas de LinkedIn.
+          métricas de LinkedIn.
         </p>
       </div>
     );
@@ -183,7 +183,7 @@ export function ContentInsightsPanel({ data, isLoading }: ContentInsightsPanelPr
       {/* Card 1: Performance by Content Type */}
       <Card>
         <CardHeader>
-          <h4 className="text-sm font-semibold text-white flex items-center gap-2">
+          <h4 className="text-sm font-semibold text-stone-900 flex items-center gap-2">
             <Activity className="w-4 h-4 text-orange-400" />
             Rendimiento por Tipo de Contenido
           </h4>
@@ -201,7 +201,7 @@ export function ContentInsightsPanel({ data, isLoading }: ContentInsightsPanelPr
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-stone-500">{item.count} piezas</span>
-                    <span className="text-xs font-semibold text-white">
+                    <span className="text-xs font-semibold text-stone-900">
                       {formatNumber(item.avgEngagement)}
                     </span>
                   </div>
@@ -240,7 +240,7 @@ export function ContentInsightsPanel({ data, isLoading }: ContentInsightsPanelPr
       {/* Card 2: Performance by Time of Day */}
       <Card>
         <CardHeader>
-          <h4 className="text-sm font-semibold text-white flex items-center gap-2">
+          <h4 className="text-sm font-semibold text-stone-900 flex items-center gap-2">
             <Clock className="w-4 h-4 text-cyan-400" />
             Rendimiento por Hora de Publicacion
           </h4>
@@ -256,7 +256,7 @@ export function ContentInsightsPanel({ data, isLoading }: ContentInsightsPanelPr
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-stone-500">{item.count} posts</span>
-                    <span className="text-xs font-semibold text-white">
+                    <span className="text-xs font-semibold text-stone-900">
                       {formatNumber(item.avgEngagement)}
                     </span>
                   </div>
@@ -293,7 +293,7 @@ export function ContentInsightsPanel({ data, isLoading }: ContentInsightsPanelPr
       {/* Card 3: Trend Analysis */}
       <Card>
         <CardHeader>
-          <h4 className="text-sm font-semibold text-white flex items-center gap-2">
+          <h4 className="text-sm font-semibold text-stone-900 flex items-center gap-2">
             {trendDirection === "up" ? (
               <TrendingUp className="w-4 h-4 text-green-400" />
             ) : (
@@ -314,8 +314,8 @@ export function ContentInsightsPanel({ data, isLoading }: ContentInsightsPanelPr
                 </Badge>
               </div>
               <p className="text-xs text-stone-400">
-                El engagement promedio esta{" "}
-                {trendDirection === "up" ? "mejorando" : "disminuyendo"} en el periodo
+                El engagement promedio está{" "}
+                {trendDirection === "up" ? "mejorando" : "disminuyendo"} en el período
                 analizado
               </p>
             </div>

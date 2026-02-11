@@ -5,7 +5,6 @@ import { useAction, useQuery } from "convex/react";
 import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
-import { translate } from "@/lib/language";
 import { useToast } from "@/components/ui/Toast";
 import { Instagram, Loader2, CheckCircle2, AlertTriangle, Plus, X } from "lucide-react";
 import { InstagramPostPreview } from "./InstagramPostPreview";
@@ -188,7 +187,7 @@ export function PublishToInstagramButton({
           {/* Image URL Input */}
           {!isCarousel && (
             <div className="space-y-2">
-              <label className="text-sm font-medium text-stone-300">
+              <label className="text-sm font-medium text-stone-600">
                 URL de la imagen <span className="text-red-400">*</span>
               </label>
               <input
@@ -196,7 +195,7 @@ export function PublishToInstagramButton({
                 value={imageUrl}
                 onChange={(e) => setImageUrl(e.target.value)}
                 placeholder="https://ejemplo.com/imagen.jpg"
-                className="w-full px-3 py-2 rounded-lg bg-stone-200 border border-stone-300 text-white placeholder:text-stone-500 focus:outline-none focus:ring-2 focus:ring-[#FD1D1D]/50"
+                className="w-full px-3 py-2 rounded-lg bg-white border border-stone-300 text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-[#FD1D1D]/50"
               />
               <p className="text-xs text-stone-500">
                 La imagen debe ser JPEG o PNG, entre 320x320 y 1440x1440 píxeles
@@ -224,7 +223,7 @@ export function PublishToInstagramButton({
               }}
               className="w-4 h-4 rounded border-stone-300 bg-stone-200 text-[#FD1D1D] focus:ring-[#FD1D1D]/50"
             />
-            <label htmlFor="carousel-toggle" className="text-sm text-stone-300">
+            <label htmlFor="carousel-toggle" className="text-sm text-stone-600">
               Agregar más imágenes (carrusel)
             </label>
           </div>
@@ -233,7 +232,7 @@ export function PublishToInstagramButton({
           {isCarousel && (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-stone-300">
+                <p className="text-sm font-medium text-stone-600">
                   Imágenes del carrusel
                 </p>
                 <span className="text-xs text-stone-500">
@@ -247,7 +246,7 @@ export function PublishToInstagramButton({
                     value={url}
                     onChange={(e) => updateCarouselUrl(index, e.target.value)}
                     placeholder={`https://ejemplo.com/imagen${index + 1}.jpg`}
-                    className="flex-1 px-3 py-2 rounded-lg bg-stone-200 border border-stone-300 text-white placeholder:text-stone-500 focus:outline-none focus:ring-2 focus:ring-[#FD1D1D]/50"
+                    className="flex-1 px-3 py-2 rounded-lg bg-white border border-stone-300 text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-[#FD1D1D]/50"
                   />
                   {carouselUrls.length > 1 && (
                     <button
@@ -279,7 +278,7 @@ export function PublishToInstagramButton({
 
           {/* Preview */}
           <div className="mt-4">
-            <p className="text-sm font-medium text-stone-300 mb-3">Vista previa:</p>
+            <p className="text-sm font-medium text-stone-600 mb-3">Vista previa:</p>
             {isCarousel ? (
               <InstagramCarouselPreview
                 imageUrls={carouselUrls.filter(url => url.trim().length > 0)}

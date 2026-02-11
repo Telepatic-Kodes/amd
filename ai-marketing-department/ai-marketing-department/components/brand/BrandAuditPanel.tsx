@@ -111,7 +111,7 @@ export function BrandAuditPanel({ brandProfileId, instagramHandle, websiteUrl }:
             <p className="text-xs text-stone-400 mt-0.5">
               Ultimo: {formatTimeAgo(audit.createdAt)}
               {audit.tokensUsed && (
-                <span className="ml-2 text-stone-300">
+                <span className="ml-2 text-stone-500">
                   ({audit.tokensUsed.toLocaleString()} tokens)
                 </span>
               )}
@@ -294,7 +294,7 @@ export function BrandAuditPanel({ brandProfileId, instagramHandle, websiteUrl }:
       {/* Empty state (no audit yet, idle) */}
       {!hasAudit && status === "idle" && latestAudit === null && (
         <div className="p-8 text-center">
-          <Search className="w-8 h-8 mx-auto mb-3 text-stone-300" />
+          <Search className="w-8 h-8 mx-auto mb-3 text-stone-400" />
           <p className="text-sm text-stone-500">
             Analiza tu presencia digital con IA
           </p>

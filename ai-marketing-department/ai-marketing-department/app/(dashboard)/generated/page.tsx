@@ -85,11 +85,11 @@ const TASK_LABELS: Record<string, string> = {
   create_ads: "Ads",
   keyword_research: "SEO",
   brand_strategy: "Brand",
-  default: "Other",
+  default: "Otro",
 };
 
 const FILTER_TABS = [
-  { id: "all", label: "All", icon: LayoutGrid },
+  { id: "all", label: "Todos", icon: LayoutGrid },
   { id: "write_blog", label: "Blog", icon: FileText },
   { id: "create_linkedin_post", label: "LinkedIn", icon: Linkedin },
   { id: "create_twitter_thread", label: "Twitter", icon: Twitter },
@@ -105,7 +105,7 @@ function CopyButton({ text, size = "sm" }: { text: string; size?: "sm" | "lg" })
     e.stopPropagation();
     navigator.clipboard.writeText(text);
     setCopied(true);
-    success("Copied!", "Content copied to clipboard");
+    success("¡Copiado!", "Contenido copiado al portapapeles");
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -118,12 +118,12 @@ function CopyButton({ text, size = "sm" }: { text: string; size?: "sm" | "lg" })
         {copied ? (
           <>
             <Check className="h-4 w-4" />
-            Copied
+            Copiado
           </>
         ) : (
           <>
             <Copy className="h-4 w-4" />
-            Copy content
+            Copiar contenido
           </>
         )}
       </button>
@@ -134,7 +134,7 @@ function CopyButton({ text, size = "sm" }: { text: string; size?: "sm" | "lg" })
     <button
       onClick={handleCopy}
       className="p-2 rounded-lg bg-stone-200 hover:bg-stone-100 transition-colors"
-      title="Copy content"
+      title="Copiar contenido"
     >
       {copied ? (
         <Check className="h-4 w-4 text-green-400" />
@@ -170,20 +170,20 @@ function LinkedInPreview({ content }: { content: string }) {
           </span>
           128
         </span>
-        <span className="ml-auto">24 comments • 8 shares</span>
+        <span className="ml-auto">24 comentarios • 8 compartidos</span>
       </div>
       <div className="px-4 py-2 border-t border-stone-100 flex justify-around">
         <button className="flex items-center gap-2 text-stone-600 hover:text-stone-900 text-sm py-2 px-4 rounded hover:bg-stone-50">
-          <ThumbsUp className="w-4 h-4" /> Like
+          <ThumbsUp className="w-4 h-4" /> Me gusta
         </button>
         <button className="flex items-center gap-2 text-stone-600 hover:text-stone-900 text-sm py-2 px-4 rounded hover:bg-stone-50">
-          <MessageCircle className="w-4 h-4" /> Comment
+          <MessageCircle className="w-4 h-4" /> Comentar
         </button>
         <button className="flex items-center gap-2 text-stone-600 hover:text-stone-900 text-sm py-2 px-4 rounded hover:bg-stone-50">
-          <Share2 className="w-4 h-4" /> Share
+          <Share2 className="w-4 h-4" /> Compartir
         </button>
         <button className="flex items-center gap-2 text-stone-600 hover:text-stone-900 text-sm py-2 px-4 rounded hover:bg-stone-50">
-          <Send className="w-4 h-4" /> Send
+          <Send className="w-4 h-4" /> Enviar
         </button>
       </div>
     </div>
@@ -256,7 +256,7 @@ function EmailPreview({ content }: { content: string }) {
       </div>
       <div className="px-6 pb-6">
         <button className="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-medium hover:opacity-90 transition-opacity">
-          Learn more →
+          Conocer más →
         </button>
       </div>
     </div>
@@ -273,7 +273,7 @@ function BlogPreview({ content }: { content: string }) {
         <div className="flex items-center gap-2 text-sm text-stone-500 mb-4">
           <span className="px-2 py-1 bg-orange-100 text-orange-700 rounded">Marketing</span>
           <span>•</span>
-          <span>5 min read</span>
+          <span>5 min lectura</span>
         </div>
         <div className="prose prose-lg max-w-none text-stone-800">
           <ReactMarkdown
@@ -306,8 +306,8 @@ function AdsPreview({ content }: { content: string }) {
             <span className="text-white font-bold text-xs">f</span>
           </div>
           <div>
-            <p className="font-semibold text-stone-900 text-sm">Sponsored</p>
-            <p className="text-xs text-stone-500">Facebook Ad</p>
+            <p className="font-semibold text-stone-900 text-sm">Patrocinado</p>
+            <p className="text-xs text-stone-500">Anuncio de Facebook</p>
           </div>
         </div>
         <div className="h-40 bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center">
@@ -318,7 +318,7 @@ function AdsPreview({ content }: { content: string }) {
             <ReactMarkdown>{content.substring(0, 500)}</ReactMarkdown>
           </div>
           <button className="w-full py-2 bg-orange-600 text-white rounded font-medium text-sm">
-            Learn More
+            Conocer más
           </button>
         </div>
       </div>
@@ -409,7 +409,7 @@ function ReviewModal({
               <Icon className="h-6 w-6" />
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-white">
+              <h2 className="text-xl font-semibold text-stone-900">
                 {task.title.replace("[SDK] ", "")}
               </h2>
               <p className="text-sm text-stone-500">
@@ -434,7 +434,7 @@ function ReviewModal({
                 }`}
               >
                 <Eye className="h-4 w-4 inline mr-1" />
-                Preview
+                Vista previa
               </button>
               <button
                 onClick={() => setViewMode('raw')}
@@ -445,7 +445,7 @@ function ReviewModal({
                 }`}
               >
                 <Code className="h-4 w-4 inline mr-1" />
-                Raw
+                Código
               </button>
             </div>
             <button
@@ -464,7 +464,7 @@ function ReviewModal({
             </div>
           ) : (
             <div className="p-4 rounded-xl bg-stone-50 border border-stone-200">
-              <pre className="text-sm text-stone-200 whitespace-pre-wrap font-mono leading-relaxed">
+              <pre className="text-sm text-stone-700 whitespace-pre-wrap font-mono leading-relaxed">
                 {content}
               </pre>
             </div>
@@ -473,7 +473,7 @@ function ReviewModal({
           {task.input && Object.keys(task.input).length > 0 && (
             <div className="mt-6">
               <p className="text-xs text-stone-500 mb-2 uppercase tracking-wider">
-                Input Parameters
+                Parametros de entrada
               </p>
               <div className="p-3 rounded-lg bg-stone-50 border border-stone-200">
                 <code className="text-xs text-orange-400 whitespace-pre">
@@ -486,18 +486,18 @@ function ReviewModal({
 
         <div className="flex items-center justify-between p-6 border-t border-stone-200">
           <div className="flex items-center gap-2">
-            <Badge variant="success">Completed</Badge>
+            <Badge variant="success">Completado</Badge>
             <Badge variant="info">$0.00</Badge>
             <span className="text-xs text-stone-500">
-              {content.length} characters
+              {content.length} caracteres
             </span>
           </div>
           <div className="flex items-center gap-3">
             <button
               onClick={onClose}
-              className="px-4 py-2 rounded-lg bg-stone-200 hover:bg-stone-100 text-stone-300 transition-colors"
+              className="px-4 py-2 rounded-lg bg-stone-200 hover:bg-stone-100 text-stone-700 transition-colors"
             >
-              Close
+              Cerrar
             </button>
             <CopyButton text={content} size="lg" />
           </div>
@@ -565,10 +565,10 @@ function ContentCard({
                   onClick={(e) => {
                     e.stopPropagation();
                     navigator.clipboard.writeText(content);
-                    success("Copied!", "Content copied to clipboard");
+                    success("Copiado", "Contenido copiado al portapapeles");
                   }}
                   className="p-2 rounded-lg bg-black/70 backdrop-blur-sm hover:bg-black/90 transition-colors"
-                  title="Copy"
+                  title="Copiar"
                 >
                   <Copy className="h-4 w-4 text-white" />
                 </button>
@@ -578,7 +578,7 @@ function ContentCard({
                     onReview();
                   }}
                   className="p-2 rounded-lg bg-black/70 backdrop-blur-sm hover:bg-black/90 transition-colors"
-                  title="Preview"
+                  title="Vista previa"
                 >
                   <Eye className="h-4 w-4 text-white" />
                 </button>
@@ -593,7 +593,7 @@ function ContentCard({
                     a.click();
                   }}
                   className="p-2 rounded-lg bg-black/70 backdrop-blur-sm hover:bg-black/90 transition-colors"
-                  title="Download"
+                  title="Descargar"
                 >
                   <Download className="h-4 w-4 text-white" />
                 </button>
@@ -608,7 +608,7 @@ function ContentCard({
               <div className={`rounded-md bg-stone-200 p-1.5 ${colorClass}`}>
                 <Icon className="h-4 w-4" />
               </div>
-              <h3 className="font-semibold text-white text-sm truncate">
+              <h3 className="font-semibold text-stone-900 text-sm truncate">
                 {task.title.replace("[SDK] ", "")}
               </h3>
             </div>
@@ -667,7 +667,7 @@ export default function GeneratedContentPage() {
     });
 
     return Object.entries(counts).map(([type, count]) => ({
-      name: TASK_LABELS[type] || 'Other',
+      name: TASK_LABELS[type] || 'Otro',
       value: count,
       color: type === 'write_blog' ? chartColors.departments.content :
              type === 'create_linkedin_post' ? chartColors.info :
@@ -692,10 +692,10 @@ export default function GeneratedContentPage() {
     return (
       <div className="space-y-8">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-stone-400 bg-clip-text text-transparent">
-            Generated Content
+          <h1 className="text-3xl font-bold text-stone-900">
+            Contenido Generado
           </h1>
-          <p className="text-stone-400 mt-2">Loading...</p>
+          <p className="text-stone-400 mt-2">Cargando...</p>
         </div>
         <SkeletonGrid items={6} columns={3} />
       </div>
@@ -707,11 +707,11 @@ export default function GeneratedContentPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-stone-400 bg-clip-text text-transparent">
-            Generated Content
+          <h1 className="text-3xl font-bold text-stone-900">
+            Contenido Generado
           </h1>
           <p className="text-stone-400 mt-2">
-            {completedTasks.length} pieces generated with Plan Max (Cost: $0.00)
+            {completedTasks.length} piezas generadas con Plan Max (Costo: $0.00)
           </p>
         </div>
 

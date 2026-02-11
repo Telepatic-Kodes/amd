@@ -19,11 +19,11 @@ const CONTENT_TYPES = [
   { value: "social_tiktok", label: "TikTok" },
   { value: "email", label: "Email" },
   { value: "newsletter", label: "Newsletter" },
-  { value: "ad_copy", label: "Ad Copy" },
+  { value: "ad_copy", label: "Texto Publicitario" },
   { value: "landing_page", label: "Landing Page" },
   { value: "whitepaper", label: "Whitepaper" },
-  { value: "case_study", label: "Case Study" },
-  { value: "video_script", label: "Video Script" },
+  { value: "case_study", label: "Caso de Estudio" },
+  { value: "video_script", label: "Guion de Video" },
 ];
 
 export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {

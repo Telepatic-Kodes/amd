@@ -30,7 +30,7 @@ export function MobileNav() {
   };
 
   return (
-    <nav aria-label="Navegación móvil" className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-[var(--border)] bg-[#faf8f4]/80 backdrop-blur-xl">
+    <nav aria-label="Navegación móvil" className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-[var(--border)] bg-[var(--surface-0)]/80 backdrop-blur-xl">
       <div className="grid grid-cols-4 h-16">
         {mobileNavItems.map((item) => {
           const Icon = item.icon;

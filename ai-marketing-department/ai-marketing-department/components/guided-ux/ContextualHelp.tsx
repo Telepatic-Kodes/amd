@@ -105,7 +105,7 @@ export function ContextualHelp({
           >
             <div className="rounded-lg border border-stone-300 bg-stone-100 shadow-xl p-3">
               <div className="flex items-start justify-between gap-2">
-                <p className="text-xs text-stone-300 leading-relaxed">
+                <p className="text-xs text-stone-500 leading-relaxed">
                   {content}
                 </p>
                 <button

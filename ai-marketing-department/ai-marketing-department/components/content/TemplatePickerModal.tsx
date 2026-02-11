@@ -105,7 +105,7 @@ export function TemplatePickerModal({ isOpen, onClose, preselectedTemplateId }: 
   // Result state
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedBody, setGeneratedBody] = useState("");
-  const [generatedContentId, setGeneratedContentId] = useState<string | null>(null);
+  const [_generatedContentId, setGeneratedContentId] = useState<string | null>(null);
 
   // Create template form state
   const [newName, setNewName] = useState("");
@@ -230,7 +230,7 @@ export function TemplatePickerModal({ isOpen, onClose, preselectedTemplateId }: 
     if (!newName.trim() || !newPromptTemplate.trim()) return;
     setIsCreating(true);
     try {
-      const templateId = await createCustomTemplate({
+      const _templateId = await createCustomTemplate({
         name: newName.trim(),
         description: newDescription.trim(),
         category: newCategory,

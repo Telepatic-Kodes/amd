@@ -36,6 +36,7 @@ export function LinkedInPostPreview({
       {/* Header */}
       <div className="px-4 py-3 flex items-center gap-3">
         {authorAvatar ? (
+          /* eslint-disable-next-line @next/next/no-img-element */
           <img
             src={authorAvatar}
             alt={authorName}
@@ -48,7 +49,7 @@ export function LinkedInPostPreview({
           </div>
         )}
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-white truncate">{authorName}</p>
+          <p className="text-sm font-semibold text-stone-900 truncate">{authorName}</p>
           <p className="text-xs text-stone-400 truncate">{authorTitle}</p>
           <p className="text-xs text-stone-500">Ahora · 🌐</p>
         </div>
@@ -56,7 +57,7 @@ export function LinkedInPostPreview({
 
       {/* Body */}
       <div className="px-4 pb-3">
-        <div className="text-sm text-stone-200 whitespace-pre-wrap break-words leading-relaxed">
+        <div className="text-sm text-stone-700 whitespace-pre-wrap break-words leading-relaxed">
           {displayText}
           {shouldTruncate && !expanded && (
             <button

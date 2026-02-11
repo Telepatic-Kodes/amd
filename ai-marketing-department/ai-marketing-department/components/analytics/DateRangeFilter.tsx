@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -29,7 +29,7 @@ export function DateRangeFilter({ value, onChange }: DateRangeFilterProps) {
     custom: { label: "Personalizado", days: 0 },
   };
 
-  const handlePresetClick = (key: PresetKey) => {
+  const handlePresetClick = useCallback((key: PresetKey) => {
     if (key === "custom") {
       setShowCustom(true);
       return;
@@ -45,7 +45,7 @@ export function DateRangeFilter({ value, onChange }: DateRangeFilterProps) {
       endDate,
       label: presets[key].label,
     });
-  };
+  }, [onChange]);
 
   const handleCustomDateChange = () => {
     if (!customStart || !customEnd) return;
@@ -80,7 +80,7 @@ export function DateRangeFilter({ value, onChange }: DateRangeFilterProps) {
               "border border-stone-200 hover:border-stone-300",
               isActive(key)
                 ? "bg-orange-600 text-white border-orange-600 shadow-lg shadow-orange-500/30"
-                : "bg-stone-100 text-stone-300 hover:bg-stone-200"
+                : "bg-stone-100 text-stone-600 hover:bg-stone-200"
             )}
           >
             {key === "custom" && <Calendar className="inline-block w-3.5 h-3.5 mr-1.5" />}
@@ -103,7 +103,7 @@ export function DateRangeFilter({ value, onChange }: DateRangeFilterProps) {
                   setTimeout(() => handleCustomDateChange(), 50);
                 }
               }}
-              className="px-3 py-2 rounded-lg bg-stone-50 border border-stone-200 text-stone-300 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+              className="px-3 py-2 rounded-lg bg-stone-50 border border-stone-200 text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
             />
           </div>
 
@@ -118,7 +118,7 @@ export function DateRangeFilter({ value, onChange }: DateRangeFilterProps) {
                   setTimeout(() => handleCustomDateChange(), 50);
                 }
               }}
-              className="px-3 py-2 rounded-lg bg-stone-50 border border-stone-200 text-stone-300 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+              className="px-3 py-2 rounded-lg bg-stone-50 border border-stone-200 text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
             />
           </div>
         </div>

@@ -45,7 +45,4 @@ export function validateEnvironment() {
     }
   }
 
-  console.log(
-    `[AMD] Environment validation passed (${isProduction ? "production" : process.env.NODE_ENV})`
-  );
 }

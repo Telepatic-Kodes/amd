@@ -116,7 +116,7 @@ function ChainDetail({ taskId }: { taskId: Id<"tasks"> }) {
           return (
             <div key={node.taskId} className="flex items-center gap-2">
               {i > 0 && (
-                <ArrowRight className="h-3 w-3 text-stone-300 shrink-0" />
+                <ArrowRight className="h-3 w-3 text-stone-400 shrink-0" />
               )}
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}

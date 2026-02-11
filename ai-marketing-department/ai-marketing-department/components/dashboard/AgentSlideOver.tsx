@@ -218,7 +218,7 @@ export function AgentSlideOver({ agent, recentActivity, recentExecutions, onClos
             <div className="flex items-start gap-2 rounded-md bg-red-500/10 border border-red-500/20 p-3">
               <AlertTriangle className="h-4 w-4 text-red-400 shrink-0 mt-0.5" />
               <p className="text-xs text-red-300">
-                Este agente esta en estado de error. Revisa la configuracion o reinicialo desde el Centro de Control.
+                Este agente está en estado de error. Revisa la configuración o reinícialo desde el Centro de Control.
               </p>
             </div>
           )}

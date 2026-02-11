@@ -34,7 +34,7 @@ interface OnboardingActivationProps {
 
 const DEMO_CONTENT = `# Analisis Estrategico Inicial
 
-Basado en el perfil de marca proporcionado, aqui esta mi evaluacion inicial como CMO:
+Basado en el perfil de marca proporcionado, aquí está mi evaluación inicial como CMO:
 
 ## Oportunidades Inmediatas
 1. **Contenido de autoridad**: Posicionar la marca como lider de pensamiento en su industria
@@ -46,8 +46,8 @@ Basado en el perfil de marca proporcionado, aqui esta mi evaluacion inicial como
 - Activar campanas de reconocimiento de marca en los canales seleccionados
 - Monitorear competidores para identificar brechas de contenido
 
-## Proximos Pasos
-El equipo de agentes esta listo para ejecutar. Revisa el dashboard para asignar las primeras tareas.`;
+## Próximos Pasos
+El equipo de agentes está listo para ejecutar. Revisa el dashboard para asignar las primeras tareas.`;
 
 export function OnboardingActivation({
   brandData,
@@ -345,7 +345,7 @@ export function OnboardingActivation({
             <div className="flex items-center gap-2 mb-2">
               <Zap className="w-5 h-5 text-orange-400" />
               <h2 className="text-sm font-semibold text-stone-300">
-                {activationMode === "real" ? "Ejecucion CMO Agent" : "Demo de ejecucion"}
+                {activationMode === "real" ? "Ejecución CMO Agent" : "Demo de ejecución"}
               </h2>
             </div>
 
@@ -384,7 +384,7 @@ export function OnboardingActivation({
                 <span className="text-sm text-stone-400">
                   {activationMode === "real"
                     ? "CMO Agent analizando tu marca..."
-                    : "Simulando ejecucion..."}
+                    : "Simulando ejecución..."}
                 </span>
               </div>
             )}

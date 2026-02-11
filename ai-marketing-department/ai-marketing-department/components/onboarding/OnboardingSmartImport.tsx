@@ -458,7 +458,7 @@ export function OnboardingSmartImport({
             ) : (
               <>
                 <Sparkles className="w-4 h-4" />
-                Extraer informacion
+                Extraer información
               </>
             )}
           </button>

@@ -39,7 +39,7 @@ export function TwitterConnectionCard({ convexSiteUrl }: TwitterConnectionCardPr
       showError("Error al conectar Twitter", twitterError);
       window.history.replaceState({}, "", window.location.pathname);
     }
-  }, []);
+  }, [success, showError]);
 
   const handleConnect = () => {
     // Redirect to Convex HTTP Action that starts OAuth
@@ -101,7 +101,7 @@ export function TwitterConnectionCard({ convexSiteUrl }: TwitterConnectionCardPr
             <Twitter className="h-5 w-5 text-[#1DA1F2]" />
           </div>
           <div>
-            <h4 className="font-medium text-white flex items-center gap-2">
+            <h4 className="font-medium text-stone-900 flex items-center gap-2">
               Twitter/X
               <span className={cn("inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full", config.bg, config.color)}>
                 <StatusIcon className="h-3 w-3" />
@@ -110,7 +110,7 @@ export function TwitterConnectionCard({ convexSiteUrl }: TwitterConnectionCardPr
             </h4>
             {connection ? (
               <div className="mt-1 space-y-1">
-                <p className="text-sm text-stone-300">@{connection.username}</p>
+                <p className="text-sm text-stone-500">@{connection.username}</p>
                 {connection.displayName && (
                   <p className="text-xs text-stone-500">{connection.displayName}</p>
                 )}

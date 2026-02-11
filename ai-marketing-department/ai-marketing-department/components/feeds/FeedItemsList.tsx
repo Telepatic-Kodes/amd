@@ -31,14 +31,14 @@ export function FeedItemsList({ feedId, limit = 10 }: FeedItemsListProps) {
   if (feedItems.length === 0) {
     return (
       <div className="text-center py-8 text-stone-500">
-        No items yet. Sync a feed to see items here.
+        Sin elementos aún. Sincroniza un feed para ver elementos aquí.
       </div>
     );
   }
 
   const formatDate = (timestamp?: number) => {
-    if (!timestamp) return "Unknown";
-    return new Date(timestamp).toLocaleDateString(undefined, {
+    if (!timestamp) return "Desconocido";
+    return new Date(timestamp).toLocaleDateString("es-CL", {
       month: "short",
       day: "numeric",
       hour: "2-digit",
@@ -64,7 +64,7 @@ export function FeedItemsList({ feedId, limit = 10 }: FeedItemsListProps) {
                 href={item.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm font-medium text-white hover:text-orange-400 transition-colors line-clamp-2"
+                className="text-sm font-medium text-stone-900 hover:text-orange-400 transition-colors line-clamp-2"
               >
                 {item.title}
               </a>

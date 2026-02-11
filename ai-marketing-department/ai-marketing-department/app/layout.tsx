@@ -3,6 +3,7 @@ import { Playfair_Display, DM_Sans, JetBrains_Mono } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
+import Script from "next/script";
 import { validateEnvironment } from "@/lib/validateEnv";
 import "./globals.css";
 import "./luxury-overrides.css";
@@ -34,8 +35,11 @@ const jetbrains = JetBrains_Mono({
 import ConvexClientProvider from "./ConvexClientProvider";
 
 export const metadata: Metadata = {
-  title: "AI Marketing Department",
-  description: "Automated marketing department operated by 37 AI agents",
+  title: {
+    default: "AI Marketing Department",
+    template: "%s | AMD",
+  },
+  description: "Departamento de marketing automatizado con 37 agentes IA",
 };
 
 export const viewport: Viewport = {
@@ -56,7 +60,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const content = (
-    <html lang="es">
+    <html lang="es" suppressHydrationWarning>
+      <head>
+        <Script src="/theme-init.js" strategy="beforeInteractive" />
+      </head>
       <body
         className={`${playfair.variable} ${dmSans.variable} ${jetbrains.variable} antialiased font-[family-name:var(--font-dm-sans)]`}
       >

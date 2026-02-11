@@ -38,7 +38,7 @@ export function DonutChart({
   innerRadius = 60,
   outerRadius = 90,
   showLegend = true,
-  showLabels = false,
+  showLabels: _showLabels = false,
   showTooltip = true,
   valueFormatter = (v) => v.toLocaleString(),
   centerLabel,

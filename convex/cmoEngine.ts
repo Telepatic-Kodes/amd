@@ -804,3 +804,323 @@ export const getPendingStrategyTasks = query({
     return allTasks.filter((t) => t.strategyId === args.strategyId);
   },
 });
+
+// ===========================================
+// GOAL-BASED STRATEGY LAUNCH
+// ===========================================
+
+/**
+ * launchStrategyFromGoal — Creates a strategy from a natural language goal.
+ * User types something like "Aumentar engagement en LinkedIn 20%" and the
+ * CMO generates a targeted strategy for that specific goal.
+ */
+export const launchStrategyFromGoal = mutation({
+  args: {
+    goal: v.string(),
+    brandProfileId: v.id("brandProfiles"),
+  },
+  handler: async (ctx, args) => {
+    const now = Date.now();
+    const strategyId = `strategy_${now}_${Math.random().toString(36).substr(2, 9)}`;
+
+    const brandProfile = await ctx.db.get(args.brandProfileId);
+    if (!brandProfile) {
+      throw new Error("Perfil de marca no encontrado");
+    }
+    if (brandProfile.status !== "complete") {
+      throw new Error("El perfil de marca debe estar completo");
+    }
+
+    // Check no active strategy already running
+    const existing = await ctx.db
+      .query("marketingStrategies")
+      .withIndex("by_brandProfile", (q) => q.eq("brandProfileId", args.brandProfileId))
+      .filter((q) =>
+        q.or(
+          q.eq(q.field("status"), "generating"),
+          q.eq(q.field("status"), "executing"),
+          q.eq(q.field("status"), "ready")
+        )
+      )
+      .first();
+
+    if (existing) {
+      throw new Error("Ya existe una estrategia activa para esta marca. Completa o archiva la actual primero.");
+    }
+
+    const id = await ctx.db.insert("marketingStrategies", {
+      strategyId,
+      brandProfileId: args.brandProfileId,
+      userId: brandProfile.userId,
+      goal: args.goal,
+      status: "generating",
+      totalTasks: 0,
+      completedTasks: 0,
+      failedTasks: 0,
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    await ctx.scheduler.runAfter(0, internal.cmoEngine.generateStrategyFromGoalAsync, {
+      strategyDocId: id,
+      brandProfileId: args.brandProfileId,
+      goal: args.goal,
+    });
+
+    await ctx.db.insert("auditLog", {
+      action: "strategy.launched_from_goal",
+      entityType: "marketingStrategy",
+      entityId: strategyId,
+      performedBy: "user",
+      metadata: { brandProfileId: args.brandProfileId, goal: args.goal },
+      timestamp: now,
+    });
+
+    return { strategyId, id };
+  },
+});
+
+/**
+ * generateStrategyFromGoalAsync — Claude CMO generates strategy
+ * targeting a specific user goal.
+ */
+export const generateStrategyFromGoalAsync = internalAction({
+  args: {
+    strategyDocId: v.id("marketingStrategies"),
+    brandProfileId: v.id("brandProfiles"),
+    goal: v.string(),
+  },
+  handler: async (ctx, args) => {
+    try {
+      const brandProfile = await ctx.runQuery(api.brandProfile.getBrandProfile);
+      if (!brandProfile) {
+        throw new Error("Brand profile not found");
+      }
+
+      const basePrompt = buildCMOPrompt(brandProfile);
+      const goalPrompt = `${basePrompt}
+
+IMPORTANT CONTEXT — USER GOAL:
+The user has set this specific marketing objective: "${args.goal}"
+
+Your strategy MUST be laser-focused on achieving this goal. Every content pillar, calendar entry, ad campaign, SEO priority, and email sequence should directly contribute to this objective.
+
+Include a "goalMetrics" section in your JSON response:
+{
+  "goalMetrics": {
+    "objective": "${args.goal}",
+    "kpis": ["KPI 1", "KPI 2", "KPI 3"],
+    "targetTimeline": "4 weeks",
+    "milestones": [
+      { "week": 1, "target": "Description of week 1 milestone" },
+      { "week": 2, "target": "Description of week 2 milestone" },
+      { "week": 3, "target": "Description of week 3 milestone" },
+      { "week": 4, "target": "Description of week 4 milestone" }
+    ]
+  }
+}`;
+
+      const claudeResponse = await ctx.runAction(api.actions.callClaude, {
+        systemPrompt: goalPrompt,
+        userMessage: `Generate a focused marketing strategy for ${brandProfile.companyName} to achieve: "${args.goal}". Return only valid JSON.`,
+        model: "claude-sonnet-4-20250514",
+        temperature: 0.7,
+        maxTokens: 4096,
+      });
+
+      let strategyData;
+      try {
+        let content = claudeResponse.content.trim();
+        if (content.startsWith("```")) {
+          content = content.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
+        }
+        strategyData = JSON.parse(content);
+      } catch {
+        throw new Error(`Failed to parse CMO strategy JSON: ${claudeResponse.content.slice(0, 200)}`);
+      }
+
+      if (!strategyData.summary || !strategyData.contentPillars || !strategyData.weeklyCalendar) {
+        throw new Error("Strategy missing required fields");
+      }
+
+      await ctx.runMutation(internal.cmoEngine.saveStrategy, {
+        strategyDocId: args.strategyDocId,
+        strategy: strategyData,
+      });
+
+      await ctx.runMutation(internal.cmoEngine.decomposeStrategy, {
+        strategyDocId: args.strategyDocId,
+      });
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      await ctx.runMutation(internal.cmoEngine.failStrategy, {
+        strategyDocId: args.strategyDocId,
+        error: errorMessage,
+      });
+    }
+  },
+});
+
+// ===========================================
+// ARCHIVE STRATEGY
+// ===========================================
+
+export const archiveStrategy = mutation({
+  args: { strategyDocId: v.id("marketingStrategies") },
+  handler: async (ctx, args) => {
+    const strategy = await ctx.db.get(args.strategyDocId);
+    if (!strategy) throw new Error("Estrategia no encontrada");
+    if (strategy.status === "executing" || strategy.status === "generating") {
+      throw new Error("No se puede archivar una estrategia en ejecucion o generandose");
+    }
+
+    await ctx.db.patch(args.strategyDocId, {
+      status: "failed", // reuse failed status as "archived"
+      updatedAt: Date.now(),
+    });
+
+    await ctx.db.insert("auditLog", {
+      action: "strategy.archived",
+      entityType: "marketingStrategy",
+      entityId: strategy.strategyId,
+      performedBy: "user",
+      metadata: {},
+      timestamp: Date.now(),
+    });
+  },
+});
+
+// ===========================================
+// STRATEGY PERFORMANCE
+// ===========================================
+
+/**
+ * getStrategyPerformance — Returns execution metrics for a strategy.
+ */
+export const getStrategyPerformance = query({
+  args: { strategyDocId: v.id("marketingStrategies") },
+  handler: async (ctx, args) => {
+    const strategy = await ctx.db.get(args.strategyDocId);
+    if (!strategy) return null;
+
+    // Get all tasks for this strategy
+    const allTasks = await ctx.db.query("tasks").order("desc").collect();
+    const stratTasks = allTasks.filter((t) => t.strategyId === strategy.strategyId);
+
+    // Get executions for these tasks
+    const executions = [];
+    for (const task of stratTasks) {
+      const taskExecs = await ctx.db
+        .query("executions")
+        .withIndex("by_task", (q) => q.eq("taskId", task._id))
+        .collect();
+      executions.push(...taskExecs);
+    }
+
+    const totalTokens = executions.reduce((s, e) => s + (e.tokensUsed?.total || 0), 0);
+    const totalCost = executions.reduce((s, e) => s + (e.cost || 0), 0);
+    const totalDuration = executions.reduce((s, e) => s + (e.duration || 0), 0);
+    const successCount = executions.filter((e) => e.status === "success").length;
+
+    // Content generated from this strategy
+    const contentGenerated = await ctx.db.query("content").order("desc").collect();
+    const stratContent = contentGenerated.filter((c) =>
+      stratTasks.some((t) => t._id === c.sourceTaskId)
+    );
+
+    // Timeline: task completion over time
+    const completedTasks = stratTasks
+      .filter((t) => t.completedAt)
+      .sort((a, b) => (a.completedAt || 0) - (b.completedAt || 0));
+
+    const timeline = completedTasks.map((t) => ({
+      timestamp: t.completedAt!,
+      title: t.title,
+      status: t.status,
+    }));
+
+    return {
+      strategyId: strategy.strategyId,
+      goal: strategy.goal,
+      status: strategy.status,
+      tasks: {
+        total: stratTasks.length,
+        completed: stratTasks.filter((t) => t.status === "completed").length,
+        running: stratTasks.filter((t) => t.status === "running").length,
+        pending: stratTasks.filter((t) => t.status === "pending").length,
+        failed: stratTasks.filter((t) => t.status === "failed").length,
+      },
+      execution: {
+        totalExecutions: executions.length,
+        successRate: executions.length > 0 ? (successCount / executions.length) * 100 : 0,
+        totalTokens,
+        totalCost,
+        avgDuration: executions.length > 0 ? totalDuration / executions.length : 0,
+      },
+      content: {
+        total: stratContent.length,
+        published: stratContent.filter((c) => c.status === "published").length,
+        draft: stratContent.filter((c) => c.status === "draft").length,
+      },
+      timeline,
+      createdAt: strategy.createdAt,
+      completedAt: strategy.completedAt,
+    };
+  },
+});
+
+/**
+ * getStrategyTasksDetailed — Returns all strategy tasks with full agent info
+ * for the real-time execution monitoring view.
+ */
+export const getStrategyTasksDetailed = query({
+  args: { strategyId: v.string() },
+  handler: async (ctx, args) => {
+    const allTasks = await ctx.db.query("tasks").order("desc").collect();
+    const stratTasks = allTasks.filter((t) => t.strategyId === args.strategyId);
+
+    const result = [];
+    for (const task of stratTasks) {
+      const agent = await ctx.db.get(task.agentId);
+
+      // Get latest execution for this task
+      const executions = await ctx.db
+        .query("executions")
+        .withIndex("by_task", (q) => q.eq("taskId", task._id))
+        .order("desc")
+        .take(1);
+
+      const latestExec = executions[0];
+
+      result.push({
+        _id: task._id,
+        taskId: task.taskId,
+        title: task.title,
+        type: task.type,
+        status: task.status,
+        priority: task.priority,
+        agent: agent
+          ? { name: agent.name, department: agent.department, agentId: agent.agentId, status: agent.status }
+          : null,
+        execution: latestExec
+          ? {
+              status: latestExec.status,
+              duration: latestExec.duration,
+              tokensUsed: latestExec.tokensUsed?.total || 0,
+              cost: latestExec.cost,
+              timestamp: latestExec.timestamp,
+            }
+          : null,
+        createdAt: task.createdAt,
+        startedAt: task.startedAt,
+        completedAt: task.completedAt,
+      });
+    }
+
+    return result.sort((a, b) => {
+      // Running first, then pending, then completed, then failed
+      const order: Record<string, number> = { running: 0, pending: 1, queued: 2, completed: 3, failed: 4 };
+      return (order[a.status] ?? 5) - (order[b.status] ?? 5);
+    });
+  },
+});

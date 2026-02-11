@@ -63,7 +63,7 @@ export function LineChartComponent({
   if (!data || !lines || lines.length === 0) {
     return (
       <div className={`${className} flex items-center justify-center bg-stone-50 rounded-lg`} style={{ height }}>
-        <p className="text-stone-400">No data available</p>
+        <p className="text-stone-400">Sin datos disponibles</p>
       </div>
     );
   }

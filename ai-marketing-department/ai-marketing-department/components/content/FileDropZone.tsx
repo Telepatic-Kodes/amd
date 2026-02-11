@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef } from "react";
-import { Upload, FileText, X, AlertCircle, Loader2, CheckCircle2 } from "lucide-react";
+import { Upload, FileText, AlertCircle, Loader2, CheckCircle2 } from "lucide-react";
 import {
   parseFile,
   validateFile,
@@ -219,7 +219,7 @@ export function FileDropZone({
         <>
           <Loader2 className="w-12 h-12 text-orange-400 animate-spin" />
           <div className="text-center">
-            <p className="text-base font-medium text-stone-200">
+            <p className="text-base font-medium text-stone-700">
               Procesando archivo...
             </p>
             <p className="text-sm text-stone-400 mt-1">{selectedFile.name}</p>
@@ -250,7 +250,7 @@ export function FileDropZone({
           <AlertCircle className="w-12 h-12 text-red-400" />
           <div className="text-center max-w-md">
             <p className="text-base font-medium text-red-400">Error</p>
-            <p className="text-sm text-stone-300 mt-2">{error}</p>
+            <p className="text-sm text-stone-500 mt-2">{error}</p>
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -277,7 +277,7 @@ export function FileDropZone({
           </div>
 
           <div className="text-center space-y-2">
-            <p className="text-base font-medium text-stone-200">
+            <p className="text-base font-medium text-stone-700">
               {isDragging
                 ? "Suelta el archivo aquí"
                 : "Arrastra un archivo o haz clic para seleccionar"}

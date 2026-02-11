@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 import { EditorToolbar } from "./EditorToolbar";
 import { LinkDialog } from "./LinkDialog";
 import { EditorStatusBar } from "./EditorStatusBar";
-import { copyHtmlToClipboard, downloadAsFile, cleanPastedContent } from "@/lib/editor-utils";
+import { copyHtmlToClipboard, downloadAsFile } from "@/lib/editor-utils";
 import { useToast } from "@/components/ui/Toast";
 
 /**
@@ -114,8 +114,8 @@ export function RichTextEditor({
     editorProps: {
       attributes: {
         class: cn(
-          "prose prose-invert max-w-none focus:outline-none",
-          "text-white text-sm leading-relaxed",
+          "prose max-w-none focus:outline-none",
+          "text-stone-900 text-sm leading-relaxed",
           // Handle long words overflow with CSS
           "break-words"
         ),
@@ -150,9 +150,9 @@ export function RichTextEditor({
   const handleCopyHtml = async () => {
     try {
       await copyHtmlToClipboard(content);
-      success("Copied!", "HTML copied to clipboard");
-    } catch (err) {
-      showError("Copy failed", "Failed to copy HTML to clipboard");
+      success("¡Copiado!", "HTML copiado al portapapeles");
+    } catch (_err) {
+      showError("Error al copiar", "Error al copiar HTML al portapapeles");
     }
   };
 
@@ -161,38 +161,13 @@ export function RichTextEditor({
       const timestamp = new Date().toISOString().split('T')[0];
       const filename = `${title.toLowerCase().replace(/\s+/g, '-')}-${timestamp}.html`;
       downloadAsFile(content, filename);
-      success("Downloaded!", `Saved as ${filename}`);
-    } catch (err) {
-      showError("Download failed", "Failed to download file");
+      success("¡Descargado!", `Saved as ${filename}`);
+    } catch (_err) {
+      showError("Error al descargar", "Failed to download file");
     }
   };
 
-  const BubbleMenuButton = ({
-    onClick,
-    isActive = false,
-    children,
-    title,
-  }: {
-    onClick: () => void;
-    isActive?: boolean;
-    children: React.ReactNode;
-    title: string;
-  }) => (
-    <button
-      type="button"
-      onClick={onClick}
-      title={title}
-      aria-label={title}
-      aria-pressed={isActive}
-      className={cn(
-        "p-2 rounded transition-colors touch-target min-w-[44px] min-h-[44px] flex items-center justify-center",
-        "hover:bg-stone-100",
-        isActive ? "bg-stone-700 text-orange-400" : "text-stone-300"
-      )}
-    >
-      {children}
-    </button>
-  );
+  // BubbleMenuButton is defined outside the component to avoid re-creation during render
 
   return (
     <div
@@ -218,28 +193,28 @@ export function RichTextEditor({
         <BubbleMenuButton
           onClick={() => editor.chain().focus().toggleBold().run()}
           isActive={editor.isActive("bold")}
-          title="Bold"
+          title="Negrita"
         >
           <Bold className="h-4 w-4" />
         </BubbleMenuButton>
         <BubbleMenuButton
           onClick={() => editor.chain().focus().toggleItalic().run()}
           isActive={editor.isActive("italic")}
-          title="Italic"
+          title="Cursiva"
         >
           <Italic className="h-4 w-4" />
         </BubbleMenuButton>
         <BubbleMenuButton
           onClick={() => editor.chain().focus().toggleStrike().run()}
           isActive={editor.isActive("strike")}
-          title="Strikethrough"
+          title="Tachado"
         >
           <Strikethrough className="h-4 w-4" />
         </BubbleMenuButton>
         <BubbleMenuButton
           onClick={() => editor.chain().focus().toggleCode().run()}
           isActive={editor.isActive("code")}
-          title="Code"
+          title="Código"
         >
           <Code className="h-4 w-4" />
         </BubbleMenuButton>
@@ -247,7 +222,7 @@ export function RichTextEditor({
         <BubbleMenuButton
           onClick={() => setIsLinkDialogOpen(true)}
           isActive={editor.isActive("link")}
-          title="Link"
+          title="Enlace"
         >
           <LinkIcon className="h-4 w-4" />
         </BubbleMenuButton>
@@ -255,7 +230,7 @@ export function RichTextEditor({
 
       {/* Editor Content */}
       <div
-        className="p-4 bg-[#faf8f4]/50"
+        className="p-4 bg-white"
         style={{ minHeight }}
         data-placeholder={placeholder}
       >
@@ -263,7 +238,7 @@ export function RichTextEditor({
       </div>
 
       {/* Footer - EditorStatusBar with optional export buttons */}
-      <div className="flex items-center justify-between border-t border-stone-200 bg-[#faf8f4]/50">
+      <div className="flex items-center justify-between border-t border-stone-200 bg-white">
         <EditorStatusBar content={content} className="flex-1 border-0" />
 
         {showExport && (
@@ -271,22 +246,22 @@ export function RichTextEditor({
             <button
               type="button"
               onClick={handleCopyHtml}
-              aria-label="Copy HTML to clipboard"
+              aria-label="Copiar HTML al portapapeles"
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-stone-400 hover:text-stone-900 hover:bg-stone-200 rounded transition-colors"
-              title="Copy HTML to clipboard"
+              title="Copiar HTML al portapapeles"
             >
               <Copy className="h-3.5 w-3.5" />
-              Copy HTML
+              Copiar HTML
             </button>
             <button
               type="button"
               onClick={handleDownload}
-              aria-label="Download as HTML file"
+              aria-label="Descargar como archivo HTML"
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-stone-400 hover:text-stone-900 hover:bg-stone-200 rounded transition-colors"
-              title="Download as HTML file"
+              title="Descargar"
             >
               <Download className="h-3.5 w-3.5" />
-              Download
+              Descargar
             </button>
           </div>
         )}
@@ -299,5 +274,34 @@ export function RichTextEditor({
         onClose={() => setIsLinkDialogOpen(false)}
       />
     </div>
+  );
+}
+
+function BubbleMenuButton({
+  onClick,
+  isActive = false,
+  children,
+  title,
+}: {
+  onClick: () => void;
+  isActive?: boolean;
+  children: React.ReactNode;
+  title: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      title={title}
+      aria-label={title}
+      aria-pressed={isActive}
+      className={cn(
+        "p-2 rounded transition-colors touch-target min-w-[44px] min-h-[44px] flex items-center justify-center",
+        "hover:bg-stone-100",
+        isActive ? "bg-stone-700 text-orange-400" : "text-stone-500"
+      )}
+    >
+      {children}
+    </button>
   );
 }

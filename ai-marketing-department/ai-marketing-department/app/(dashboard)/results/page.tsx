@@ -131,8 +131,8 @@ export default function ResultsPage() {
           </h1>
           <p className="text-stone-500 mt-2 md:mt-3 text-base md:text-lg">
             {hasEngagementData
-              ? "Como esta performando tu contenido en LinkedIn."
-              : "Sin datos — publica contenido en LinkedIn para ver metricas"}
+              ? "Cómo está performando tu contenido en LinkedIn."
+              : "Sin datos — publica contenido en LinkedIn para ver métricas"}
           </p>
         </div>
       </div>
@@ -217,7 +217,7 @@ export default function ResultsPage() {
             <div className="flex items-center justify-between mb-4 md:mb-6">
               <h3 className="text-xl md:text-2xl font-semibold text-stone-900 flex items-center gap-3">
                 <TrendingUp className="w-5 h-5 md:w-6 md:h-6 text-orange-600" />
-                Tendencia (ultimos 7 dias)
+                Tendencia (últimos 7 días)
               </h3>
               <Badge variant="default">Tareas</Badge>
             </div>
@@ -234,7 +234,7 @@ export default function ResultsPage() {
                 <div className="flex items-center justify-center h-full text-stone-400">
                   <div className="text-center">
                     <BarChart3 className="w-10 h-10 mx-auto mb-2" />
-                    <p>Sin datos de tareas en este periodo</p>
+                    <p>Sin datos de tareas en este período</p>
                   </div>
                 </div>
               )}
@@ -332,7 +332,7 @@ export default function ResultsPage() {
           ) : (
             <div className="py-12 text-center text-stone-400">
               <BarChart3 className="w-10 h-10 mx-auto mb-3" />
-              <p className="text-base">Sin datos — publica contenido en LinkedIn para ver metricas</p>
+              <p className="text-base">Sin datos — publica contenido en LinkedIn para ver métricas</p>
             </div>
           )}
         </Card>
@@ -348,7 +348,7 @@ export default function ResultsPage() {
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
               <h3 className="text-xl md:text-2xl font-semibold text-stone-900 mb-2">Necesitas un reporte detallado?</h3>
-              <p className="text-sm md:text-base text-stone-600">Descarga tu reporte completo de los ultimos 30 dias</p>
+              <p className="text-sm md:text-base text-stone-600">Descarga tu reporte completo de los últimos 30 días</p>
             </div>
             <button className="px-6 py-3 rounded-lg bg-orange-600 text-white font-medium hover:bg-orange-700 transition-colors min-h-[44px] w-full md:w-auto">
               <Download className="w-4 h-4 inline mr-2" />

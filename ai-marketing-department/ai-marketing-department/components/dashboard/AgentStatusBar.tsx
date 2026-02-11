@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { cn } from "@/lib/utils";
 import { chartColors } from "@/components/charts/theme";
 import { AgentSlideOver } from "./AgentSlideOver";
 

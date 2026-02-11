@@ -9,7 +9,6 @@ import {
   Bot,
   Zap,
   Clock,
-  MessageSquare,
   Send,
   RefreshCw,
 } from "lucide-react";
@@ -33,7 +32,7 @@ export interface ActivityItem {
   description?: string;
   timestamp: number;
   agent?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 const activityConfig: Record<ActivityType, {
@@ -137,7 +136,7 @@ function ActivityItemComponent({ activity, isLast }: ActivityItemProps) {
       <div className="flex-1 pb-4">
         <div className="flex items-start justify-between gap-2">
           <div>
-            <p className="text-sm font-medium text-white">
+            <p className="text-sm font-medium text-stone-900">
               {activity.title}
             </p>
             {activity.description && (
@@ -238,7 +237,7 @@ export function CompactActivityFeed({
                 <Icon className={cn("h-3 w-3", config.color)} />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs text-white truncate">
+                <p className="text-xs text-stone-900 truncate">
                   {activity.title}
                 </p>
               </div>

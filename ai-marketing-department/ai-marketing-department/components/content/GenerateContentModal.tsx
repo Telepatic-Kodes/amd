@@ -151,7 +151,7 @@ export function GenerateContentModal({ isOpen, onClose, defaultChannels = [] }: 
         <div className="flex items-center justify-between px-6 py-4 border-b border-stone-200">
           <div className="flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-orange-400" />
-            <h2 className="text-lg font-semibold text-white">Generar Contenido</h2>
+            <h2 className="text-lg font-semibold text-stone-900">Generar Contenido</h2>
           </div>
           <button
             onClick={handleClose}
@@ -166,20 +166,20 @@ export function GenerateContentModal({ isOpen, onClose, defaultChannels = [] }: 
         <div className="px-6 py-5 space-y-5 max-h-[70vh] overflow-y-auto">
           {/* Topic */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-stone-300">Tema</label>
+            <label className="text-sm font-medium text-stone-600">Tema</label>
             <input
               type="text"
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
               placeholder="Ej: 5 tendencias de IA para marketing en 2026"
               disabled={isGenerating}
-              className="w-full px-4 py-3 rounded-lg bg-stone-100 border border-stone-200 text-white placeholder:text-stone-600 focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition disabled:opacity-50"
+              className="w-full px-4 py-3 rounded-lg bg-stone-100 border border-stone-200 text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition disabled:opacity-50"
             />
           </div>
 
           {/* Channel Selection */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-stone-300">Canales</label>
+            <label className="text-sm font-medium text-stone-600">Canales</label>
             <div className="grid grid-cols-2 gap-2">
               {CHANNELS.map((channel) => {
                 const Icon = channel.icon;
@@ -216,8 +216,8 @@ export function GenerateContentModal({ isOpen, onClose, defaultChannels = [] }: 
 
           {/* Custom Instructions */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-stone-300">
-              Instrucciones adicionales <span className="text-stone-600">(opcional)</span>
+            <label className="text-sm font-medium text-stone-600">
+              Instrucciones adicionales <span className="text-stone-400">(opcional)</span>
             </label>
             <textarea
               value={customInstructions}
@@ -225,7 +225,7 @@ export function GenerateContentModal({ isOpen, onClose, defaultChannels = [] }: 
               placeholder="Ej: Enfócate en el mercado latinoamericano, usa ejemplos de Chile..."
               rows={3}
               disabled={isGenerating}
-              className="w-full px-4 py-3 rounded-lg bg-stone-100 border border-stone-200 text-white placeholder:text-stone-600 focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition resize-none disabled:opacity-50 text-sm"
+              className="w-full px-4 py-3 rounded-lg bg-stone-100 border border-stone-200 text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition resize-none disabled:opacity-50 text-sm"
             />
           </div>
 
@@ -237,7 +237,7 @@ export function GenerateContentModal({ isOpen, onClose, defaultChannels = [] }: 
                 animate={{ opacity: 1, height: "auto" }}
                 className="space-y-2"
               >
-                <p className="text-sm font-medium text-stone-300">Resultados</p>
+                <p className="text-sm font-medium text-stone-600">Resultados</p>
                 {results.map((result) => (
                   <div
                     key={result.channel}
@@ -271,7 +271,7 @@ export function GenerateContentModal({ isOpen, onClose, defaultChannels = [] }: 
           {results ? (
             <button
               onClick={handleClose}
-              className="px-6 py-2.5 rounded-lg bg-stone-200 hover:bg-stone-100 text-white text-sm font-medium transition"
+              className="px-6 py-2.5 rounded-lg bg-stone-200 hover:bg-stone-100 text-stone-900 text-sm font-medium transition"
             >
               Cerrar
             </button>

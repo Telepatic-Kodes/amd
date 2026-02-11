@@ -4,19 +4,12 @@ import { Card, CardContent } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Quote, TrendingUp } from "lucide-react";
 import { CaseStudy } from "@/lib/landing-data";
-import { SimpleCounter } from "@/components/ui/AnimatedCounter";
 
 interface CaseStudyCardProps {
   caseStudy: CaseStudy;
 }
 
 export function CaseStudyCard({ caseStudy }: CaseStudyCardProps) {
-  // Extract numeric values for animation
-  const extractNumber = (str: string): number => {
-    const match = str.match(/\d+/);
-    return match ? parseInt(match[0]) : 0;
-  };
-
   return (
     <Card hover className="h-full">
       <CardContent className="p-8">

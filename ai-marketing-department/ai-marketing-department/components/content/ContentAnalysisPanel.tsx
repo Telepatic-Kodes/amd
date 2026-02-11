@@ -54,6 +54,12 @@ const PRIORITY_COLORS: Record<string, string> = {
   low: "bg-orange-500/10 text-orange-400 border-orange-500/20",
 };
 
+const PRIORITY_LABELS: Record<string, string> = {
+  high: "Alta",
+  medium: "Media",
+  low: "Baja",
+};
+
 const SUGGESTION_TYPE_LABELS: Record<string, string> = {
   rewrite_hook: "Reescribir hook",
   add_cta: "Agregar CTA",
@@ -119,7 +125,7 @@ export function ContentAnalysisPanel({ contentId, isOpen, onClose }: Props) {
       <div className="flex items-center justify-between px-5 py-4 border-b border-stone-200">
         <div className="flex items-center gap-2">
           <Sparkles className="w-5 h-5 text-purple-400" />
-          <h2 className="text-lg font-semibold text-white">Análisis</h2>
+          <h2 className="text-lg font-semibold text-stone-900">Análisis</h2>
         </div>
         <button
           onClick={onClose}
@@ -137,7 +143,7 @@ export function ContentAnalysisPanel({ contentId, isOpen, onClose }: Props) {
               <Sparkles className="w-7 h-7 text-purple-400" />
             </div>
             <div>
-              <p className="text-stone-300 font-medium">Sin análisis aún</p>
+              <p className="text-stone-600 font-medium">Sin análisis aún</p>
               <p className="text-stone-500 text-sm mt-1">
                 Analiza este contenido para ver scores y sugerencias de mejora.
               </p>
@@ -150,7 +156,7 @@ export function ContentAnalysisPanel({ contentId, isOpen, onClose }: Props) {
             <div className="rounded-lg border border-stone-200 overflow-hidden">
               <button
                 onClick={() => toggleSection("scores")}
-                className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-stone-300 hover:bg-stone-100/50 transition"
+                className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-stone-600 hover:bg-stone-100/50 transition"
               >
                 <span>Puntuaciones</span>
                 <ChevronDown
@@ -205,7 +211,7 @@ export function ContentAnalysisPanel({ contentId, isOpen, onClose }: Props) {
             <div className="rounded-lg border border-stone-200 overflow-hidden">
               <button
                 onClick={() => toggleSection("details")}
-                className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-stone-300 hover:bg-stone-100/50 transition"
+                className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-stone-600 hover:bg-stone-100/50 transition"
               >
                 <span>Detalles</span>
                 <ChevronDown
@@ -267,7 +273,7 @@ export function ContentAnalysisPanel({ contentId, isOpen, onClose }: Props) {
             <div className="rounded-lg border border-stone-200 overflow-hidden">
               <button
                 onClick={() => toggleSection("suggestions")}
-                className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-stone-300 hover:bg-stone-100/50 transition"
+                className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-stone-600 hover:bg-stone-100/50 transition"
               >
                 <span>Sugerencias ({analysis.suggestions.length})</span>
                 <ChevronDown
@@ -312,7 +318,7 @@ export function ContentAnalysisPanel({ contentId, isOpen, onClose }: Props) {
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-1">
-                                <span className="text-xs font-medium text-stone-300">
+                                <span className="text-xs font-medium text-stone-600">
                                   {SUGGESTION_TYPE_LABELS[suggestion.type] || suggestion.type}
                                 </span>
                                 <span
@@ -321,7 +327,7 @@ export function ContentAnalysisPanel({ contentId, isOpen, onClose }: Props) {
                                     PRIORITY_COLORS[suggestion.priority] || PRIORITY_COLORS.medium
                                   )}
                                 >
-                                  {suggestion.priority}
+                                  {PRIORITY_LABELS[suggestion.priority] || suggestion.priority}
                                 </span>
                               </div>
                               <p className="text-xs text-stone-500 leading-relaxed">

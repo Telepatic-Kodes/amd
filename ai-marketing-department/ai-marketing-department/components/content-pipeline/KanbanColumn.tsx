@@ -32,10 +32,10 @@ export function KanbanColumn({ status, title, items, count, color, onDrop, onAct
   const [isDropTarget, setIsDropTarget] = useState(false);
   const [isInvalidDrop, setIsInvalidDrop] = useState(false);
   const dragCounter = useRef(0);
-  const allowedFrom = getAllowedFromStatuses(status);
+  const _allowedFrom = getAllowedFromStatuses(status);
 
   const handleDragOver = (e: React.DragEvent) => {
-    const fromStatus = e.dataTransfer.types.includes("application/x-status")
+    const _fromStatus = e.dataTransfer.types.includes("application/x-status")
       ? "unknown"
       : "";
     // Allow the drop - we validate on drop
@@ -86,7 +86,7 @@ export function KanbanColumn({ status, title, items, count, color, onDrop, onAct
       <div className="px-4 py-3 border-b border-stone-200/50 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className={cn("h-2.5 w-2.5 rounded-full", color)} />
-          <span className="text-sm font-medium text-white">{title}</span>
+          <span className="text-sm font-medium text-stone-900">{title}</span>
         </div>
         <span className="text-xs text-stone-500 bg-stone-200 px-2 py-0.5 rounded-full">{count}</span>
       </div>

@@ -18,7 +18,9 @@ import {
   Pause,
   Play,
   ChevronRight,
+  ArrowUpRight,
 } from "lucide-react";
+import Link from "next/link";
 import { useToast } from "@/components/ui/Toast";
 
 // Department color map
@@ -109,7 +111,7 @@ function CalendarDay({ entry }: { entry: { dayOfWeek: string; contentType: strin
         <p className="text-xs text-stone-700 truncate">{entry.description}</p>
         <div className="flex items-center gap-1.5 mt-0.5">
           <span className="text-[9px] text-stone-400">{entry.channel}</span>
-          <span className="text-[9px] text-stone-300">·</span>
+          <span className="text-[9px] text-stone-400">·</span>
           <span className="text-[9px] text-stone-400">{entry.pillar}</span>
         </div>
       </div>
@@ -186,7 +188,7 @@ export function StrategyDashboard({ strategyDocId }: StrategyDashboardProps) {
           <XCircle className="h-5 w-5 text-red-500" />
           <div>
             <h2 className="text-sm font-semibold text-stone-900">Error al generar estrategia</h2>
-            <p className="text-xs text-stone-500">Hubo un problema. Puedes intentar nuevamente desde el boton de activar.</p>
+            <p className="text-xs text-stone-500">Hubo un problema. Puedes intentar nuevamente desde el botón de activar.</p>
           </div>
         </div>
       </div>
@@ -206,12 +208,19 @@ export function StrategyDashboard({ strategyDocId }: StrategyDashboardProps) {
             <StatusBadge status={strategy.status} />
           </div>
           <div className="flex items-center gap-2">
+            <Link
+              href="/strategy"
+              className="inline-flex items-center gap-1 px-2 py-1 text-[10px] font-medium text-orange-600 hover:text-orange-800 rounded transition-colors"
+            >
+              Ver detalle
+              <ArrowUpRight className="h-3 w-3" />
+            </Link>
             {strategy.status === "ready" && (
               <button
                 onClick={async () => {
                   try {
                     await startExecution({ strategyDocId });
-                    success("Ejecucion iniciada", "Los agentes comenzaron a trabajar en la estrategia");
+                    success("Ejecución iniciada", "Los agentes comenzaron a trabajar en la estrategia");
                   } catch (err: unknown) {
                     const msg = err instanceof Error ? err.message : "Error";
                     toastError("Error", msg);
@@ -327,7 +336,7 @@ export function StrategyDashboard({ strategyDocId }: StrategyDashboardProps) {
                   <p className="text-[10px] text-stone-400 mb-1">Gaps de contenido</p>
                   {data.seoStrategy.contentGaps.slice(0, 3).map((gap) => (
                     <p key={gap} className="text-[10px] text-stone-600 flex items-center gap-1">
-                      <ChevronRight className="h-2.5 w-2.5 text-stone-300" />
+                      <ChevronRight className="h-2.5 w-2.5 text-stone-400" />
                       {gap}
                     </p>
                   ))}
@@ -362,7 +371,7 @@ export function StrategyDashboard({ strategyDocId }: StrategyDashboardProps) {
                   <p className="text-[10px] text-stone-400">Objetivos</p>
                   {data.adStrategy.objectives.map((obj) => (
                     <p key={obj} className="text-[10px] text-stone-600 flex items-center gap-1">
-                      <ChevronRight className="h-2.5 w-2.5 text-stone-300" />
+                      <ChevronRight className="h-2.5 w-2.5 text-stone-400" />
                       {obj}
                     </p>
                   ))}
@@ -383,7 +392,7 @@ export function StrategyDashboard({ strategyDocId }: StrategyDashboardProps) {
                   <p className="text-[10px] text-stone-400 mb-1">Secuencias</p>
                   {data.emailStrategy.sequences.map((seq) => (
                     <p key={seq} className="text-[10px] text-stone-600 flex items-center gap-1">
-                      <ChevronRight className="h-2.5 w-2.5 text-stone-300" />
+                      <ChevronRight className="h-2.5 w-2.5 text-stone-400" />
                       {seq}
                     </p>
                   ))}
@@ -408,7 +417,7 @@ export function StrategyDashboard({ strategyDocId }: StrategyDashboardProps) {
       {/* Task Execution Tracker by Department */}
       {strategyTasks && taskStats.byDept.length > 0 && (
         <div className="rounded-xl border border-stone-200 bg-white p-4">
-          <h3 className="text-xs font-medium text-stone-700 mb-3">Ejecucion por Departamento</h3>
+          <h3 className="text-xs font-medium text-stone-700 mb-3">Ejecución por Departamento</h3>
           <div className="space-y-2">
             {taskStats.byDept.map(({ dept, total, completed, running, failed }) => (
               <div key={dept} className="flex items-center gap-3">

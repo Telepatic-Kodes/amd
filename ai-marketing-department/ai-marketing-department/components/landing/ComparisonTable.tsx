@@ -1,8 +1,7 @@
 "use client";
 
-import { Card, CardContent, CardHeader } from "@/components/ui/Card";
+import { Card, CardContent } from "@/components/ui/Card";
 import { comparisonFeatures } from "@/lib/landing-data";
-import { Check, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 

@@ -31,7 +31,7 @@ export function QuickModeToggle() {
           <ZapOff className="w-4 h-4 text-stone-500" />
         )}
         <div>
-          <p className="text-sm font-medium text-white">Modo Express</p>
+          <p className="text-sm font-medium text-stone-900">Modo Express</p>
           <p className="text-xs text-stone-500">
             {quickModeEnabled
               ? "Configuración rápida activada"

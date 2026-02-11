@@ -1,6 +1,6 @@
 "use client";
 
-import { Palette, Type, Image } from "lucide-react";
+import { Palette, Type, Image as ImageIcon } from "lucide-react";
 
 interface BrandVisual {
   primaryColor: string;
@@ -96,7 +96,7 @@ export function BrandStepVisual({ data, onChange }: Props) {
         {/* Logo description */}
         <div className="space-y-2">
           <label className="text-sm font-medium text-stone-700 flex items-center gap-2">
-            <Image className="w-4 h-4 text-orange-400" /> Descripción del logo
+            <ImageIcon className="w-4 h-4 text-orange-400" /> Descripción del logo
           </label>
           <textarea
             value={data.logoDescription}

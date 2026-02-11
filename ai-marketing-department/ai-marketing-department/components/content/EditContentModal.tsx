@@ -14,10 +14,10 @@ import { FileImportModal } from "./FileImportModal";
 import { stripHtmlTags, countWords, validateContent } from "@/lib/editor-utils";
 
 const TONES = [
-  { value: "professional", label: "Professional" },
+  { value: "professional", label: "Profesional" },
   { value: "casual", label: "Casual" },
-  { value: "friendly", label: "Friendly" },
-  { value: "technical", label: "Technical" },
+  { value: "friendly", label: "Amigable" },
+  { value: "technical", label: "Técnico" },
 ];
 
 interface EditContentModalProps {
@@ -147,7 +147,7 @@ export function EditContentModal({
 
       if (Object.keys(updates).length === 1) {
         // Only id, no changes
-        success("No changes", "No changes were made.");
+        success("Sin cambios", "No se realizaron cambios.");
         onClose();
         return;
       }
@@ -155,18 +155,18 @@ export function EditContentModal({
       // Validate content before saving
       const contentValidation = validateContent(formData.body, 50);
       if (!contentValidation.isValid) {
-        setError(contentValidation.error || "Invalid content");
-        showError("Validation Error", contentValidation.error || "Invalid content");
+        setError(contentValidation.error || "Contenido inválido");
+        showError("Error de Validación", contentValidation.error || "Contenido inválido");
         return;
       }
 
       await updateContent(updates);
 
-      success("Content updated!", "Your changes have been saved.");
+      success("Contenido actualizado", "Los cambios se han guardado correctamente.");
       onClose();
       onSuccess?.();
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to update content";
+      const message = err instanceof Error ? err.message : "Error al actualizar contenido";
       setError(message);
       showError("Error", message);
     } finally {
@@ -221,7 +221,7 @@ export function EditContentModal({
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-stone-200">
               <div>
-                <h2 className="text-xl font-bold text-white">Edit Content</h2>
+                <h2 className="text-xl font-bold text-stone-900">Editar Contenido</h2>
                 <p className="text-sm text-stone-400 mt-1">{content?.title}</p>
               </div>
               <div className="flex items-center gap-2">
@@ -253,15 +253,15 @@ export function EditContentModal({
               {/* Basic Section */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-semibold text-white">Content</h3>
+                  <h3 className="text-sm font-semibold text-stone-900">Contenido</h3>
 
                   {/* Write/Preview Tabs */}
-                  <div role="tablist" aria-label="Editor mode" className="flex gap-2 bg-[#faf8f4]/50 rounded-lg p-1 border border-stone-200">
+                  <div role="tablist" aria-label="Modo de editor" className="flex gap-2 bg-white rounded-lg p-1 border border-stone-200">
                     <button
                       type="button"
                       role="tab"
                       aria-selected={activeTab === "write"}
-                      aria-label="Write mode"
+                      aria-label="Modo de escritura"
                       onClick={() => setActiveTab("write")}
                       className={cn(
                         "flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-colors",
@@ -271,13 +271,13 @@ export function EditContentModal({
                       )}
                     >
                       <Edit3 className="h-3 w-3" />
-                      Write
+                      Escribir
                     </button>
                     <button
                       type="button"
                       role="tab"
                       aria-selected={activeTab === "preview"}
-                      aria-label="Preview mode"
+                      aria-label="Modo de vista previa"
                       onClick={() => setActiveTab("preview")}
                       className={cn(
                         "flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-colors",
@@ -287,28 +287,28 @@ export function EditContentModal({
                       )}
                     >
                       <Eye className="h-3 w-3" />
-                      Preview
+                      Vista Previa
                     </button>
                   </div>
                 </div>
 
                 {/* Title */}
                 <div>
-                  <label className="block text-xs text-stone-500 mb-2">Title</label>
+                  <label className="block text-xs text-stone-500 mb-2">Título</label>
                   <input
                     type="text"
                     value={formData.title}
                     onChange={(e) => handleInputChange("title", e.target.value)}
-                    className="w-full rounded-lg border border-stone-200 bg-[#faf8f4]/50 py-2 px-3 text-sm text-white placeholder-stone-500 focus:border-orange-500 focus:outline-none"
+                    className="w-full rounded-lg border border-stone-200 bg-white py-2 px-3 text-sm text-stone-900 placeholder-stone-400 focus:border-orange-500 focus:outline-none"
                   />
                   <p className="text-xs text-stone-500 mt-1">
-                    {formData.title.length} characters
+                    {formData.title.length} caracteres
                   </p>
                 </div>
 
                 {/* Body - Tab Content */}
                 <div>
-                  <label className="block text-xs text-stone-500 mb-2">Content</label>
+                  <label className="block text-xs text-stone-500 mb-2">Contenido</label>
 
                   <AnimatePresence mode="wait">
                     {activeTab === "write" ? (
@@ -322,7 +322,7 @@ export function EditContentModal({
                         <RichTextEditor
                           content={formData.body}
                           onChange={(html) => handleInputChange("body", html)}
-                          placeholder="Start writing your content..."
+                          placeholder="Comienza a escribir tu contenido..."
                           minHeight="400px"
                           title={formData.title}
                           showExport={true}
@@ -343,8 +343,8 @@ export function EditContentModal({
 
                   <div className="flex items-center justify-between mt-2">
                     <p className="text-xs text-stone-500">
-                      {stripHtmlTags(formData.body).length} characters • {wordCount} words •{" "}
-                      {readingTime} min read
+                      {stripHtmlTags(formData.body).length} caracteres • {wordCount} palabras •{" "}
+                      {readingTime} min lectura
                     </p>
                     {!validation.isValid && (
                       <p className="text-xs text-red-400">
@@ -356,13 +356,13 @@ export function EditContentModal({
 
                 {/* Summary */}
                 <div>
-                  <label className="block text-xs text-stone-500 mb-2">Summary</label>
+                  <label className="block text-xs text-stone-500 mb-2">Resumen</label>
                   <textarea
                     value={formData.summary}
                     onChange={(e) => handleInputChange("summary", e.target.value)}
                     rows={3}
-                    placeholder="Brief summary of the content..."
-                    className="w-full rounded-lg border border-stone-200 bg-[#faf8f4]/50 py-2 px-3 text-sm text-white placeholder-stone-500 focus:border-orange-500 focus:outline-none"
+                    placeholder="Breve resumen del contenido..."
+                    className="w-full rounded-lg border border-stone-200 bg-white py-2 px-3 text-sm text-stone-900 placeholder-stone-400 focus:border-orange-500 focus:outline-none"
                   />
                 </div>
               </div>
@@ -372,7 +372,7 @@ export function EditContentModal({
                 <button
                   type="button"
                   onClick={() => toggleSection("seo")}
-                  className="flex items-center gap-3 w-full text-sm font-semibold text-white hover:text-orange-400 transition-colors"
+                  className="flex items-center gap-3 w-full text-sm font-semibold text-stone-700 hover:text-orange-600 transition-colors"
                 >
                   <ChevronDown
                     className={cn(
@@ -380,7 +380,7 @@ export function EditContentModal({
                       expandedSections.seo && "rotate-180"
                     )}
                   />
-                  SEO Settings
+                  Configuración SEO
                 </button>
 
                 {expandedSections.seo && (
@@ -397,11 +397,11 @@ export function EditContentModal({
                         type="text"
                         value={formData.seoTitle}
                         onChange={(e) => handleInputChange("seoTitle", e.target.value)}
-                        placeholder="Page title for search engines (55-60 chars)"
-                        className="w-full rounded-lg border border-stone-200 bg-[#faf8f4]/50 py-2 px-3 text-sm text-white placeholder-stone-500 focus:border-orange-500 focus:outline-none"
+                        placeholder="Título de página para motores de búsqueda (55-60 caracteres)"
+                        className="w-full rounded-lg border border-stone-200 bg-white py-2 px-3 text-sm text-stone-900 placeholder-stone-400 focus:border-orange-500 focus:outline-none"
                       />
                       <p className="text-xs text-stone-500 mt-1">
-                        {formData.seoTitle.length} / 60 characters
+                        {formData.seoTitle.length} / 60 caracteres
                         {formData.seoTitle.length >= 55 &&
                           formData.seoTitle.length <= 60 &&
                           " ✓"}
@@ -418,12 +418,12 @@ export function EditContentModal({
                         onChange={(e) =>
                           handleInputChange("seoDescription", e.target.value)
                         }
-                        placeholder="Meta description for search results (150-160 chars)"
+                        placeholder="Meta descripción para resultados de búsqueda (150-160 caracteres)"
                         rows={3}
-                        className="w-full rounded-lg border border-stone-200 bg-[#faf8f4]/50 py-2 px-3 text-sm text-white placeholder-stone-500 focus:border-orange-500 focus:outline-none"
+                        className="w-full rounded-lg border border-stone-200 bg-white py-2 px-3 text-sm text-stone-900 placeholder-stone-400 focus:border-orange-500 focus:outline-none"
                       />
                       <p className="text-xs text-stone-500 mt-1">
-                        {formData.seoDescription.length} / 160 characters
+                        {formData.seoDescription.length} / 160 caracteres
                         {formData.seoDescription.length >= 150 &&
                           formData.seoDescription.length <= 160 &&
                           " ✓"}
@@ -438,7 +438,7 @@ export function EditContentModal({
                         value={formData.slug}
                         onChange={(e) => handleInputChange("slug", e.target.value)}
                         placeholder="url-friendly-slug"
-                        className="w-full rounded-lg border border-stone-200 bg-[#faf8f4]/50 py-2 px-3 text-sm text-white placeholder-stone-500 focus:border-orange-500 focus:outline-none font-mono"
+                        className="w-full rounded-lg border border-stone-200 bg-white py-2 px-3 text-sm text-stone-900 placeholder-stone-400 focus:border-orange-500 focus:outline-none font-mono"
                       />
                     </div>
                   </motion.div>
@@ -450,7 +450,7 @@ export function EditContentModal({
                 <button
                   type="button"
                   onClick={() => toggleSection("metadata")}
-                  className="flex items-center gap-3 w-full text-sm font-semibold text-white hover:text-orange-400 transition-colors"
+                  className="flex items-center gap-3 w-full text-sm font-semibold text-stone-700 hover:text-orange-600 transition-colors"
                 >
                   <ChevronDown
                     className={cn(
@@ -471,26 +471,26 @@ export function EditContentModal({
                     {/* Keywords */}
                     <div>
                       <label className="block text-xs text-stone-500 mb-2">
-                        Target Keywords (comma-separated)
+                        Palabras Clave Objetivo (separadas por comas)
                       </label>
                       <textarea
                         value={formData.keywords}
                         onChange={(e) => handleInputChange("keywords", e.target.value)}
-                        placeholder="keyword1, keyword2, keyword3"
+                        placeholder="palabra1, palabra2, palabra3"
                         rows={2}
-                        className="w-full rounded-lg border border-stone-200 bg-[#faf8f4]/50 py-2 px-3 text-sm text-white placeholder-stone-500 focus:border-orange-500 focus:outline-none"
+                        className="w-full rounded-lg border border-stone-200 bg-white py-2 px-3 text-sm text-stone-900 placeholder-stone-400 focus:border-orange-500 focus:outline-none"
                       />
                     </div>
 
                     {/* Tone */}
                     <div>
-                      <label className="block text-xs text-stone-500 mb-2">Tone</label>
+                      <label className="block text-xs text-stone-500 mb-2">Tono</label>
                       <select
                         value={formData.tone}
                         onChange={(e) => handleInputChange("tone", e.target.value)}
-                        className="w-full rounded-lg border border-stone-200 bg-[#faf8f4]/50 py-2 px-3 text-sm text-white focus:border-orange-500 focus:outline-none"
+                        className="w-full rounded-lg border border-stone-200 bg-white py-2 px-3 text-sm text-stone-900 focus:border-orange-500 focus:outline-none"
                       >
-                        <option value="">Select a tone...</option>
+                        <option value="">Selecciona un tono...</option>
                         {TONES.map((tone) => (
                           <option key={tone.value} value={tone.value}>
                             {tone.label}
@@ -502,7 +502,7 @@ export function EditContentModal({
                     {/* Target Audience */}
                     <div>
                       <label className="block text-xs text-stone-500 mb-2">
-                        Target Audience
+                        Audiencia Objetivo
                       </label>
                       <input
                         type="text"
@@ -510,8 +510,8 @@ export function EditContentModal({
                         onChange={(e) =>
                           handleInputChange("targetAudience", e.target.value)
                         }
-                        placeholder="e.g., C-level executives, developers"
-                        className="w-full rounded-lg border border-stone-200 bg-[#faf8f4]/50 py-2 px-3 text-sm text-white placeholder-stone-500 focus:border-orange-500 focus:outline-none"
+                        placeholder="ej., ejecutivos C-level, desarrolladores"
+                        className="w-full rounded-lg border border-stone-200 bg-white py-2 px-3 text-sm text-stone-900 placeholder-stone-400 focus:border-orange-500 focus:outline-none"
                       />
                     </div>
                   </motion.div>
@@ -520,13 +520,13 @@ export function EditContentModal({
             </form>
 
             {/* Footer */}
-            <div className="flex gap-3 p-6 border-t border-stone-200 bg-[#faf8f4]/50">
+            <div className="flex gap-3 p-6 border-t border-stone-200 bg-white">
               <button
                 type="button"
                 onClick={onClose}
                 className="flex-1 py-2 rounded-lg border border-stone-200 text-stone-400 hover:bg-stone-200 transition-colors"
               >
-                Cancel
+                Cancelar
               </button>
               <button
                 type="submit"
@@ -537,7 +537,7 @@ export function EditContentModal({
                 {isLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  "Save Changes"
+                  "Guardar Cambios"
                 )}
               </button>
             </div>

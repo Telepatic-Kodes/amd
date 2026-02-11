@@ -403,7 +403,7 @@ function ExecutionTracker({
                   <Icon
                     className={cn(
                       "h-4 w-4",
-                      isActive ? "text-orange-500" : "text-stone-300"
+                      isActive ? "text-orange-500" : "text-stone-400"
                     )}
                   />
                 )}

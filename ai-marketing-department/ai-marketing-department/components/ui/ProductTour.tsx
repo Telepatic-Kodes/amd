@@ -15,7 +15,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
-import { TOUR_STEPS, setTourCompleted, setTourSkipped, findTourElement, calculateTooltipPosition, type TourStep } from "@/lib/tour-utils";
+import { TOUR_STEPS, setTourCompleted, setTourSkipped, findTourElement, calculateTooltipPosition } from "@/lib/tour-utils";
 
 interface ProductTourProps {
   onComplete?: () => void;
@@ -150,16 +150,16 @@ export function ProductTour({ onComplete, onSkip }: ProductTourProps) {
 
             {/* Content */}
             <div className="px-6 py-6">
-              <h3 className="text-lg font-semibold text-white mb-3">
+              <h3 className="text-lg font-semibold text-stone-900 mb-3">
                 {step.title}
               </h3>
-              <p className="text-sm text-stone-300 leading-relaxed">
+              <p className="text-sm text-stone-500 leading-relaxed">
                 {step.content}
               </p>
             </div>
 
             {/* Footer with navigation */}
-            <div className="flex items-center justify-between px-6 py-4 border-t border-stone-200 bg-[#faf8f4]/50">
+            <div className="flex items-center justify-between px-6 py-4 border-t border-stone-200 bg-stone-50">
               {/* Skip button (always visible) */}
               <button
                 onClick={handleSkip}
@@ -174,7 +174,7 @@ export function ProductTour({ onComplete, onSkip }: ProductTourProps) {
                 <button
                   onClick={handlePrevious}
                   disabled={isFirstStep}
-                  className="min-h-[44px] min-w-[44px] flex items-center justify-center gap-2 px-4 rounded-lg border border-stone-300 bg-stone-200 text-white text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-stone-100 transition-colors"
+                  className="min-h-[44px] min-w-[44px] flex items-center justify-center gap-2 px-4 rounded-lg border border-stone-300 bg-stone-200 text-stone-700 text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-stone-100 transition-colors"
                   aria-label="Paso anterior"
                 >
                   <ChevronLeft className="h-4 w-4" />

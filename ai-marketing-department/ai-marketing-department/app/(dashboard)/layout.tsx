@@ -2,8 +2,11 @@ import type { Metadata } from "next";
 import { LayoutShell } from "@/components/layout/LayoutShell";
 
 export const metadata: Metadata = {
-  title: "AI Marketing Department - Dashboard",
-  description: "Automated marketing department operated by 37 AI agents",
+  title: {
+    default: "Dashboard",
+    template: "%s | AMD",
+  },
+  description: "Departamento de marketing automatizado con 37 agentes IA",
 };
 
 export default function DashboardLayout({

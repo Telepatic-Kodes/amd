@@ -5,12 +5,6 @@ import { Bot, Sparkles, ArrowRight } from "lucide-react";
 import { SimpleCounter } from "@/components/ui/AnimatedCounter";
 import { motion } from "framer-motion";
 
-const fadeInUp = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.5 },
-};
-
 const staggerContainer = {
   animate: {
     transition: {

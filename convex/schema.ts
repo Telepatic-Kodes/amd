@@ -1285,6 +1285,8 @@ export default defineSchema({
       v.literal("completed"),
       v.literal("failed")
     ),
+    // User goal (natural language input for goal-driven strategies)
+    goal: v.optional(v.string()),
     // CMO-generated strategy
     strategy: v.optional(v.object({
       summary: v.string(),

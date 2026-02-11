@@ -61,7 +61,7 @@ export function BrandUploadFlow({ onExtracted, onBack, onSkip }: BrandUploadFlow
   const extractFromUrl = useAction(api.brandExtractor.extractBrandFromUrl);
   const extractFromText = useAction(api.brandExtractor.extractBrandFromText);
 
-  const hasSources = urlStatus === "done" || docs.length > 0;
+  const _hasSources = urlStatus === "done" || docs.length > 0;
   const hasAnySources = url.trim() !== "" || docs.length > 0;
 
   // Handle URL analysis

@@ -20,6 +20,26 @@ import {
   Clock,
 } from "lucide-react";
 
+// Format relative time in Spanish — outside component to avoid impure Date.now() during render
+function formatRelativeTime(timestamp: number): string {
+  const now = Date.now();
+  const diff = now - timestamp;
+  const seconds = Math.floor(diff / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  if (days > 0) {
+    return `hace ${days} día${days > 1 ? "s" : ""}`;
+  } else if (hours > 0) {
+    return `hace ${hours} hora${hours > 1 ? "s" : ""}`;
+  } else if (minutes > 0) {
+    return `hace ${minutes} minuto${minutes > 1 ? "s" : ""}`;
+  } else {
+    return "ahora mismo";
+  }
+}
+
 interface UnifiedPublishHistoryProps {
   className?: string;
   limit?: number;
@@ -68,26 +88,6 @@ export function UnifiedPublishHistory({
     },
   };
 
-  // Format relative time in Spanish
-  const formatRelativeTime = (timestamp: number): string => {
-    const now = Date.now();
-    const diff = now - timestamp;
-    const seconds = Math.floor(diff / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
-
-    if (days > 0) {
-      return `hace ${days} día${days > 1 ? "s" : ""}`;
-    } else if (hours > 0) {
-      return `hace ${hours} hora${hours > 1 ? "s" : ""}`;
-    } else if (minutes > 0) {
-      return `hace ${minutes} minuto${minutes > 1 ? "s" : ""}`;
-    } else {
-      return "ahora mismo";
-    }
-  };
-
   // Status badge variant
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -125,10 +125,10 @@ export function UnifiedPublishHistory({
   };
 
   return (
-    <Card className={cn("border-stone-200 bg-[#faf8f4]/50", className)}>
+    <Card className={cn("border-stone-200 bg-white", className)}>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <h3 className="flex items-center gap-2 text-lg font-semibold text-white">
+          <h3 className="flex items-center gap-2 text-lg font-semibold text-stone-900">
             <Share2 className="h-5 w-5 text-orange-500" />
             {translate("publishHistory")}
           </h3>
@@ -147,7 +147,7 @@ export function UnifiedPublishHistory({
                   LinkedIn
                 </span>
               </div>
-              <p className="text-lg font-bold text-white">
+              <p className="text-lg font-bold text-stone-900">
                 {summary.linkedin.published}
               </p>
               <p className="text-xs text-stone-500">
@@ -166,7 +166,7 @@ export function UnifiedPublishHistory({
                   Twitter/X
                 </span>
               </div>
-              <p className="text-lg font-bold text-white">
+              <p className="text-lg font-bold text-stone-900">
                 {summary.twitter.published}
               </p>
               <p className="text-xs text-stone-500">
@@ -185,7 +185,7 @@ export function UnifiedPublishHistory({
                   Instagram
                 </span>
               </div>
-              <p className="text-lg font-bold text-white">
+              <p className="text-lg font-bold text-stone-900">
                 {summary.instagram.published}
               </p>
               <p className="text-xs text-stone-500">
@@ -254,7 +254,7 @@ export function UnifiedPublishHistory({
                     <div className="flex-1 min-w-0">
                       {/* Title */}
                       <div className="flex items-center gap-2 mb-1">
-                        <h4 className="text-sm font-medium text-white truncate">
+                        <h4 className="text-sm font-medium text-stone-900 truncate">
                           {entry.contentTitle.length > 40
                             ? `${entry.contentTitle.slice(0, 40)}...`
                             : entry.contentTitle}
@@ -306,7 +306,7 @@ export function UnifiedPublishHistory({
                 <Share2 className="h-12 w-12 text-stone-700" />
               </div>
             </div>
-            <h4 className="text-lg font-semibold text-white mb-2">
+            <h4 className="text-lg font-semibold text-stone-900 mb-2">
               {translate("noPublicationsYet")}
             </h4>
             <p className="text-sm text-stone-500">
@@ -319,7 +319,7 @@ export function UnifiedPublishHistory({
         {history && history.length > 0 && history.length === currentLimit && (
           <button
             onClick={loadMore}
-            className="w-full px-4 py-2 rounded-lg border border-stone-200 bg-[#faf8f4]/50 text-stone-400 hover:bg-stone-100 hover:text-stone-900 transition-colors text-sm font-medium"
+            className="w-full px-4 py-2 rounded-lg border border-stone-200 bg-white text-stone-400 hover:bg-stone-100 hover:text-stone-900 transition-colors text-sm font-medium"
           >
             {translate("viewMore")}
           </button>

@@ -31,7 +31,7 @@ export function EditorPreview({ content, className }: EditorPreviewProps) {
       Link.configure({
         openOnClick: true, // Allow clicking links in preview
         HTMLAttributes: {
-          class: "text-orange-400 hover:text-orange-300 underline cursor-pointer",
+          class: "text-orange-600 hover:text-orange-500 underline cursor-pointer",
         },
       }),
     ],
@@ -41,22 +41,22 @@ export function EditorPreview({ content, className }: EditorPreviewProps) {
       attributes: {
         class: cn(
           // Prose styles for better readability
-          "prose prose-invert max-w-none",
+          "prose max-w-none",
           // Typography
-          "text-white text-base leading-relaxed",
-          // Prose customization for dark theme
-          "prose-headings:text-white prose-headings:font-bold",
+          "text-stone-900 text-base leading-relaxed",
+          // Prose customization for light theme
+          "prose-headings:text-stone-900 prose-headings:font-bold",
           "prose-h1:text-4xl prose-h1:mb-6",
           "prose-h2:text-3xl prose-h2:mb-4",
           "prose-h3:text-2xl prose-h3:mb-3",
-          "prose-p:text-stone-200 prose-p:mb-4",
-          "prose-strong:text-white prose-strong:font-semibold",
-          "prose-em:text-stone-300",
-          "prose-code:text-orange-400 prose-code:bg-stone-100 prose-code:rounded prose-code:px-1",
+          "prose-p:text-stone-700 prose-p:mb-4",
+          "prose-strong:text-stone-900 prose-strong:font-semibold",
+          "prose-em:text-stone-600",
+          "prose-code:text-orange-600 prose-code:bg-stone-100 prose-code:rounded prose-code:px-1",
           "prose-pre:bg-stone-100 prose-pre:border prose-pre:border-stone-200",
-          "prose-blockquote:border-l-orange-500 prose-blockquote:text-stone-300 prose-blockquote:italic",
-          "prose-ul:text-stone-200 prose-ol:text-stone-200",
-          "prose-li:text-stone-200 prose-li:mb-2"
+          "prose-blockquote:border-l-orange-500 prose-blockquote:text-stone-600 prose-blockquote:italic",
+          "prose-ul:text-stone-700 prose-ol:text-stone-700",
+          "prose-li:text-stone-700 prose-li:mb-2"
         ),
       },
     },
@@ -67,7 +67,7 @@ export function EditorPreview({ content, className }: EditorPreviewProps) {
   }
 
   return (
-    <div className={cn("p-8 bg-[#faf8f4]/50 rounded-lg", className)}>
+    <div className={cn("p-8 bg-white rounded-lg", className)}>
       <EditorContent editor={editor} />
     </div>
   );

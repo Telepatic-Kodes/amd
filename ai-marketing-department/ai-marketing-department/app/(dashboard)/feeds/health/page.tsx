@@ -13,7 +13,6 @@ import {
 } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
-import { translate } from "@/lib/language";
 
 // Mock feed performance data
 function generateFeedPerformance() {
@@ -119,7 +118,7 @@ export default function FeedsHealthPage() {
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <h1 className="text-3xl md:text-5xl font-bold bg-gradient-to-r from-white to-stone-400 bg-clip-text text-transparent">
+            <h1 className="text-3xl md:text-5xl font-bold text-stone-900">
               Salud de Fuentes
             </h1>
             <p className="text-stone-400 mt-2 text-lg">
@@ -147,7 +146,7 @@ export default function FeedsHealthPage() {
                 <Activity className="w-5 h-5 text-orange-400" />
               </div>
             </div>
-            <p className="text-3xl font-bold text-white">{stats.totalFeeds}</p>
+            <p className="text-3xl font-bold text-stone-900">{stats.totalFeeds}</p>
             <p className="text-sm text-stone-400">Fuentes totales</p>
           </Card>
         </motion.div>
@@ -164,7 +163,7 @@ export default function FeedsHealthPage() {
                 <CheckCircle className="w-5 h-5 text-green-400" />
               </div>
             </div>
-            <p className="text-3xl font-bold text-white">{stats.activeFeeds}</p>
+            <p className="text-3xl font-bold text-stone-900">{stats.activeFeeds}</p>
             <p className="text-sm text-stone-400">Activas ahora</p>
           </Card>
         </motion.div>
@@ -181,7 +180,7 @@ export default function FeedsHealthPage() {
                 <AlertCircle className="w-5 h-5 text-red-400" />
               </div>
             </div>
-            <p className="text-3xl font-bold text-white">{stats.errorFeeds}</p>
+            <p className="text-3xl font-bold text-stone-900">{stats.errorFeeds}</p>
             <p className="text-sm text-stone-400">Con problemas</p>
           </Card>
         </motion.div>
@@ -198,7 +197,7 @@ export default function FeedsHealthPage() {
                 <TrendingUp className="w-5 h-5 text-purple-400" />
               </div>
             </div>
-            <p className="text-3xl font-bold text-white">{stats.avgUptime}%</p>
+            <p className="text-3xl font-bold text-stone-900">{stats.avgUptime}%</p>
             <p className="text-sm text-stone-400">Disponibilidad promedio</p>
           </Card>
         </motion.div>
@@ -211,7 +210,7 @@ export default function FeedsHealthPage() {
         transition={{ delay: 0.4 }}
       >
         <Card className="p-6">
-          <h3 className="text-2xl font-semibold text-white mb-4 flex items-center gap-2">
+          <h3 className="text-2xl font-semibold text-stone-900 mb-4 flex items-center gap-2">
             <Zap className="w-6 h-6 text-yellow-400" />
             Recomendaciones
           </h3>
@@ -238,7 +237,7 @@ export default function FeedsHealthPage() {
                 >
                   <AlertCircle className={`w-5 h-5 ${iconColor} flex-shrink-0 mt-0.5`} />
                   <div className="flex-1">
-                    <p className="font-medium text-white">{rec.title}</p>
+                    <p className="font-medium text-stone-900">{rec.title}</p>
                     <p className="text-sm text-stone-400 mt-1">{rec.message}</p>
                   </div>
                   <button className="px-3 py-1 rounded-lg text-sm font-medium text-orange-400 hover:bg-orange-500/20 transition-colors flex-shrink-0">
@@ -258,7 +257,7 @@ export default function FeedsHealthPage() {
         transition={{ delay: 0.5 }}
       >
         <Card className="p-6">
-          <h3 className="text-2xl font-semibold text-white mb-4">Rendimiento de fuentes</h3>
+          <h3 className="text-2xl font-semibold text-stone-900 mb-4">Rendimiento de fuentes</h3>
 
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -292,7 +291,7 @@ export default function FeedsHealthPage() {
                   >
                     <td className="py-4 px-4 text-sm">
                       <div>
-                        <p className="font-medium text-white">{feed.name}</p>
+                        <p className="font-medium text-stone-900">{feed.name}</p>
                         <p className="text-xs text-stone-500 mt-0.5">{feed.url}</p>
                       </div>
                     </td>
@@ -360,8 +359,8 @@ export default function FeedsHealthPage() {
         transition={{ delay: 0.6 }}
       >
         <Card className="p-6 bg-gradient-to-r from-orange-500/10 to-purple-500/10 border-orange-500/30">
-          <h3 className="text-2xl font-semibold text-white mb-2">¿Cómo mejoro la salud?</h3>
-          <ul className="space-y-2 text-stone-300">
+          <h3 className="text-2xl font-semibold text-stone-900 mb-2">¿Cómo mejoro la salud?</h3>
+          <ul className="space-y-2 text-stone-600">
             <li>✓ Revisa regularmente fuentes con bajo rendimiento</li>
             <li>✓ Elimina fuentes pausadas que ya no uses</li>
             <li>✓ Aumenta el intervalo de sincronización para fuentes lentas</li>

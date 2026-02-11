@@ -55,7 +55,7 @@ export default function PipelinePage() {
             <Columns3 className="h-6 w-6 text-orange-400" />
           </div>
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-white to-stone-400 bg-clip-text text-transparent">
+            <h1 className="text-3xl md:text-4xl font-bold text-stone-900">
               {translate("contentPipeline")}
             </h1>
             <p className="text-stone-400 mt-1">

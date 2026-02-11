@@ -9,9 +9,8 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  Cell,
 } from 'recharts';
-import { chartColors, chartConfig, seriesColors, tooltipStyle } from './theme';
+import { chartColors, chartConfig, seriesColors } from './theme';
 import { ChartTooltip } from './ChartTooltip';
 
 interface DataPoint {
@@ -176,7 +175,7 @@ interface ProgressBarChartProps {
 
 export function ProgressBarChart({
   data,
-  height = 200,
+  height: _height = 200,
   showLabels = true,
   valueFormatter = (v) => v.toLocaleString(),
   className,

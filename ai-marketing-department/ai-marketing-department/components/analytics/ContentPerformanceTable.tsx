@@ -92,10 +92,10 @@ export function ContentPerformanceTable({ data, isLoading }: ContentPerformanceT
           </tr>
         </thead>
         <tbody>
-          {data.map((item, i) => {
+          {data.map((item, _i) => {
             const hasEngagement = item.engagement !== null;
             const engagement = item.engagement;
-            const totalEngagement = hasEngagement && engagement
+            const _totalEngagement = hasEngagement && engagement
               ? engagement.likes + engagement.comments + engagement.shares
               : 0;
 
@@ -106,7 +106,7 @@ export function ContentPerformanceTable({ data, isLoading }: ContentPerformanceT
               >
                 <td className="py-3 pl-6">
                   <div className="flex flex-col gap-1 max-w-md">
-                    <span className="text-sm text-stone-300 font-medium truncate">
+                    <span className="text-sm text-stone-600 font-medium truncate">
                       {item.title.length > 50
                         ? item.title.substring(0, 50) + "..."
                         : item.title}
@@ -124,7 +124,7 @@ export function ContentPerformanceTable({ data, isLoading }: ContentPerformanceT
                 <td className="py-3 text-center">
                   <div className="flex items-center justify-center gap-1.5">
                     <Heart className="w-3.5 h-3.5 text-red-400" />
-                    <span className="text-sm text-stone-300 font-mono">
+                    <span className="text-sm text-stone-600 font-mono">
                       {hasEngagement && engagement ? formatNumber(engagement.likes) : "-"}
                     </span>
                   </div>
@@ -132,7 +132,7 @@ export function ContentPerformanceTable({ data, isLoading }: ContentPerformanceT
                 <td className="py-3 text-center">
                   <div className="flex items-center justify-center gap-1.5">
                     <MessageCircle className="w-3.5 h-3.5 text-orange-400" />
-                    <span className="text-sm text-stone-300 font-mono">
+                    <span className="text-sm text-stone-600 font-mono">
                       {hasEngagement && engagement ? formatNumber(engagement.comments) : "-"}
                     </span>
                   </div>
@@ -140,7 +140,7 @@ export function ContentPerformanceTable({ data, isLoading }: ContentPerformanceT
                 <td className="py-3 text-center">
                   <div className="flex items-center justify-center gap-1.5">
                     <Share2 className="w-3.5 h-3.5 text-green-400" />
-                    <span className="text-sm text-stone-300 font-mono">
+                    <span className="text-sm text-stone-600 font-mono">
                       {hasEngagement && engagement ? formatNumber(engagement.shares) : "-"}
                     </span>
                   </div>
@@ -148,7 +148,7 @@ export function ContentPerformanceTable({ data, isLoading }: ContentPerformanceT
                 <td className="py-3 text-center">
                   <div className="flex items-center justify-center gap-1.5">
                     <Eye className="w-3.5 h-3.5 text-purple-400" />
-                    <span className="text-sm text-stone-300 font-mono">
+                    <span className="text-sm text-stone-600 font-mono">
                       {hasEngagement && engagement ? formatNumber(engagement.impressions) : "-"}
                     </span>
                   </div>

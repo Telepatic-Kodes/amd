@@ -25,6 +25,8 @@ const SHORTCUT_GROUPS: ShortcutGroup[] = [
       { keys: ["G", "C"], description: "Ir a Centro de Control" },
       { keys: ["G", "R"], description: "Ir a Resultados" },
       { keys: ["G", "S"], description: "Ir a Configuración" },
+      { keys: ["G", "A"], description: "Ir a Agentes" },
+      { keys: ["G", "T"], description: "Ir a Estrategia" },
     ],
   },
   {

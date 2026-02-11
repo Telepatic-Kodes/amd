@@ -54,7 +54,7 @@ export function RollbackDialog({
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-500/10">
               <AlertTriangle className="h-5 w-5 text-amber-400" />
             </div>
-            <h2 className="text-xl font-semibold text-white">
+            <h2 className="text-xl font-semibold text-stone-900">
               Revertir a versión {versionNumber}
             </h2>
           </div>
@@ -62,7 +62,7 @@ export function RollbackDialog({
 
         {/* Body */}
         <div className="p-6">
-          <p className="text-sm text-stone-300">
+          <p className="text-sm text-stone-600">
             Esta acción restaurará el contenido a la versión {versionNumber}. Se creará una nueva
             entrada en el historial. ¿Deseas continuar?
           </p>
@@ -73,7 +73,7 @@ export function RollbackDialog({
           <button
             onClick={onClose}
             disabled={isLoading}
-            className="px-4 py-2 rounded-lg border border-stone-300 hover:bg-stone-200 text-stone-300 font-medium transition-colors disabled:opacity-50"
+            className="px-4 py-2 rounded-lg border border-stone-300 hover:bg-stone-200 text-stone-600 font-medium transition-colors disabled:opacity-50"
           >
             Cancelar
           </button>

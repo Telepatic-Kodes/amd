@@ -145,7 +145,7 @@ export function VersionHistory({ contentId, onCompare, onRollback }: VersionHist
                 {/* Details */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2 mb-1">
-                    <p className="text-sm font-medium text-white">
+                    <p className="text-sm font-medium text-stone-900">
                       {translate("version")} {version.version}
                       {isLatest && (
                         <span className="ml-2 text-xs text-emerald-400">(Actual)</span>
