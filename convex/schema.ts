@@ -1186,6 +1186,48 @@ export default defineSchema({
     .index("by_userId", ["userId"]),
 
   // ===========================================
+  // BRAND_AUDITS - Auditorías de presencia digital
+  // ===========================================
+  brandAudits: defineTable({
+    brandProfileId: v.id("brandProfiles"),
+    instagramHandle: v.optional(v.string()),
+    websiteUrl: v.optional(v.string()),
+    metrics: v.object({
+      followers: v.string(),
+      following: v.string(),
+      posts: v.string(),
+      engagementNote: v.string(),
+    }),
+    strengths: v.array(v.object({
+      title: v.string(),
+      description: v.string(),
+      icon: v.string(),
+    })),
+    weaknesses: v.array(v.object({
+      title: v.string(),
+      description: v.string(),
+      icon: v.string(),
+    })),
+    actionPlan: v.array(v.object({
+      priority: v.union(
+        v.literal("immediate"),
+        v.literal("short"),
+        v.literal("medium"),
+        v.literal("long")
+      ),
+      title: v.string(),
+      description: v.string(),
+      timeframe: v.string(),
+    })),
+    summary: v.string(),
+    rawContent: v.optional(v.string()),
+    tokensUsed: v.optional(v.number()),
+    cost: v.optional(v.number()),
+    createdAt: v.number(),
+  })
+    .index("by_brandProfileId", ["brandProfileId"]),
+
+  // ===========================================
   // RATE_LIMITS - Token bucket per user/endpoint
   // ===========================================
   rateLimits: defineTable({

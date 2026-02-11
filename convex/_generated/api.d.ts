@@ -13,6 +13,8 @@ import type * as agentExecution from "../agentExecution.js";
 import type * as agentSdk from "../agentSdk.js";
 import type * as analysis_metrics from "../analysis/metrics.js";
 import type * as analytics from "../analytics.js";
+import type * as brandAudit from "../brandAudit.js";
+import type * as brandAuditAction from "../brandAuditAction.js";
 import type * as brandExtractor from "../brandExtractor.js";
 import type * as brandMaturity from "../brandMaturity.js";
 import type * as brandProfile from "../brandProfile.js";
@@ -111,6 +113,8 @@ declare const fullApi: ApiFromModules<{
   agentSdk: typeof agentSdk;
   "analysis/metrics": typeof analysis_metrics;
   analytics: typeof analytics;
+  brandAudit: typeof brandAudit;
+  brandAuditAction: typeof brandAuditAction;
   brandExtractor: typeof brandExtractor;
   brandMaturity: typeof brandMaturity;
   brandProfile: typeof brandProfile;

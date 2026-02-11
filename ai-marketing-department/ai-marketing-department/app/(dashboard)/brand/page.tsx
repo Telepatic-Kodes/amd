@@ -18,6 +18,7 @@ import { BrandMaturityBar } from "@/components/brand/BrandMaturityBar";
 import { BrandProfileSummary } from "@/components/brand/BrandProfileSummary";
 import { BrandSuggestionsPanel } from "@/components/brand/BrandSuggestionsPanel";
 import { BrandSourcesList } from "@/components/brand/BrandSourcesList";
+import { BrandAuditPanel } from "@/components/brand/BrandAuditPanel";
 import { AddSourceDialog } from "@/components/brand/AddSourceDialog";
 import dynamic from "next/dynamic";
 
@@ -344,6 +345,17 @@ export default function BrandPage() {
             />
           </div>
         )}
+
+        {/* Brand Audit Panel */}
+        <BrandAuditPanel
+          brandProfileId={profile._id}
+          instagramHandle={
+            profile.strategy.channels.includes("instagram")
+              ? profile.companyName.toLowerCase().replace(/\s+/g, "")
+              : undefined
+          }
+          websiteUrl={profile.website || undefined}
+        />
 
         {/* Three-column grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
