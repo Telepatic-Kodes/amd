@@ -1343,4 +1343,111 @@ export default defineSchema({
     count: v.number(), // requests in current window
   })
     .index("by_identifier_endpoint", ["identifier", "endpoint"]),
+
+  // ===========================================
+  // API_KEYS - Public API authentication
+  // ===========================================
+  apiKeys: defineTable({
+    userId: v.string(),
+    name: v.string(), // Human-readable label: "Production Key"
+    keyHash: v.string(), // SHA-256 hash of the API key (never store plaintext)
+    keyPrefix: v.string(), // First 8 chars for identification: "amd_live_abc12345..."
+    permissions: v.array(
+      v.union(
+        v.literal("read:content"),
+        v.literal("write:content"),
+        v.literal("read:agents"),
+        v.literal("write:agents"),
+        v.literal("read:analytics"),
+        v.literal("read:strategies"),
+        v.literal("write:strategies"),
+        v.literal("admin")
+      )
+    ),
+    rateLimit: v.optional(v.number()), // Custom rate limit (req/min), null = default 100
+    status: v.union(v.literal("active"), v.literal("revoked")),
+    lastUsedAt: v.optional(v.number()),
+    totalRequests: v.optional(v.number()),
+    createdAt: v.number(),
+    revokedAt: v.optional(v.number()),
+    expiresAt: v.optional(v.number()), // Optional expiration
+  })
+    .index("by_keyHash", ["keyHash"])
+    .index("by_userId", ["userId"])
+    .index("by_status", ["status"])
+    .index("by_keyPrefix", ["keyPrefix"]),
+
+  // ===========================================
+  // API_USAGE - Track API request logs
+  // ===========================================
+  apiUsage: defineTable({
+    apiKeyId: v.id("apiKeys"),
+    endpoint: v.string(), // "/api/v1/content"
+    method: v.string(), // "GET", "POST"
+    statusCode: v.number(), // 200, 401, 429, etc.
+    responseTimeMs: v.number(),
+    timestamp: v.number(),
+  })
+    .index("by_apiKey", ["apiKeyId"])
+    .index("by_timestamp", ["timestamp"])
+    .index("by_apiKey_timestamp", ["apiKeyId", "timestamp"]),
+
+  // ===========================================
+  // AGENT_CONFIG_VERSIONS - Version history for agent customization
+  // ===========================================
+  agentConfigVersions: defineTable({
+    agentId: v.id("agents"),
+    version: v.number(), // Auto-incrementing version
+    config: v.object({
+      systemPrompt: v.string(),
+      model: v.string(),
+      temperature: v.number(),
+      maxTokens: v.number(),
+      tools: v.optional(v.array(v.string())),
+    }),
+    triggers: v.optional(v.array(v.string())),
+    changedBy: v.string(), // userId who made the change
+    changeDescription: v.optional(v.string()), // "Changed model to Haiku"
+    createdAt: v.number(),
+  })
+    .index("by_agentId", ["agentId"])
+    .index("by_agentId_version", ["agentId", "version"]),
+
+  // ===========================================
+  // WEBHOOKS - Event notification system
+  // ===========================================
+  webhooks: defineTable({
+    userId: v.string(),
+    name: v.string(),
+    url: v.string(), // HTTPS URL to POST events to
+    events: v.array(v.string()), // "content.published", "agent.execution_completed", etc.
+    secret: v.string(), // HMAC-SHA256 signing secret
+    status: v.union(v.literal("active"), v.literal("paused"), v.literal("failed")),
+    lastDeliveryAt: v.optional(v.number()),
+    lastDeliveryStatus: v.optional(v.number()), // HTTP status code
+    failureCount: v.optional(v.number()), // Consecutive failures
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_status", ["status"])
+    .index("by_event", ["events"]),
+
+  // ===========================================
+  // WEBHOOK_DELIVERIES - Delivery log with retry tracking
+  // ===========================================
+  webhookDeliveries: defineTable({
+    webhookId: v.id("webhooks"),
+    event: v.string(),
+    payload: v.string(), // JSON stringified payload
+    statusCode: v.optional(v.number()),
+    responseBody: v.optional(v.string()),
+    attempt: v.number(), // 1, 2, 3 (max 3 retries)
+    status: v.union(v.literal("pending"), v.literal("success"), v.literal("failed")),
+    sentAt: v.optional(v.number()),
+    createdAt: v.number(),
+  })
+    .index("by_webhookId", ["webhookId"])
+    .index("by_status", ["status"])
+    .index("by_webhookId_createdAt", ["webhookId", "createdAt"]),
 });

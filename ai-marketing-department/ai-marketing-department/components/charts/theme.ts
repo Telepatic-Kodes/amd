@@ -1,49 +1,81 @@
-// Chart theme — light & minimal with clean blue accent
-// Matches the new light surface + accent token system
+// Chart theme — supports light & dark modes
+// Matches the CSS variable token system in globals.css
 
-export const chartColors = {
-  // Primary palette
-  primary: '#2563eb',    // accent blue
-  secondary: '#7c3aed',  // violet-600
-  tertiary: '#0891b2',   // cyan-600
-  quaternary: '#16a34a',  // green-600
-  quinary: '#d97706',    // amber-600
-
-  // Semantic
+const lightColors = {
+  primary: '#2563eb',
+  secondary: '#7c3aed',
+  tertiary: '#0891b2',
+  quaternary: '#16a34a',
+  quinary: '#d97706',
   success: '#16a34a',
   warning: '#d97706',
   error: '#dc2626',
   info: '#2563eb',
-
-  // Neutral — light mode
-  grid: '#f3f4f6',       // gray-100
-  axis: '#9ca3af',       // gray-400
-  text: '#6b7280',       // gray-500
-  textMuted: '#9ca3af',  // gray-400
+  grid: '#f3f4f6',
+  axis: '#9ca3af',
+  text: '#6b7280',
+  textMuted: '#9ca3af',
   background: '#ffffff',
-
-  // Department colors (kept vivid for differentiation)
-  departments: {
-    leadership: '#6366f1',   // indigo
-    content: '#3b82f6',      // blue
-    social: '#06b6d4',       // cyan
-    demandgen: '#d97706',    // amber
-    seo: '#16a34a',          // green
-    brand: '#ec4899',        // pink
-    ops: '#7c3aed',          // violet
-  },
 } as const;
+
+const darkColors = {
+  primary: '#60a5fa',
+  secondary: '#a78bfa',
+  tertiary: '#22d3ee',
+  quaternary: '#4ade80',
+  quinary: '#fbbf24',
+  success: '#4ade80',
+  warning: '#fbbf24',
+  error: '#f87171',
+  info: '#60a5fa',
+  grid: '#292524',
+  axis: '#78716c',
+  text: '#a8a29e',
+  textMuted: '#78716c',
+  background: '#1c1917',
+} as const;
+
+// Department colors — same for both themes (vivid for differentiation)
+const departments = {
+  leadership: '#6366f1',
+  content: '#3b82f6',
+  social: '#06b6d4',
+  demandgen: '#d97706',
+  seo: '#16a34a',
+  brand: '#ec4899',
+  ops: '#7c3aed',
+} as const;
+
+// Detect dark mode from document class
+function isDarkMode(): boolean {
+  if (typeof document === 'undefined') return false;
+  return document.documentElement.classList.contains('dark');
+}
+
+// Dynamic chart colors — reads current theme
+export function getChartColors() {
+  const colors = isDarkMode() ? darkColors : lightColors;
+  return { ...colors, departments };
+}
+
+// Static fallback for contexts where reactivity isn't needed
+export const chartColors = { ...lightColors, departments } as const;
 
 // Color palette for multiple series
 export const seriesColors = [
-  chartColors.primary,
-  chartColors.secondary,
-  chartColors.tertiary,
-  chartColors.quaternary,
-  chartColors.quinary,
-  chartColors.info,
-  chartColors.success,
+  lightColors.primary,
+  lightColors.secondary,
+  lightColors.tertiary,
+  lightColors.quaternary,
+  lightColors.quinary,
+  lightColors.info,
+  lightColors.success,
 ];
+
+export function getSeriesColors() {
+  const c = isDarkMode() ? darkColors : lightColors;
+  return [c.primary, c.secondary, c.tertiary, c.quaternary, c.quinary, c.info, c.success];
+}
 
 // Gradient definitions for area charts
 export const gradients = {
@@ -75,7 +107,35 @@ export const chartConfig = {
   activeDotRadius: 6,
 } as const;
 
-// Tooltip styling — light mode
+// Tooltip styling — adapts to theme
+export function getTooltipStyle() {
+  const dark = isDarkMode();
+  return {
+    contentStyle: {
+      backgroundColor: dark ? '#1c1917' : '#ffffff',
+      border: `1px solid ${dark ? '#44403c' : '#e5e7eb'}`,
+      borderRadius: '8px',
+      padding: '8px 12px',
+      boxShadow: dark ? '0 4px 12px rgba(0, 0, 0, 0.3)' : '0 4px 12px rgba(0, 0, 0, 0.08)',
+    },
+    labelStyle: {
+      color: dark ? '#fafaf9' : '#111827',
+      fontWeight: 600,
+      marginBottom: '4px',
+    },
+    itemStyle: {
+      color: dark ? '#a8a29e' : '#6b7280',
+      padding: '2px 0',
+    },
+    cursor: {
+      stroke: dark ? '#44403c' : '#e5e7eb',
+      strokeWidth: 1,
+      strokeDasharray: '4 4',
+    },
+  };
+}
+
+// Static tooltip (backward compat)
 export const tooltipStyle = {
   contentStyle: {
     backgroundColor: '#ffffff',

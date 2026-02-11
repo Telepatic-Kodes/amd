@@ -9,6 +9,7 @@
  */
 
 import type * as actions from "../actions.js";
+import type * as agentConfig from "../agentConfig.js";
 import type * as agentExecution from "../agentExecution.js";
 import type * as agentSdk from "../agentSdk.js";
 import type * as analysis_metrics from "../analysis/metrics.js";
@@ -90,6 +91,7 @@ import type * as multiChannelGenerate from "../multiChannelGenerate.js";
 import type * as oauthHelpers from "../oauthHelpers.js";
 import type * as onboarding from "../onboarding.js";
 import type * as platformApprovals from "../platformApprovals.js";
+import type * as publicApi from "../publicApi.js";
 import type * as rateLimit from "../rateLimit.js";
 import type * as reports from "../reports.js";
 import type * as reportsActions from "../reportsActions.js";
@@ -103,6 +105,7 @@ import type * as twitter_mutations from "../twitter/mutations.js";
 import type * as twitter_queries from "../twitter/queries.js";
 import type * as twitter_threadSplitter from "../twitter/threadSplitter.js";
 import type * as users from "../users.js";
+import type * as webhookEngine from "../webhookEngine.js";
 
 import type {
   ApiFromModules,
@@ -112,6 +115,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   actions: typeof actions;
+  agentConfig: typeof agentConfig;
   agentExecution: typeof agentExecution;
   agentSdk: typeof agentSdk;
   "analysis/metrics": typeof analysis_metrics;
@@ -193,6 +197,7 @@ declare const fullApi: ApiFromModules<{
   oauthHelpers: typeof oauthHelpers;
   onboarding: typeof onboarding;
   platformApprovals: typeof platformApprovals;
+  publicApi: typeof publicApi;
   rateLimit: typeof rateLimit;
   reports: typeof reports;
   reportsActions: typeof reportsActions;
@@ -206,6 +211,7 @@ declare const fullApi: ApiFromModules<{
   "twitter/queries": typeof twitter_queries;
   "twitter/threadSplitter": typeof twitter_threadSplitter;
   users: typeof users;
+  webhookEngine: typeof webhookEngine;
 }>;
 
 /**

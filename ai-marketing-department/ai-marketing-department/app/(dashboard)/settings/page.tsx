@@ -37,10 +37,15 @@ import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { SimpleCounter } from "@/components/ui/AnimatedCounter";
 import { useTheme } from "@/hooks/useTheme";
+import { ApiTokenManager } from "@/components/settings/ApiTokenManager";
+import { WebhookManager } from "@/components/settings/WebhookManager";
+import { Globe, Webhook } from "lucide-react";
 
 const SETTING_CATEGORIES = [
   { id: "integrations", label: "Integraciones", icon: Key },
   { id: "platforms", label: "Plataformas", icon: Share2 },
+  { id: "api", label: "API Pública", icon: Globe },
+  { id: "webhooks", label: "Webhooks", icon: Webhook },
   { id: "team", label: "Equipo", icon: Users },
   { id: "appearance", label: "Apariencia", icon: Palette },
   { id: "notifications", label: "Notificaciones", icon: Bell },
@@ -861,6 +866,56 @@ export default function SettingsPage() {
                       </ul>
                     </div>
                   </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
+
+          {activeCategory === "api" && (
+            <motion.div
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.2 }}
+              className="space-y-6"
+            >
+              <Card>
+                <CardHeader>
+                  <h3 className="flex items-center gap-2 font-semibold text-lg text-stone-900">
+                    <Globe className="h-5 w-5 text-blue-600" />
+                    API Pública REST
+                  </h3>
+                  <p className="text-sm text-stone-500 mt-1">
+                    Accede a contenido, agentes, analítica y estrategias vía API.
+                    Ideal para integraciones con Zapier, Make, n8n o apps propias.
+                  </p>
+                </CardHeader>
+                <CardContent className="p-6 pt-0">
+                  <ApiTokenManager />
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
+
+          {activeCategory === "webhooks" && (
+            <motion.div
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.2 }}
+              className="space-y-6"
+            >
+              <Card>
+                <CardHeader>
+                  <h3 className="flex items-center gap-2 font-semibold text-lg text-stone-900">
+                    <Webhook className="h-5 w-5 text-violet-600" />
+                    Webhooks
+                  </h3>
+                  <p className="text-sm text-stone-500 mt-1">
+                    Recibe notificaciones en tiempo real cuando ocurren eventos en AMD.
+                    Ideal para integraciones con sistemas externos.
+                  </p>
+                </CardHeader>
+                <CardContent className="p-6 pt-0">
+                  <WebhookManager />
                 </CardContent>
               </Card>
             </motion.div>

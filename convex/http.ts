@@ -1,9 +1,365 @@
 import { httpRouter } from "convex/server";
 import { httpAction } from "./_generated/server";
-import { internal } from "./_generated/api";
+import { internal, api } from "./_generated/api";
 import { getFrontendUrl } from "./oauthHelpers";
 
 const http = httpRouter();
+
+// ===========================================
+// PUBLIC REST API v1
+// ===========================================
+
+// Helper: SHA-256 hash for token validation
+async function hashToken(token: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(token);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(hashBuffer))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+// Helper: Authenticate API request and check permissions
+async function authenticateRequest(
+  ctx: any,
+  request: Request,
+  requiredPermission: string
+): Promise<{ valid: boolean; error?: string; userId?: string; keyId?: any }> {
+  const authHeader = request.headers.get("Authorization");
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return { valid: false, error: "Missing Authorization header. Use: Bearer <token>" };
+  }
+
+  const token = authHeader.slice(7);
+  if (!token.startsWith("amd_live_")) {
+    return { valid: false, error: "Invalid token format" };
+  }
+
+  const keyHash = await hashToken(token);
+  const result = await ctx.runMutation(internal.publicApi.validateToken, {
+    keyHash,
+    requiredPermission,
+  });
+
+  return result;
+}
+
+// Helper: JSON response with CORS headers
+function jsonResponse(data: unknown, status = 200): Response {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "X-API-Version": "v1",
+    },
+  });
+}
+
+// Helper: Error response
+function errorResponse(error: string, status: number): Response {
+  return jsonResponse({ error, meta: { timestamp: Date.now() } }, status);
+}
+
+// CORS preflight handler
+http.route({
+  path: "/api/v1/content",
+  method: "OPTIONS",
+  handler: httpAction(async () => {
+    return new Response(null, {
+      status: 204,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Authorization, Content-Type",
+        "Access-Control-Max-Age": "86400",
+      },
+    });
+  }),
+});
+
+http.route({
+  path: "/api/v1/agents",
+  method: "OPTIONS",
+  handler: httpAction(async () => {
+    return new Response(null, {
+      status: 204,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Authorization, Content-Type",
+        "Access-Control-Max-Age": "86400",
+      },
+    });
+  }),
+});
+
+http.route({
+  path: "/api/v1/analytics",
+  method: "OPTIONS",
+  handler: httpAction(async () => {
+    return new Response(null, {
+      status: 204,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Authorization, Content-Type",
+        "Access-Control-Max-Age": "86400",
+      },
+    });
+  }),
+});
+
+http.route({
+  path: "/api/v1/strategies",
+  method: "OPTIONS",
+  handler: httpAction(async () => {
+    return new Response(null, {
+      status: 204,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Authorization, Content-Type",
+        "Access-Control-Max-Age": "86400",
+      },
+    });
+  }),
+});
+
+/**
+ * GET /api/v1/agents - List all agents
+ * Query params: ?department=content&status=active
+ */
+http.route({
+  path: "/api/v1/agents",
+  method: "GET",
+  handler: httpAction(async (ctx, request) => {
+    const startTime = Date.now();
+
+    const auth = await authenticateRequest(ctx, request, "read:agents");
+    if (!auth.valid) return errorResponse(auth.error!, 401);
+
+    try {
+      const url = new URL(request.url);
+      const department = url.searchParams.get("department") || undefined;
+      const status = url.searchParams.get("status") || undefined;
+
+      const agents = await ctx.runQuery(api.functions.listAgents, {
+        department,
+        status,
+      });
+
+      // Log usage
+      await ctx.runMutation(internal.publicApi.logUsage, {
+        apiKeyId: auth.keyId,
+        endpoint: "/api/v1/agents",
+        method: "GET",
+        statusCode: 200,
+        responseTimeMs: Date.now() - startTime,
+      });
+
+      return jsonResponse({
+        data: agents.map((a: any) => ({
+          id: a._id,
+          agentId: a.agentId,
+          name: a.name,
+          department: a.department,
+          role: a.role,
+          status: a.status,
+          description: a.description,
+        })),
+        meta: { total: agents.length, timestamp: Date.now() },
+      });
+    } catch (err: any) {
+      return errorResponse(err.message || "Error interno", 500);
+    }
+  }),
+});
+
+/**
+ * GET /api/v1/content - List content with pagination
+ * Query params: ?status=published&type=blog&limit=20&offset=0
+ */
+http.route({
+  path: "/api/v1/content",
+  method: "GET",
+  handler: httpAction(async (ctx, request) => {
+    const startTime = Date.now();
+
+    const auth = await authenticateRequest(ctx, request, "read:content");
+    if (!auth.valid) return errorResponse(auth.error!, 401);
+
+    try {
+      const url = new URL(request.url);
+      const status = url.searchParams.get("status") || undefined;
+      const type = url.searchParams.get("type") || undefined;
+      const limit = Math.min(parseInt(url.searchParams.get("limit") || "20"), 100);
+
+      const content = await ctx.runQuery(api.functions.listContent, {
+        status,
+        type,
+      });
+
+      const paginated = content.slice(0, limit);
+
+      await ctx.runMutation(internal.publicApi.logUsage, {
+        apiKeyId: auth.keyId,
+        endpoint: "/api/v1/content",
+        method: "GET",
+        statusCode: 200,
+        responseTimeMs: Date.now() - startTime,
+      });
+
+      return jsonResponse({
+        data: paginated.map((c: any) => ({
+          id: c._id,
+          title: c.title,
+          type: c.type,
+          status: c.status,
+          summary: c.summary,
+          createdAt: c.createdAt,
+          updatedAt: c.updatedAt,
+          metadata: c.metadata,
+          seo: c.seo,
+        })),
+        meta: {
+          total: content.length,
+          limit,
+          returned: paginated.length,
+          timestamp: Date.now(),
+        },
+      });
+    } catch (err: any) {
+      return errorResponse(err.message || "Error interno", 500);
+    }
+  }),
+});
+
+/**
+ * POST /api/v1/content - Create new content
+ * Body: { type, title, body, summary?, metadata?, seo? }
+ */
+http.route({
+  path: "/api/v1/content",
+  method: "POST",
+  handler: httpAction(async (ctx, request) => {
+    const startTime = Date.now();
+
+    const auth = await authenticateRequest(ctx, request, "write:content");
+    if (!auth.valid) return errorResponse(auth.error!, 401);
+
+    try {
+      const body = await request.json();
+
+      if (!body.type || !body.title || !body.body) {
+        return errorResponse("Campos requeridos: type, title, body", 400);
+      }
+
+      const contentId = await ctx.runMutation(api.functions.createContent, {
+        type: body.type,
+        title: body.title,
+        body: body.body,
+        summary: body.summary,
+        metadata: body.metadata || {},
+        seo: body.seo,
+        createdBy: "system" as const,
+      });
+
+      await ctx.runMutation(internal.publicApi.logUsage, {
+        apiKeyId: auth.keyId,
+        endpoint: "/api/v1/content",
+        method: "POST",
+        statusCode: 201,
+        responseTimeMs: Date.now() - startTime,
+      });
+
+      return jsonResponse(
+        { data: { id: contentId }, meta: { timestamp: Date.now() } },
+        201
+      );
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Error al crear contenido";
+      return errorResponse(message, 500);
+    }
+  }),
+});
+
+/**
+ * GET /api/v1/analytics - Dashboard analytics overview
+ */
+http.route({
+  path: "/api/v1/analytics",
+  method: "GET",
+  handler: httpAction(async (ctx, request) => {
+    const startTime = Date.now();
+
+    const auth = await authenticateRequest(ctx, request, "read:analytics");
+    if (!auth.valid) return errorResponse(auth.error!, 401);
+
+    try {
+      const stats = await ctx.runQuery(api.functions.getDashboardStats, {});
+
+      await ctx.runMutation(internal.publicApi.logUsage, {
+        apiKeyId: auth.keyId,
+        endpoint: "/api/v1/analytics",
+        method: "GET",
+        statusCode: 200,
+        responseTimeMs: Date.now() - startTime,
+      });
+
+      return jsonResponse({
+        data: stats,
+        meta: { timestamp: Date.now() },
+      });
+    } catch (err: any) {
+      return errorResponse(err.message || "Error interno", 500);
+    }
+  }),
+});
+
+/**
+ * GET /api/v1/strategies - List strategies
+ */
+http.route({
+  path: "/api/v1/strategies",
+  method: "GET",
+  handler: httpAction(async (ctx, request) => {
+    const startTime = Date.now();
+
+    const auth = await authenticateRequest(ctx, request, "read:strategies");
+    if (!auth.valid) return errorResponse(auth.error!, 401);
+
+    try {
+      const strategies = await ctx.runQuery(api.cmoEngine.listStrategies, {});
+
+      await ctx.runMutation(internal.publicApi.logUsage, {
+        apiKeyId: auth.keyId,
+        endpoint: "/api/v1/strategies",
+        method: "GET",
+        statusCode: 200,
+        responseTimeMs: Date.now() - startTime,
+      });
+
+      return jsonResponse({
+        data: strategies.map((s: any) => ({
+          id: s._id,
+          strategyId: s.strategyId,
+          status: s.status,
+          goal: s.goal,
+          summary: s.strategy?.summary,
+          totalTasks: s.totalTasks,
+          completedTasks: s.completedTasks,
+          failedTasks: s.failedTasks,
+          createdAt: s.createdAt,
+          completedAt: s.completedAt,
+        })),
+        meta: { total: strategies.length, timestamp: Date.now() },
+      });
+    } catch (err: any) {
+      return errorResponse(err.message || "Error interno", 500);
+    }
+  }),
+});
 
 /**
  * LinkedIn OAuth: Start authorization flow
