@@ -1257,7 +1257,7 @@ export default defineSchema({
     exampleOutput: v.string(),
     tags: v.array(v.string()),
     isActive: v.boolean(),
-    usageCount: v.number(),
+    usageCount: v.optional(v.number()),
     lastUsedAt: v.optional(v.number()),
     userId: v.optional(v.string()),
     createdAt: v.number(),
