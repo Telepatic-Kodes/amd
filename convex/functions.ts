@@ -982,7 +982,7 @@ export const clearAllData = mutation({
       "userGuidance", "contentVersions", "users",
       "brandProfiles", "brandSources", "brandSuggestions",
       "contentAnalyses", "kbAgentAccess", "reports", "reportSettings",
-      "topicSuggestions", "platformApprovals",
+      "topicSuggestions", "platformApprovals", "marketingStrategies",
     ] as const;
 
     let total = 0;

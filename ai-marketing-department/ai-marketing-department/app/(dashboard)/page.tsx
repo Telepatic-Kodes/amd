@@ -6,6 +6,8 @@ import { api } from "@convex/_generated/api";
 import { Database, X, Plus, Zap, LayoutTemplate, TrendingUp, ArrowRight } from "lucide-react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { StrategyLauncher } from "@/components/dashboard/StrategyLauncher";
+import { StrategyDashboard } from "@/components/dashboard/StrategyDashboard";
 import { HeroMetric, HeroMetricSkeleton } from "@/components/dashboard/HeroMetric";
 import { ActivityChart, ActivityChartSkeleton } from "@/components/dashboard/ActivityChart";
 import { TopAgentsTable, TopAgentsTableSkeleton } from "@/components/dashboard/TopAgentsTable";
@@ -48,6 +50,7 @@ export default function DashboardPage() {
   const content = useQuery(api.functions.listContent, {});
   const agents = useQuery(api.functions.listAgents, {});
   const allTemplates = useQuery(api.contentTemplates.listTemplates, {});
+  const activeStrategy = useQuery(api.cmoEngine.getActiveStrategy);
 
   // Template modal state
   const [showTemplateModal, setShowTemplateModal] = useState(false);
@@ -340,6 +343,13 @@ export default function DashboardPage() {
             href="/content"
           />
         </div>
+      )}
+
+      {/* Marketing Autopilot — CMO Orchestration Engine */}
+      {activeStrategy && activeStrategy.status !== "failed" ? (
+        <StrategyDashboard strategyDocId={activeStrategy._id} />
+      ) : (
+        <StrategyLauncher />
       )}
 
       {/* Templates Populares */}

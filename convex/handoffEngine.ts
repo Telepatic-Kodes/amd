@@ -13,7 +13,7 @@ import { Id } from "./_generated/dataModel";
 interface HandoffRule {
   targetAgentId: string;
   targetTaskType: string;
-  outputMapping: "blog_to_social" | "keyword_to_blog" | "social_to_analytics" | "passthrough";
+  outputMapping: "blog_to_social" | "keyword_to_blog" | "social_to_analytics" | "strategy_blog_to_social" | "strategy_seo_to_content" | "passthrough";
 }
 
 const HANDOFF_RULES: Record<string, HandoffRule[]> = {
@@ -41,6 +41,26 @@ const HANDOFF_RULES: Record<string, HandoffRule[]> = {
       targetAgentId: "social-006",
       targetTaskType: "analyze_engagement",
       outputMapping: "social_to_analytics",
+    },
+  ],
+  // Strategy task handoff chains (CMO Orchestration Engine)
+  strategy_blog_post: [
+    {
+      targetAgentId: "social-001",
+      targetTaskType: "create_linkedin_post",
+      outputMapping: "strategy_blog_to_social",
+    },
+    {
+      targetAgentId: "social-002",
+      targetTaskType: "create_twitter_thread",
+      outputMapping: "strategy_blog_to_social",
+    },
+  ],
+  strategy_seo_keywords: [
+    {
+      targetAgentId: "content-001",
+      targetTaskType: "create_content_brief",
+      outputMapping: "strategy_seo_to_content",
     },
   ],
 };
@@ -78,6 +98,22 @@ function mapOutput(
           source: "auto_generated_post",
           parentContent: parentOutput.slice(0, 500),
         },
+      };
+
+    case "strategy_blog_to_social":
+      return {
+        topic: parentInput.topic || parentInput.title || "Contenido de estrategia",
+        sourceContent: parentOutput.slice(0, 3000),
+        objective: "engagement",
+        tone: "profesional pero cercano",
+        strategyContext: `Parte de la estrategia de marketing - Pilar: ${parentInput.pillar || "general"}`,
+      };
+
+    case "strategy_seo_to_content":
+      return {
+        keywords: parentInput.keywords || [],
+        contentGaps: parentInput.contentGaps || [],
+        instructions: `Crea un brief de contenido basado en este analisis SEO:\n\n${parentOutput.slice(0, 2000)}`,
       };
 
     case "passthrough":

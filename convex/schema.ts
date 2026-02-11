@@ -90,6 +90,7 @@ export default defineSchema({
     ),
     parentTaskId: v.optional(v.id("tasks")), // Para subtareas
     childTaskIds: v.optional(v.array(v.id("tasks"))), // Subtareas generadas
+    strategyId: v.optional(v.string()), // Links task to a CMO marketing strategy
     retryCount: v.number(),
     maxRetries: v.number(),
     scheduledFor: v.optional(v.number()), // Timestamp para ejecución programada
@@ -1267,6 +1268,67 @@ export default defineSchema({
     .index("by_category", ["category"])
     .index("by_contentType", ["contentType"])
     .index("by_active", ["isActive"])
+    .index("by_userId", ["userId"]),
+
+  // ===========================================
+  // MARKETING_STRATEGIES - CMO Orchestration Engine strategies
+  // ===========================================
+  marketingStrategies: defineTable({
+    strategyId: v.string(),
+    brandProfileId: v.id("brandProfiles"),
+    userId: v.optional(v.string()),
+    status: v.union(
+      v.literal("generating"),
+      v.literal("ready"),
+      v.literal("executing"),
+      v.literal("paused"),
+      v.literal("completed"),
+      v.literal("failed")
+    ),
+    // CMO-generated strategy
+    strategy: v.optional(v.object({
+      summary: v.string(),
+      contentPillars: v.array(v.object({
+        name: v.string(),
+        description: v.string(),
+        topics: v.array(v.string()),
+        channels: v.array(v.string()),
+      })),
+      weeklyCalendar: v.array(v.object({
+        dayOfWeek: v.string(),
+        contentType: v.string(),
+        channel: v.string(),
+        pillar: v.string(),
+        description: v.string(),
+      })),
+      adStrategy: v.optional(v.object({
+        platforms: v.array(v.string()),
+        budgetSplit: v.array(v.object({ platform: v.string(), percentage: v.number() })),
+        objectives: v.array(v.string()),
+      })),
+      seoStrategy: v.optional(v.object({
+        primaryKeywords: v.array(v.string()),
+        contentGaps: v.array(v.string()),
+        technicalPriorities: v.array(v.string()),
+      })),
+      emailStrategy: v.optional(v.object({
+        sequences: v.array(v.string()),
+        frequency: v.string(),
+        segments: v.array(v.string()),
+      })),
+    })),
+    // Execution tracking
+    totalTasks: v.optional(v.number()),
+    completedTasks: v.optional(v.number()),
+    failedTasks: v.optional(v.number()),
+    // Timestamps
+    createdAt: v.number(),
+    updatedAt: v.number(),
+    completedAt: v.optional(v.number()),
+  })
+    .index("by_strategyId", ["strategyId"])
+    .index("by_brandProfile", ["brandProfileId"])
+    .index("by_status", ["status"])
     .index("by_userId", ["userId"]),
 
   // ===========================================

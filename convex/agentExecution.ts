@@ -254,6 +254,15 @@ export const executeAgentAsync = internalAction({
         input: args.input,
       });
 
+      // 12. Strategy task completion callback (CMO Orchestration Engine)
+      const strategyId = args.input?.strategyId as string | undefined;
+      if (strategyId) {
+        await ctx.runMutation(internal.cmoEngine.onStrategyTaskComplete, {
+          strategyId,
+          taskStatus: "completed",
+        });
+      }
+
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : "Unknown error";
 
@@ -265,6 +274,15 @@ export const executeAgentAsync = internalAction({
           code: "EXECUTION_FAILED",
         },
       });
+
+      // Strategy task failure callback (CMO Orchestration Engine)
+      const strategyId = args.input?.strategyId as string | undefined;
+      if (strategyId) {
+        await ctx.runMutation(internal.cmoEngine.onStrategyTaskComplete, {
+          strategyId,
+          taskStatus: "failed",
+        });
+      }
     }
   },
 });
