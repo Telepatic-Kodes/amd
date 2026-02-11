@@ -53,9 +53,18 @@ const GenerateContentModal = dynamic(
   () => import("@/components/content/GenerateContentModal").then((m) => m.GenerateContentModal),
   { ssr: false }
 );
-import { VersionHistory } from "@/components/content/VersionHistory";
-import { VersionDiff } from "@/components/content/VersionDiff";
-import { RollbackDialog } from "@/components/content/RollbackDialog";
+const VersionHistory = dynamic(
+  () => import("@/components/content/VersionHistory").then((m) => m.VersionHistory),
+  { ssr: false }
+);
+const VersionDiff = dynamic(
+  () => import("@/components/content/VersionDiff").then((m) => m.VersionDiff),
+  { ssr: false }
+);
+const RollbackDialog = dynamic(
+  () => import("@/components/content/RollbackDialog").then((m) => m.RollbackDialog),
+  { ssr: false }
+);
 
 const CONTENT_TYPES = [
   { value: "", label: "Todos los tipos" },
@@ -291,7 +300,7 @@ export default function ContentPage() {
             <FileText className="h-6 w-6 text-orange-600" />
           </div>
           <div>
-            <h1 className="text-5xl font-bold text-stone-900">
+            <h1 className="text-3xl md:text-5xl font-bold text-stone-900">
               Content
             </h1>
             <p className="text-stone-500 mt-1 text-lg">
@@ -313,7 +322,7 @@ export default function ContentPage() {
             <FileText className="h-6 w-6 text-orange-600" />
           </div>
           <div>
-            <h1 className="text-5xl font-bold text-stone-900">
+            <h1 className="text-3xl md:text-5xl font-bold text-stone-900">
               Contenido
             </h1>
             <p className="text-stone-500 mt-1 text-lg">

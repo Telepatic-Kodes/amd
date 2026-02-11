@@ -5,13 +5,24 @@ import { useQuery } from "convex/react";
 import { api } from "@convex/_generated/api";
 import { motion } from "framer-motion";
 import { useEffect, useRef } from "react";
+import dynamic from "next/dynamic";
 import { MetricsSummary } from "@/components/control-center/MetricsSummary";
 import { AgentStatusGrid } from "@/components/control-center/AgentStatusGrid";
 import { ActivityFeed } from "@/components/control-center/ActivityFeed";
-import { ExecutionHistory } from "@/components/control-center/ExecutionHistory";
-import { HandoffChainView } from "@/components/control-center/HandoffChainView";
-import { RunAgentModal } from "@/components/control-center/RunAgentModal";
 import { useToast } from "@/components/ui/Toast";
+
+const ExecutionHistory = dynamic(
+  () => import("@/components/control-center/ExecutionHistory").then((m) => m.ExecutionHistory),
+  { ssr: false }
+);
+const HandoffChainView = dynamic(
+  () => import("@/components/control-center/HandoffChainView").then((m) => m.HandoffChainView),
+  { ssr: false }
+);
+const RunAgentModal = dynamic(
+  () => import("@/components/control-center/RunAgentModal").then((m) => m.RunAgentModal),
+  { ssr: false }
+);
 
 interface AgentForModal {
   _id: string;

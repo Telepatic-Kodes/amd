@@ -119,7 +119,7 @@ export default function FeedsHealthPage() {
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-white to-stone-400 bg-clip-text text-transparent">
+            <h1 className="text-3xl md:text-5xl font-bold bg-gradient-to-r from-white to-stone-400 bg-clip-text text-transparent">
               Salud de Fuentes
             </h1>
             <p className="text-stone-400 mt-2 text-lg">

@@ -151,7 +151,7 @@ export default function ResultsPage() {
                 <Eye className="w-6 h-6 text-orange-600" />
               </div>
             </div>
-            <p className="text-5xl font-bold text-stone-900 mb-2">
+            <p className="text-3xl md:text-5xl font-bold text-stone-900 mb-2">
               {engagementStats && engagementStats.totalImpressions >= 1000 ? (
                 <>
                   <SimpleCounter value={Math.round(engagementStats.totalImpressions / 1000)} />
@@ -177,7 +177,7 @@ export default function ResultsPage() {
                 <MousePointerClick className="w-6 h-6 text-green-600" />
               </div>
             </div>
-            <p className="text-5xl font-bold text-stone-900 mb-2">
+            <p className="text-3xl md:text-5xl font-bold text-stone-900 mb-2">
               <SimpleCounter value={engagementStats?.totalInteractions ?? 0} />
             </p>
             <p className="text-base text-stone-500">Interacciones</p>
@@ -196,7 +196,7 @@ export default function ResultsPage() {
                 <Heart className="w-6 h-6 text-purple-600" />
               </div>
             </div>
-            <p className="text-5xl font-bold text-stone-900 mb-2">
+            <p className="text-3xl md:text-5xl font-bold text-stone-900 mb-2">
               <SimpleCounter value={engagementStats?.totalShares ?? 0} />
             </p>
             <p className="text-base text-stone-500">Compartidos</p>
