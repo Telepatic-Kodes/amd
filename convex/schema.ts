@@ -227,6 +227,7 @@ export default defineSchema({
     reviewedBy: v.optional(v.id("agents")),
     approvedBy: v.optional(v.string()), // Puede ser humano
     sourceTaskId: v.optional(v.id("tasks")),
+    sourceTemplateId: v.optional(v.string()), // Links content back to the template that created it
     parentContentId: v.optional(v.id("content")), // Para repurposed content
     publishedUrl: v.optional(v.string()),
     scheduledFor: v.optional(v.number()),
@@ -1226,6 +1227,47 @@ export default defineSchema({
     createdAt: v.number(),
   })
     .index("by_brandProfileId", ["brandProfileId"]),
+
+  // ===========================================
+  // CONTENT_TEMPLATES - Pre-built content structures
+  // ===========================================
+  contentTemplates: defineTable({
+    templateId: v.string(),
+    name: v.string(),
+    description: v.string(),
+    category: v.union(
+      v.literal("social"),
+      v.literal("blog"),
+      v.literal("email"),
+      v.literal("ads"),
+      v.literal("misc")
+    ),
+    industry: v.array(v.string()),
+    contentType: v.string(),
+    channels: v.array(v.string()),
+    promptTemplate: v.string(),
+    variables: v.array(
+      v.object({
+        name: v.string(),
+        description: v.string(),
+        required: v.boolean(),
+        default: v.optional(v.string()),
+      })
+    ),
+    exampleOutput: v.string(),
+    tags: v.array(v.string()),
+    isActive: v.boolean(),
+    usageCount: v.number(),
+    lastUsedAt: v.optional(v.number()),
+    userId: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_templateId", ["templateId"])
+    .index("by_category", ["category"])
+    .index("by_contentType", ["contentType"])
+    .index("by_active", ["isActive"])
+    .index("by_userId", ["userId"]),
 
   // ===========================================
   // RATE_LIMITS - Token bucket per user/endpoint

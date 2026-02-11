@@ -591,6 +591,7 @@ export const createContent = mutation({
     ),
     createdBy: v.union(v.id("agents"), v.literal("system")),
     sourceTaskId: v.optional(v.id("tasks")),
+    sourceTemplateId: v.optional(v.string()),
     parentContentId: v.optional(v.id("content")),
   },
   handler: async (ctx, args) => {

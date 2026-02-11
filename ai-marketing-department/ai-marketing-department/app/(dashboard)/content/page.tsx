@@ -30,6 +30,7 @@ import {
   Loader2,
   Columns3,
   History,
+  LayoutTemplate,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/Card";
@@ -63,6 +64,10 @@ const VersionDiff = dynamic(
 );
 const RollbackDialog = dynamic(
   () => import("@/components/content/RollbackDialog").then((m) => m.RollbackDialog),
+  { ssr: false }
+);
+const TemplatePickerModal = dynamic(
+  () => import("@/components/content/TemplatePickerModal").then((m) => m.TemplatePickerModal),
   { ssr: false }
 );
 
@@ -226,6 +231,30 @@ function StatusActions({ content, onStatusChange }: { content: Doc<"content">; o
   return null;
 }
 
+function TemplateOriginBadge({ templateId, onRegenerate }: { templateId: string; onRegenerate: (tplId: string) => void }) {
+  const template = useQuery(api.contentTemplates.getTemplate, { templateId });
+
+  if (!template) return null;
+
+  return (
+    <div className="flex items-center justify-between p-2.5 rounded-lg bg-purple-50 border border-purple-200">
+      <div className="flex items-center gap-2 min-w-0">
+        <LayoutTemplate className="h-4 w-4 text-purple-500 shrink-0" />
+        <div className="min-w-0">
+          <p className="text-xs text-purple-600 font-medium">Generado desde template</p>
+          <p className="text-xs text-purple-500 truncate">{template.name}</p>
+        </div>
+      </div>
+      <button
+        onClick={() => onRegenerate(templateId)}
+        className="text-xs text-purple-600 hover:text-purple-800 font-medium shrink-0 ml-2"
+      >
+        Regenerar
+      </button>
+    </div>
+  );
+}
+
 export default function ContentPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
@@ -236,6 +265,8 @@ export default function ContentPage() {
   const [editingContent, setEditingContent] = useState<Doc<"content"> | null>(null);
   const [analysisContentId, setAnalysisContentId] = useState<string | null>(null);
   const [showGenerateModal, setShowGenerateModal] = useState(false);
+  const [showTemplateModal, setShowTemplateModal] = useState(false);
+  const [templateModalPreselect, setTemplateModalPreselect] = useState<string | undefined>(undefined);
   const [showVersionHistory, setShowVersionHistory] = useState(false);
   const [diffVersions, setDiffVersions] = useState<{ versionAId: Id<"contentVersions">; versionBId: Id<"contentVersions"> } | null>(null);
   const [rollbackTarget, setRollbackTarget] = useState<{ versionId: Id<"contentVersions">; versionNumber: number } | null>(null);
@@ -338,9 +369,16 @@ export default function ContentPage() {
             <Sparkles className="h-4 w-4" />
             Generar Contenido
           </button>
+          <button
+            onClick={() => setShowTemplateModal(true)}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-orange-50 text-orange-700 hover:bg-orange-100 transition-colors text-sm font-medium"
+          >
+            <LayoutTemplate className="h-4 w-4" />
+            Usar Template
+          </button>
           <Link
             href="/content/pipeline"
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-orange-50 text-orange-700 hover:bg-orange-100 transition-colors text-sm font-medium"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-stone-100 text-stone-700 hover:bg-stone-200 transition-colors text-sm font-medium"
           >
             <Columns3 className="h-4 w-4" />
             Vista Pipeline
@@ -481,7 +519,7 @@ export default function ContentPage() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
               >
-                <EmptyContent onAction={() => setShowGenerateModal(true)} />
+                <EmptyContent onAction={() => setShowGenerateModal(true)} onTemplateAction={() => setShowTemplateModal(true)} />
               </motion.div>
             ) : viewMode === "grid" ? (
               <motion.div
@@ -731,6 +769,17 @@ export default function ContentPage() {
                       </div>
                     </div>
 
+                    {/* Template Origin Badge */}
+                    {selectedContentData.sourceTemplateId && (
+                      <TemplateOriginBadge
+                        templateId={selectedContentData.sourceTemplateId}
+                        onRegenerate={(tplId) => {
+                          setTemplateModalPreselect(tplId);
+                          setShowTemplateModal(true);
+                        }}
+                      />
+                    )}
+
                     {/* Status Actions */}
                     <div className="pt-3 border-t border-stone-200">
                       <StatusActions
@@ -957,6 +1006,18 @@ export default function ContentPage() {
         <GenerateContentModal
           isOpen={showGenerateModal}
           onClose={() => setShowGenerateModal(false)}
+        />
+      )}
+
+      {/* Template Picker Modal */}
+      {showTemplateModal && (
+        <TemplatePickerModal
+          isOpen={showTemplateModal}
+          onClose={() => {
+            setShowTemplateModal(false);
+            setTemplateModalPreselect(undefined);
+          }}
+          preselectedTemplateId={templateModalPreselect}
         />
       )}
 

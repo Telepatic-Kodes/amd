@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@convex/_generated/api";
-import { Database, X, Plus, Zap } from "lucide-react";
+import { Database, X, Plus, Zap, LayoutTemplate, TrendingUp, ArrowRight } from "lucide-react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { HeroMetric, HeroMetricSkeleton } from "@/components/dashboard/HeroMetric";
 import { ActivityChart, ActivityChartSkeleton } from "@/components/dashboard/ActivityChart";
@@ -14,6 +15,11 @@ import { ContentPipeline } from "@/components/dashboard/ContentPipeline";
 import { NeedsAttention, NeedsAttentionSkeleton } from "@/components/dashboard/NeedsAttention";
 import { translate } from "@/lib/language";
 import { useToast } from "@/components/ui/Toast";
+
+const TemplatePickerModal = dynamic(
+  () => import("@/components/content/TemplatePickerModal").then((m) => m.TemplatePickerModal),
+  { ssr: false }
+);
 
 export default function DashboardPage() {
   const { success, error } = useToast();
@@ -41,6 +47,19 @@ export default function DashboardPage() {
   const activity = useQuery(api.controlCenter.getRecentActivity, {});
   const content = useQuery(api.functions.listContent, {});
   const agents = useQuery(api.functions.listAgents, {});
+  const allTemplates = useQuery(api.contentTemplates.listTemplates, {});
+
+  // Template modal state
+  const [showTemplateModal, setShowTemplateModal] = useState(false);
+  const [templateModalPreselect, setTemplateModalPreselect] = useState<string | undefined>(undefined);
+
+  // Top 4 templates by usage
+  const topTemplates = useMemo(() => {
+    if (!allTemplates) return [];
+    return [...allTemplates]
+      .sort((a, b) => (b.usageCount ?? 0) - (a.usageCount ?? 0))
+      .slice(0, 4);
+  }, [allTemplates]);
 
   // Content counts for ContentPipeline
   const contentCounts = useMemo(() => {
@@ -323,6 +342,53 @@ export default function DashboardPage() {
         </div>
       )}
 
+      {/* Templates Populares */}
+      {topTemplates.length > 0 && (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <LayoutTemplate className="h-4 w-4 text-purple-500" />
+              <h2 className="text-sm font-medium text-stone-700">Templates Populares</h2>
+            </div>
+            <button
+              onClick={() => {
+                setTemplateModalPreselect(undefined);
+                setShowTemplateModal(true);
+              }}
+              className="text-xs text-purple-600 hover:text-purple-800 font-medium flex items-center gap-1 transition-colors"
+            >
+              Ver todos
+              <ArrowRight className="h-3 w-3" />
+            </button>
+          </div>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            {topTemplates.map((tpl) => (
+              <button
+                key={tpl.templateId}
+                onClick={() => {
+                  setTemplateModalPreselect(tpl.templateId);
+                  setShowTemplateModal(true);
+                }}
+                className="flex items-center gap-3 p-3 rounded-lg border border-stone-200 bg-white hover:border-purple-300 hover:shadow-sm transition-all text-left group"
+              >
+                <div className="p-2 rounded-lg bg-purple-50 group-hover:bg-purple-100 transition-colors shrink-0">
+                  <LayoutTemplate className="w-4 h-4 text-purple-500" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium text-stone-900 truncate group-hover:text-purple-700 transition-colors">
+                    {tpl.name}
+                  </p>
+                  <div className="flex items-center gap-1 mt-0.5">
+                    <TrendingUp className="w-3 h-3 text-stone-400" />
+                    <span className="text-xs text-stone-400">{tpl.usageCount ?? 0} usos</span>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Activity Chart (60%) + Needs Attention (40%) */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         <div className="lg:col-span-3">
@@ -364,6 +430,18 @@ export default function DashboardPage() {
 
       {/* Agent Status Bar */}
       <AgentStatusBar agentsByDepartment={controlStatus?.agentsByDepartment} />
+
+      {/* Template Picker Modal */}
+      {showTemplateModal && (
+        <TemplatePickerModal
+          isOpen={showTemplateModal}
+          onClose={() => {
+            setShowTemplateModal(false);
+            setTemplateModalPreselect(undefined);
+          }}
+          preselectedTemplateId={templateModalPreselect}
+        />
+      )}
     </div>
   );
 }
