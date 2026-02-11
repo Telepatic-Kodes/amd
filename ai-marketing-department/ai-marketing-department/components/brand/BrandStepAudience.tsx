@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Users, Plus, X, AlertCircle } from "lucide-react";
+import { Plus, X, AlertCircle } from "lucide-react";
 
 interface AudienceSegment {
   name: string;
@@ -91,7 +91,7 @@ function SegmentCard({
             {segment.painPoints.map((pp, i) => (
               <span
                 key={i}
-                className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-red-500/10 text-red-400 text-xs border border-red-500/20"
+                className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-red-50 text-red-700 text-xs border border-red-200"
               >
                 {pp}
                 <button

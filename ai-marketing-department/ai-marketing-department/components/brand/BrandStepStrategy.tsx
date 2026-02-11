@@ -4,14 +4,14 @@ import { useState } from "react";
 import { Target, Hash, Plus, X, Calendar } from "lucide-react";
 
 const CHANNEL_OPTIONS = [
-  { id: "linkedin", label: "LinkedIn", color: "bg-sky-500/10 text-sky-400 border-sky-500/30" },
-  { id: "twitter", label: "Twitter/X", color: "bg-cyan-500/10 text-cyan-400 border-cyan-500/30" },
-  { id: "instagram", label: "Instagram", color: "bg-pink-500/10 text-pink-400 border-pink-500/30" },
-  { id: "tiktok", label: "TikTok", color: "bg-purple-500/10 text-purple-400 border-purple-500/30" },
-  { id: "blog", label: "Blog", color: "bg-orange-500/10 text-orange-400 border-orange-500/30" },
-  { id: "email", label: "Email", color: "bg-green-500/10 text-green-400 border-green-500/30" },
-  { id: "youtube", label: "YouTube", color: "bg-red-500/10 text-red-400 border-red-500/30" },
-  { id: "podcast", label: "Podcast", color: "bg-orange-500/10 text-orange-400 border-orange-500/30" },
+  { id: "linkedin", label: "LinkedIn", color: "bg-sky-100 text-sky-700 border-sky-300" },
+  { id: "twitter", label: "Twitter/X", color: "bg-cyan-100 text-cyan-700 border-cyan-300" },
+  { id: "instagram", label: "Instagram", color: "bg-pink-100 text-pink-700 border-pink-300" },
+  { id: "tiktok", label: "TikTok", color: "bg-purple-100 text-purple-700 border-purple-300" },
+  { id: "blog", label: "Blog", color: "bg-orange-100 text-orange-700 border-orange-300" },
+  { id: "email", label: "Email", color: "bg-green-100 text-green-700 border-green-300" },
+  { id: "youtube", label: "YouTube", color: "bg-red-100 text-red-700 border-red-300" },
+  { id: "podcast", label: "Podcast", color: "bg-amber-100 text-amber-700 border-amber-300" },
 ];
 
 const FREQUENCY_OPTIONS = [
@@ -89,7 +89,7 @@ export function BrandStepStrategy({ data, onChange }: Props) {
               {data.topics.map((topic, i) => (
                 <span
                   key={i}
-                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-orange-500/10 text-orange-300 text-sm border border-orange-500/20"
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-orange-100 text-orange-700 text-sm border border-orange-300"
                 >
                   {topic}
                   <button
@@ -146,8 +146,8 @@ export function BrandStepStrategy({ data, onChange }: Props) {
                   onClick={() => onChange({ postingFrequency: freq })}
                   className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
                     isSelected
-                      ? "bg-orange-500/20 text-orange-300 border border-orange-500/40"
-                      : "bg-stone-50 text-stone-400 border border-stone-200 hover:border-stone-300 hover:text-stone-600"
+                      ? "bg-orange-100 text-orange-700 border border-orange-300"
+                      : "bg-stone-50 text-stone-500 border border-stone-200 hover:border-stone-300 hover:text-stone-700"
                   }`}
                 >
                   {freq}

@@ -8,40 +8,50 @@ const BRAND_EXTRACTION_PROMPT = `You are a brand analyst. Extract brand informat
 Return a JSON object with ONLY the fields where you have reasonable confidence from the content.
 Do NOT include fields where you're guessing or have no evidence.
 
+IMPORTANT: For tone, personality, channels, and industry fields, you MUST use values from the predefined lists below.
+
+Valid "industry" values: "SaaS / Software", "E-commerce", "Fintech", "Salud", "Educación", "Inmobiliario", "Agencia / Consultoría", "Medios / Editorial", "Viajes / Hospitalidad", "Alimentos y Bebidas", "Otro"
+
+Valid "tone" values: "Profesional", "Cercano", "Autoridad", "Divertido", "Inspirador", "Educativo", "Provocador", "Empático", "Directo", "Sofisticado"
+
+Valid "personality" values: "Innovador", "Confiable", "Audaz", "Accesible", "Experto", "Líder", "Colaborativo", "Disruptivo", "Emprendedor", "Humano"
+
+Valid "channels" values: "linkedin", "twitter", "instagram", "tiktok", "blog", "email", "youtube", "podcast"
+
 The JSON must match this structure (all fields optional):
 {
   "companyName": "string",
-  "industry": "string",
+  "industry": "one of the valid industry values above",
   "website": "string",
   "description": "string (1-2 sentences about the company)",
   "voice": {
-    "tone": ["string array of tone descriptors, e.g. profesional, cercano, innovador"],
-    "personality": ["string array of personality traits"],
-    "dos": ["string array of communication guidelines"],
-    "donts": ["string array of things to avoid"]
+    "tone": ["select from valid tone values above"],
+    "personality": ["select from valid personality values above"],
+    "dos": ["string array of communication guidelines in Spanish"],
+    "donts": ["string array of things to avoid in Spanish"]
   },
   "audience": {
     "segments": [
       {
-        "name": "segment name",
-        "demographics": "demographic description",
-        "painPoints": ["pain point 1", "pain point 2"]
+        "name": "segment name in Spanish",
+        "demographics": "demographic description in Spanish",
+        "painPoints": ["pain point in Spanish"]
       }
     ]
   },
   "strategy": {
-    "topics": ["content topics the brand focuses on"],
-    "channels": ["marketing channels used"],
+    "topics": ["content topics the brand focuses on, in Spanish"],
+    "channels": ["select from valid channel values above"],
     "postingFrequency": "string"
   },
   "competitors": [
-    { "name": "competitor name", "url": "url if found", "notes": "brief note" }
+    { "name": "competitor name", "url": "url if found", "notes": "brief note in Spanish" }
   ],
   "visual": {
     "primaryColor": "hex color if identifiable",
     "secondaryColor": "hex color if identifiable",
-    "logoDescription": "brief logo description",
-    "styleNotes": "visual style observations"
+    "logoDescription": "brief logo description in Spanish",
+    "styleNotes": "visual style observations in Spanish"
   }
 }
 
@@ -133,5 +143,59 @@ export const extractBrandFromText = action({
       : "document text";
 
     return await callClaudeForExtraction(args.text, source);
+  },
+});
+
+export const extractBrandFromInstagram = action({
+  args: {
+    handle: v.string(),
+  },
+  handler: async (_ctx, args) => {
+    // Normalize: accept @handle or full URL
+    let username = args.handle.trim();
+    if (username.startsWith("@")) {
+      username = username.slice(1);
+    }
+    // Extract username from URL if full URL provided
+    const urlMatch = username.match(
+      /(?:instagram\.com|instagr\.am)\/([a-zA-Z0-9_.]+)/
+    );
+    if (urlMatch) {
+      username = urlMatch[1];
+    }
+
+    if (!username || username.length < 2) {
+      throw new Error("Instagram handle inválido");
+    }
+
+    // Scrape the public Instagram profile page
+    const profileUrl = `https://www.instagram.com/${username}/`;
+    let profileContent: string;
+    try {
+      const { title, content } = await extractContentFromURL(profileUrl);
+      profileContent = `Instagram Profile: @${username}\nPage Title: ${title}\n\nContent:\n${content}`;
+    } catch {
+      // If scraping fails, use just the username for AI inference
+      profileContent = `Instagram Profile: @${username}\nURL: ${profileUrl}\n\nNote: Could not scrape the profile directly. Extract what brand information you can infer from the username and public Instagram presence of @${username}.`;
+    }
+
+    const extracted = await callClaudeForExtraction(
+      profileContent,
+      `Instagram profile @${username}`
+    );
+
+    // Ensure strategy includes instagram as a channel
+    if (extracted.strategy && typeof extracted.strategy === "object") {
+      const strategy = extracted.strategy as Record<string, unknown>;
+      if (Array.isArray(strategy.channels)) {
+        if (!strategy.channels.includes("instagram")) {
+          strategy.channels.push("instagram");
+        }
+      } else {
+        strategy.channels = ["instagram"];
+      }
+    }
+
+    return extracted;
   },
 });

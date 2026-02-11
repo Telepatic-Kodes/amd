@@ -45,8 +45,8 @@ function PillSelector({
             onClick={() => onToggle(option)}
             className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
               isSelected
-                ? "bg-orange-500/20 text-orange-300 border border-orange-500/40"
-                : "bg-stone-50 text-stone-400 border border-stone-200 hover:border-stone-300 hover:text-stone-600"
+                ? "bg-orange-100 text-orange-700 border border-orange-300"
+                : "bg-stone-50 text-stone-500 border border-stone-200 hover:border-stone-300 hover:text-stone-700"
             }`}
           >
             {option}

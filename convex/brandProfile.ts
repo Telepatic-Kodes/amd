@@ -25,10 +25,7 @@ function shortId(): string {
 
 export const getBrandProfile = query({
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return null;
-
-    const userId = identity.subject;
+    const userId = await getUserId(ctx);
     const profile = await ctx.db
       .query("brandProfiles")
       .withIndex("by_userId", (q) => q.eq("userId", userId))

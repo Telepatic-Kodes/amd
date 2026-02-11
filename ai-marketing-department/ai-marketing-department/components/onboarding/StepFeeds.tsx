@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { Plus, Rss, X, Sparkles, ChevronDown } from "lucide-react";
+import { Plus, Rss, X, ChevronDown } from "lucide-react";
 import { FEED_TEMPLATES, getTemplatesByIndustry } from "@convex/feeds/templates";
 
 interface Props {
@@ -43,8 +43,8 @@ export function StepFeeds({ feeds, industry, onChange }: Props) {
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
       <div className="text-center space-y-2">
-        <h2 className="text-2xl font-bold text-white">Selecciona tus fuentes</h2>
-        <p className="text-stone-400 text-sm">Elige paquetes pre-configurados para tu industria.</p>
+        <h2 className="text-2xl font-bold text-stone-900">Selecciona tus fuentes</h2>
+        <p className="text-stone-500 text-sm">Elige paquetes pre-configurados para tu industria.</p>
       </div>
 
       {/* Template Selection Cards */}
@@ -77,7 +77,7 @@ export function StepFeeds({ feeds, industry, onChange }: Props) {
                   <div className="flex items-center gap-2">
                     <span className="text-2xl">{template.icon}</span>
                     <div>
-                      <p className="font-semibold text-sm text-white">{template.name}</p>
+                      <p className="font-semibold text-sm text-stone-900">{template.name}</p>
                       <p className="text-xs text-stone-500">{template.feeds.length} fuentes</p>
                     </div>
                   </div>
@@ -91,8 +91,8 @@ export function StepFeeds({ feeds, industry, onChange }: Props) {
         {/* Summary */}
         {totalFeeds > 0 && (
           <div className="p-3 rounded-lg bg-orange-500/10 border border-orange-500/20">
-            <p className="text-sm text-orange-300">
-              ✅ Se agregarán <strong>{totalFeeds} fuentes</strong> a tu departamento
+            <p className="text-sm text-orange-700">
+              Se agregarán <strong>{totalFeeds} fuentes</strong> a tu departamento
             </p>
           </div>
         )}
@@ -109,7 +109,7 @@ export function StepFeeds({ feeds, industry, onChange }: Props) {
             >
               <div className="flex items-center gap-2 min-w-0">
                 <Rss className="w-4 h-4 text-orange-400 shrink-0" />
-                <span className="text-sm text-stone-300 truncate">{url}</span>
+                <span className="text-sm text-stone-700 truncate">{url}</span>
               </div>
               <button
                 onClick={() => removeFeed(url)}
@@ -126,7 +126,7 @@ export function StepFeeds({ feeds, industry, onChange }: Props) {
       <div className="space-y-3">
         <button
           onClick={() => setShowManual(!showManual)}
-          className="flex items-center gap-2 text-sm text-stone-400 hover:text-stone-900 transition"
+          className="flex items-center gap-2 text-sm text-stone-500 hover:text-stone-900 transition"
         >
           <ChevronDown className={cn("w-4 h-4 transition", showManual && "rotate-180")} />
           Agregar manualmente
@@ -139,7 +139,7 @@ export function StepFeeds({ feeds, industry, onChange }: Props) {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && addFeed(input.trim())}
               placeholder="https://ejemplo.com/feed.xml"
-              className="flex-1 px-3 py-2 rounded-lg bg-stone-100 border border-stone-200 text-white placeholder:text-stone-600 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 transition text-sm"
+              className="flex-1 px-3 py-2 rounded-lg bg-stone-50 border border-stone-200 text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 transition text-sm"
             />
             <button
               onClick={() => addFeed(input.trim())}
