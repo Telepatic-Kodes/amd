@@ -939,7 +939,7 @@ export default function SettingsPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="p-3 rounded-lg bg-stone-50">
                       <p className="text-xs text-stone-500">Versión</p>
-                      <p className="text-sm font-medium text-stone-900">1.0.0</p>
+                      <p className="text-sm font-medium text-stone-900">5.0.0</p>
                     </div>
                     <div className="p-3 rounded-lg bg-stone-50">
                       <p className="text-xs text-stone-500">Entorno</p>
