@@ -187,7 +187,6 @@ export function PublishToTwitterButton({
   // Preview mode
   const tweets = splitIntoThread(contentBody);
   const isThread = tweets.length > 1;
-  const _totalChars = tweets.reduce((sum, tweet) => sum + tweet.length, 0);
   const isRateLimited = (connectionStatus?.dailyTweetCount ?? 0) >= 50;
 
   return (

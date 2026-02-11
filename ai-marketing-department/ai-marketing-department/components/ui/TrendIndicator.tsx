@@ -28,7 +28,6 @@ export function TrendIndicator({
 }: TrendIndicatorProps) {
   const isPositive = value > 0;
   const isNegative = value < 0;
-  const _isNeutral = value === 0;
 
   const sizes = {
     sm: {
@@ -152,12 +151,6 @@ export function TrendBadge({ value, label, suffix = '%', className }: TrendBadge
     : isNegative
     ? 'bg-red-500/10 border-red-500/20'
     : 'bg-stone-500/10 border-stone-500/20';
-
-  const _textColor = isPositive
-    ? 'text-green-400'
-    : isNegative
-    ? 'text-red-400'
-    : 'text-stone-400';
 
   return (
     <div
