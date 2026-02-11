@@ -96,7 +96,7 @@ export function getTourState(): TourState {
     const state = JSON.parse(stored) as TourState;
     return state;
   } catch (error) {
-    console.error("Error reading tour state:", error);
+    void error; // localStorage read failed silently
     return { completed: false, skipped: false };
   }
 }
@@ -115,7 +115,7 @@ export function setTourCompleted(): void {
     };
     localStorage.setItem(TOUR_STORAGE_KEY, JSON.stringify(state));
   } catch (error) {
-    console.error("Error saving tour completion:", error);
+    void error;
   }
 }
 
@@ -133,7 +133,7 @@ export function setTourSkipped(): void {
     };
     localStorage.setItem(TOUR_STORAGE_KEY, JSON.stringify(state));
   } catch (error) {
-    console.error("Error saving tour skip:", error);
+    void error;
   }
 }
 
@@ -146,7 +146,7 @@ export function resetTour(): void {
   try {
     localStorage.removeItem(TOUR_STORAGE_KEY);
   } catch (error) {
-    console.error("Error resetting tour:", error);
+    void error;
   }
 }
 
@@ -155,11 +155,8 @@ export function resetTour(): void {
  * @returns true if user hasn't completed or skipped the tour
  */
 export function shouldShowTour(): boolean {
-  // DEV BYPASS: disable tour for preview
-  // TODO: restore before production
-  return false;
-  // const state = getTourState();
-  // return !state.completed && !state.skipped;
+  const state = getTourState();
+  return !state.completed && !state.skipped;
 }
 
 /**
@@ -173,7 +170,7 @@ export function findTourElement(selector: string): HTMLElement | null {
   try {
     return document.querySelector(selector) as HTMLElement;
   } catch (error) {
-    console.error(`Error finding tour element: ${selector}`, error);
+    void error;
     return null;
   }
 }

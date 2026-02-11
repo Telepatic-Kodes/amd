@@ -121,7 +121,7 @@ export async function copyHtmlToClipboard(html: string): Promise<void> {
     document.execCommand('copy');
     document.body.removeChild(textarea);
   } catch (error) {
-    console.error('Failed to copy to clipboard:', error);
+    void error;
     throw new Error('Failed to copy content to clipboard');
   }
 }
@@ -171,7 +171,6 @@ export function downloadAsFile(html: string, filename: string = 'content.html'):
 
     throw new Error('Browser does not support file download');
   } catch (error) {
-    console.error('Failed to download file:', error);
     throw error;
   }
 }

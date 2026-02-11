@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { usePathname } from "next/navigation";
 import { useMutation } from "convex/react";
 import { api } from "@convex/_generated/api";
-// import { useConvexAuth } from "convex/react"; // DEV BYPASS: disabled
+import { useConvexAuth } from "convex/react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { MobileNav } from "@/components/layout/MobileNav";
 import { CommandPalette } from "@/components/dashboard/CommandPalette";
@@ -18,8 +18,8 @@ import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 
 export function LayoutShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  // DEV BYPASS: useConvexAuth requires ConvexProviderWithClerk
-  // const { isLoading, isAuthenticated } = useConvexAuth();
+  const devBypass = process.env.NODE_ENV !== "production" && process.env.NEXT_PUBLIC_DEV_AUTH_BYPASS === "true";
+  const { isLoading, isAuthenticated } = useConvexAuth();
   const isOnboarding = pathname.startsWith("/onboarding");
 
   // Multi-tab logout sync
@@ -52,15 +52,13 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
     return <>{children}</>;
   }
 
-  // DEV BYPASS: skip auth check to preview dashboard without Clerk login
-  // TODO: restore auth gate before production
-  // if (isLoading || !isAuthenticated) {
-  //   return (
-  //     <div className="flex min-h-screen items-center justify-center bg-stone-50">
-  //       <div className="text-stone-400 animate-pulse">Cargando...</div>
-  //     </div>
-  //   );
-  // }
+  if (!devBypass && (isLoading || !isAuthenticated)) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[var(--surface-0)]">
+        <div className="text-stone-400 animate-pulse">Cargando...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-[var(--surface-0)]">

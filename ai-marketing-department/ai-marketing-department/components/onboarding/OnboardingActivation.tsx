@@ -227,7 +227,7 @@ export function OnboardingActivation({
       setPhase("completed");
       localStorage.removeItem("amd-unified-brand-draft");
     } catch (error) {
-      console.error("Activation error:", error);
+      void error;
       // Still proceed to completed state to not block the user
       setPhase("completed");
     }

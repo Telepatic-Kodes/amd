@@ -44,7 +44,7 @@ export function ProductTour({ onComplete, onSkip }: ProductTourProps) {
           const position = calculateTooltipPosition(element, step.placement);
           setTooltipPosition(position);
         } else {
-          console.warn(`Tour target not found: ${step.target}`);
+          // Tour target not found — skip highlighting
           setTargetElement(null);
         }
       } else {

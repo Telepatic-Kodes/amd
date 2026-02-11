@@ -43,8 +43,8 @@ export function CsvExportButton({ startDate, endDate }: CsvExportButtonProps) {
         });
       }
     } catch (error) {
-      console.error("Error exporting CSV:", error);
-      // Show error toast (if toast system exists)
+      void error;
+      // Show error toast
       if (typeof window !== "undefined" && window.showToast) {
         window.showToast({
           title: "Error",
