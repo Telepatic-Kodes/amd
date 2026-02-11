@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { mutation, query, internalMutation } from "./_generated/server";
+import { mutation, query, internalMutation, internalQuery } from "./_generated/server";
 
 /**
  * Public API authentication and management.
@@ -203,5 +203,25 @@ export const getTokenUsage = query({
       errorRate: totalRecent > 0 ? Math.round((errorCount / totalRecent) * 100) : 0,
       lastUsedAt: key.lastUsedAt,
     };
+  },
+});
+
+/**
+ * Internal: count recent requests for rate limiting.
+ */
+export const getRecentRequestCount = internalQuery({
+  args: {
+    apiKeyId: v.id("apiKeys"),
+    windowMs: v.number(),
+  },
+  handler: async (ctx, { apiKeyId, windowMs }) => {
+    const cutoff = Date.now() - windowMs;
+    const recent = await ctx.db
+      .query("apiUsage")
+      .withIndex("by_apiKey_timestamp", (q) =>
+        q.eq("apiKeyId", apiKeyId).gt("timestamp", cutoff)
+      )
+      .collect();
+    return recent.length;
   },
 });

@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query, action } from "./_generated/server";
+import { internal } from "./_generated/api";
 import { Id } from "./_generated/dataModel";
 import { requireAuth, getUserId } from "./lib/auth";
 import { requireRole, getUserRole, canTransitionContent } from "./lib/permissions";
@@ -392,6 +393,30 @@ export const updateTaskStatus = mutation({
     }
 
     await ctx.db.patch(args.id, updates);
+
+    // Dispatch webhook events for agent execution completion/failure
+    if (args.status === "completed") {
+      await ctx.scheduler.runAfter(0, internal.webhookEngine.dispatchEvent, {
+        event: "agent.execution_completed",
+        payload: JSON.stringify({
+          taskId: args.id,
+          agentId: task.agentId,
+          type: task.type,
+          completedAt: now,
+        }),
+      });
+    } else if (args.status === "failed") {
+      await ctx.scheduler.runAfter(0, internal.webhookEngine.dispatchEvent, {
+        event: "agent.execution_failed",
+        payload: JSON.stringify({
+          taskId: args.id,
+          agentId: task.agentId,
+          type: task.type,
+          error: args.error?.message,
+          failedAt: now,
+        }),
+      });
+    }
   },
 });
 
@@ -674,6 +699,29 @@ export const updateContentStatus = mutation({
     // Create version snapshot with Spanish summary
     const summary = `Estado cambiado de ${oldStatus} a ${args.status}`;
     await createVersionSnapshot(ctx, args.id, "status_change", summary);
+
+    // Dispatch webhook events
+    if (args.status === "published") {
+      await ctx.scheduler.runAfter(0, internal.webhookEngine.dispatchEvent, {
+        event: "content.published",
+        payload: JSON.stringify({
+          contentId: args.id,
+          title: content.title,
+          type: content.type,
+          publishedAt: now,
+        }),
+      });
+    } else if (oldStatus !== args.status) {
+      await ctx.scheduler.runAfter(0, internal.webhookEngine.dispatchEvent, {
+        event: "content.status_changed",
+        payload: JSON.stringify({
+          contentId: args.id,
+          title: content.title,
+          from: oldStatus,
+          to: args.status,
+        }),
+      });
+    }
 
     // Log audit trail with appropriate action
     const statusActionMap: Record<string, string> = {

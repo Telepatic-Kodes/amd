@@ -19,12 +19,12 @@ async function hashToken(token: string): Promise<string> {
     .join("");
 }
 
-// Helper: Authenticate API request and check permissions
+// Helper: Authenticate API request, check permissions, and enforce rate limits
 async function authenticateRequest(
   ctx: any,
   request: Request,
   requiredPermission: string
-): Promise<{ valid: boolean; error?: string; userId?: string; keyId?: any }> {
+): Promise<{ valid: boolean; error?: string; userId?: string; keyId?: any; rateLimited?: boolean }> {
   const authHeader = request.headers.get("Authorization");
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return { valid: false, error: "Missing Authorization header. Use: Bearer <token>" };
@@ -40,6 +40,19 @@ async function authenticateRequest(
     keyHash,
     requiredPermission,
   });
+
+  if (!result.valid) return result;
+
+  // Rate limiting: check recent requests in the last minute
+  const recentUsage = await ctx.runQuery(internal.publicApi.getRecentRequestCount, {
+    apiKeyId: result.keyId,
+    windowMs: 60_000, // 1 minute window
+  });
+
+  const rateLimit = 100; // 100 requests per minute
+  if (recentUsage >= rateLimit) {
+    return { valid: false, error: `Rate limit exceeded (${rateLimit}/min)`, rateLimited: true };
+  }
 
   return result;
 }
@@ -137,7 +150,7 @@ http.route({
     const startTime = Date.now();
 
     const auth = await authenticateRequest(ctx, request, "read:agents");
-    if (!auth.valid) return errorResponse(auth.error!, 401);
+    if (!auth.valid) return errorResponse(auth.error!, auth.rateLimited ? 429 : 401);
 
     try {
       const url = new URL(request.url);
@@ -187,7 +200,7 @@ http.route({
     const startTime = Date.now();
 
     const auth = await authenticateRequest(ctx, request, "read:content");
-    if (!auth.valid) return errorResponse(auth.error!, 401);
+    if (!auth.valid) return errorResponse(auth.error!, auth.rateLimited ? 429 : 401);
 
     try {
       const url = new URL(request.url);
@@ -246,7 +259,7 @@ http.route({
     const startTime = Date.now();
 
     const auth = await authenticateRequest(ctx, request, "write:content");
-    if (!auth.valid) return errorResponse(auth.error!, 401);
+    if (!auth.valid) return errorResponse(auth.error!, auth.rateLimited ? 429 : 401);
 
     try {
       const body = await request.json();
@@ -294,7 +307,7 @@ http.route({
     const startTime = Date.now();
 
     const auth = await authenticateRequest(ctx, request, "read:analytics");
-    if (!auth.valid) return errorResponse(auth.error!, 401);
+    if (!auth.valid) return errorResponse(auth.error!, auth.rateLimited ? 429 : 401);
 
     try {
       const stats = await ctx.runQuery(api.functions.getDashboardStats, {});
@@ -327,7 +340,7 @@ http.route({
     const startTime = Date.now();
 
     const auth = await authenticateRequest(ctx, request, "read:strategies");
-    if (!auth.valid) return errorResponse(auth.error!, 401);
+    if (!auth.valid) return errorResponse(auth.error!, auth.rateLimited ? 429 : 401);
 
     try {
       const strategies = await ctx.runQuery(api.cmoEngine.listStrategies, {});

@@ -321,6 +321,17 @@ export const failStrategy = internalMutation({
         metadata: { error: args.error },
         timestamp: Date.now(),
       });
+
+      // Dispatch webhook event
+      await ctx.scheduler.runAfter(0, internal.webhookEngine.dispatchEvent, {
+        event: "strategy.failed",
+        payload: JSON.stringify({
+          strategyId: args.strategyDocId,
+          strategyName: strategy.goal || strategy.strategyId,
+          error: args.error,
+          failedAt: Date.now(),
+        }),
+      });
     }
   },
 });
@@ -619,6 +630,18 @@ export const onStrategyTaskComplete = internalMutation({
     if (totalDone >= (strategyDoc.totalTasks || 0)) {
       updates.status = "completed";
       updates.completedAt = now;
+
+      // Dispatch webhook event for strategy completion
+      await ctx.scheduler.runAfter(0, internal.webhookEngine.dispatchEvent, {
+        event: "strategy.completed",
+        payload: JSON.stringify({
+          strategyId: strategyDoc._id,
+          strategyName: strategyDoc.goal || strategyDoc.strategyId,
+          completedTasks: newCompleted,
+          failedTasks: newFailed,
+          completedAt: now,
+        }),
+      });
     }
 
     await ctx.db.patch(strategyDoc._id, updates);
