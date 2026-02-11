@@ -66,6 +66,10 @@ export default function SettingsPage() {
   const updateSetting = useMutation(api.functions.updateSetting);
   const upgradeAllAgents = useMutation(api.functions.upgradeAllAgentsModel);
   const resetAllSettings = useMutation(api.functions.resetAllSettings);
+  const seedAgents = useMutation(api.seed.seedAgents);
+  const seedCampaigns = useMutation(api.seed.seedCampaigns);
+  const seedDemoData = useMutation(api.seed.seedDemoData);
+  const [seeding, setSeeding] = useState(false);
 
   const completeStep = useMutation(api.guidance.completeSetupStep);
   const [formState, setFormState] = useState<Record<string, string | number | boolean>>({});
@@ -961,6 +965,41 @@ export default function SettingsPage() {
                           : "N/A"}
                       </p>
                     </div>
+                  </div>
+
+                  {/* Demo Seed Button */}
+                  <div className="mt-4 p-4 rounded-lg border border-orange-200 bg-orange-50">
+                    <p className="text-sm font-medium text-orange-700 mb-1">
+                      Datos de demostración
+                    </p>
+                    <p className="text-xs text-stone-500 mb-3">
+                      Carga agentes, tareas, contenido, campañas y ejecuciones de ejemplo para explorar el dashboard.
+                    </p>
+                    <button
+                      onClick={async () => {
+                        setSeeding(true);
+                        try {
+                          await seedAgents();
+                          await seedCampaigns();
+                          await seedDemoData();
+                          toast.success(
+                            "Demo cargada",
+                            "37 agentes, 15 tareas, 8 contenidos, 7 campañas y 20 ejecuciones creados."
+                          );
+                        } catch (_err: unknown) {
+                          toast.error(
+                            "Error al cargar demo",
+                            "Algunos datos ya existían. Intenta restablecer primero."
+                          );
+                        } finally {
+                          setSeeding(false);
+                        }
+                      }}
+                      disabled={seeding}
+                      className="px-4 py-2 rounded-lg bg-orange-600 text-white text-sm font-medium hover:bg-orange-500 transition-colors disabled:opacity-50"
+                    >
+                      {seeding ? "Cargando..." : "Cargar datos de demo"}
+                    </button>
                   </div>
                 </CardContent>
               </Card>
