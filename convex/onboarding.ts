@@ -181,3 +181,21 @@ export const getActivationData = query({
     });
   },
 });
+
+// DEV ONLY: Reset onboarding + brand profile for testing
+export const devReset = mutation({
+  handler: async (ctx) => {
+    const userId = await getUserId(ctx);
+    const records = await ctx.db
+      .query("onboarding")
+      .filter((q) => q.eq(q.field("userId"), userId))
+      .collect();
+    for (const r of records) await ctx.db.delete(r._id);
+    const profiles = await ctx.db
+      .query("brandProfiles")
+      .withIndex("by_userId", (q) => q.eq("userId", userId))
+      .collect();
+    for (const p of profiles) await ctx.db.delete(p._id);
+    return { deleted: { onboarding: records.length, brandProfiles: profiles.length } };
+  },
+});

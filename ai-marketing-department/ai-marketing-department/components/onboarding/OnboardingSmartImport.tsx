@@ -71,7 +71,6 @@ export function OnboardingSmartImport({
 
   // Convex actions
   const extractFromUrl = useAction(api.brandExtractor.extractBrandFromUrl);
-  const extractFromInstagram = useAction(api.brandExtractor.extractBrandFromInstagram);
   const extractFromText = useAction(api.brandExtractor.extractBrandFromText);
 
   const hasAnySources = url.trim() !== "" || igHandle.trim() !== "" || docs.length > 0;
@@ -95,20 +94,49 @@ export function OnboardingSmartImport({
     }
   }, [url, extractFromUrl]);
 
-  // Handle Instagram pre-analysis
+  // Handle Instagram pre-analysis via Playwright API route + Claude
   const handleAnalyzeIg = useCallback(async () => {
     if (!igHandle.trim()) return;
     setIgStatus("analyzing");
     setIgError(null);
     try {
-      const result = await extractFromInstagram({ handle: igHandle.trim() });
+      // Step 1: Scrape Instagram via Playwright API route
+      const scrapeRes = await fetch(`/api/scrape-instagram?handle=${encodeURIComponent(igHandle.trim())}`);
+      const scrapeData = await scrapeRes.json();
+
+      if (!scrapeRes.ok) {
+        throw new Error(scrapeData.error || "Error al scraping Instagram");
+      }
+
+      // Step 2: Send scraped content to Claude via Convex action
+      const textForAnalysis = scrapeData.hasRealData
+        ? scrapeData.content
+        : `${scrapeData.content}\n\nPage body text:\n${scrapeData.bodyText || ""}`;
+
+      const result = await extractFromText({
+        text: textForAnalysis,
+        fileName: `Instagram @${scrapeData.username}`,
+      });
+
+      // Ensure instagram is in channels
+      if (result.strategy && typeof result.strategy === "object") {
+        const strategy = result.strategy as Record<string, unknown>;
+        if (Array.isArray(strategy.channels)) {
+          if (!strategy.channels.includes("instagram")) {
+            strategy.channels.push("instagram");
+          }
+        } else {
+          strategy.channels = ["instagram"];
+        }
+      }
+
       setIgData(result);
       setIgStatus("done");
     } catch (err) {
       setIgError(err instanceof Error ? err.message : "Error al analizar Instagram");
       setIgStatus("error");
     }
-  }, [igHandle, extractFromInstagram]);
+  }, [igHandle, extractFromText]);
 
   // Handle file processed
   const handleFileProcessed = useCallback((content: ParsedContent) => {
@@ -149,12 +177,22 @@ export function OnboardingSmartImport({
         setUrlStatus("done");
       }
 
-      // Step 2: Instagram
+      // Step 2: Instagram (via Playwright API route + Claude)
       if (igHandle.trim() && !igData) {
         setExtractStep(1);
-        currentIgData = await extractFromInstagram({ handle: igHandle.trim() });
-        setIgData(currentIgData);
-        setIgStatus("done");
+        const scrapeRes = await fetch(`/api/scrape-instagram?handle=${encodeURIComponent(igHandle.trim())}`);
+        const scrapeData = await scrapeRes.json();
+        if (scrapeRes.ok) {
+          const textForAnalysis = scrapeData.hasRealData
+            ? scrapeData.content
+            : `${scrapeData.content}\n\nPage body text:\n${scrapeData.bodyText || ""}`;
+          currentIgData = await extractFromText({
+            text: textForAnalysis,
+            fileName: `Instagram @${scrapeData.username}`,
+          });
+          setIgData(currentIgData);
+          setIgStatus("done");
+        }
       }
 
       // Step 3: Documents
@@ -180,7 +218,7 @@ export function OnboardingSmartImport({
     } finally {
       setExtracting(false);
     }
-  }, [url, urlData, igHandle, igData, docs, extractFromUrl, extractFromInstagram, extractFromText, onExtracted]);
+  }, [url, urlData, igHandle, igData, docs, extractFromUrl, extractFromText, onExtracted]);
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-stone-950 to-stone-900">
