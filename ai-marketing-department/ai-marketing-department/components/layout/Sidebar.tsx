@@ -8,11 +8,7 @@ import { api } from "@convex/_generated/api";
 import {
     Home,
     FileText,
-    BarChart3,
     Settings,
-    Sparkles,
-    Activity,
-    Palette,
     Brain,
     Sun,
     Moon,
@@ -23,20 +19,18 @@ import { translate } from "@/lib/language";
 import { UserMenu } from "./UserMenu";
 import { NotificationCenter } from "@/components/dashboard/NotificationCenter";
 import { useTheme } from "@/hooks/useTheme";
+import { BrandSwitcher } from "./BrandSwitcher";
 
 const mainNavigation = [
-    { name: translate("home"), href: "/", icon: Home, label: "Tu centro de comando", badgeKey: null },
-    { name: "Marca", href: "/brand", icon: Palette, label: "Tu perfil de marca y contenido", badgeKey: null },
-    { name: "Estrategia", href: "/strategy", icon: Brain, label: "Marketing Autopilot y estrategias", badgeKey: "strategy" as const },
-    { name: translate("controlCenter"), href: "/control-center", icon: Activity, label: "Monitorea tus agentes en tiempo real", badgeKey: "control" as const },
-    { name: translate("content"), href: "/content", icon: FileText, label: "Crea y gestiona contenido", badgeKey: "content" as const },
-    { name: translate("analytics"), href: "/results", icon: BarChart3, label: "Ve tus resultados", badgeKey: null },
-    { name: translate("settings"), href: "/settings", icon: Settings, label: "Configuración avanzada", badgeKey: null },
+    { name: translate("home"), href: "/", icon: Home, label: "Dashboard ejecutivo", badgeKey: null },
+    { name: translate("content"), href: "/content", icon: FileText, label: "Pipeline, lista y calendario", badgeKey: "content" as const },
+    { name: "Estrategia", href: "/strategy", icon: Brain, label: "Autopilot, marca e insights", badgeKey: "strategy" as const },
+    { name: translate("settings"), href: "/settings", icon: Settings, label: "API keys y apariencia", badgeKey: null },
 ];
 
 function ThemeToggle() {
-    const { resolved, toggleTheme } = useTheme();
-    const isDark = resolved === "dark";
+    const { resolved, mounted, toggleTheme } = useTheme();
+    const isDark = mounted ? resolved === "dark" : false;
 
     return (
         <button
@@ -62,17 +56,15 @@ function ThemeToggle() {
 
 export function Sidebar() {
     const pathname = usePathname();
-    const agents = useQuery(api.functions.listAgents, {});
-    const content = useQuery(api.functions.listContent, {});
+    const brandProfile = useQuery(api.brandProfile.getBrandProfile);
+    const content = useQuery(api.functions.listContent, brandProfile === undefined ? "skip" : { brandProfileId: brandProfile?._id });
     const activeStrategy = useQuery(api.cmoEngine.getActiveStrategy);
 
     // Compute badge counts
-    const errorAgents = agents?.filter((a: Record<string, unknown>) => a.status === "error").length ?? 0;
     const reviewContent = content?.filter((c: Record<string, unknown>) => c.status === "review").length ?? 0;
     const strategyActive = activeStrategy && ["executing", "generating"].includes(activeStrategy.status) ? 1 : 0;
 
     const badges: Record<string, number> = {
-        control: errorAgents,
         content: reviewContent,
         strategy: strategyActive,
     };
@@ -83,13 +75,16 @@ export function Sidebar() {
             aria-label="Navegación principal"
             className="hidden md:flex h-screen w-56 flex-col fixed left-0 top-0 bg-[#1c1917] border-r border-[#44403c]"
         >
-            {/* Logo Header */}
-            <div className="flex h-14 items-center justify-between px-5">
-                <Link href="/" className="flex items-center gap-2.5 font-semibold text-stone-200">
-                    <Sparkles className="h-4 w-4 text-orange-500" />
-                    <span className="text-sm tracking-tight">AMD</span>
-                </Link>
-                <NotificationCenter />
+            {/* Brand Switcher Header */}
+            <div className="border-b border-[#44403c]">
+                <div className="flex items-center justify-between">
+                    <div className="flex-1 min-w-0">
+                        <BrandSwitcher />
+                    </div>
+                    <div className="pr-3">
+                        <NotificationCenter />
+                    </div>
+                </div>
             </div>
 
             {/* Navigation */}
@@ -124,9 +119,7 @@ export function Sidebar() {
                             {badgeCount > 0 && (
                                 <span className={cn(
                                     "text-[10px] font-semibold min-w-[18px] h-[18px] flex items-center justify-center rounded-full",
-                                    item.badgeKey === "control"
-                                        ? "bg-red-900/40 text-red-400"
-                                        : item.badgeKey === "strategy"
+                                    item.badgeKey === "strategy"
                                         ? "bg-orange-900/40 text-orange-400"
                                         : "bg-amber-900/40 text-amber-400"
                                 )}>

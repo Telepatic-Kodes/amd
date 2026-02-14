@@ -5,7 +5,7 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
 import { motion, AnimatePresence } from "framer-motion";
-import Link from "next/link";
+import { isSameDay } from "date-fns";
 import {
   FileText,
   Search,
@@ -20,6 +20,7 @@ import {
   FileCode,
   Eye,
   Calendar,
+  CalendarDays,
   Hash,
   Copy,
   X,
@@ -39,12 +40,19 @@ import { SkeletonGrid } from "@/components/ui/Skeleton";
 import { EmptyContent } from "@/components/ui/EmptyState";
 import { useToast } from "@/components/ui/Toast";
 import { UploadContentForm } from "@/components/content/UploadContentForm";
+import { KanbanBoard } from "@/components/content-pipeline/KanbanBoard";
+import { PipelineStats } from "@/components/content-pipeline/PipelineStats";
+import { ScheduledContentList } from "@/components/content-pipeline/ScheduledContentList";
+import { CalendarGrid } from "@/components/content-pipeline/CalendarGrid";
+import { CalendarDayDetail } from "@/components/content-pipeline/CalendarDayDetail";
+import { translate } from "@/lib/language";
 import dynamic from "next/dynamic";
 import { CrossPlatformPublishPanel } from "@/components/content/CrossPlatformPublishPanel";
 import { UnifiedPublishHistory } from "@/components/content/UnifiedPublishHistory";
 import { AnalyzeButton } from "@/components/content/AnalyzeButton";
 import { ContentAnalysisPanel } from "@/components/content/ContentAnalysisPanel";
 import { AIGeneratedBadge } from "@/components/content/AIGeneratedBadge";
+import { RepurposePanel } from "@/components/content/RepurposePanel";
 
 const EditContentModal = dynamic(
   () => import("@/components/content/EditContentModal").then((m) => m.EditContentModal),
@@ -126,6 +134,14 @@ const typeIcons: Record<string, React.ElementType> = {
   case_study: FileText,
   video_script: Video,
 };
+
+type ContentTab = "list" | "pipeline" | "calendar";
+
+const contentTabs: { key: ContentTab; label: string; icon: React.ElementType }[] = [
+  { key: "pipeline", label: "Pipeline", icon: Columns3 },
+  { key: "list", label: "Lista", icon: List },
+  { key: "calendar", label: "Calendario", icon: CalendarDays },
+];
 
 function formatDate(timestamp: number) {
   return new Date(timestamp).toLocaleDateString("es-ES", {
@@ -270,14 +286,30 @@ export default function ContentPage() {
   const [showVersionHistory, setShowVersionHistory] = useState(false);
   const [diffVersions, setDiffVersions] = useState<{ versionAId: Id<"contentVersions">; versionBId: Id<"contentVersions"> } | null>(null);
   const [rollbackTarget, setRollbackTarget] = useState<{ versionId: Id<"contentVersions">; versionNumber: number } | null>(null);
+  const [activeTab, setActiveTab] = useState<ContentTab>("list");
+  const [selectedDay, setSelectedDay] = useState<Date | null>(null);
 
-  const content = useQuery(api.functions.listContent, {
+  const brandProfile = useQuery(api.brandProfile.getBrandProfile);
+
+  const content = useQuery(api.functions.listContent, brandProfile === undefined ? "skip" : {
     type: typeFilter || undefined,
     status: statusFilter || undefined,
+    brandProfileId: brandProfile?._id,
   });
 
+  // Pipeline queries
+  const brandArgs = brandProfile === undefined ? "skip" as const : { brandProfileId: brandProfile?._id };
+  const contentByStatus = useQuery(api.contentPipeline.getContentByStatus, brandArgs);
+  const statusCounts = useQuery(api.contentPipeline.getContentStatusCounts, brandArgs);
+  const scheduledContent = useQuery(api.contentPipeline.getScheduledContent, brandArgs);
+
+  // Pipeline mutations
+  const publishContent = useMutation(api.contentPipeline.publishContent);
+  const moveContent = useMutation(api.contentPipeline.moveContent);
+  const rescheduleContent = useMutation(api.contentPipeline.rescheduleContent);
+
   const updateContentStatus = useMutation(api.functions.updateContentStatus);
-  const { success } = useToast();
+  const { success, error: showError } = useToast();
 
   const filteredContent = useMemo(() => {
     if (!content) return [];
@@ -302,6 +334,62 @@ export default function ContentPage() {
     return content.find((c: { contentId: string }) => c.contentId === selectedContent);
   }, [selectedContent, content]);
 
+
+  // Calendar data derivations
+  const calendarItems = useMemo(() => {
+    if (!content) return [];
+    return content.filter(
+      (c: Record<string, string | number | undefined>) =>
+        c.status === "scheduled" || c.status === "approved" || c.status === "published"
+    );
+  }, [content]);
+
+  const selectedDayItems = useMemo(() => {
+    if (!selectedDay || !content) return [];
+    return content.filter((c: Record<string, unknown>) => {
+      const sf = c.scheduledFor as number | undefined;
+      if (!sf) return false;
+      return isSameDay(new Date(sf), selectedDay);
+    });
+  }, [selectedDay, content]);
+
+  const unscheduledApproved = useMemo(() => {
+    if (!content) return [];
+    return content.filter(
+      (c: Record<string, unknown>) => c.status === "approved" && !c.scheduledFor
+    );
+  }, [content]);
+
+  // Pipeline handlers
+  const handlePublishNow = async (id: Id<"content">) => {
+    try {
+      await publishContent({ id });
+      success(translate("contentPublished"), "El contenido ha sido publicado");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Error desconocido";
+      showError("Error", message);
+    }
+  };
+
+  const handleUnschedule = async (id: Id<"content">) => {
+    try {
+      await moveContent({ id, toStatus: "approved" });
+      success(translate("unschedule"), "El contenido ha vuelto a estado aprobado");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Error desconocido";
+      showError("Error", message);
+    }
+  };
+
+  const handleReschedule = async (contentId: Id<"content">, newDate: number) => {
+    try {
+      await rescheduleContent({ id: contentId, scheduledFor: newDate });
+      success(translate("rescheduleSuccess"), "Contenido reprogramado exitosamente");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Error desconocido";
+      showError("Error", message);
+    }
+  };
 
   // Copy to clipboard helper
   const copyToClipboard = (text: string) => {
@@ -376,16 +464,100 @@ export default function ContentPage() {
             <LayoutTemplate className="h-4 w-4" />
             Usar Template
           </button>
-          <Link
-            href="/content/pipeline"
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-stone-100 text-stone-700 hover:bg-stone-200 transition-colors text-sm font-medium"
-          >
-            <Columns3 className="h-4 w-4" />
-            Vista Pipeline
-          </Link>
         </div>
       </div>
 
+      {/* Tabs */}
+      <div className="flex items-center gap-1 p-1 rounded-xl bg-[var(--surface-0,#f5f5f4)] w-fit">
+        {contentTabs.map(({ key, label, icon: Icon }) => (
+          <button
+            key={key}
+            onClick={() => setActiveTab(key)}
+            className={cn(
+              "inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors",
+              activeTab === key
+                ? "bg-orange-600 text-white"
+                : "text-[var(--text-secondary,#78716c)] hover:bg-[var(--surface-1,#e7e5e4)]"
+            )}
+          >
+            <Icon className="h-3.5 w-3.5" />
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {/* Pipeline Tab */}
+      {activeTab === "pipeline" && (
+        <>
+          <PipelineStats counts={statusCounts} />
+          <KanbanBoard columns={contentByStatus?.columns} statusCounts={statusCounts} />
+          <ScheduledContentList
+            scheduledContent={scheduledContent}
+            onPublishNow={handlePublishNow}
+            onUnschedule={handleUnschedule}
+          />
+        </>
+      )}
+
+      {/* Calendar Tab */}
+      {activeTab === "calendar" && (
+        <>
+          <PipelineStats counts={statusCounts} />
+          <div className="flex gap-5">
+            <div className="flex-1">
+              <CalendarGrid
+                items={calendarItems}
+                onDayClick={(date) => setSelectedDay(date)}
+                onReschedule={handleReschedule}
+              />
+            </div>
+            <div className="w-64 shrink-0 hidden lg:block">
+              <div className="rounded-xl border border-stone-200 bg-white p-4 sticky top-4">
+                <h4 className="text-sm font-semibold text-stone-900 mb-3">
+                  {translate("approvedSidebar")}
+                </h4>
+                <p className="text-[10px] text-stone-400 mb-3">
+                  {translate("dragToSchedule")}
+                </p>
+                <div className="space-y-2 max-h-[600px] overflow-y-auto">
+                  {unscheduledApproved.length === 0 ? (
+                    <p className="text-xs text-stone-400 text-center py-4">
+                      {translate("noContent")}
+                    </p>
+                  ) : (
+                    unscheduledApproved.map((item: { _id: Id<"content">; title: string; type: string }) => (
+                      <div
+                        key={item._id}
+                        draggable
+                        onDragStart={(e) => {
+                          e.dataTransfer.setData("text/plain", item._id);
+                          e.dataTransfer.effectAllowed = "move";
+                        }}
+                        className="flex items-center gap-2 p-2 rounded-lg border border-stone-200 bg-stone-50 cursor-grab active:cursor-grabbing hover:border-orange-300 transition-colors"
+                      >
+                        <div className="w-1.5 h-1.5 rounded-full bg-green-500 shrink-0" />
+                        <span className="text-xs text-stone-700 truncate">{item.title}</span>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
+            {selectedDay && (
+              <CalendarDayDetail
+                date={selectedDay}
+                items={selectedDayItems}
+                onClose={() => setSelectedDay(null)}
+                onPublishNow={handlePublishNow}
+                onUnschedule={handleUnschedule}
+              />
+            )}
+          </div>
+        </>
+      )}
+
+      {/* List Tab - original content view */}
+      {activeTab === "list" && (<>
       {/* Filters */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
         {/* Upload Form */}
@@ -984,12 +1156,20 @@ export default function ContentPage() {
         </AnimatePresence>
       </div>
 
+      {/* Content Recycling — P7 */}
+      {!selectedContent && (
+        <div className="mt-8">
+          <RepurposePanel />
+        </div>
+      )}
+
       {/* Unified Publishing History */}
       {!selectedContent && (
         <div className="mt-12">
           <UnifiedPublishHistory limit={20} />
         </div>
       )}
+      </>)}
 
       {/* Edit Content Modal */}
       {editingContent && (
