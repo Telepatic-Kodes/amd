@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "@convex/_generated/api";
-import { Plus, X, Loader2, Upload } from "lucide-react";
+import { Id } from "@convex/_generated/dataModel";
+import { Plus, X, Loader2, Upload, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "@/components/ui/Toast";
 import { FileImportModal } from "./FileImportModal";
@@ -38,6 +39,16 @@ export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [summary, setSummary] = useState("");
+
+  // Framework metadata (optional)
+  const [showFramework, setShowFramework] = useState(false);
+  const [contentTier, setContentTier] = useState<"" | "hero" | "hub" | "hygiene">("");
+  const [funnelStage, setFunnelStage] = useState<"" | "reach" | "act" | "convert" | "engage">("");
+  const [tayaCategory, setTayaCategory] = useState<"" | "cost" | "problems" | "comparisons" | "reviews" | "best">("");
+  const [pillarId, setPillarId] = useState<string>("");
+
+  // Fetch active pillars for dropdown
+  const activePillars = useQuery(api.contentPillars.getActivePillars);
 
   const { success, error: showError } = useToast();
   const createContent = useMutation(api.functions.createContent);
@@ -78,6 +89,11 @@ export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {
           readingTime,
         },
         createdBy: "system",
+        // Framework metadata (only include if set)
+        ...(contentTier ? { contentTier: contentTier as "hero" | "hub" | "hygiene" } : {}),
+        ...(funnelStage ? { funnelStage: funnelStage as "reach" | "act" | "convert" | "engage" } : {}),
+        ...(tayaCategory ? { tayaCategory: tayaCategory as "cost" | "problems" | "comparisons" | "reviews" | "best" } : {}),
+        ...(pillarId ? { pillarId: pillarId as Id<"contentPillars"> } : {}),
       });
 
       success("Contenido creado", "Tu contenido ha sido agregado como borrador.");
@@ -236,6 +252,85 @@ export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {
                   className="w-full rounded-lg border border-stone-300 bg-white py-2 px-3 text-sm text-stone-900 placeholder-stone-400 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
                 />
               </div>
+            </div>
+
+            {/* Framework Metadata (collapsible) */}
+            <div className="border-t border-stone-100 pt-3">
+              <button
+                type="button"
+                onClick={() => setShowFramework(!showFramework)}
+                className="flex items-center gap-2 text-xs text-stone-500 hover:text-stone-700 transition-colors w-full"
+              >
+                <ChevronDown className={`h-3.5 w-3.5 transition-transform ${showFramework ? "rotate-180" : ""}`} />
+                Metadata de Estrategia (opcional)
+              </button>
+
+              {showFramework && (
+                <div className="grid grid-cols-2 gap-3 mt-3">
+                  {/* Content Tier */}
+                  <div>
+                    <label className="block text-xs text-stone-500 mb-1">Tier</label>
+                    <select
+                      value={contentTier}
+                      onChange={(e) => setContentTier(e.target.value as typeof contentTier)}
+                      className="w-full rounded-lg border border-stone-300 bg-white py-1.5 px-2 text-xs text-stone-900 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                    >
+                      <option value="">Sin tier</option>
+                      <option value="hero">Hero (10%)</option>
+                      <option value="hub">Hub (30%)</option>
+                      <option value="hygiene">Hygiene (60%)</option>
+                    </select>
+                  </div>
+
+                  {/* Funnel Stage */}
+                  <div>
+                    <label className="block text-xs text-stone-500 mb-1">Etapa del Funnel</label>
+                    <select
+                      value={funnelStage}
+                      onChange={(e) => setFunnelStage(e.target.value as typeof funnelStage)}
+                      className="w-full rounded-lg border border-stone-300 bg-white py-1.5 px-2 text-xs text-stone-900 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                    >
+                      <option value="">Sin etapa</option>
+                      <option value="reach">Reach</option>
+                      <option value="act">Act</option>
+                      <option value="convert">Convert</option>
+                      <option value="engage">Engage</option>
+                    </select>
+                  </div>
+
+                  {/* TAYA Category */}
+                  <div>
+                    <label className="block text-xs text-stone-500 mb-1">TAYA</label>
+                    <select
+                      value={tayaCategory}
+                      onChange={(e) => setTayaCategory(e.target.value as typeof tayaCategory)}
+                      className="w-full rounded-lg border border-stone-300 bg-white py-1.5 px-2 text-xs text-stone-900 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                    >
+                      <option value="">Sin categoría</option>
+                      <option value="cost">Costos</option>
+                      <option value="problems">Problemas</option>
+                      <option value="comparisons">Comparaciones</option>
+                      <option value="reviews">Reviews</option>
+                      <option value="best">Best-of</option>
+                    </select>
+                  </div>
+
+                  {/* Pillar */}
+                  <div>
+                    <label className="block text-xs text-stone-500 mb-1">Pilar</label>
+                    <select
+                      value={pillarId}
+                      onChange={(e) => setPillarId(e.target.value)}
+                      className="w-full rounded-lg border border-stone-300 bg-white py-1.5 px-2 text-xs text-stone-900 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                    >
+                      <option value="">Sin pilar</option>
+                      {activePillars?.map((p) => (
+                        <option key={p._id} value={p._id}>{p.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="flex gap-2 pt-2">

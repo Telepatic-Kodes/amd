@@ -13,7 +13,18 @@ import { Id } from "./_generated/dataModel";
 interface HandoffRule {
   targetAgentId: string;
   targetTaskType: string;
-  outputMapping: "blog_to_social" | "keyword_to_blog" | "social_to_analytics" | "strategy_blog_to_social" | "strategy_seo_to_content" | "passthrough";
+  outputMapping:
+    | "blog_to_social"
+    | "keyword_to_blog"
+    | "social_to_analytics"
+    | "strategy_blog_to_social"
+    | "strategy_seo_to_content"
+    | "hero_to_hub"
+    | "hub_to_hygiene"
+    | "hero_video_to_hub"
+    | "passthrough";
+  /** If set, only triggers when content matches this tier */
+  contentTierFilter?: "hero" | "hub";
 }
 
 const HANDOFF_RULES: Record<string, HandoffRule[]> = {
@@ -61,6 +72,80 @@ const HANDOFF_RULES: Record<string, HandoffRule[]> = {
       targetAgentId: "content-001",
       targetTaskType: "create_content_brief",
       outputMapping: "strategy_seo_to_content",
+    },
+  ],
+
+  // ──────────────────────────────────────────────
+  // Content Pyramid — Hero → Hub → Hygiene chains
+  // ──────────────────────────────────────────────
+
+  // Hero blog → hub derivatives (carousel, thread, newsletter)
+  strategy_hero_blog: [
+    {
+      targetAgentId: "social-001",
+      targetTaskType: "create_linkedin_carousel",
+      outputMapping: "hero_to_hub",
+      contentTierFilter: "hero",
+    },
+    {
+      targetAgentId: "social-002",
+      targetTaskType: "create_twitter_thread",
+      outputMapping: "hero_to_hub",
+      contentTierFilter: "hero",
+    },
+    {
+      targetAgentId: "ops-002",
+      targetTaskType: "write_newsletter_section",
+      outputMapping: "hero_to_hub",
+      contentTierFilter: "hero",
+    },
+  ],
+
+  // Hero video script → hub derivatives (blog recap, carousel, reel script)
+  strategy_hero_video: [
+    {
+      targetAgentId: "content-002",
+      targetTaskType: "write_blog",
+      outputMapping: "hero_video_to_hub",
+      contentTierFilter: "hero",
+    },
+    {
+      targetAgentId: "social-001",
+      targetTaskType: "create_linkedin_carousel",
+      outputMapping: "hero_video_to_hub",
+      contentTierFilter: "hero",
+    },
+    {
+      targetAgentId: "social-004",
+      targetTaskType: "create_reel_script",
+      outputMapping: "hero_video_to_hub",
+      contentTierFilter: "hero",
+    },
+  ],
+
+  // Hub LinkedIn carousel → hygiene micro-content
+  create_linkedin_carousel: [
+    {
+      targetAgentId: "social-004",
+      targetTaskType: "create_instagram_post",
+      outputMapping: "hub_to_hygiene",
+      contentTierFilter: "hub",
+    },
+    {
+      targetAgentId: "social-002",
+      targetTaskType: "create_tweet",
+      outputMapping: "hub_to_hygiene",
+      contentTierFilter: "hub",
+    },
+  ],
+
+  // Hub twitter thread → hygiene tweets
+  create_twitter_thread: [
+    {
+      targetAgentId: "social-004",
+      targetTaskType: "create_instagram_post",
+      outputMapping: "hub_to_hygiene",
+      contentTierFilter: "hub",
     },
   ],
 };
@@ -116,6 +201,46 @@ function mapOutput(
         instructions: `Crea un brief de contenido basado en este analisis SEO:\n\n${parentOutput.slice(0, 2000)}`,
       };
 
+    case "hero_to_hub":
+      return {
+        topic: parentInput.title || parentInput.topic || "Contenido derivado",
+        sourceContent: parentOutput.slice(0, 4000),
+        contentTier: "hub",
+        parentContentTier: "hero",
+        pillarName: parentInput.pillarName || parentInput.pillar || "",
+        funnelStage: parentInput.funnelStage || "reach",
+        tayaCategory: parentInput.tayaCategory || "",
+        objective: "engagement",
+        tone: "profesional pero cercano",
+        instructions: `Repurposea este contenido HERO en una versión más corta y digerible. Mantén los puntos clave y adapta el formato al canal de destino.`,
+      };
+
+    case "hub_to_hygiene":
+      return {
+        topic: parentInput.topic || parentInput.title || "Micro contenido",
+        sourceContent: parentOutput.slice(0, 2000),
+        contentTier: "hygiene",
+        parentContentTier: "hub",
+        pillarName: parentInput.pillarName || parentInput.pillar || "",
+        funnelStage: parentInput.funnelStage || "reach",
+        objective: "awareness",
+        tone: "directo y visual",
+        instructions: `Crea micro-contenido a partir de este contenido HUB. Extrae 1-2 ideas clave y adáptalas al formato del canal (post corto, imagen con texto, etc).`,
+      };
+
+    case "hero_video_to_hub":
+      return {
+        topic: parentInput.title || parentInput.topic || "Contenido derivado de video",
+        sourceContent: parentOutput.slice(0, 4000),
+        contentTier: "hub",
+        parentContentTier: "hero",
+        pillarName: parentInput.pillarName || parentInput.pillar || "",
+        funnelStage: parentInput.funnelStage || "reach",
+        objective: "engagement",
+        tone: "educativo y dinámico",
+        instructions: `Adapta este guión de video HERO a otro formato. Extrae los puntos principales y crea contenido derivado que complemente el video original.`,
+      };
+
     case "passthrough":
     default:
       return { prompt: parentOutput.slice(0, 3000) };
@@ -142,6 +267,12 @@ export const processHandoffs = internalMutation({
     if (!task) return;
 
     for (const rule of rules) {
+      // Content Pyramid: skip rule if tier filter doesn't match
+      if (rule.contentTierFilter) {
+        const taskTier = (task.input as Record<string, unknown>)?.contentTier as string | undefined;
+        if (taskTier !== rule.contentTierFilter) continue;
+      }
+
       // Look up target agent
       const targetAgent = await ctx.db
         .query("agents")

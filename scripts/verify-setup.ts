@@ -21,13 +21,13 @@ async function main() {
   console.log("\n🔍 1. Verificando variables de entorno...");
   try {
     const hasConvexUrl = !!process.env.NEXT_PUBLIC_CONVEX_URL;
-    const hasAnthropicKey = !!process.env.ANTHROPIC_API_KEY;
+    const hasOpenAIKey = !!process.env.OPENAI_API_KEY;
 
-    if (hasConvexUrl && hasAnthropicKey) {
+    if (hasConvexUrl && hasOpenAIKey) {
       checks.push({
         name: "Variables de entorno",
         status: true,
-        message: "CONVEX_URL y ANTHROPIC_API_KEY configurados",
+        message: "CONVEX_URL y OPENAI_API_KEY configurados",
       });
       console.log("   ✅ Variables configuradas correctamente");
     } else {

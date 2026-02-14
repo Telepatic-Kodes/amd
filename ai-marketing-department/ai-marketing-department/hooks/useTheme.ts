@@ -31,15 +31,21 @@ function applyTheme(resolved: "light" | "dark") {
 export function useTheme() {
   const [theme, setThemeState] = useState<Theme>(() => {
     if (typeof window === "undefined") return "light";
-    return (localStorage.getItem("amd_theme") as Theme) || "light";
+    const stored = localStorage.getItem("amd_theme") as Theme | null;
+    return stored || "light";
   });
+  const [mounted, setMounted] = useState(false);
 
   const resolved = getResolvedTheme(theme);
 
+  useEffect(() => {
+    queueMicrotask(() => setMounted(true));
+  }, []);
+
   // Apply theme on mount and when it changes
   useEffect(() => {
-    applyTheme(resolved);
-  }, [resolved]);
+    if (mounted) applyTheme(resolved);
+  }, [resolved, mounted]);
 
   // Listen for system theme changes when in "system" mode
   useEffect(() => {
@@ -60,5 +66,5 @@ export function useTheme() {
     setTheme(resolved === "light" ? "dark" : "light");
   }, [resolved, setTheme]);
 
-  return { theme, resolved, setTheme, toggleTheme };
+  return { theme, resolved, mounted, setTheme, toggleTheme };
 }

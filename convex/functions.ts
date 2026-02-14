@@ -439,6 +439,26 @@ export const retryTask = mutation({
   },
 });
 
+export const getTaskById = query({
+  args: { id: v.id("tasks") },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.id);
+  },
+});
+
+export const incrementRetry = mutation({
+  args: { id: v.id("tasks") },
+  handler: async (ctx, args) => {
+    const task = await ctx.db.get(args.id);
+    if (!task) throw new Error("Task not found");
+    await ctx.db.patch(args.id, {
+      retryCount: task.retryCount + 1,
+      status: "pending" as const,
+      updatedAt: Date.now(),
+    });
+  },
+});
+
 // ===========================================
 // EXECUTION MUTATIONS
 // ===========================================
@@ -544,13 +564,19 @@ export const listContent = query({
     status: v.optional(v.string()),
     createdBy: v.optional(v.id("agents")),
     limit: v.optional(v.number()),
+    brandProfileId: v.optional(v.id("brandProfiles")),
   },
   handler: async (ctx, args) => {
     const userId = await getUserId(ctx);
 
     let q: any = ctx.db.query("content");
 
-    if (args.type && args.status) {
+    // Always prefer brandProfileId index when available
+    if (args.brandProfileId) {
+      q = q.withIndex("by_brandProfileId", (q: any) =>
+        q.eq("brandProfileId", args.brandProfileId)
+      );
+    } else if (args.type && args.status) {
       q = q.withIndex("by_type_status", (q: any) =>
         q.eq("type", args.type as any).eq("status", args.status as any)
       );
@@ -564,7 +590,17 @@ export const listContent = query({
 
     q = q.order("desc");
 
-    const results = args.limit ? await q.take(args.limit) : await q.collect();
+    let results = args.limit ? await q.take(args.limit) : await q.collect();
+
+    // When using brandProfileId index, apply type/status filters in memory
+    if (args.brandProfileId) {
+      if (args.type) {
+        results = results.filter((item: any) => item.type === args.type);
+      }
+      if (args.status) {
+        results = results.filter((item: any) => item.status === args.status);
+      }
+    }
 
     // Filter by userId - show user's content + legacy unassigned content
     return results.filter((item: any) => item.userId === userId || item.userId === undefined);
@@ -618,6 +654,12 @@ export const createContent = mutation({
     sourceTaskId: v.optional(v.id("tasks")),
     sourceTemplateId: v.optional(v.string()),
     parentContentId: v.optional(v.id("content")),
+    brandProfileId: v.optional(v.id("brandProfiles")),
+    // Framework metadata (Content Pyramid / RACE / TAYA / Hero-Hub-Hygiene)
+    contentTier: v.optional(v.union(v.literal("hero"), v.literal("hub"), v.literal("hygiene"))),
+    pillarId: v.optional(v.id("contentPillars")),
+    funnelStage: v.optional(v.union(v.literal("reach"), v.literal("act"), v.literal("convert"), v.literal("engage"))),
+    tayaCategory: v.optional(v.union(v.literal("cost"), v.literal("problems"), v.literal("comparisons"), v.literal("reviews"), v.literal("best"))),
   },
   handler: async (ctx, args) => {
     // RBAC Guard: Only editors and above can create content
@@ -627,10 +669,23 @@ export const createContent = mutation({
     const now = Date.now();
     const contentId = `content_${now}_${Math.random().toString(36).substr(2, 9)}`;
 
+    // Auto-detect brandProfileId from user's active profile if not provided
+    let resolvedBrandProfileId = args.brandProfileId;
+    if (!resolvedBrandProfileId) {
+      const profile = await ctx.db
+        .query("brandProfiles")
+        .withIndex("by_userId", (q) => q.eq("userId", userId))
+        .first();
+      if (profile) {
+        resolvedBrandProfileId = profile._id;
+      }
+    }
+
     const newContentId = await ctx.db.insert("content", {
       contentId,
       ...args,
       userId,
+      ...(resolvedBrandProfileId ? { brandProfileId: resolvedBrandProfileId } : {}),
       status: "draft",
       createdAt: now,
       updatedAt: now,
@@ -721,6 +776,21 @@ export const updateContentStatus = mutation({
           to: args.status,
         }),
       });
+    }
+
+    // P2: Notify relevant users about state change
+    if (oldStatus !== args.status) {
+      await ctx.scheduler.runAfter(
+        0,
+        internal.notifications._notifyContentStateChange,
+        {
+          contentId: args.id,
+          contentTitle: content.title,
+          fromStatus: oldStatus,
+          toStatus: args.status,
+          triggeredByUserId: userId,
+        }
+      );
     }
 
     // Log audit trail with appropriate action

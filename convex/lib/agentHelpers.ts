@@ -9,14 +9,20 @@ export function calculateCost(
   inputTokens: number,
   outputTokens: number
 ): number {
+  // Prices per million tokens (input / output)
   const pricing: Record<string, { input: number; output: number }> = {
-    "claude-opus-4-5-20251101": { input: 15, output: 75 },
-    "claude-opus-4-20250514": { input: 15, output: 75 },
-    "claude-sonnet-4-20250514": { input: 3, output: 15 },
-    "claude-haiku-3-20250514": { input: 0.25, output: 1.25 },
+    // OpenAI models (active)
+    "gpt-4o": { input: 2.5, output: 10 },
+    "gpt-4o-mini": { input: 0.15, output: 0.6 },
+    // Anthropic model IDs still accepted for backwards compat
+    "claude-sonnet-4-20250514": { input: 2.5, output: 10 },
+    "claude-3-5-haiku-20241022": { input: 0.15, output: 0.6 },
+    "claude-haiku-3-20250514": { input: 0.15, output: 0.6 },
+    "claude-opus-4-5-20251101": { input: 2.5, output: 10 },
+    "claude-opus-4-20250514": { input: 2.5, output: 10 },
   };
 
-  const modelPricing = pricing[model] || pricing["claude-sonnet-4-20250514"];
+  const modelPricing = pricing[model] || pricing["gpt-4o"];
 
   return (
     (inputTokens * modelPricing.input) / 1_000_000 +
@@ -372,4 +378,39 @@ export const TASK_TYPE_TO_CONTENT_TYPE: Record<string, string> = {
  */
 export function isContentGenerativeTask(taskType: string): boolean {
   return taskType in TASK_TYPE_TO_CONTENT_TYPE;
+}
+
+/**
+ * Determine if an error is retriable (rate limit, timeout, server errors).
+ * Non-retriable: auth errors, validation errors, not found.
+ */
+export function isRetryableError(message: string): boolean {
+  const retriablePatterns = [
+    /rate.?limit/i,
+    /429/,
+    /too many requests/i,
+    /timeout/i,
+    /timed?\s*out/i,
+    /ETIMEDOUT/,
+    /ECONNRESET/,
+    /ECONNREFUSED/,
+    /500/,
+    /502/,
+    /503/,
+    /504/,
+    /internal server error/i,
+    /bad gateway/i,
+    /service unavailable/i,
+    /gateway timeout/i,
+    /overloaded/i,
+    /capacity/i,
+  ];
+  return retriablePatterns.some((pattern) => pattern.test(message));
+}
+
+/**
+ * Calculate backoff delay: min(60s, 1s * 2^retryCount)
+ */
+export function calculateBackoff(retryCount: number): number {
+  return Math.min(60_000, 1_000 * Math.pow(2, retryCount));
 }

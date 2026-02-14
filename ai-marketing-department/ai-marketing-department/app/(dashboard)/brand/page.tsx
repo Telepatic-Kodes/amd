@@ -4,7 +4,8 @@ import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, useAction } from "convex/react";
 import { api } from "@convex/_generated/api";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, Palette, Loader2, Database, RefreshCw, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, Palette, Loader2, Database, RefreshCw, Sparkles, BookOpen } from "lucide-react";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/components/ui/Toast";
 
@@ -14,11 +15,15 @@ import { BrandStepAudience } from "@/components/brand/BrandStepAudience";
 import { BrandStepStrategy } from "@/components/brand/BrandStepStrategy";
 import { BrandStepCompetitors } from "@/components/brand/BrandStepCompetitors";
 import { BrandStepVisual } from "@/components/brand/BrandStepVisual";
+import { BrandStepMessaging } from "@/components/brand/BrandStepMessaging";
+import { BrandStepPositioning } from "@/components/brand/BrandStepPositioning";
 import { BrandMaturityBar } from "@/components/brand/BrandMaturityBar";
 import { BrandProfileSummary } from "@/components/brand/BrandProfileSummary";
 import { BrandSuggestionsPanel } from "@/components/brand/BrandSuggestionsPanel";
 import { BrandSourcesList } from "@/components/brand/BrandSourcesList";
 import { BrandAuditPanel } from "@/components/brand/BrandAuditPanel";
+import { BrandVersionHistory } from "@/components/brand/BrandVersionHistory";
+import { BrandGuideExport } from "@/components/brand/BrandGuideExport";
 import { AddSourceDialog } from "@/components/brand/AddSourceDialog";
 import dynamic from "next/dynamic";
 
@@ -29,7 +34,7 @@ const GenerateContentModal = dynamic(
 import { useRouter } from "next/navigation";
 import { type BrandData, DEFAULT_BRAND_DATA } from "@/lib/brand-utils";
 
-const TOTAL_STEPS = 6;
+const TOTAL_STEPS = 8;
 
 const stepLabels = [
   { title: "Información básica", subtitle: "Nombre, industria y descripción" },
@@ -38,6 +43,8 @@ const stepLabels = [
   { title: "Estrategia", subtitle: "Temas, canales y frecuencia" },
   { title: "Competencia", subtitle: "Competidores y referencias" },
   { title: "Identidad visual", subtitle: "Colores, logo y estilo" },
+  { title: "Messaging StoryBrand", subtitle: "Narrativa de marca: guía, problema, solución y CTA" },
+  { title: "Posicionamiento", subtitle: "Propuesta de valor, diferenciadores y pruebas" },
 ];
 
 const DEFAULT_DATA = DEFAULT_BRAND_DATA;
@@ -96,10 +103,29 @@ export default function BrandPage() {
         })),
         references: profile.references || [],
         visual: {
-          primaryColor: profile.visual?.primaryColor || "",
-          secondaryColor: profile.visual?.secondaryColor || "",
+          primaryColor: profile.visual?.primaryColor || "#FF6B35",
+          secondaryColor: profile.visual?.secondaryColor || "#1C1917",
+          accentColor: profile.visual?.accentColor || "#F59E0B",
+          backgroundColor: profile.visual?.backgroundColor || "#FFFFFF",
+          textColor: profile.visual?.textColor || "#1C1917",
           logoDescription: profile.visual?.logoDescription || "",
+          fontPrimary: profile.visual?.fontPrimary || "Inter",
+          fontSecondary: profile.visual?.fontSecondary || "Inter",
           styleNotes: profile.visual?.styleNotes || "",
+        },
+        messaging: {
+          guide: (profile as Record<string, unknown>).messaging ? ((profile as Record<string, unknown>).messaging as Record<string, string>).guide || "" : "",
+          problem: (profile as Record<string, unknown>).messaging ? ((profile as Record<string, unknown>).messaging as Record<string, string>).problem || "" : "",
+          solution: (profile as Record<string, unknown>).messaging ? ((profile as Record<string, unknown>).messaging as Record<string, string>).solution || "" : "",
+          successVision: (profile as Record<string, unknown>).messaging ? ((profile as Record<string, unknown>).messaging as Record<string, string>).successVision || "" : "",
+          failureVision: (profile as Record<string, unknown>).messaging ? ((profile as Record<string, unknown>).messaging as Record<string, string>).failureVision || "" : "",
+          callToAction: (profile as Record<string, unknown>).messaging ? ((profile as Record<string, unknown>).messaging as Record<string, string>).callToAction || "" : "",
+        },
+        positioning: {
+          uniqueValue: (profile as Record<string, unknown>).positioning ? ((profile as Record<string, unknown>).positioning as Record<string, unknown>).uniqueValue as string || "" : "",
+          category: (profile as Record<string, unknown>).positioning ? ((profile as Record<string, unknown>).positioning as Record<string, unknown>).category as string || "" : "",
+          differentiators: (profile as Record<string, unknown>).positioning ? ((profile as Record<string, unknown>).positioning as Record<string, unknown>).differentiators as string[] || [] : [],
+          proofPoints: (profile as Record<string, unknown>).positioning ? ((profile as Record<string, unknown>).positioning as Record<string, unknown>).proofPoints as string[] || [] : [],
         },
       });
     }
@@ -151,6 +177,10 @@ export default function BrandPage() {
         return true; // Competitors are optional
       case 5:
         return true; // Visual identity is optional
+      case 6:
+        return true; // Messaging is optional but recommended
+      case 7:
+        return true; // Positioning is optional but recommended
       default:
         return true;
     }
@@ -186,8 +216,27 @@ export default function BrandPage() {
         visual: {
           primaryColor: data.visual.primaryColor || undefined,
           secondaryColor: data.visual.secondaryColor || undefined,
+          accentColor: data.visual.accentColor || undefined,
+          backgroundColor: data.visual.backgroundColor || undefined,
+          textColor: data.visual.textColor || undefined,
           logoDescription: data.visual.logoDescription || undefined,
+          fontPrimary: data.visual.fontPrimary || undefined,
+          fontSecondary: data.visual.fontSecondary || undefined,
           styleNotes: data.visual.styleNotes || undefined,
+        },
+        messaging: {
+          guide: data.messaging.guide || undefined,
+          problem: data.messaging.problem || undefined,
+          solution: data.messaging.solution || undefined,
+          successVision: data.messaging.successVision || undefined,
+          failureVision: data.messaging.failureVision || undefined,
+          callToAction: data.messaging.callToAction || undefined,
+        },
+        positioning: {
+          uniqueValue: data.positioning.uniqueValue || undefined,
+          category: data.positioning.category || undefined,
+          differentiators: data.positioning.differentiators.length > 0 ? data.positioning.differentiators : undefined,
+          proofPoints: data.positioning.proofPoints.length > 0 ? data.positioning.proofPoints : undefined,
         },
       });
 
@@ -277,7 +326,24 @@ export default function BrandPage() {
         return (
           <BrandStepVisual
             data={data.visual}
+            companyName={data.companyName}
             onChange={(partial) => setData((d) => ({ ...d, visual: { ...d.visual, ...partial } }))}
+          />
+        );
+      case 6:
+        return (
+          <BrandStepMessaging
+            data={data.messaging}
+            onChange={(partial) => setData((d) => ({ ...d, messaging: { ...d.messaging, ...partial } }))}
+            brandProfileId={profile?._id}
+          />
+        );
+      case 7:
+        return (
+          <BrandStepPositioning
+            data={data.positioning}
+            onChange={(partial) => setData((d) => ({ ...d, positioning: { ...d.positioning, ...partial } }))}
+            brandProfileId={profile?._id}
           />
         );
       default:
@@ -324,15 +390,25 @@ export default function BrandPage() {
               </p>
             </div>
           </div>
-          <button
-            onClick={() => {
-              setIsEditing(true);
-              setStep(0);
-            }}
-            className="px-4 py-2 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 text-sm font-medium transition"
-          >
-            Editar perfil
-          </button>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/brand/manual"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-stone-900 text-white text-sm font-medium hover:bg-stone-800 transition"
+            >
+              <BookOpen className="h-4 w-4" />
+              Manual de Marca
+            </Link>
+            <BrandGuideExport />
+            <button
+              onClick={() => {
+                setIsEditing(true);
+                setStep(0);
+              }}
+              className="px-4 py-2 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 text-sm font-medium transition"
+            >
+              Editar perfil
+            </button>
+          </div>
         </div>
 
         {/* Maturity bar */}
@@ -388,6 +464,11 @@ export default function BrandPage() {
                 setStep(step);
               }}
             />
+
+            {/* B2: Version History */}
+            <div className="mt-4 p-4 rounded-xl border border-stone-200 bg-white">
+              <BrandVersionHistory brandProfileId={profile._id} />
+            </div>
           </div>
 
           {/* Center: AI Suggestions */}

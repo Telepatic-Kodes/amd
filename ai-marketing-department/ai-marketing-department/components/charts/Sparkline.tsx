@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  ResponsiveContainer,
   LineChart,
   Line,
   Tooltip,
@@ -9,6 +8,7 @@ import {
 } from 'recharts';
 import { chartColors, chartConfig } from './theme';
 import { SparklineTooltip } from './ChartTooltip';
+import { ChartContainer } from './ChartContainer';
 
 interface SparklineProps {
   data: { value: number }[];
@@ -49,40 +49,38 @@ export function Sparkline({
   const gradientId = `sparkline-${lineColor.replace('#', '')}`;
 
   return (
-    <div className={className} style={{ height }}>
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={data} margin={{ top: 2, right: 2, left: 2, bottom: 2 }}>
-          {showArea && (
-            <defs>
-              <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={lineColor} stopOpacity={fillOpacity} />
-                <stop offset="100%" stopColor={lineColor} stopOpacity={0} />
-              </linearGradient>
-            </defs>
-          )}
-          <YAxis
-            domain={[min - padding, max + padding]}
-            hide
+    <ChartContainer height={height} className={className}>
+      <LineChart data={data} margin={{ top: 2, right: 2, left: 2, bottom: 2 }}>
+        {showArea && (
+          <defs>
+            <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={lineColor} stopOpacity={fillOpacity} />
+              <stop offset="100%" stopColor={lineColor} stopOpacity={0} />
+            </linearGradient>
+          </defs>
+        )}
+        <YAxis
+          domain={[min - padding, max + padding]}
+          hide
+        />
+        {showTooltip && (
+          <Tooltip
+            content={<SparklineTooltip valueFormatter={valueFormatter} />}
+            cursor={false}
           />
-          {showTooltip && (
-            <Tooltip
-              content={<SparklineTooltip valueFormatter={valueFormatter} />}
-              cursor={false}
-            />
-          )}
-          <Line
-            type="monotone"
-            dataKey="value"
-            stroke={lineColor}
-            strokeWidth={1.5}
-            dot={false}
-            fill={showArea ? `url(#${gradientId})` : 'none'}
-            animationDuration={chartConfig.animationDuration}
-            animationEasing="ease-out"
-          />
-        </LineChart>
-      </ResponsiveContainer>
-    </div>
+        )}
+        <Line
+          type="monotone"
+          dataKey="value"
+          stroke={lineColor}
+          strokeWidth={1.5}
+          dot={false}
+          fill={showArea ? `url(#${gradientId})` : 'none'}
+          animationDuration={chartConfig.animationDuration}
+          animationEasing="ease-out"
+        />
+      </LineChart>
+    </ChartContainer>
   );
 }
 
@@ -113,33 +111,31 @@ export function SparklineArea({
   const padding = (max - min) * 0.1 || 1;
 
   return (
-    <div className={className} style={{ height }}>
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={data} margin={{ top: 2, right: 2, left: 2, bottom: 2 }}>
-          <defs>
-            <linearGradient id={`sparkArea-${lineColor}`} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={lineColor} stopOpacity={fillOpacity} />
-              <stop offset="100%" stopColor={lineColor} stopOpacity={0} />
-            </linearGradient>
-          </defs>
-          <YAxis domain={[min - padding, max + padding]} hide />
-          {showTooltip && (
-            <Tooltip
-              content={<SparklineTooltip valueFormatter={valueFormatter} />}
-              cursor={false}
-            />
-          )}
-          <Line
-            type="monotone"
-            dataKey="value"
-            stroke={lineColor}
-            strokeWidth={1.5}
-            dot={false}
-            fill={`url(#sparkArea-${lineColor})`}
-            animationDuration={chartConfig.animationDuration}
+    <ChartContainer height={height} className={className}>
+      <LineChart data={data} margin={{ top: 2, right: 2, left: 2, bottom: 2 }}>
+        <defs>
+          <linearGradient id={`sparkArea-${lineColor}`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={lineColor} stopOpacity={fillOpacity} />
+            <stop offset="100%" stopColor={lineColor} stopOpacity={0} />
+          </linearGradient>
+        </defs>
+        <YAxis domain={[min - padding, max + padding]} hide />
+        {showTooltip && (
+          <Tooltip
+            content={<SparklineTooltip valueFormatter={valueFormatter} />}
+            cursor={false}
           />
-        </LineChart>
-      </ResponsiveContainer>
-    </div>
+        )}
+        <Line
+          type="monotone"
+          dataKey="value"
+          stroke={lineColor}
+          strokeWidth={1.5}
+          dot={false}
+          fill={`url(#sparkArea-${lineColor})`}
+          animationDuration={chartConfig.animationDuration}
+        />
+      </LineChart>
+    </ChartContainer>
   );
 }

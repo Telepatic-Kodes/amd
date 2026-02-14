@@ -40,12 +40,19 @@ export const _saveAudit = internalMutation({
     brandProfileId: v.id("brandProfiles"),
     instagramHandle: v.optional(v.string()),
     websiteUrl: v.optional(v.string()),
+    // B6: Multi-platform handles
+    linkedinHandle: v.optional(v.string()),
+    twitterHandle: v.optional(v.string()),
+    youtubeHandle: v.optional(v.string()),
+    platforms: v.optional(v.array(v.string())),
     metrics: v.object({
       followers: v.string(),
       following: v.string(),
       posts: v.string(),
       engagementNote: v.string(),
     }),
+    // B6: Per-platform metrics
+    platformMetrics: v.optional(v.any()),
     strengths: v.array(v.object({
       title: v.string(),
       description: v.string(),

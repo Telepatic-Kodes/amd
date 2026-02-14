@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  ResponsiveContainer,
   BarChart as RechartsBarChart,
   Bar,
   XAxis,
@@ -12,6 +11,7 @@ import {
 } from 'recharts';
 import { chartColors, chartConfig, seriesColors } from './theme';
 import { ChartTooltip } from './ChartTooltip';
+import { ChartContainer } from './ChartContainer';
 
 interface DataPoint {
   [key: string]: string | number;
@@ -59,103 +59,101 @@ export function BarChartComponent({
   const isVertical = layout === 'vertical';
 
   return (
-    <div className={className} style={{ height }}>
-      <ResponsiveContainer width="100%" height="100%">
-        <RechartsBarChart
-          data={data}
-          layout={layout}
-          margin={chartConfig.marginWithAxis}
-          barSize={barSize}
-        >
-          {showGrid && (
-            <CartesianGrid
-              strokeDasharray="3 3"
-              stroke={chartColors.grid}
-              horizontal={!isVertical}
-              vertical={isVertical}
-            />
-          )}
-          {isVertical ? (
-            <>
-              <XAxis
-                type="number"
-                stroke={chartColors.axis}
-                fontSize={12}
-                tickLine={false}
-                axisLine={false}
-                tick={{ fill: chartColors.text }}
-                tickFormatter={valueFormatter}
-                hide={!showXAxis}
-              />
-              <YAxis
-                type="category"
-                dataKey={xAxisKey}
-                stroke={chartColors.axis}
-                fontSize={12}
-                tickLine={false}
-                axisLine={false}
-                tick={{ fill: chartColors.text }}
-                width={100}
-                hide={!showYAxis}
-              />
-            </>
-          ) : (
-            <>
-              <XAxis
-                dataKey={xAxisKey}
-                stroke={chartColors.axis}
-                fontSize={12}
-                tickLine={false}
-                axisLine={false}
-                tick={{ fill: chartColors.text }}
-                hide={!showXAxis}
-              />
-              <YAxis
-                stroke={chartColors.axis}
-                fontSize={12}
-                tickLine={false}
-                axisLine={false}
-                tick={{ fill: chartColors.text }}
-                tickFormatter={valueFormatter}
-                hide={!showYAxis}
-              />
-            </>
-          )}
-          <Tooltip
-            content={
-              <ChartTooltip
-                valueFormatter={valueFormatter}
-                labelFormatter={labelFormatter}
-              />
-            }
-            cursor={{ fill: 'rgba(0,0,0,0.04)' }}
+    <ChartContainer height={height} className={className}>
+      <RechartsBarChart
+        data={data}
+        layout={layout}
+        margin={chartConfig.marginWithAxis}
+        barSize={barSize}
+      >
+        {showGrid && (
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke={chartColors.grid}
+            horizontal={!isVertical}
+            vertical={isVertical}
           />
-          {showLegend && bars.length > 1 && (
-            <Legend
-              wrapperStyle={{
-                paddingTop: '20px',
-                fontSize: '12px',
-              }}
-              formatter={(value) => (
-                <span className="text-stone-500">{value}</span>
-              )}
+        )}
+        {isVertical ? (
+          <>
+            <XAxis
+              type="number"
+              stroke={chartColors.axis}
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
+              tick={{ fill: chartColors.text }}
+              tickFormatter={valueFormatter}
+              hide={!showXAxis}
             />
-          )}
-          {bars.map((bar, index) => (
-            <Bar
-              key={bar.dataKey}
-              dataKey={bar.dataKey}
-              name={bar.name || bar.dataKey}
-              fill={bar.color || seriesColors[index % seriesColors.length]}
-              stackId={stacked ? 'stack' : bar.stackId}
-              radius={bar.radius ?? [4, 4, 0, 0]}
-              animationDuration={chartConfig.animationDuration}
-              animationEasing="ease-out"
+            <YAxis
+              type="category"
+              dataKey={xAxisKey}
+              stroke={chartColors.axis}
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
+              tick={{ fill: chartColors.text }}
+              width={100}
+              hide={!showYAxis}
             />
-          ))}
-        </RechartsBarChart>
-      </ResponsiveContainer>
-    </div>
+          </>
+        ) : (
+          <>
+            <XAxis
+              dataKey={xAxisKey}
+              stroke={chartColors.axis}
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
+              tick={{ fill: chartColors.text }}
+              hide={!showXAxis}
+            />
+            <YAxis
+              stroke={chartColors.axis}
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
+              tick={{ fill: chartColors.text }}
+              tickFormatter={valueFormatter}
+              hide={!showYAxis}
+            />
+          </>
+        )}
+        <Tooltip
+          content={
+            <ChartTooltip
+              valueFormatter={valueFormatter}
+              labelFormatter={labelFormatter}
+            />
+          }
+          cursor={{ fill: 'rgba(0,0,0,0.04)' }}
+        />
+        {showLegend && bars.length > 1 && (
+          <Legend
+            wrapperStyle={{
+              paddingTop: '20px',
+              fontSize: '12px',
+            }}
+            formatter={(value) => (
+              <span className="text-stone-500">{value}</span>
+            )}
+          />
+        )}
+        {bars.map((bar, index) => (
+          <Bar
+            key={bar.dataKey}
+            dataKey={bar.dataKey}
+            name={bar.name || bar.dataKey}
+            fill={bar.color || seriesColors[index % seriesColors.length]}
+            stackId={stacked ? 'stack' : bar.stackId}
+            radius={bar.radius ?? [4, 4, 0, 0]}
+            animationDuration={chartConfig.animationDuration}
+            animationEasing="ease-out"
+          />
+        ))}
+      </RechartsBarChart>
+    </ChartContainer>
   );
 }
 
@@ -175,7 +173,6 @@ interface ProgressBarChartProps {
 
 export function ProgressBarChart({
   data,
-  height: _height = 200,
   showLabels = true,
   valueFormatter = (v) => v.toLocaleString(),
   className,

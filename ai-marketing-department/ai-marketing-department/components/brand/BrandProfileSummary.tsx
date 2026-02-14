@@ -46,7 +46,12 @@ interface BrandData {
   visual?: {
     primaryColor?: string;
     secondaryColor?: string;
+    accentColor?: string;
+    backgroundColor?: string;
+    textColor?: string;
     logoDescription?: string;
+    fontPrimary?: string;
+    fontSecondary?: string;
     styleNotes?: string;
   };
 }
@@ -185,6 +190,25 @@ export function BrandProfileSummary({ data, onEditSection }: Props) {
       isComplete: Boolean(data.visual?.primaryColor),
       content: (
         <div className="space-y-2 text-sm">
+          {/* Color palette strip */}
+          {(data.visual?.primaryColor || data.visual?.secondaryColor) && (
+            <div className="flex gap-0.5 rounded overflow-hidden border border-stone-200">
+              {[
+                { color: data.visual?.primaryColor, label: "Primario" },
+                { color: data.visual?.secondaryColor, label: "Secundario" },
+                { color: data.visual?.accentColor, label: "Acento" },
+                { color: data.visual?.backgroundColor, label: "Fondo" },
+                { color: data.visual?.textColor, label: "Texto" },
+              ].filter(c => c.color).map((c, i) => (
+                <div
+                  key={i}
+                  className="flex-1 h-5"
+                  style={{ backgroundColor: c.color }}
+                  title={`${c.label}: ${c.color}`}
+                />
+              ))}
+            </div>
+          )}
           {data.visual?.primaryColor && (
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 rounded-full border border-stone-300" style={{ backgroundColor: data.visual.primaryColor }} />
@@ -196,6 +220,18 @@ export function BrandProfileSummary({ data, onEditSection }: Props) {
               <div className="w-4 h-4 rounded-full border border-stone-300" style={{ backgroundColor: data.visual.secondaryColor }} />
               <span className="text-stone-500">Secundario: {data.visual.secondaryColor}</span>
             </div>
+          )}
+          {data.visual?.accentColor && (
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded-full border border-stone-300" style={{ backgroundColor: data.visual.accentColor }} />
+              <span className="text-stone-500">Acento: {data.visual.accentColor}</span>
+            </div>
+          )}
+          {data.visual?.fontPrimary && (
+            <div><span className="text-stone-400">Fuente principal:</span> <span className="text-stone-500">{data.visual.fontPrimary}</span></div>
+          )}
+          {data.visual?.fontSecondary && data.visual.fontSecondary !== data.visual.fontPrimary && (
+            <div><span className="text-stone-400">Fuente secundaria:</span> <span className="text-stone-500">{data.visual.fontSecondary}</span></div>
           )}
           {data.visual?.logoDescription && (
             <div><span className="text-stone-400">Logo:</span> <span className="text-stone-500">{data.visual.logoDescription}</span></div>

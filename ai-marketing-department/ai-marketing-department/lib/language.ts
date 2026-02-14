@@ -370,6 +370,51 @@ export const LABELS = {
   emailNotSent: "Correo no enviado",
   period: "Período",
   settingsSaved: "Configuración guardada",
+
+  // Pipeline & Calendar (Phase 1-2)
+  pipeline: "Pipeline",
+  calendarView: "Vista Calendario",
+  kanbanView2: "Vista Kanban",
+  calendarTab: "Calendario",
+  kanbanTab: "Kanban",
+  pipelineNav: "Pipeline",
+  pipelineNavLabel: "Kanban y calendario de contenido",
+  listToggle: "Lista",
+  pipelineToggle: "Pipeline",
+  todayLabel: "Hoy",
+  prevMonth: "Mes anterior",
+  nextMonth: "Mes siguiente",
+  moreItems: "+{N} más",
+  rescheduleSuccess: "Contenido reprogramado",
+  noContentForDay: "Sin contenido para este día",
+  dragToSchedule: "Arrastra contenido aquí para programar",
+  approvedSidebar: "Aprobados (sin fecha)",
+  calendarEmpty: "No hay contenido programado este mes",
+
+  // Brand Switcher (Phase 3)
+  brandSwitcher: "Cambiar cliente",
+  allBrands: "Todos los clientes",
+  newClient: "Nuevo Cliente",
+  switchBrand: "Cambiar a",
+  currentBrand: "Cliente actual",
+  noBrands: "Sin perfiles de marca",
+  createFirstBrand: "Crea tu primer perfil de marca",
+  contentCount: "contenidos",
+
+  // Scheduled Publishing Countdown (P1)
+  publishesIn: "Publica en",
+  publishesSoon: "Publica pronto",
+  autoPublishEnabled: "Auto-publicación activa",
+  autoPublishInfo: "El contenido se publica automáticamente cada 15 min",
+  nextAutoPublish: "Próxima verificación",
+  overdue: "Pendiente de publicar",
+
+  // AI Attribution (Phase 4)
+  aiGenerated: "Generado por IA",
+  generatedBy: "Generado por",
+  fromStrategy: "Desde estrategia",
+  upcomingContent: "Próximo contenido",
+  miniCalendarTitle: "Calendario",
 } as const;
 
 /**

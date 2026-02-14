@@ -234,7 +234,7 @@ export function StrategyExecutionMonitor({ strategyId }: StrategyExecutionMonito
                   <div className="flex items-center gap-3 shrink-0">
                     {task.execution && (
                       <>
-                        <span className="text-[10px] text-stone-400 flex items-center gap-0.5" title="Duracion">
+                        <span className="text-[10px] text-stone-400 flex items-center gap-0.5" title="Duración">
                           <Timer className="h-2.5 w-2.5" />
                           {formatDuration(task.execution.duration)}
                         </span>

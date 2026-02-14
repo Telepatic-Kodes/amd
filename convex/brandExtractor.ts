@@ -3,6 +3,7 @@
 import { v } from "convex/values";
 import { action } from "./_generated/server";
 import { extractContentFromURL } from "./kb/scrapeUrl";
+import { callLLM } from "./lib/llm";
 
 const BRAND_EXTRACTION_PROMPT = `You are a brand analyst. Extract brand information from the provided content.
 Return a JSON object with ONLY the fields where you have reasonable confidence from the content.
@@ -61,48 +62,19 @@ async function callClaudeForExtraction(
   text: string,
   source: string
 ): Promise<Record<string, unknown>> {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    throw new Error("ANTHROPIC_API_KEY not configured");
-  }
-
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "x-api-key": apiKey,
-      "anthropic-version": "2023-06-01",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 2048,
-      temperature: 0.3,
-      system: BRAND_EXTRACTION_PROMPT,
-      messages: [
-        {
-          role: "user",
-          content: `Extract brand information from this ${source}:\n\n${text.substring(0, 12000)}`,
-        },
-      ],
-    }),
+  const result = await callLLM({
+    system: BRAND_EXTRACTION_PROMPT,
+    user: `Extract brand information from this ${source}:\n\n${text.substring(0, 12000)}`,
+    model: "claude-sonnet-4-20250514", // maps to gpt-4o
+    maxTokens: 2048,
+    temperature: 0.3,
+    jsonMode: true,
   });
 
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Claude API error: ${error}`);
-  }
-
-  const data = await response.json();
-  if (!data.content?.[0]?.text) {
-    throw new Error("Claude API returned empty or invalid response");
-  }
-  const raw = data.content[0].text;
-
   try {
-    return JSON.parse(raw);
+    return JSON.parse(result.content);
   } catch {
-    // Try to extract JSON from the response if it has extra text
-    const match = raw.match(/\{[\s\S]*\}/);
+    const match = result.content.match(/\{[\s\S]*\}/);
     if (match) {
       return JSON.parse(match[0]);
     }

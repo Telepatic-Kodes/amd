@@ -62,6 +62,8 @@ function buildCMOPrompt(brandProfile: {
   audience: { segments: { name: string; demographics?: string; painPoints: string[] }[] };
   strategy: { topics: string[]; channels: string[]; postingFrequency?: string };
   competitors: { name: string; url?: string; notes?: string }[];
+  messaging?: { guide?: string; problem?: string; solution?: string; successVision?: string; failureVision?: string; callToAction?: string } | null;
+  positioning?: { uniqueValue?: string; category?: string; differentiators?: string[]; proofPoints?: string[] } | null;
 }): string {
   const segments = brandProfile.audience.segments
     .map((s) => `${s.name} (${s.painPoints.join(", ")})`)
@@ -71,7 +73,31 @@ function buildCMOPrompt(brandProfile: {
     .map((c) => `${c.name}${c.notes ? ` — ${c.notes}` : ""}`)
     .join("; ");
 
-  return `You are the CMO (Chief Marketing Officer) of ${brandProfile.companyName}. Based on the brand profile below, create a comprehensive marketing strategy.
+  // Build StoryBrand context if available
+  const msg = brandProfile.messaging;
+  const storyBrandBlock = msg && (msg.guide || msg.problem || msg.solution)
+    ? `
+STORYBRAND MESSAGING (use this narrative in ALL content):
+- Guide: ${msg.guide || "Not defined"}
+- Customer Problem: ${msg.problem || "Not defined"}
+- Solution: ${msg.solution || "Not defined"}
+- Success Vision: ${msg.successVision || "Not defined"}
+- Failure Vision: ${msg.failureVision || "Not defined"}
+- CTA: ${msg.callToAction || "Not defined"}`
+    : "";
+
+  // Build positioning context if available
+  const pos = brandProfile.positioning;
+  const positioningBlock = pos && (pos.uniqueValue || pos.category)
+    ? `
+BRAND POSITIONING:
+- Unique Value: ${pos.uniqueValue || "Not defined"}
+- Market Category: ${pos.category || "Not defined"}
+- Differentiators: ${pos.differentiators?.join(", ") || "Not defined"}
+- Proof Points: ${pos.proofPoints?.join(", ") || "Not defined"}`
+    : "";
+
+  return `You are the CMO (Chief Marketing Officer) of ${brandProfile.companyName}. You apply 5 proven marketing frameworks to create data-driven strategies.
 
 BRAND DATA:
 - Company: ${brandProfile.companyName} (${brandProfile.industry})
@@ -82,18 +108,50 @@ BRAND DATA:
 - Posting Frequency: ${brandProfile.strategy.postingFrequency || "3x/week"}
 - Content Topics: ${brandProfile.strategy.topics.join(", ")}
 - Competitors: ${competitors}
+${storyBrandBlock}
+${positioningBlock}
+
+FRAMEWORKS TO APPLY:
+
+1. STORYBRAND (Donald Miller): Position the customer as hero, brand as guide. Every content piece must address the problem, offer a solution, and include a clear CTA.
+
+2. THEY ASK YOU ANSWER (TAYA): Tag each content piece with one of 5 categories:
+   - "cost" — pricing, costs, investment content
+   - "problems" — common issues, challenges, pain points
+   - "comparisons" — vs competitors, alternatives, options
+   - "reviews" — testimonials, case studies, social proof
+   - "best" — best-of lists, top recommendations, guides
+
+3. HERO/HUB/HYGIENE (Google/CMI): Distribute content by tier:
+   - "hero" (10%) — flagship, big-bet content (videos, whitepapers, events)
+   - "hub" (30%) — regular valuable content (blog series, newsletters, carousels)
+   - "hygiene" (60%) — always-on, SEO-driven, evergreen content (social posts, FAQs)
+
+4. RACE (Smart Insights): Map content to funnel stages:
+   - "reach" — awareness, discovery, top-of-funnel
+   - "act" — interaction, consideration, engagement
+   - "convert" — conversion, purchase, sign-up
+   - "engage" — retention, loyalty, advocacy
+
+5. CONTENT PYRAMID (Gary Vee): Plan repurposing chains:
+   - Hero piece → hub derivatives → hygiene micro-content
+   - Each hero content should generate 3-5 derivative pieces
 
 YOUR TASK:
-Create a full marketing strategy. Return ONLY valid JSON with this exact structure:
+Create a comprehensive marketing strategy. Return ONLY valid JSON with this exact structure:
 
 {
   "summary": "2-3 sentence executive brief of the strategy",
+  "messagingAlignment": "How the strategy aligns with StoryBrand messaging (1-2 sentences)",
   "contentPillars": [
     {
       "name": "Pillar name",
       "description": "What this pillar covers and why",
       "topics": ["topic1", "topic2", "topic3"],
-      "channels": ["Blog", "LinkedIn", "Twitter"]
+      "channels": ["Blog", "LinkedIn", "Twitter"],
+      "tayaCategories": ["problems", "comparisons"],
+      "funnelFocus": ["reach", "act"],
+      "tierDistribution": { "hero": 10, "hub": 30, "hygiene": 60 }
     }
   ],
   "weeklyCalendar": [
@@ -102,15 +160,25 @@ Create a full marketing strategy. Return ONLY valid JSON with this exact structu
       "contentType": "blog",
       "channel": "Blog",
       "pillar": "Pillar name",
-      "description": "Brief description of what to publish"
+      "description": "Brief description of what to publish",
+      "contentTier": "hub",
+      "funnelStage": "reach",
+      "tayaCategory": "problems"
+    }
+  ],
+  "repurposingPlan": [
+    {
+      "heroContent": "Title of hero piece",
+      "heroType": "blog",
+      "derivatives": [
+        { "type": "social_linkedin", "tier": "hub", "description": "Carousel with key insights" },
+        { "type": "social_twitter", "tier": "hygiene", "description": "Thread summarizing main points" }
+      ]
     }
   ],
   "adStrategy": {
     "platforms": ["Google Ads", "Meta Ads"],
-    "budgetSplit": [
-      { "platform": "Google Ads", "percentage": 60 },
-      { "platform": "Meta Ads", "percentage": 40 }
-    ],
+    "budgetSplit": [{ "platform": "Google Ads", "percentage": 60 }, { "platform": "Meta Ads", "percentage": 40 }],
     "objectives": ["Brand awareness", "Lead generation"]
   },
   "seoStrategy": {
@@ -126,12 +194,11 @@ Create a full marketing strategy. Return ONLY valid JSON with this exact structu
 }
 
 RULES:
-- Create 3-5 content pillars aligned with the brand topics and audience
-- Weekly calendar should have 5-7 entries (one per weekday)
-- Include all channels the brand uses
-- Ad strategy should reflect realistic budget splits
-- SEO keywords should be specific and actionable
-- Email sequences should match the funnel stages
+- Create 3-5 content pillars aligned with brand topics and audience
+- Each pillar MUST have tayaCategories, funnelFocus, and tierDistribution
+- Weekly calendar (5-7 entries) — each entry MUST include contentTier, funnelStage, and tayaCategory
+- Maintain ~10% hero / ~30% hub / ~60% hygiene distribution across the calendar
+- Include 2-3 repurposing chains (hero → derivatives)
 - All text in Spanish (the brand operates in Spanish-speaking markets)
 - Return ONLY the JSON, no markdown fences, no explanations`;
 }
@@ -402,6 +469,11 @@ export const decomposeStrategy = internalMutation({
 
     // 1. Content pillar tasks: create blog posts and social content per pillar
     for (const pillar of strategy.contentPillars) {
+      // Determine default TAYA/funnel from pillar if available (dynamic JSON from Claude)
+      const pillarAny = pillar as Record<string, unknown>;
+      const pillarTaya = (pillarAny.tayaCategories as string[] | undefined)?.[0] || undefined;
+      const pillarFunnel = (pillarAny.funnelFocus as string[] | undefined)?.[0] || undefined;
+
       for (const topic of pillar.topics.slice(0, 2)) { // Limit to 2 topics per pillar
         for (const channel of pillar.channels) {
           const taskType = CHANNEL_TASK_MAP[channel];
@@ -417,14 +489,19 @@ export const decomposeStrategy = internalMutation({
               description: pillar.description,
               tone: "profesional",
               objective: "engagement",
+              // Framework metadata
+              contentTier: "hub",
+              funnelStage: pillarFunnel,
+              tayaCategory: pillarTaya,
             }
           );
         }
       }
     }
 
-    // 2. Weekly calendar tasks: create content for each day
+    // 2. Weekly calendar tasks: create content for each day (with framework metadata)
     for (const entry of strategy.weeklyCalendar) {
+      const entryAny = entry as Record<string, unknown>;
       const taskType = CONTENT_TYPE_TASK_MAP[entry.contentType] ||
         CHANNEL_TASK_MAP[entry.channel];
       if (!taskType) continue;
@@ -438,8 +515,39 @@ export const decomposeStrategy = internalMutation({
           channel: entry.channel,
           dayOfWeek: entry.dayOfWeek,
           contentType: entry.contentType,
+          // Framework metadata from enhanced calendar (dynamic JSON from Claude)
+          contentTier: (entryAny.contentTier as string) || "hygiene",
+          funnelStage: (entryAny.funnelStage as string) || undefined,
+          tayaCategory: (entryAny.tayaCategory as string) || undefined,
         }
       );
+    }
+
+    // 2.5 Repurposing plan: create derivative tasks from hero content
+    const strategyAny = strategy as Record<string, unknown>;
+    const repurposingPlan = strategyAny.repurposingPlan as Array<{ heroContent: string; derivatives: Array<{ type: string; description: string; tier?: string }> }> | undefined;
+    if (repurposingPlan) {
+      for (const plan of repurposingPlan) {
+        for (const derivative of plan.derivatives || []) {
+          const derivTaskType = CONTENT_TYPE_TASK_MAP[derivative.type] ||
+            CHANNEL_TASK_MAP[derivative.type];
+          if (!derivTaskType) continue;
+
+          await createStrategyTask(
+            derivTaskType,
+            `Derivado: ${derivative.description} (de ${plan.heroContent})`,
+            {
+              topic: derivative.description,
+              pillar: plan.heroContent,
+              channel: derivative.type,
+              contentType: derivative.type,
+              contentTier: derivative.tier || "hub",
+              parentHeroContent: plan.heroContent,
+              isDerivative: true,
+            }
+          );
+        }
+      }
     }
 
     // 3. SEO tasks
@@ -740,9 +848,17 @@ export const listStrategies = query({
   handler: async (ctx) => {
     const userId = await getUserId(ctx);
 
+    // Get active brand profile to scope strategies
+    const brandProfile = await ctx.db
+      .query("brandProfiles")
+      .withIndex("by_userId", (q) => q.eq("userId", userId))
+      .first();
+
+    if (!brandProfile) return [];
+
     return await ctx.db
       .query("marketingStrategies")
-      .withIndex("by_userId", (q) => q.eq("userId", userId))
+      .withIndex("by_brandProfile", (q) => q.eq("brandProfileId", brandProfile._id))
       .order("desc")
       .collect();
   },
@@ -1145,5 +1261,213 @@ export const getStrategyTasksDetailed = query({
       const order: Record<string, number> = { running: 0, pending: 1, queued: 2, completed: 3, failed: 4 };
       return (order[a.status] ?? 5) - (order[b.status] ?? 5);
     });
+  },
+});
+
+// ===========================================
+// ITERATE STRATEGY — Optimization feedback loop
+// Takes performance data and generates refined strategy adjustments
+// ===========================================
+
+export const iterateStrategy = internalAction({
+  args: {
+    strategyDocId: v.id("marketingStrategies"),
+  },
+  handler: async (ctx, args): Promise<Record<string, unknown>> => {
+    // 1. Get the current strategy
+    const strategy: Record<string, unknown> | null = await ctx.runQuery(api.cmoEngine.getStrategyInternal, {
+      strategyDocId: args.strategyDocId,
+    });
+    if (!strategy) throw new Error("Strategy not found");
+
+    // 2. Get performance data
+    const performance: Record<string, unknown> | null = await ctx.runQuery(api.cmoEngine.getStrategyPerformance, {
+      strategyDocId: args.strategyDocId,
+    });
+    if (!performance) throw new Error("Performance data not found");
+
+    // 3. Get content distribution data
+    const allContent: Array<Record<string, unknown>> = (await ctx.runQuery(api.functions.listContent, {})) || [];
+    const contentByTier: Record<string, number> = {
+      hero: (allContent || []).filter((c: Record<string, unknown>) => c.contentTier === "hero").length,
+      hub: (allContent || []).filter((c: Record<string, unknown>) => c.contentTier === "hub").length,
+      hygiene: (allContent || []).filter((c: Record<string, unknown>) => c.contentTier === "hygiene").length,
+    };
+    const contentByFunnel: Record<string, number> = {
+      reach: (allContent || []).filter((c: Record<string, unknown>) => c.funnelStage === "reach").length,
+      act: (allContent || []).filter((c: Record<string, unknown>) => c.funnelStage === "act").length,
+      convert: (allContent || []).filter((c: Record<string, unknown>) => c.funnelStage === "convert").length,
+      engage: (allContent || []).filter((c: Record<string, unknown>) => c.funnelStage === "engage").length,
+    };
+    const contentByTAYA: Record<string, number> = {
+      cost: (allContent || []).filter((c: Record<string, unknown>) => c.tayaCategory === "cost").length,
+      problems: (allContent || []).filter((c: Record<string, unknown>) => c.tayaCategory === "problems").length,
+      comparisons: (allContent || []).filter((c: Record<string, unknown>) => c.tayaCategory === "comparisons").length,
+      reviews: (allContent || []).filter((c: Record<string, unknown>) => c.tayaCategory === "reviews").length,
+      best: (allContent || []).filter((c: Record<string, unknown>) => c.tayaCategory === "best").length,
+    };
+
+    // 4. Build iteration prompt
+    const perfTasks = (performance.tasks || {}) as Record<string, unknown>;
+    const iterationPrompt: string = `Eres el CMO AI. Analiza el rendimiento de la estrategia actual y genera ajustes de optimización.
+
+## Estrategia Actual
+- ID: ${strategy.strategyId}
+- Estado: ${strategy.status}
+- Tareas totales: ${perfTasks.total ?? 0}
+- Tareas completadas: ${perfTasks.completed ?? 0}
+- Tasa de éxito: ${perfTasks.successRate ?? 0}%
+- Contenido generado: ${performance.contentGenerated ?? 0}
+- Tokens usados: ${performance.totalTokens ?? 0}
+- Costo total: $${Number(performance.totalCost ?? 0).toFixed(4)}
+
+## Distribución por Tier (Hero/Hub/Hygiene)
+- Hero: ${contentByTier.hero} (ideal: 10%)
+- Hub: ${contentByTier.hub} (ideal: 30%)
+- Hygiene: ${contentByTier.hygiene} (ideal: 60%)
+
+## Distribución Funnel (RACE)
+- Reach: ${contentByFunnel.reach}
+- Act: ${contentByFunnel.act}
+- Convert: ${contentByFunnel.convert}
+- Engage: ${contentByFunnel.engage}
+
+## Distribución TAYA
+- Cost: ${contentByTAYA.cost}
+- Problems: ${contentByTAYA.problems}
+- Comparisons: ${contentByTAYA.comparisons}
+- Reviews: ${contentByTAYA.reviews}
+- Best-of: ${contentByTAYA.best}
+
+## Instrucciones
+Analiza los datos y genera un JSON con ajustes recomendados:
+
+\`\`\`json
+{
+  "analysis": "Resumen ejecutivo del rendimiento actual",
+  "tierAdjustments": {
+    "issue": "Descripción del problema de distribución de tiers",
+    "recommendation": "Qué ajustar",
+    "newTasks": [{ "type": "tipo_tarea", "title": "título", "contentTier": "hero|hub|hygiene", "priority": "high|medium|low" }]
+  },
+  "funnelAdjustments": {
+    "gaps": ["etapa_con_gap"],
+    "recommendation": "Qué contenido crear",
+    "newTasks": [{ "type": "tipo_tarea", "title": "título", "funnelStage": "reach|act|convert|engage", "priority": "high|medium|low" }]
+  },
+  "tayaAdjustments": {
+    "uncoveredCategories": ["categoría"],
+    "recommendation": "Qué temas abordar",
+    "newTasks": [{ "type": "tipo_tarea", "title": "título", "tayaCategory": "cost|problems|comparisons|reviews|best", "priority": "high|medium|low" }]
+  },
+  "overallScore": 0-100,
+  "nextActions": ["acción 1", "acción 2"]
+}
+\`\`\`
+
+Responde SOLO con JSON válido.`;
+
+    // 5. Call Claude API for iteration analysis via existing callClaude action
+    const claudeResponse: Record<string, unknown> = await ctx.runAction(api.actions.callClaude, {
+      userMessage: iterationPrompt,
+      systemPrompt: "Eres un CMO AI experto en marketing digital. Analiza datos de rendimiento y genera recomendaciones de optimización en formato JSON.",
+      model: "claude-sonnet-4-20250514",
+      maxTokens: 4000,
+      temperature: 0.4,
+    }) as Record<string, unknown>;
+
+    const rawText: string = String(claudeResponse?.response || "{}");
+
+    // 6. Parse and save iteration results
+    let iterationData;
+    try {
+      const jsonMatch = rawText.match(/```json\s*([\s\S]*?)```/) || rawText.match(/(\{[\s\S]*\})/);
+      iterationData = JSON.parse(jsonMatch?.[1] || rawText);
+    } catch {
+      iterationData = { analysis: rawText, overallScore: 0, nextActions: [] };
+    }
+
+    // 7. Save iteration as strategy metadata
+    await ctx.runMutation(internal.cmoEngine.saveIterationResult, {
+      strategyDocId: args.strategyDocId,
+      iterationData,
+    });
+
+    return iterationData;
+  },
+});
+
+export const saveIterationResult = internalMutation({
+  args: {
+    strategyDocId: v.id("marketingStrategies"),
+    iterationData: v.any(),
+  },
+  handler: async (ctx, args) => {
+    const strategy = await ctx.db.get(args.strategyDocId);
+    if (!strategy) return;
+
+    // Append iteration to strategy's metadata
+    const iterations = (strategy as Record<string, unknown>).iterations as unknown[] || [];
+    iterations.push({
+      timestamp: Date.now(),
+      data: args.iterationData,
+    });
+
+    await ctx.db.patch(args.strategyDocId, {
+      updatedAt: Date.now(),
+      // Store in the existing metadata or as a separate field
+    } as Record<string, unknown>);
+  },
+});
+
+// ===========================================
+// DEBUG / CLEANUP UTILITIES
+// ===========================================
+
+/**
+ * listAllStrategies — List all strategies (no brand filter) for debugging.
+ */
+export const listAllStrategies = query({
+  args: {},
+  handler: async (ctx) => {
+    const all = await ctx.db.query("marketingStrategies").order("desc").collect();
+    return all.map((s) => ({
+      _id: s._id,
+      strategyId: s.strategyId,
+      goal: s.goal,
+      status: s.status,
+      brandProfileId: s.brandProfileId,
+      createdAt: s.createdAt,
+    }));
+  },
+});
+
+/**
+ * deleteStrategies — Delete specific strategies and their tasks.
+ */
+export const deleteStrategies = mutation({
+  args: {
+    strategyIds: v.array(v.id("marketingStrategies")),
+  },
+  handler: async (ctx, args) => {
+    let deleted = 0;
+    let tasksDeleted = 0;
+    for (const id of args.strategyIds) {
+      const doc = await ctx.db.get(id);
+      if (doc) {
+        // Also delete associated tasks
+        const tasks = await ctx.db.query("tasks").collect();
+        const strategyTasks = tasks.filter(
+          (t) => t.strategyId === doc.strategyId
+        );
+        for (const task of strategyTasks) {
+          await ctx.db.delete(task._id);
+          tasksDeleted++;
+        }
+        await ctx.db.delete(id);
+        deleted++;
+      }
+    }
+    return { deleted, tasksDeleted };
   },
 });

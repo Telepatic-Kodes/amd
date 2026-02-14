@@ -4,7 +4,6 @@ import { useState, useRef } from "react";
 import { Id, Doc } from "@convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
 import { translate } from "@/lib/language";
-import { ALLOWED_TRANSITIONS } from "@/lib/contentTypes";
 import { KanbanCard } from "./KanbanCard";
 
 interface KanbanColumnProps {
@@ -15,29 +14,19 @@ interface KanbanColumnProps {
   color: string;
   onDrop: (contentId: string, toStatus: string) => void;
   onAction: (action: string, contentId: Id<"content">) => void;
+  // P6: Batch operations
+  batchMode?: boolean;
+  selectedIds?: Set<string>;
+  onSelectAll?: (status: string, select: boolean) => void;
+  onSelectItem?: (contentId: Id<"content">, selected: boolean) => void;
 }
 
-// Invert transitions: for each status, find which statuses can transition INTO it
-function getAllowedFromStatuses(targetStatus: string): string[] {
-  const allowed: string[] = [];
-  for (const [from, targets] of Object.entries(ALLOWED_TRANSITIONS)) {
-    if (targets.includes(targetStatus)) {
-      allowed.push(from);
-    }
-  }
-  return allowed;
-}
-
-export function KanbanColumn({ status, title, items, count, color, onDrop, onAction }: KanbanColumnProps) {
+export function KanbanColumn({ status, title, items, count, color, onDrop, onAction, batchMode, selectedIds, onSelectAll, onSelectItem }: KanbanColumnProps) {
   const [isDropTarget, setIsDropTarget] = useState(false);
   const [isInvalidDrop, setIsInvalidDrop] = useState(false);
   const dragCounter = useRef(0);
-  const _allowedFrom = getAllowedFromStatuses(status);
 
   const handleDragOver = (e: React.DragEvent) => {
-    const _fromStatus = e.dataTransfer.types.includes("application/x-status")
-      ? "unknown"
-      : "";
     // Allow the drop - we validate on drop
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
@@ -85,6 +74,16 @@ export function KanbanColumn({ status, title, items, count, color, onDrop, onAct
       {/* Column Header */}
       <div className="px-4 py-3 border-b border-stone-200/50 flex items-center justify-between">
         <div className="flex items-center gap-2">
+          {/* P6: Select All checkbox */}
+          {batchMode && items.length > 0 && (
+            <input
+              type="checkbox"
+              checked={items.length > 0 && items.every((item) => selectedIds?.has(item._id))}
+              onChange={(e) => onSelectAll?.(status, e.target.checked)}
+              className="h-3.5 w-3.5 rounded border-stone-300 text-orange-500 focus:ring-orange-500 cursor-pointer"
+              title={`Seleccionar todos en ${title}`}
+            />
+          )}
           <span className={cn("h-2.5 w-2.5 rounded-full", color)} />
           <span className="text-sm font-medium text-stone-900">{title}</span>
         </div>
@@ -99,7 +98,14 @@ export function KanbanColumn({ status, title, items, count, color, onDrop, onAct
           </div>
         ) : (
           items.map((item) => (
-            <KanbanCard key={item._id} content={item} onAction={onAction} />
+            <KanbanCard
+              key={item._id}
+              content={item}
+              onAction={onAction}
+              selectable={batchMode}
+              selected={selectedIds?.has(item._id)}
+              onSelect={onSelectItem}
+            />
           ))
         )}
 

@@ -8,6 +8,8 @@ import {
   mapDepartmentToCategories,
   buildEnhancedSystemPrompt,
   buildUserMessage,
+  isRetryableError,
+  calculateBackoff,
 } from "./lib/agentHelpers";
 
 /**
@@ -266,11 +268,33 @@ export const executeAgentAsync = internalAction({
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : "Unknown error";
 
+      // P5: Retry with exponential backoff for retriable errors
+      const task = await ctx.runQuery(api.functions.getTaskById, { id: args.taskId });
+      const retryCount = task?.retryCount ?? 0;
+      const maxRetries = task?.maxRetries ?? 3;
+
+      if (isRetryableError(errorMessage) && retryCount < maxRetries) {
+        // Increment retry count and schedule retry with backoff
+        await ctx.runMutation(api.functions.incrementRetry, { id: args.taskId });
+        const delay = calculateBackoff(retryCount);
+        await ctx.scheduler.runAfter(delay, internal.agentExecution.executeAgentAsync, {
+          taskId: args.taskId,
+          agentId: args.agentId,
+          agentStringId: args.agentStringId,
+          taskType: args.taskType,
+          input: args.input,
+        });
+        return; // Don't mark as failed yet
+      }
+
+      // All retries exhausted or non-retriable error → mark as failed
       await ctx.runMutation(api.functions.updateTaskStatus, {
         id: args.taskId,
         status: "failed",
         error: {
-          message: errorMessage,
+          message: retryCount > 0
+            ? `${errorMessage} (after ${retryCount + 1} attempts)`
+            : errorMessage,
           code: "EXECUTION_FAILED",
         },
       });

@@ -69,6 +69,7 @@ export default function SettingsPage() {
   const seedAgents = useMutation(api.seed.seedAgents);
   const seedCampaigns = useMutation(api.seed.seedCampaigns);
   const seedDemoData = useMutation(api.seed.seedDemoData);
+  const seedTemplates = useMutation(api.seedTemplates.seed);
   const [seeding, setSeeding] = useState(false);
 
   const completeStep = useMutation(api.guidance.completeSetupStep);
@@ -982,9 +983,10 @@ export default function SettingsPage() {
                           await seedAgents();
                           await seedCampaigns();
                           await seedDemoData();
+                          await seedTemplates();
                           toast.success(
                             "Demo cargada",
-                            "37 agentes, 15 tareas, 8 contenidos, 7 campañas y 20 ejecuciones creados."
+                            "37 agentes, 15 tareas, 8 contenidos, 7 campañas, 20 ejecuciones y templates creados."
                           );
                         } catch (_err: unknown) {
                           toast.error(

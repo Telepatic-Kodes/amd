@@ -18,8 +18,15 @@ export const generateMultiChannelContent = action({
     topic: v.string(),
     channels: v.array(v.string()),
     customInstructions: v.optional(v.string()),
+    templateId: v.optional(v.string()),
+    templatePrompt: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    // Merge templatePrompt into customInstructions
+    const effectiveInstructions = [
+      args.templatePrompt,
+      args.customInstructions,
+    ].filter(Boolean).join("\n\n") || undefined;
     const results: Array<{
       channel: string;
       contentId: string | null;
@@ -42,7 +49,7 @@ export const generateMultiChannelContent = action({
           input: {
             topic: args.topic,
             title: args.topic,
-            customInstructions: args.customInstructions,
+            customInstructions: effectiveInstructions,
             tone: "profesional pero cercano",
           },
         });
@@ -58,6 +65,7 @@ export const generateMultiChannelContent = action({
             readingTime: Math.ceil(result.output.split(/\s+/).length / 200),
           },
           createdBy: "system",
+          ...(args.templateId ? { sourceTemplateId: args.templateId } : {}),
         });
 
         return {
@@ -87,6 +95,17 @@ export const generateMultiChannelContent = action({
           success: false,
           error: result.reason?.message || "Promise rejected",
         });
+      }
+    }
+
+    // Track template usage
+    if (args.templateId) {
+      try {
+        await ctx.runMutation(api.contentTemplates.incrementUsage, {
+          templateId: args.templateId,
+        });
+      } catch {
+        // Non-critical, don't fail the generation
       }
     }
 

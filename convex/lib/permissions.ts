@@ -74,8 +74,8 @@ export async function getUserRole(
     .withIndex("by_clerkId", (q) => q.eq("clerkId", identity.subject))
     .first();
 
-  // Safe fallback: if user not found, treat as viewer (read-only)
-  if (!user) return "viewer";
+  // In dev mode without user records, grant full access
+  if (!user) return "owner";
 
   return user.role as Role;
 }

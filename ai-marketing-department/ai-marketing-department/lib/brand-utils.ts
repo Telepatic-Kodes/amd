@@ -35,8 +35,30 @@ export interface BrandData {
   visual: {
     primaryColor: string;
     secondaryColor: string;
+    accentColor: string;
+    backgroundColor: string;
+    textColor: string;
     logoDescription: string;
+    logoStorageId?: string;
+    fontPrimary: string;
+    fontSecondary: string;
     styleNotes: string;
+  };
+  // StoryBrand messaging hierarchy
+  messaging: {
+    guide: string;
+    problem: string;
+    solution: string;
+    successVision: string;
+    failureVision: string;
+    callToAction: string;
+  };
+  // Brand positioning
+  positioning: {
+    uniqueValue: string;
+    category: string;
+    differentiators: string[];
+    proofPoints: string[];
   };
 }
 
@@ -50,7 +72,19 @@ export const DEFAULT_BRAND_DATA: BrandData = {
   strategy: { topics: [], channels: [], postingFrequency: "" },
   competitors: [],
   references: [],
-  visual: { primaryColor: "", secondaryColor: "", logoDescription: "", styleNotes: "" },
+  visual: {
+    primaryColor: "#FF6B35",
+    secondaryColor: "#1C1917",
+    accentColor: "#F59E0B",
+    backgroundColor: "#FFFFFF",
+    textColor: "#1C1917",
+    logoDescription: "",
+    fontPrimary: "Inter",
+    fontSecondary: "Inter",
+    styleNotes: "",
+  },
+  messaging: { guide: "", problem: "", solution: "", successVision: "", failureVision: "", callToAction: "" },
+  positioning: { uniqueValue: "", category: "", differentiators: [], proofPoints: [] },
 };
 
 // Known UI labels for fuzzy matching AI-extracted values
@@ -247,11 +281,42 @@ export function mergeBrandData(
   // Visual
   if (partial.visual && typeof partial.visual === "object") {
     const vis = partial.visual as Record<string, unknown>;
-    const visKeys = ["primaryColor", "secondaryColor", "logoDescription", "styleNotes"] as const;
+    const visKeys = [
+      "primaryColor", "secondaryColor", "accentColor", "backgroundColor", "textColor",
+      "logoDescription", "fontPrimary", "fontSecondary", "styleNotes",
+    ] as const;
     for (const k of visKeys) {
       if (typeof vis[k] === "string" && (vis[k] as string).trim()) {
         result.visual = { ...result.visual, [k]: vis[k] as string };
       }
+    }
+  }
+
+  // Messaging (StoryBrand)
+  if (partial.messaging && typeof partial.messaging === "object") {
+    const msg = partial.messaging as Record<string, unknown>;
+    const msgKeys = ["guide", "problem", "solution", "successVision", "failureVision", "callToAction"] as const;
+    for (const k of msgKeys) {
+      if (typeof msg[k] === "string" && (msg[k] as string).trim()) {
+        result.messaging = { ...result.messaging, [k]: msg[k] as string };
+      }
+    }
+  }
+
+  // Positioning
+  if (partial.positioning && typeof partial.positioning === "object") {
+    const pos = partial.positioning as Record<string, unknown>;
+    if (typeof pos.uniqueValue === "string" && pos.uniqueValue.trim()) {
+      result.positioning = { ...result.positioning, uniqueValue: pos.uniqueValue };
+    }
+    if (typeof pos.category === "string" && pos.category.trim()) {
+      result.positioning = { ...result.positioning, category: pos.category };
+    }
+    if (Array.isArray(pos.differentiators) && pos.differentiators.length > 0) {
+      result.positioning = { ...result.positioning, differentiators: pos.differentiators as string[] };
+    }
+    if (Array.isArray(pos.proofPoints) && pos.proofPoints.length > 0) {
+      result.positioning = { ...result.positioning, proofPoints: pos.proofPoints as string[] };
     }
   }
 

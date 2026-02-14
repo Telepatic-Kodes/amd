@@ -16,6 +16,12 @@ import {
   AlertTriangle,
   ArrowRight,
   Clock,
+  ChevronDown,
+  ChevronUp,
+  Globe,
+  Linkedin,
+  Twitter,
+  Instagram,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -34,6 +40,20 @@ const priorityConfig = {
   long: { color: "bg-green-500", label: "Largo plazo", textColor: "text-green-700", bgColor: "bg-green-50" },
 };
 
+const platformIcons: Record<string, React.ReactNode> = {
+  instagram: <Instagram className="w-4 h-4 text-pink-500" />,
+  linkedin: <Linkedin className="w-4 h-4 text-blue-600" />,
+  twitter: <Twitter className="w-4 h-4 text-sky-500" />,
+  website: <Globe className="w-4 h-4 text-green-500" />,
+};
+
+const platformLabels: Record<string, string> = {
+  instagram: "Instagram",
+  linkedin: "LinkedIn",
+  twitter: "Twitter/X",
+  website: "Website",
+};
+
 function formatTimeAgo(timestamp: number): string {
   const diff = Date.now() - timestamp;
   const minutes = Math.floor(diff / 60000);
@@ -45,47 +65,77 @@ function formatTimeAgo(timestamp: number): string {
   return `hace ${days}d`;
 }
 
-export function BrandAuditPanel({ brandProfileId, instagramHandle, websiteUrl }: Props) {
+export function BrandAuditPanel({ brandProfileId, instagramHandle: defaultIgHandle, websiteUrl: defaultWebsite }: Props) {
   const latestAudit = useQuery(api.brandAudit.getLatest, { brandProfileId });
   const analyzeAction = useAction(api.brandAuditAction.analyze);
 
   const [status, setStatus] = useState<AuditStatus>("idle");
   const [error, setError] = useState<string | null>(null);
+  const [showInputs, setShowInputs] = useState(false);
+  const [showPlatformDetails, setShowPlatformDetails] = useState(false);
+
+  // B6: Multi-platform input state
+  const [igHandle, setIgHandle] = useState(defaultIgHandle || "");
+  const [linkedinHandle, setLinkedinHandle] = useState("");
+  const [twitterHandle, setTwitterHandle] = useState("");
+  const [webUrl, setWebUrl] = useState(defaultWebsite || "");
 
   const handleAudit = async () => {
     setStatus("scraping");
     setError(null);
 
+    const hasAnySource = igHandle.trim() || linkedinHandle.trim() || twitterHandle.trim() || webUrl.trim();
+
+    if (!hasAnySource) {
+      setError("Configura al menos una plataforma (Instagram, LinkedIn, Twitter o Website) para poder auditar.");
+      setStatus("error");
+      return;
+    }
+
     try {
-      // Step 1: Scrape data via Next.js API route
+      // Step 1: Scrape data via Next.js API route (Instagram + Website)
       const params = new URLSearchParams();
-      if (instagramHandle) params.set("handle", instagramHandle);
-      if (websiteUrl) params.set("website", websiteUrl);
+      if (igHandle.trim()) params.set("handle", igHandle.trim());
+      if (webUrl.trim()) params.set("website", webUrl.trim());
 
-      if (!instagramHandle && !websiteUrl) {
-        setError("Configura un handle de Instagram o website en tu perfil de marca para poder auditar.");
-        setStatus("error");
-        return;
+      let combinedContent = "";
+
+      // Only call scrape API if we have Instagram or website
+      if (igHandle.trim() || webUrl.trim()) {
+        const scrapeRes = await fetch(`/api/brand-audit?${params.toString()}`);
+        if (!scrapeRes.ok) {
+          const err = await scrapeRes.json();
+          throw new Error(err.error || "Error scrapeando datos");
+        }
+        const scrapeData = await scrapeRes.json();
+        combinedContent = scrapeData.combinedContent || "";
       }
 
-      const scrapeRes = await fetch(`/api/brand-audit?${params.toString()}`);
-      if (!scrapeRes.ok) {
-        const err = await scrapeRes.json();
-        throw new Error(err.error || "Error scrapeando datos");
+      // B6: Add LinkedIn context if provided (no scraping, just handle reference for AI)
+      if (linkedinHandle.trim()) {
+        combinedContent += `\n\n=== LINKEDIN DATA ===\nLinkedIn Company Page: ${linkedinHandle.trim()}\nNote: LinkedIn data is reference-only. Analyze based on the handle and general LinkedIn best practices for this industry.`;
       }
-      const scrapeData = await scrapeRes.json();
 
-      if (!scrapeData.combinedContent || scrapeData.combinedContent.length < 20) {
-        throw new Error("No se obtuvieron suficientes datos del scrape. Verifica el handle/URL.");
+      // B6: Add Twitter context if provided
+      if (twitterHandle.trim()) {
+        let twitterUser = twitterHandle.trim();
+        if (twitterUser.startsWith("@")) twitterUser = twitterUser.slice(1);
+        combinedContent += `\n\n=== TWITTER/X DATA ===\nTwitter Handle: @${twitterUser}\nNote: Twitter data is reference-only. Analyze based on the handle and general Twitter/X best practices for this industry.`;
+      }
+
+      if (!combinedContent || combinedContent.length < 20) {
+        throw new Error("No se obtuvieron suficientes datos. Verifica los handles/URLs.");
       }
 
       // Step 2: Send to Claude via Convex action
       setStatus("analyzing");
       await analyzeAction({
         brandProfileId,
-        rawContent: scrapeData.combinedContent,
-        instagramHandle: instagramHandle || undefined,
-        websiteUrl: websiteUrl || undefined,
+        rawContent: combinedContent,
+        instagramHandle: igHandle.trim() || undefined,
+        websiteUrl: webUrl.trim() || undefined,
+        linkedinHandle: linkedinHandle.trim() || undefined,
+        twitterHandle: twitterHandle.trim() || undefined,
       });
 
       setStatus("done");
@@ -98,6 +148,22 @@ export function BrandAuditPanel({ brandProfileId, instagramHandle, websiteUrl }:
   const audit = latestAudit;
   const hasAudit = audit !== null && audit !== undefined;
 
+  // B6: Extract platform metrics from audit
+  const auditPlatformMetrics = hasAudit
+    ? (audit.platformMetrics as Record<string, {
+        followers?: string;
+        following?: string;
+        connections?: string;
+        posts?: string;
+        tweets?: string;
+        engagementNote?: string;
+        score?: number;
+        highlights?: string[];
+      }> | undefined)
+    : undefined;
+
+  const auditedPlatforms = hasAudit ? (audit.platforms as string[] | undefined) : undefined;
+
   return (
     <div className="rounded-xl border border-stone-200 bg-white overflow-hidden">
       {/* Header */}
@@ -106,6 +172,15 @@ export function BrandAuditPanel({ brandProfileId, instagramHandle, websiteUrl }:
           <h3 className="text-sm font-semibold text-stone-900 flex items-center gap-2">
             <Search className="w-4 h-4 text-orange-500" />
             Audit de Presencia Digital
+            {auditedPlatforms && auditedPlatforms.length > 0 && (
+              <span className="flex items-center gap-1 ml-1">
+                {auditedPlatforms.map((p) => (
+                  <span key={p} title={platformLabels[p] || p}>
+                    {platformIcons[p]}
+                  </span>
+                ))}
+              </span>
+            )}
           </h3>
           {hasAudit && (
             <p className="text-xs text-stone-400 mt-0.5">
@@ -118,39 +193,111 @@ export function BrandAuditPanel({ brandProfileId, instagramHandle, websiteUrl }:
             </p>
           )}
         </div>
-        <button
-          onClick={handleAudit}
-          disabled={status === "scraping" || status === "analyzing"}
-          className={cn(
-            "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition",
-            status === "scraping" || status === "analyzing"
-              ? "bg-stone-100 text-stone-400 cursor-not-allowed"
-              : "bg-orange-50 text-orange-600 hover:bg-orange-100"
-          )}
-        >
-          {status === "scraping" ? (
-            <>
-              <Loader2 className="w-4 h-4 animate-spin" />
-              Scrapeando Instagram...
-            </>
-          ) : status === "analyzing" ? (
-            <>
-              <Loader2 className="w-4 h-4 animate-spin" />
-              Analizando con IA...
-            </>
-          ) : hasAudit ? (
-            <>
-              <RefreshCw className="w-4 h-4" />
-              Re-auditar
-            </>
-          ) : (
-            <>
-              <Search className="w-4 h-4" />
-              Auditar Presencia Digital
-            </>
-          )}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowInputs(!showInputs)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-stone-500 hover:bg-stone-50 transition border border-stone-200"
+          >
+            {showInputs ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+            Plataformas
+          </button>
+          <button
+            onClick={handleAudit}
+            disabled={status === "scraping" || status === "analyzing"}
+            className={cn(
+              "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition",
+              status === "scraping" || status === "analyzing"
+                ? "bg-stone-100 text-stone-400 cursor-not-allowed"
+                : "bg-orange-50 text-orange-600 hover:bg-orange-100"
+            )}
+          >
+            {status === "scraping" ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Scrapeando...
+              </>
+            ) : status === "analyzing" ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Analizando con IA...
+              </>
+            ) : hasAudit ? (
+              <>
+                <RefreshCw className="w-4 h-4" />
+                Re-auditar
+              </>
+            ) : (
+              <>
+                <Search className="w-4 h-4" />
+                Auditar
+              </>
+            )}
+          </button>
+        </div>
       </div>
+
+      {/* B6: Multi-platform input fields */}
+      {showInputs && (
+        <div className="px-5 py-4 border-b border-stone-100 bg-stone-50/50">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs font-medium text-stone-500 flex items-center gap-1.5 mb-1">
+                <Instagram className="w-3.5 h-3.5 text-pink-500" />
+                Instagram
+              </label>
+              <input
+                type="text"
+                placeholder="@tu_cuenta"
+                value={igHandle}
+                onChange={(e) => setIgHandle(e.target.value)}
+                className="w-full px-3 py-2 text-sm rounded-lg border border-stone-200 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-400 placeholder:text-stone-300"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-stone-500 flex items-center gap-1.5 mb-1">
+                <Linkedin className="w-3.5 h-3.5 text-blue-600" />
+                LinkedIn (URL de empresa)
+              </label>
+              <input
+                type="text"
+                placeholder="https://linkedin.com/company/..."
+                value={linkedinHandle}
+                onChange={(e) => setLinkedinHandle(e.target.value)}
+                className="w-full px-3 py-2 text-sm rounded-lg border border-stone-200 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-400 placeholder:text-stone-300"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-stone-500 flex items-center gap-1.5 mb-1">
+                <Twitter className="w-3.5 h-3.5 text-sky-500" />
+                Twitter/X
+              </label>
+              <input
+                type="text"
+                placeholder="@tu_cuenta"
+                value={twitterHandle}
+                onChange={(e) => setTwitterHandle(e.target.value)}
+                className="w-full px-3 py-2 text-sm rounded-lg border border-stone-200 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-400 placeholder:text-stone-300"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-stone-500 flex items-center gap-1.5 mb-1">
+                <Globe className="w-3.5 h-3.5 text-green-500" />
+                Website
+              </label>
+              <input
+                type="text"
+                placeholder="https://..."
+                value={webUrl}
+                onChange={(e) => setWebUrl(e.target.value)}
+                className="w-full px-3 py-2 text-sm rounded-lg border border-stone-200 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-400 placeholder:text-stone-300"
+              />
+            </div>
+          </div>
+          <p className="text-[11px] text-stone-400 mt-2">
+            Selecciona las plataformas a auditar. Instagram y Website se scrapean directamente; LinkedIn y Twitter se analizan por referencia.
+          </p>
+        </div>
+      )}
 
       {/* Error state */}
       {status === "error" && error && (
@@ -189,7 +336,7 @@ export function BrandAuditPanel({ brandProfileId, instagramHandle, websiteUrl }:
           {/* Summary */}
           <p className="text-sm text-stone-600 leading-relaxed">{audit.summary}</p>
 
-          {/* Metrics row */}
+          {/* Overall Metrics row */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <MetricCard
               icon={<Users className="w-4 h-4 text-purple-500" />}
@@ -213,6 +360,39 @@ export function BrandAuditPanel({ brandProfileId, instagramHandle, websiteUrl }:
               isNote
             />
           </div>
+
+          {/* B6: Per-platform metrics (collapsible) */}
+          {auditPlatformMetrics && Object.keys(auditPlatformMetrics).length > 0 && (
+            <div className="border border-stone-100 rounded-lg overflow-hidden">
+              <button
+                onClick={() => setShowPlatformDetails(!showPlatformDetails)}
+                className="w-full flex items-center justify-between px-4 py-2.5 text-xs font-semibold text-stone-600 uppercase tracking-wider bg-stone-50/50 hover:bg-stone-50 transition"
+              >
+                <span className="flex items-center gap-1.5">
+                  Detalle por Plataforma
+                  <span className="text-stone-400 normal-case font-normal">
+                    ({Object.keys(auditPlatformMetrics).length} plataformas)
+                  </span>
+                </span>
+                {showPlatformDetails ? (
+                  <ChevronUp className="w-4 h-4 text-stone-400" />
+                ) : (
+                  <ChevronDown className="w-4 h-4 text-stone-400" />
+                )}
+              </button>
+              {showPlatformDetails && (
+                <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {Object.entries(auditPlatformMetrics).map(([platform, data]) => (
+                    <PlatformMetricCard
+                      key={platform}
+                      platform={platform}
+                      data={data}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Strengths & Weaknesses */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -299,8 +479,14 @@ export function BrandAuditPanel({ brandProfileId, instagramHandle, websiteUrl }:
             Analiza tu presencia digital con IA
           </p>
           <p className="text-xs text-stone-400 mt-1">
-            Scrapeamos tu Instagram y web para generar un audit completo
+            Scrapeamos tu Instagram y web, y analizamos LinkedIn y Twitter para un audit multi-plataforma
           </p>
+          <button
+            onClick={() => setShowInputs(true)}
+            className="mt-3 text-xs font-medium text-orange-600 hover:text-orange-700 underline"
+          >
+            Configurar plataformas
+          </button>
         </div>
       )}
     </div>
@@ -330,6 +516,100 @@ function MetricCard({
       )}>
         {value}
       </p>
+    </div>
+  );
+}
+
+// B6: Per-platform metric card component
+function PlatformMetricCard({
+  platform,
+  data,
+}: {
+  platform: string;
+  data: {
+    followers?: string;
+    following?: string;
+    connections?: string;
+    posts?: string;
+    tweets?: string;
+    engagementNote?: string;
+    score?: number;
+    highlights?: string[];
+  };
+}) {
+  const icon = platformIcons[platform] || <Globe className="w-4 h-4 text-stone-400" />;
+  const label = platformLabels[platform] || platform;
+  const score = data.score ?? 0;
+
+  const scoreColor =
+    score >= 70 ? "text-green-600 bg-green-50" :
+    score >= 40 ? "text-amber-600 bg-amber-50" :
+    "text-red-600 bg-red-50";
+
+  return (
+    <div className="p-3 rounded-lg border border-stone-100 bg-white">
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          {icon}
+          <span className="text-sm font-medium text-stone-800">{label}</span>
+        </div>
+        {score > 0 && (
+          <span className={cn("text-xs font-bold px-2 py-0.5 rounded-full", scoreColor)}>
+            {score}/100
+          </span>
+        )}
+      </div>
+
+      {/* Platform-specific stats */}
+      <div className="grid grid-cols-3 gap-2 mb-2">
+        {data.followers && data.followers !== "N/A" && (
+          <div>
+            <p className="text-[10px] text-stone-400">Seguidores</p>
+            <p className="text-xs font-semibold text-stone-700">{data.followers}</p>
+          </div>
+        )}
+        {data.following && data.following !== "N/A" && (
+          <div>
+            <p className="text-[10px] text-stone-400">Siguiendo</p>
+            <p className="text-xs font-semibold text-stone-700">{data.following}</p>
+          </div>
+        )}
+        {data.connections && data.connections !== "N/A" && (
+          <div>
+            <p className="text-[10px] text-stone-400">Conexiones</p>
+            <p className="text-xs font-semibold text-stone-700">{data.connections}</p>
+          </div>
+        )}
+        {data.posts && data.posts !== "N/A" && (
+          <div>
+            <p className="text-[10px] text-stone-400">Posts</p>
+            <p className="text-xs font-semibold text-stone-700">{data.posts}</p>
+          </div>
+        )}
+        {data.tweets && data.tweets !== "N/A" && (
+          <div>
+            <p className="text-[10px] text-stone-400">Tweets</p>
+            <p className="text-xs font-semibold text-stone-700">{data.tweets}</p>
+          </div>
+        )}
+      </div>
+
+      {/* Engagement note */}
+      {data.engagementNote && (
+        <p className="text-[11px] text-stone-500 mb-2">{data.engagementNote}</p>
+      )}
+
+      {/* Highlights */}
+      {data.highlights && data.highlights.length > 0 && (
+        <div className="space-y-1">
+          {data.highlights.map((h, i) => (
+            <p key={i} className="text-[11px] text-stone-500 flex items-start gap-1">
+              <span className="text-stone-300 mt-px shrink-0">-</span>
+              {h}
+            </p>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

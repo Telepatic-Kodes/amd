@@ -151,6 +151,7 @@ export function OnboardingBrandReview({
         return (
           <BrandStepVisual
             data={data.visual}
+            companyName={data.companyName}
             onChange={(partial) =>
               onChange({ ...data, visual: { ...data.visual, ...partial } })
             }

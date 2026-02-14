@@ -66,6 +66,15 @@ export const listMyTemplates = query({
   },
 });
 
+export const getActiveTemplates = query({
+  handler: async (ctx) => {
+    return await ctx.db
+      .query("contentTemplates")
+      .withIndex("by_active", (q) => q.eq("isActive", true))
+      .collect();
+  },
+});
+
 // ===========================================
 // MUTATIONS
 // ===========================================

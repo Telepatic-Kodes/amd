@@ -75,15 +75,22 @@ export function SimpleCounter({
   const [displayValue, setDisplayValue] = useState(0);
   const ref = useRef<HTMLSpanElement>(null);
   const isInView = useInView(ref, { once: true, margin: '-50px' });
-  const hasAnimated = useRef(false);
+  const prevValue = useRef(0);
 
   useEffect(() => {
-    if (!isInView || hasAnimated.current) return;
-    hasAnimated.current = true;
+    if (!isInView) return;
+
+    const startValue = prevValue.current;
+    const endValue = value;
+    prevValue.current = value;
+
+    // Skip animation if values are the same
+    if (startValue === endValue) {
+      setDisplayValue(endValue);
+      return;
+    }
 
     const startTime = performance.now();
-    const startValue = 0;
-    const endValue = value;
 
     const animate = (currentTime: number) => {
       const elapsed = currentTime - startTime;

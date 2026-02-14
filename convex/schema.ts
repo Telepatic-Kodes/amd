@@ -171,6 +171,7 @@ export default defineSchema({
   // ===========================================
   content: defineTable({
     userId: v.optional(v.string()),
+    brandProfileId: v.optional(v.id("brandProfiles")),
     contentId: v.string(), // UUID
     type: v.union(
       v.literal("blog"),
@@ -229,10 +230,33 @@ export default defineSchema({
     approvedBy: v.optional(v.string()), // Puede ser humano
     sourceTaskId: v.optional(v.id("tasks")),
     sourceTemplateId: v.optional(v.string()), // Links content back to the template that created it
-    parentContentId: v.optional(v.id("content")), // Para repurposed content
+    parentContentId: v.optional(v.id("content")), // Para repurposed content (Content Pyramid)
+    // Framework-driven content classification (Sprint 1)
+    contentTier: v.optional(v.union(
+      v.literal("hero"),     // 10% — flagship content
+      v.literal("hub"),      // 30% — regular valuable content
+      v.literal("hygiene")   // 60% — always-on, SEO-driven
+    )),
+    pillarId: v.optional(v.id("contentPillars")),  // Links to content pillar
+    funnelStage: v.optional(v.union(
+      v.literal("reach"),    // RACE: awareness/discovery
+      v.literal("act"),      // RACE: interaction/consideration
+      v.literal("convert"),  // RACE: conversion/purchase
+      v.literal("engage")    // RACE: retention/advocacy
+    )),
+    tayaCategory: v.optional(v.union(
+      v.literal("cost"),         // "They Ask, You Answer" — pricing/cost content
+      v.literal("problems"),     // Common problems/issues
+      v.literal("comparisons"),  // vs competitors, alternatives
+      v.literal("reviews"),      // Reviews, testimonials
+      v.literal("best")          // Best-of lists, recommendations
+    )),
     publishedUrl: v.optional(v.string()),
     scheduledFor: v.optional(v.number()),
     publishedAt: v.optional(v.number()),
+    // P7: Content recycling tracking
+    recycledAt: v.optional(v.number()),
+    recycleCount: v.optional(v.number()),
     createdAt: v.number(),
     updatedAt: v.number(),
   })
@@ -242,7 +266,11 @@ export default defineSchema({
     .index("by_createdBy", ["createdBy"])
     .index("by_type_status", ["type", "status"])
     .index("by_scheduled", ["scheduledFor"])
-    .index("by_userId", ["userId"]),
+    .index("by_userId", ["userId"])
+    .index("by_pillarId", ["pillarId"])
+    .index("by_funnelStage", ["funnelStage"])
+    .index("by_contentTier", ["contentTier"])
+    .index("by_brandProfileId", ["brandProfileId"]),
 
   // ===========================================
   // CAMPAIGNS - Campañas de marketing
@@ -991,8 +1019,37 @@ export default defineSchema({
     visual: v.optional(v.object({
       primaryColor: v.optional(v.string()),
       secondaryColor: v.optional(v.string()),
+      accentColor: v.optional(v.string()),           // B3: accent color
+      backgroundColor: v.optional(v.string()),       // B3: background color
+      textColor: v.optional(v.string()),             // B3: text color
       logoDescription: v.optional(v.string()),
+      logoStorageId: v.optional(v.id("_storage")),   // B3: logo upload via Convex Storage
+      fontPrimary: v.optional(v.string()),           // B3: primary Google Font
+      fontSecondary: v.optional(v.string()),         // B3: secondary Google Font
       styleNotes: v.optional(v.string()),
+    })),
+    // B6: Social handles for multi-platform audit
+    socialHandles: v.optional(v.object({
+      instagram: v.optional(v.string()),
+      linkedin: v.optional(v.string()),
+      twitter: v.optional(v.string()),
+      youtube: v.optional(v.string()),
+    })),
+    // StoryBrand messaging hierarchy (Sprint 1)
+    messaging: v.optional(v.object({
+      guide: v.optional(v.string()),           // Brand as the guide
+      problem: v.optional(v.string()),         // Customer's problem
+      solution: v.optional(v.string()),        // Brand's solution
+      successVision: v.optional(v.string()),   // What success looks like
+      failureVision: v.optional(v.string()),   // What failure looks like
+      callToAction: v.optional(v.string()),    // Primary CTA
+    })),
+    // Brand positioning (Sprint 1)
+    positioning: v.optional(v.object({
+      uniqueValue: v.optional(v.string()),           // Unique value proposition
+      category: v.optional(v.string()),              // Market category
+      differentiators: v.optional(v.array(v.string())), // Key differentiators
+      proofPoints: v.optional(v.array(v.string())),     // Evidence/proof points
     })),
     kbId: v.optional(v.id("knowledgeBases")),
     maturityScore: v.optional(v.number()),
@@ -1194,12 +1251,19 @@ export default defineSchema({
     brandProfileId: v.id("brandProfiles"),
     instagramHandle: v.optional(v.string()),
     websiteUrl: v.optional(v.string()),
+    // B6: Multi-platform handles
+    linkedinHandle: v.optional(v.string()),
+    twitterHandle: v.optional(v.string()),
+    youtubeHandle: v.optional(v.string()),
+    platforms: v.optional(v.array(v.string())), // which platforms were audited
     metrics: v.object({
       followers: v.string(),
       following: v.string(),
       posts: v.string(),
       engagementNote: v.string(),
     }),
+    // B6: Per-platform metrics
+    platformMetrics: v.optional(v.any()),
     strengths: v.array(v.object({
       title: v.string(),
       description: v.string(),
@@ -1295,6 +1359,14 @@ export default defineSchema({
         description: v.string(),
         topics: v.array(v.string()),
         channels: v.array(v.string()),
+        // Optional fields generated by CMO AI
+        funnelFocus: v.optional(v.array(v.string())),
+        tayaCategories: v.optional(v.array(v.string())),
+        tierDistribution: v.optional(v.object({
+          hero: v.number(),
+          hub: v.number(),
+          hygiene: v.number(),
+        })),
       })),
       weeklyCalendar: v.array(v.object({
         dayOfWeek: v.string(),
@@ -1302,6 +1374,10 @@ export default defineSchema({
         channel: v.string(),
         pillar: v.string(),
         description: v.string(),
+        // Optional fields generated by CMO AI
+        contentTier: v.optional(v.string()),
+        funnelStage: v.optional(v.string()),
+        tayaCategory: v.optional(v.string()),
       })),
       adStrategy: v.optional(v.object({
         platforms: v.array(v.string()),
@@ -1318,6 +1394,26 @@ export default defineSchema({
         frequency: v.string(),
         segments: v.array(v.string()),
       })),
+      // Optional AI-generated strategy enrichments
+      goalMetrics: v.optional(v.object({
+        objective: v.optional(v.string()),
+        targetTimeline: v.optional(v.string()),
+        kpis: v.optional(v.array(v.string())),
+        milestones: v.optional(v.array(v.object({
+          week: v.number(),
+          target: v.string(),
+        }))),
+      })),
+      messagingAlignment: v.optional(v.string()),
+      repurposingPlan: v.optional(v.array(v.object({
+        heroContent: v.string(),
+        heroType: v.string(),
+        derivatives: v.optional(v.array(v.object({
+          type: v.string(),
+          tier: v.optional(v.string()),
+          description: v.string(),
+        }))),
+      }))),
     })),
     // Execution tracking
     totalTasks: v.optional(v.number()),
@@ -1434,6 +1530,75 @@ export default defineSchema({
     .index("by_event", ["events"]),
 
   // ===========================================
+  // CONTENT_PILLARS - Strategic content pillars with framework metadata
+  // ===========================================
+  contentPillars: defineTable({
+    pillarId: v.string(),
+    brandProfileId: v.id("brandProfiles"),
+    name: v.string(),
+    description: v.string(),
+    // TAYA categories this pillar covers
+    tayaCategories: v.optional(v.array(v.union(
+      v.literal("cost"),
+      v.literal("problems"),
+      v.literal("comparisons"),
+      v.literal("reviews"),
+      v.literal("best")
+    ))),
+    // RACE funnel stages this pillar targets
+    funnelStages: v.optional(v.array(v.union(
+      v.literal("reach"),
+      v.literal("act"),
+      v.literal("convert"),
+      v.literal("engage")
+    ))),
+    // Hero/Hub/Hygiene tier distribution for this pillar
+    contentTiers: v.optional(v.array(v.union(
+      v.literal("hero"),
+      v.literal("hub"),
+      v.literal("hygiene")
+    ))),
+    keywords: v.optional(v.array(v.string())),
+    status: v.union(v.literal("active"), v.literal("paused"), v.literal("archived")),
+    contentCount: v.optional(v.number()),
+    performanceScore: v.optional(v.number()), // 0-100
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_pillarId", ["pillarId"])
+    .index("by_brandProfileId", ["brandProfileId"])
+    .index("by_status", ["status"]),
+
+  // ===========================================
+  // MARKETING_PHASES - Tracks brand progress through marketing journey
+  // ===========================================
+  marketingPhases: defineTable({
+    phaseId: v.string(),
+    brandProfileId: v.id("brandProfiles"),
+    strategyId: v.optional(v.string()),
+    phase: v.union(
+      v.literal("foundation"),   // Brand identity, messaging, positioning
+      v.literal("strategy"),     // CMO strategy generation
+      v.literal("planning"),     // Content calendar, pillar assignment
+      v.literal("execution"),    // Agent task execution
+      v.literal("optimization")  // Performance review, iteration
+    ),
+    status: v.union(
+      v.literal("pending"),
+      v.literal("in_progress"),
+      v.literal("completed"),
+      v.literal("skipped")
+    ),
+    completedAt: v.optional(v.number()),
+    data: v.optional(v.any()), // Phase-specific metadata
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_brandProfileId", ["brandProfileId"])
+    .index("by_phase", ["phase"])
+    .index("by_status", ["status"]),
+
+  // ===========================================
   // WEBHOOK_DELIVERIES - Delivery log with retry tracking
   // ===========================================
   webhookDeliveries: defineTable({
@@ -1450,4 +1615,100 @@ export default defineSchema({
     .index("by_webhookId", ["webhookId"])
     .index("by_status", ["status"])
     .index("by_webhookId_createdAt", ["webhookId", "createdAt"]),
+
+  // ===========================================
+  // BRAND_PROFILE_VERSIONS - Snapshot history for brand profiles (B2)
+  // ===========================================
+  brandProfileVersions: defineTable({
+    brandProfileId: v.id("brandProfiles"),
+    version: v.number(),
+    snapshot: v.any(),           // Full brand profile snapshot at this point in time
+    editedBy: v.string(),        // Clerk userId
+    editedByName: v.optional(v.string()),
+    changeType: v.union(
+      v.literal("created"),
+      v.literal("edited"),
+      v.literal("rollback")
+    ),
+    changeSummary: v.optional(v.string()),
+    createdAt: v.number(),
+  })
+    .index("by_brandProfileId", ["brandProfileId"])
+    .index("by_brandProfileId_version", ["brandProfileId", "version"])
+    .index("by_createdAt", ["createdAt"]),
+
+  // ===========================================
+  // BRAND MANUAL SHARES - Public share links for brand manual
+  // ===========================================
+  brandManualShares: defineTable({
+    brandProfileId: v.id("brandProfiles"),
+    token: v.string(),
+    createdBy: v.string(),
+    createdAt: v.number(),
+    expiresAt: v.optional(v.number()),
+  })
+    .index("by_token", ["token"])
+    .index("by_brandProfileId", ["brandProfileId"]),
+
+  // ===========================================
+  // NOTIFICATIONS - In-app notifications for workflow (P2)
+  // ===========================================
+  notifications: defineTable({
+    userId: v.string(),          // Target user's Clerk ID
+    type: v.union(
+      v.literal("content_review"),      // Content needs review
+      v.literal("content_approved"),    // Content was approved
+      v.literal("content_rejected"),    // Content was rejected
+      v.literal("content_published"),   // Content was published
+      v.literal("content_scheduled"),   // Content was scheduled
+      v.literal("agent_error"),         // Agent execution failed
+      v.literal("brand_update"),        // Brand profile changed
+      v.literal("strategy_insight"),    // New strategy insight (P4)
+      v.literal("system")              // General system notification
+    ),
+    title: v.string(),
+    message: v.string(),
+    contentId: v.optional(v.id("content")),
+    linkUrl: v.optional(v.string()),     // Deep link in the app
+    read: v.boolean(),
+    readAt: v.optional(v.number()),
+    createdAt: v.number(),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_userId_read", ["userId", "read"])
+    .index("by_type", ["type"])
+    .index("by_createdAt", ["createdAt"]),
+
+  // ===========================================
+  // STRATEGY_INSIGHTS - AI-generated performance insights (P4)
+  // ===========================================
+  strategyInsights: defineTable({
+    brandProfileId: v.id("brandProfiles"),
+    userId: v.optional(v.string()),
+    type: v.union(
+      v.literal("pillar_performance"),    // Per-pillar analysis
+      v.literal("channel_performance"),   // Per-channel analysis
+      v.literal("content_recommendation"), // What to create next
+      v.literal("pivot_suggestion")       // Strategic pivot needed
+    ),
+    title: v.string(),
+    summary: v.string(),
+    details: v.any(),            // Structured insight data
+    pillarId: v.optional(v.id("contentPillars")),
+    priority: v.union(v.literal("high"), v.literal("medium"), v.literal("low")),
+    status: v.union(
+      v.literal("active"),
+      v.literal("acknowledged"),
+      v.literal("dismissed"),
+      v.literal("actioned")
+    ),
+    tokensUsed: v.optional(v.number()),
+    generatedAt: v.number(),
+    acknowledgedAt: v.optional(v.number()),
+  })
+    .index("by_brandProfileId", ["brandProfileId"])
+    .index("by_userId", ["userId"])
+    .index("by_status", ["status"])
+    .index("by_type", ["type"])
+    .index("by_generatedAt", ["generatedAt"]),
 });

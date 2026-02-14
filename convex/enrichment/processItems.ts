@@ -1,9 +1,9 @@
 /**
  * Enrichment Processing Actions
  *
- * Internal actions for AI-powered feed item enrichment using Claude API.
- * Uses Claude Haiku 3.5 with structured outputs for maximum cost efficiency
- * ($0.25/$1.25 per MTok - 4x cheaper than Haiku 4.5) and reliable JSON responses.
+ * Internal actions for AI-powered feed item enrichment using OpenAI API.
+ * Uses gpt-4o-mini with JSON mode for maximum cost efficiency
+ * ($0.15/$0.60 per MTok) and reliable JSON responses.
  *
  * @module convex/enrichment/processItems
  */
@@ -13,27 +13,24 @@ import { internalAction } from "../_generated/server";
 import { internal } from "../_generated/api";
 import { Id } from "../_generated/dataModel";
 import {
-  ENRICHMENT_SCHEMA,
   buildEnrichmentPrompt,
   buildSystemPrompt,
 } from "./prompts";
 import { getCompetitorNames } from "../monitoring/config";
+import { callLLM } from "../lib/llm";
 
 /**
- * Enriches a single feed item using Claude Haiku 3.5
+ * Enriches a single feed item using gpt-4o-mini (via shared LLM helper)
  *
- * Fetches the feed item, constructs a prompt from its content, calls Claude
- * with structured outputs to extract topics, sentiment, summary, and relevance
+ * Fetches the feed item, constructs a prompt from its content, calls OpenAI
+ * with JSON mode to extract topics, sentiment, summary, and relevance
  * score, then stores the results.
  *
- * Uses structured outputs beta header to guarantee valid JSON responses,
- * eliminating parsing failures.
- *
- * Cost: ~$0.07/day for 100 items (Haiku 3.5: $0.25/$1.25 per MTok)
+ * Cost: ~$0.03/day for 100 items (gpt-4o-mini: $0.15/$0.60 per MTok)
  *
  * @param itemId - ID of the feedItem to enrich
  * @returns Success status, item ID, and tokens used for cost tracking
- * @throws Error if API key missing, item not found, or Claude API fails
+ * @throws Error if API key missing, item not found, or API call fails
  */
 export const enrichFeedItem = internalAction({
   args: {
@@ -47,11 +44,6 @@ export const enrichFeedItem = internalAction({
     itemId: Id<"feedItems">;
     tokensUsed: number;
   }> => {
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-    if (!apiKey) {
-      throw new Error("ANTHROPIC_API_KEY not configured");
-    }
-
     // 1. Get item to enrich
     const item = await ctx.runQuery(internal.enrichment.queries.getItem, {
       itemId: args.itemId,
@@ -68,51 +60,31 @@ export const enrichFeedItem = internalAction({
     const userMessage = buildEnrichmentPrompt(item.title, content, competitors);
     const systemPrompt = buildSystemPrompt(competitors);
 
-    // 3. Call Claude with structured outputs
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-        "anthropic-beta": "structured-outputs-2025-11-13",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "claude-3-5-haiku-20241022", // Haiku 3.5: 4x cheaper than 4.5
-        max_tokens: 512,
-        temperature: 0.3, // Lower temp for consistent classification
+    // 3. Call OpenAI with JSON mode (gpt-4o-mini for cost efficiency)
+    let result;
+    try {
+      result = await callLLM({
         system: systemPrompt,
-        output_format: {
-          type: "json_schema",
-          schema: ENRICHMENT_SCHEMA,
-        },
-        messages: [
-          {
-            role: "user",
-            content: userMessage,
-          },
-        ],
-      }),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
+        user: userMessage,
+        model: "claude-3-5-haiku-20241022", // maps to gpt-4o-mini
+        maxTokens: 512,
+        temperature: 0.3,
+        jsonMode: true,
+      });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
       // Mark as failed to prevent infinite retries
       await ctx.runMutation(internal.enrichment.mutations.markFailed, {
         itemId: args.itemId,
-        error: `Claude API error: ${response.status} - ${errorText.slice(0, 500)}`,
+        error: `LLM API error: ${message.slice(0, 500)}`,
       });
-      throw new Error(`Claude API error: ${response.status} - ${errorText}`);
+      throw error;
     }
 
-    const data = await response.json();
-    const tokensUsed = (data.usage?.input_tokens ?? 0) + (data.usage?.output_tokens ?? 0);
+    const tokensUsed = result.usage.totalTokens;
 
     // 4. Parse structured output
-    if (!data.content?.[0]?.text) {
-      throw new Error("Claude API returned empty or invalid response");
-    }
-    const enrichment = JSON.parse(data.content[0].text);
+    const enrichment = JSON.parse(result.content);
 
     // 5. Store enrichment data
     await ctx.runMutation(internal.enrichment.mutations.storeEnrichment, {

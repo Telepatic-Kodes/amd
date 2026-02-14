@@ -157,4 +157,40 @@ crons.monthly(
   {}
 );
 
+// ===========================================
+// SCHEDULED CONTENT PUBLISHING (P1)
+// ===========================================
+
+// Auto-publish content with scheduledFor <= now, every 15 minutes
+crons.interval(
+  "publish-scheduled-content",
+  { minutes: 15 },
+  internal.scheduledPublishing.publishDueContent,
+  {}
+);
+
+// ===========================================
+// WEEKLY STRATEGY REVIEW (P4)
+// ===========================================
+
+// Generate performance insights every Monday at 9:00 AM UTC
+crons.weekly(
+  "weekly-strategy-review",
+  { dayOfWeek: "monday", hourUTC: 9, minuteUTC: 0 },
+  internal.strategyReview.weeklyStrategyReview,
+  {}
+);
+
+// ===========================================
+// CONTENT RECYCLING (P7)
+// ===========================================
+
+// Identify high-performing content for recycling every Sunday at 10:00 AM UTC
+crons.weekly(
+  "weekly-content-recycling",
+  { dayOfWeek: "sunday", hourUTC: 10, minuteUTC: 0 },
+  internal.contentRecycling.identifyRecyclingCandidates,
+  {}
+);
+
 export default crons;

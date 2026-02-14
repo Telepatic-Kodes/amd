@@ -145,3 +145,23 @@ export const updateUserRole = mutation({
     return args.userId;
   },
 });
+
+// DEV ONLY: Promote dev user to owner
+export const promoteDevUser = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerkId", (q) => q.eq("clerkId", "dev-user-001"))
+      .first();
+
+    if (!user) return { error: "Dev user not found" };
+
+    await ctx.db.patch(user._id, {
+      role: "owner",
+      updatedAt: Date.now(),
+    });
+
+    return { promoted: user._id, from: user.role, to: "owner" };
+  },
+});

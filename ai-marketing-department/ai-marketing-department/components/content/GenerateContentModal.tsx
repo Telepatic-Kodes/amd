@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useAction } from "convex/react";
+import { useAction, useQuery } from "convex/react";
 import { api } from "@convex/_generated/api";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -17,6 +17,9 @@ import {
   BookOpen,
   Mail,
   Youtube,
+  FileText,
+  ArrowLeft,
+  Hash,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/components/ui/Toast";
@@ -51,10 +54,29 @@ interface Props {
   defaultChannels?: string[];
 }
 
+// Category display names and colors
+const CATEGORY_CONFIG: Record<string, { label: string; color: string }> = {
+  social: { label: "Social", color: "bg-sky-100 text-sky-700" },
+  blog: { label: "Blog", color: "bg-orange-100 text-orange-700" },
+  email: { label: "Email", color: "bg-green-100 text-green-700" },
+  ads: { label: "Ads", color: "bg-purple-100 text-purple-700" },
+  misc: { label: "Otro", color: "bg-stone-100 text-stone-600" },
+};
+
 export function GenerateContentModal({ isOpen, onClose, defaultChannels = [] }: Props) {
   const generateContent = useAction(api.multiChannelGenerate.generateMultiChannelContent);
+  const templates = useQuery(api.contentTemplates.getActiveTemplates);
   const { success: showSuccess, error: showError } = useToast();
 
+  const [mode, setMode] = useState<"select" | "free" | "template">("select");
+  const [selectedTemplate, setSelectedTemplate] = useState<{
+    templateId: string;
+    name: string;
+    promptTemplate: string;
+    channels: string[];
+    category: string;
+    description: string;
+  } | null>(null);
   const [topic, setTopic] = useState("");
   const [selectedChannels, setSelectedChannels] = useState<string[]>(defaultChannels);
   const [customInstructions, setCustomInstructions] = useState("");
@@ -84,6 +106,8 @@ export function GenerateContentModal({ isOpen, onClose, defaultChannels = [] }: 
         topic: topic.trim(),
         channels: selectedChannels,
         customInstructions: customInstructions.trim() || undefined,
+        templateId: selectedTemplate?.templateId || undefined,
+        templatePrompt: selectedTemplate?.promptTemplate || undefined,
       }) as GenerateResponse;
 
       // Update status based on results
@@ -119,12 +143,42 @@ export function GenerateContentModal({ isOpen, onClose, defaultChannels = [] }: 
 
   const handleClose = () => {
     if (!isGenerating) {
+      setMode("select");
+      setSelectedTemplate(null);
       setTopic("");
+      setSelectedChannels(defaultChannels);
       setCustomInstructions("");
       setResults(null);
       setChannelStatus({});
       onClose();
     }
+  };
+
+  const handleSelectTemplate = (template: NonNullable<typeof templates>[number]) => {
+    setSelectedTemplate({
+      templateId: template.templateId,
+      name: template.name,
+      promptTemplate: template.promptTemplate,
+      channels: template.channels,
+      category: template.category,
+      description: template.description,
+    });
+    // Pre-fill form from template
+    setTopic(template.name);
+    setSelectedChannels(
+      template.channels.filter((ch: string) => CHANNELS.some((c) => c.id === ch))
+    );
+    setCustomInstructions("");
+    // Switch to free mode with template data pre-filled
+    setMode("free");
+  };
+
+  const handleBackToSelect = () => {
+    setMode("select");
+    setSelectedTemplate(null);
+    setTopic("");
+    setSelectedChannels(defaultChannels);
+    setCustomInstructions("");
   };
 
   if (!isOpen) return null;
@@ -164,70 +218,199 @@ export function GenerateContentModal({ isOpen, onClose, defaultChannels = [] }: 
 
         {/* Body */}
         <div className="px-6 py-5 space-y-5 max-h-[70vh] overflow-y-auto">
-          {/* Topic */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-stone-600">Tema</label>
-            <input
-              type="text"
-              value={topic}
-              onChange={(e) => setTopic(e.target.value)}
-              placeholder="Ej: 5 tendencias de IA para marketing en 2026"
-              disabled={isGenerating}
-              className="w-full px-4 py-3 rounded-lg bg-stone-100 border border-stone-200 text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition disabled:opacity-50"
-            />
-          </div>
-
-          {/* Channel Selection */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-stone-600">Canales</label>
-            <div className="grid grid-cols-2 gap-2">
-              {CHANNELS.map((channel) => {
-                const Icon = channel.icon;
-                const isSelected = selectedChannels.includes(channel.id);
-                const status = channelStatus[channel.id];
-
-                return (
-                  <button
-                    key={channel.id}
-                    type="button"
-                    onClick={() => !isGenerating && toggleChannel(channel.id)}
-                    disabled={isGenerating}
-                    className={cn(
-                      "flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium transition-all border",
-                      isSelected ? channel.color : "bg-stone-100 text-stone-500 border-stone-200 hover:border-stone-300",
-                      isGenerating && "cursor-default"
-                    )}
-                  >
-                    {status === "running" ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : status === "done" ? (
-                      <CheckCircle2 className="w-4 h-4 text-green-400" />
-                    ) : status === "error" ? (
-                      <AlertCircle className="w-4 h-4 text-red-400" />
-                    ) : (
-                      <Icon className="w-4 h-4" />
-                    )}
-                    {channel.label}
-                  </button>
-                );
-              })}
+          {/* Step 0: Mode Selection */}
+          {mode === "select" && !isGenerating && !results && (
+            <div className="space-y-3">
+              <p className="text-sm text-stone-500">Como quieres generar contenido?</p>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={() => setMode("free")}
+                  className="p-4 rounded-xl border border-stone-200 hover:border-orange-300 hover:bg-orange-50/50 transition-all text-left"
+                >
+                  <Sparkles className="h-5 w-5 text-orange-400 mb-2" />
+                  <p className="text-sm font-medium text-stone-900">Tema libre</p>
+                  <p className="text-xs text-stone-400 mt-1">Escribe tu tema y elige canales</p>
+                </button>
+                <button
+                  onClick={() => setMode("template")}
+                  className="p-4 rounded-xl border border-stone-200 hover:border-purple-300 hover:bg-purple-50/50 transition-all text-left"
+                >
+                  <FileText className="h-5 w-5 text-purple-400 mb-2" />
+                  <p className="text-sm font-medium text-stone-900">Usar template</p>
+                  <p className="text-xs text-stone-400 mt-1">Pre-configurado por tipo de contenido</p>
+                </button>
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Custom Instructions */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-stone-600">
-              Instrucciones adicionales <span className="text-stone-400">(opcional)</span>
-            </label>
-            <textarea
-              value={customInstructions}
-              onChange={(e) => setCustomInstructions(e.target.value)}
-              placeholder="Ej: Enfócate en el mercado latinoamericano, usa ejemplos de Chile..."
-              rows={3}
-              disabled={isGenerating}
-              className="w-full px-4 py-3 rounded-lg bg-stone-100 border border-stone-200 text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition resize-none disabled:opacity-50 text-sm"
-            />
-          </div>
+          {/* Step 0b: Template Picker */}
+          {mode === "template" && !isGenerating && !results && (
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleBackToSelect}
+                  className="p-1.5 rounded-lg hover:bg-stone-200 text-stone-500 hover:text-stone-900 transition"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                </button>
+                <p className="text-sm font-medium text-stone-600">Elige un template</p>
+              </div>
+              {!templates ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="w-5 h-5 animate-spin text-stone-400" />
+                </div>
+              ) : templates.length === 0 ? (
+                <div className="text-center py-8">
+                  <FileText className="w-8 h-8 text-stone-300 mx-auto mb-2" />
+                  <p className="text-sm text-stone-400">No hay templates disponibles</p>
+                  <button
+                    onClick={() => setMode("free")}
+                    className="mt-3 text-sm text-orange-500 hover:text-orange-600 font-medium"
+                  >
+                    Usar tema libre
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-2 max-h-[50vh] overflow-y-auto">
+                  {templates.map((template) => {
+                    const catConfig = CATEGORY_CONFIG[template.category] || CATEGORY_CONFIG.misc;
+                    return (
+                      <button
+                        key={template._id}
+                        onClick={() => handleSelectTemplate(template)}
+                        className="w-full p-3 rounded-xl border border-stone-200 hover:border-purple-300 hover:bg-purple-50/30 transition-all text-left group"
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-stone-900 group-hover:text-purple-900 truncate">
+                              {template.name}
+                            </p>
+                            <p className="text-xs text-stone-400 mt-0.5 line-clamp-2">
+                              {template.description}
+                            </p>
+                          </div>
+                          <span className={cn("text-[10px] font-medium px-2 py-0.5 rounded-full shrink-0", catConfig.color)}>
+                            {catConfig.label}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 mt-2">
+                          {template.channels.slice(0, 3).map((ch: string) => {
+                            const channelDef = CHANNELS.find((c) => c.id === ch);
+                            return channelDef ? (
+                              <span key={ch} className="text-[10px] text-stone-400 bg-stone-100 px-1.5 py-0.5 rounded">
+                                {channelDef.label}
+                              </span>
+                            ) : null;
+                          })}
+                          {template.channels.length > 3 && (
+                            <span className="text-[10px] text-stone-400">
+                              +{template.channels.length - 3} mas
+                            </span>
+                          )}
+                          {template.usageCount ? (
+                            <span className="text-[10px] text-stone-300 ml-auto flex items-center gap-0.5">
+                              <Hash className="w-2.5 h-2.5" />
+                              {template.usageCount} usos
+                            </span>
+                          ) : null}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Free mode form (topic + channels + instructions) */}
+          {mode === "free" && (
+            <>
+              {/* Back button + template badge */}
+              {!isGenerating && !results && (
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handleBackToSelect}
+                    className="p-1.5 rounded-lg hover:bg-stone-200 text-stone-500 hover:text-stone-900 transition"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                  </button>
+                  {selectedTemplate ? (
+                    <div className="flex items-center gap-1.5 text-xs text-purple-600 bg-purple-50 px-2.5 py-1 rounded-full">
+                      <FileText className="w-3 h-3" />
+                      Template: {selectedTemplate.name}
+                    </div>
+                  ) : (
+                    <p className="text-sm font-medium text-stone-600">Tema libre</p>
+                  )}
+                </div>
+              )}
+
+              {/* Topic */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-stone-600">Tema</label>
+                <input
+                  type="text"
+                  value={topic}
+                  onChange={(e) => setTopic(e.target.value)}
+                  placeholder="Ej: 5 tendencias de IA para marketing en 2026"
+                  disabled={isGenerating}
+                  className="w-full px-4 py-3 rounded-lg bg-stone-100 border border-stone-200 text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition disabled:opacity-50"
+                />
+              </div>
+
+              {/* Channel Selection */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-stone-600">Canales</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {CHANNELS.map((channel) => {
+                    const Icon = channel.icon;
+                    const isSelected = selectedChannels.includes(channel.id);
+                    const status = channelStatus[channel.id];
+
+                    return (
+                      <button
+                        key={channel.id}
+                        type="button"
+                        onClick={() => !isGenerating && toggleChannel(channel.id)}
+                        disabled={isGenerating}
+                        className={cn(
+                          "flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium transition-all border",
+                          isSelected ? channel.color : "bg-stone-100 text-stone-500 border-stone-200 hover:border-stone-300",
+                          isGenerating && "cursor-default"
+                        )}
+                      >
+                        {status === "running" ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : status === "done" ? (
+                          <CheckCircle2 className="w-4 h-4 text-green-400" />
+                        ) : status === "error" ? (
+                          <AlertCircle className="w-4 h-4 text-red-400" />
+                        ) : (
+                          <Icon className="w-4 h-4" />
+                        )}
+                        {channel.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Custom Instructions */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-stone-600">
+                  Instrucciones adicionales <span className="text-stone-400">(opcional)</span>
+                </label>
+                <textarea
+                  value={customInstructions}
+                  onChange={(e) => setCustomInstructions(e.target.value)}
+                  placeholder="Ej: Enfócate en el mercado latinoamericano, usa ejemplos de Chile..."
+                  rows={3}
+                  disabled={isGenerating}
+                  className="w-full px-4 py-3 rounded-lg bg-stone-100 border border-stone-200 text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition resize-none disabled:opacity-50 text-sm"
+                />
+              </div>
+            </>
+          )}
 
           {/* Results */}
           <AnimatePresence>
@@ -274,6 +457,13 @@ export function GenerateContentModal({ isOpen, onClose, defaultChannels = [] }: 
               className="px-6 py-2.5 rounded-lg bg-stone-200 hover:bg-stone-100 text-stone-900 text-sm font-medium transition"
             >
               Cerrar
+            </button>
+          ) : mode === "select" || mode === "template" ? (
+            <button
+              onClick={handleClose}
+              className="px-4 py-2.5 rounded-lg text-stone-400 hover:text-stone-900 text-sm font-medium transition"
+            >
+              Cancelar
             </button>
           ) : (
             <>

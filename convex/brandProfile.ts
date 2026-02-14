@@ -42,6 +42,113 @@ export const getBrandProfileById = query({
   },
 });
 
+/**
+ * getAllBrandProfiles - Returns all brand profiles for the current user.
+ * Used by BrandSwitcher to list available clients/brands.
+ */
+export const getAllBrandProfiles = query({
+  handler: async (ctx) => {
+    const userId = await getUserId(ctx);
+    const profiles = await ctx.db
+      .query("brandProfiles")
+      .withIndex("by_userId", (q) => q.eq("userId", userId))
+      .collect();
+
+    // Also include legacy profiles without userId (for backward compat)
+    const legacyProfiles = await ctx.db
+      .query("brandProfiles")
+      .collect();
+    const legacyWithoutUser = legacyProfiles.filter(
+      (p) => !p.userId && !profiles.some((up) => up._id === p._id)
+    );
+
+    return [...profiles, ...legacyWithoutUser].map((p) => ({
+      _id: p._id,
+      companyName: p.companyName,
+      industry: p.industry,
+      description: p.description,
+      maturityScore: p.maturityScore,
+      maturityLevel: p.maturityLevel,
+      status: p.status,
+    }));
+  },
+});
+
+// ===========================================
+// B2: VERSION HISTORY QUERIES & MUTATIONS
+// ===========================================
+
+// B2: Get version history for a brand profile
+export const getBrandProfileVersions = query({
+  args: { brandProfileId: v.id("brandProfiles") },
+  handler: async (ctx, args) => {
+    const versions = await ctx.db
+      .query("brandProfileVersions")
+      .withIndex("by_brandProfileId", (q) => q.eq("brandProfileId", args.brandProfileId))
+      .collect();
+
+    return versions.sort((a, b) => b.version - a.version);
+  },
+});
+
+// B2: Rollback to a specific version
+export const rollbackBrandProfile = mutation({
+  args: {
+    brandProfileId: v.id("brandProfiles"),
+    targetVersion: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getUserId(ctx);
+    const now = Date.now();
+
+    const profile = await ctx.db.get(args.brandProfileId);
+    if (!profile) throw new Error("Brand profile not found");
+
+    // Find the target version
+    const versions = await ctx.db
+      .query("brandProfileVersions")
+      .withIndex("by_brandProfileId", (q) => q.eq("brandProfileId", args.brandProfileId))
+      .collect();
+
+    const targetVersionDoc = versions.find((ver) => ver.version === args.targetVersion);
+    if (!targetVersionDoc) throw new Error("Version not found");
+
+    // Snapshot current state before rollback
+    const nextVersion = versions.length + 1;
+    await ctx.db.insert("brandProfileVersions", {
+      brandProfileId: args.brandProfileId,
+      version: nextVersion,
+      snapshot: {
+        companyName: profile.companyName,
+        industry: profile.industry,
+        website: profile.website,
+        description: profile.description,
+        voice: profile.voice,
+        audience: profile.audience,
+        strategy: profile.strategy,
+        competitors: profile.competitors,
+        references: profile.references,
+        visual: profile.visual,
+        messaging: profile.messaging,
+        positioning: profile.positioning,
+      },
+      editedBy: userId,
+      changeType: "rollback",
+      changeSummary: `Rollback a versión ${args.targetVersion}`,
+      createdAt: now,
+    });
+
+    // Restore the snapshot
+    const snapshot = targetVersionDoc.snapshot as Record<string, unknown>;
+    await ctx.db.patch(args.brandProfileId, {
+      ...snapshot,
+      updatedAt: now,
+    });
+
+    return { rolledBackTo: args.targetVersion };
+  },
+});
+
 // ===========================================
 // MUTATIONS
 // ===========================================
@@ -84,8 +191,32 @@ export const saveBrandProfile = mutation({
       v.object({
         primaryColor: v.optional(v.string()),
         secondaryColor: v.optional(v.string()),
+        accentColor: v.optional(v.string()),
+        backgroundColor: v.optional(v.string()),
+        textColor: v.optional(v.string()),
         logoDescription: v.optional(v.string()),
+        logoStorageId: v.optional(v.id("_storage")),
+        fontPrimary: v.optional(v.string()),
+        fontSecondary: v.optional(v.string()),
         styleNotes: v.optional(v.string()),
+      })
+    ),
+    messaging: v.optional(
+      v.object({
+        guide: v.optional(v.string()),
+        problem: v.optional(v.string()),
+        solution: v.optional(v.string()),
+        successVision: v.optional(v.string()),
+        failureVision: v.optional(v.string()),
+        callToAction: v.optional(v.string()),
+      })
+    ),
+    positioning: v.optional(
+      v.object({
+        uniqueValue: v.optional(v.string()),
+        category: v.optional(v.string()),
+        differentiators: v.optional(v.array(v.string())),
+        proofPoints: v.optional(v.array(v.string())),
       })
     ),
   },
@@ -100,6 +231,36 @@ export const saveBrandProfile = mutation({
       .first();
 
     if (existing) {
+      // B2: Create version snapshot before overwriting
+      const existingVersions = await ctx.db
+        .query("brandProfileVersions")
+        .withIndex("by_brandProfileId", (q) => q.eq("brandProfileId", existing._id))
+        .collect();
+      const nextVersion = existingVersions.length + 1;
+
+      await ctx.db.insert("brandProfileVersions", {
+        brandProfileId: existing._id,
+        version: nextVersion,
+        snapshot: {
+          companyName: existing.companyName,
+          industry: existing.industry,
+          website: existing.website,
+          description: existing.description,
+          voice: existing.voice,
+          audience: existing.audience,
+          strategy: existing.strategy,
+          competitors: existing.competitors,
+          references: existing.references,
+          visual: existing.visual,
+          messaging: existing.messaging,
+          positioning: existing.positioning,
+        },
+        editedBy: userId,
+        changeType: "edited",
+        changeSummary: `Perfil actualizado`,
+        createdAt: now,
+      });
+
       await ctx.db.patch(existing._id, {
         ...args,
         status: "complete" as const,
@@ -119,6 +280,48 @@ export const saveBrandProfile = mutation({
 });
 
 // ===========================================
+// INTERNAL MUTATIONS (AI-generated messaging/positioning)
+// ===========================================
+
+export const _updateMessaging = internalMutation({
+  args: {
+    brandProfileId: v.id("brandProfiles"),
+    messaging: v.object({
+      guide: v.optional(v.string()),
+      problem: v.optional(v.string()),
+      solution: v.optional(v.string()),
+      successVision: v.optional(v.string()),
+      failureVision: v.optional(v.string()),
+      callToAction: v.optional(v.string()),
+    }),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.brandProfileId, {
+      messaging: args.messaging,
+      updatedAt: Date.now(),
+    });
+  },
+});
+
+export const _updatePositioning = internalMutation({
+  args: {
+    brandProfileId: v.id("brandProfiles"),
+    positioning: v.object({
+      uniqueValue: v.optional(v.string()),
+      category: v.optional(v.string()),
+      differentiators: v.optional(v.array(v.string())),
+      proofPoints: v.optional(v.array(v.string())),
+    }),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.brandProfileId, {
+      positioning: args.positioning,
+      updatedAt: Date.now(),
+    });
+  },
+});
+
+// ===========================================
 // INTERNAL FUNCTIONS (used by syncBrandToKB)
 // ===========================================
 
@@ -132,6 +335,24 @@ export const _getBrandProfileById = internalQuery({
   args: { id: v.id("brandProfiles") },
   handler: async (ctx, args) => {
     return await ctx.db.get(args.id);
+  },
+});
+
+/**
+ * linkUserToProfile — Links the current authenticated user to an existing brand profile.
+ * Used to fix legacy profiles that were created without a userId.
+ */
+export const linkUserToProfile = mutation({
+  args: { brandProfileId: v.id("brandProfiles") },
+  handler: async (ctx, args) => {
+    const userId = await getUserId(ctx);
+    const profile = await ctx.db.get(args.brandProfileId);
+    if (!profile) throw new Error("Brand profile not found");
+    await ctx.db.patch(args.brandProfileId, {
+      userId,
+      updatedAt: Date.now(),
+    });
+    return { linked: true, userId };
   },
 });
 
@@ -289,6 +510,166 @@ export const syncBrandToKB = action({
   },
 });
 
+export const generateMessagingDraft = action({
+  args: { brandProfileId: v.id("brandProfiles") },
+  handler: async (ctx, args) => {
+    const profile = await ctx.runQuery(internal.brandProfile._getBrandProfileById, {
+      id: args.brandProfileId,
+    }) as Record<string, unknown> | null;
+
+    if (!profile) throw new Error("Brand profile not found");
+
+    const voice = profile.voice as { tone: string[]; personality: string[] };
+    const audience = profile.audience as { segments: Array<{ name: string; painPoints: string[] }> };
+    const strategy = profile.strategy as { topics: string[] };
+
+    const audienceStr = audience.segments
+      .map((s: { name: string; painPoints: string[] }) => s.name + " (dolor: " + s.painPoints.join(", ") + ")")
+      .join("; ");
+
+    const prompt = `Eres un experto en StoryBrand Framework de Donald Miller. Basándote en esta información de marca, genera el messaging framework completo.
+
+Empresa: ${profile.companyName}
+Industria: ${profile.industry}
+Descripción: ${profile.description}
+Tono de voz: ${voice.tone.join(", ")}
+Personalidad: ${voice.personality.join(", ")}
+Audiencia: ${audienceStr}
+Temas clave: ${strategy.topics.join(", ")}
+
+Genera un JSON con esta estructura exacta (en español):
+{
+  "guide": "La marca como guía - quién es y por qué puede ayudar (1-2 oraciones)",
+  "problem": "El problema principal del cliente - externo, interno y filosófico (2-3 oraciones)",
+  "solution": "La solución que ofrece la marca (1-2 oraciones)",
+  "successVision": "Cómo se ve el éxito para el cliente (1-2 oraciones)",
+  "failureVision": "Qué pasa si no actúan (1-2 oraciones)",
+  "callToAction": "El call to action principal (frase corta y directa)"
+}
+
+Responde ÚNICAMENTE con JSON válido, sin markdown.`;
+
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    if (!apiKey) throw new Error("ANTHROPIC_API_KEY not set");
+
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1024,
+        messages: [{ role: "user", content: prompt }],
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Claude API error: ${response.status}`);
+    }
+
+    const data = await response.json() as { content: Array<{ text: string }> };
+    const content = data.content[0].text;
+
+    // Parse the JSON response — strip markdown fences if present
+    let cleaned = content.trim();
+    if (cleaned.startsWith("```")) {
+      cleaned = cleaned.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
+    }
+
+    const messaging: {
+      guide: string;
+      problem: string;
+      solution: string;
+      successVision: string;
+      failureVision: string;
+      callToAction: string;
+    } = JSON.parse(cleaned);
+
+    // Return the draft (don't auto-save — let user review first)
+    return messaging;
+  },
+});
+
+export const generatePositioningDraft = action({
+  args: { brandProfileId: v.id("brandProfiles") },
+  handler: async (ctx, args) => {
+    const profile = await ctx.runQuery(internal.brandProfile._getBrandProfileById, {
+      id: args.brandProfileId,
+    }) as Record<string, unknown> | null;
+
+    if (!profile) throw new Error("Brand profile not found");
+
+    const audience = profile.audience as { segments: Array<{ name: string; painPoints: string[] }> };
+    const competitors = profile.competitors as Array<{ name: string; url?: string; notes?: string }>;
+    const messaging = profile.messaging as Record<string, string> | undefined;
+
+    const audienceNames = audience.segments.map((s: { name: string }) => s.name).join(", ");
+    const competitorNames = competitors.map((c: { name: string }) => c.name).join(", ") || "No definidos";
+    const solutionLine = messaging?.solution ? "Solución: " + messaging.solution : "";
+
+    const prompt = `Eres un experto en posicionamiento de marca (April Dunford framework). Basándote en esta información, genera el posicionamiento estratégico.
+
+Empresa: ${profile.companyName}
+Industria: ${profile.industry}
+Descripción: ${profile.description}
+Audiencia: ${audienceNames}
+Competidores: ${competitorNames}
+${solutionLine}
+
+Genera un JSON con esta estructura exacta (en español):
+{
+  "uniqueValue": "Propuesta de valor única en 1-2 oraciones",
+  "category": "Categoría de mercado donde compite la marca",
+  "differentiators": ["Diferenciador 1", "Diferenciador 2", "Diferenciador 3"],
+  "proofPoints": ["Evidencia 1", "Evidencia 2", "Evidencia 3"]
+}
+
+Responde ÚNICAMENTE con JSON válido, sin markdown.`;
+
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    if (!apiKey) throw new Error("ANTHROPIC_API_KEY not set");
+
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1024,
+        messages: [{ role: "user", content: prompt }],
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Claude API error: ${response.status}`);
+    }
+
+    const data = await response.json() as { content: Array<{ text: string }> };
+    const content = data.content[0].text;
+
+    // Parse the JSON response — strip markdown fences if present
+    let cleaned = content.trim();
+    if (cleaned.startsWith("```")) {
+      cleaned = cleaned.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
+    }
+
+    const positioning: {
+      uniqueValue: string;
+      category: string;
+      differentiators: string[];
+      proofPoints: string[];
+    } = JSON.parse(cleaned);
+
+    return positioning;
+  },
+});
+
 // ===========================================
 // SECTION BUILDERS
 // ===========================================
@@ -299,7 +680,9 @@ function buildBrandSections(profile: Record<string, unknown>) {
   const strategy = profile.strategy as { topics: string[]; channels: string[]; postingFrequency?: string };
   const competitors = profile.competitors as Array<{ name: string; url?: string; notes?: string }>;
   const references = profile.references as string[] | undefined;
-  const visual = profile.visual as { primaryColor?: string; secondaryColor?: string; logoDescription?: string; styleNotes?: string } | undefined;
+  const visual = profile.visual as { primaryColor?: string; secondaryColor?: string; accentColor?: string; backgroundColor?: string; textColor?: string; logoDescription?: string; fontPrimary?: string; fontSecondary?: string; styleNotes?: string } | undefined;
+  const messaging = profile.messaging as { guide?: string; problem?: string; solution?: string; successVision?: string; failureVision?: string; callToAction?: string } | undefined;
+  const positioning = profile.positioning as { uniqueValue?: string; category?: string; differentiators?: string[]; proofPoints?: string[] } | undefined;
 
   return [
     {
@@ -384,12 +767,75 @@ Use competitive intelligence to differentiate our content and positioning.`,
       title: "Visual Identity",
       content: `# Visual Identity — ${profile.companyName}
 
+## Color Palette
 ${visual?.primaryColor ? `Primary Color: ${visual.primaryColor}` : ""}
 ${visual?.secondaryColor ? `Secondary Color: ${visual.secondaryColor}` : ""}
-${visual?.logoDescription ? `Logo: ${visual.logoDescription}` : ""}
-${visual?.styleNotes ? `Style Notes: ${visual.styleNotes}` : ""}
+${visual?.accentColor ? `Accent Color: ${visual.accentColor}` : ""}
+${visual?.backgroundColor ? `Background Color: ${visual.backgroundColor}` : ""}
+${visual?.textColor ? `Text Color: ${visual.textColor}` : ""}
 
-Apply these visual guidelines when creating content that includes design elements or visual descriptions.`,
+## Typography
+${visual?.fontPrimary ? `Primary Font: ${visual.fontPrimary}` : ""}
+${visual?.fontSecondary ? `Secondary Font: ${visual.fontSecondary}` : ""}
+
+## Logo
+${visual?.logoDescription ? `Description: ${visual.logoDescription}` : "No logo description provided"}
+
+${visual?.styleNotes ? `## Style Notes\n${visual.styleNotes}` : ""}
+
+Apply these visual guidelines when creating content that includes design elements or visual descriptions. Use the primary color for headlines and key branding, accent color for CTAs and highlights, and ensure text maintains readability against the background color.`,
     },
+    // Section 7: StoryBrand Messaging
+    ...(messaging && (messaging.guide || messaging.problem || messaging.solution)
+      ? [
+          {
+            title: "StoryBrand Messaging",
+            content: `# StoryBrand Messaging — ${profile.companyName}
+
+## The Guide (Our Brand)
+${messaging.guide || "Not defined yet"}
+
+## The Problem (Customer's Challenge)
+${messaging.problem || "Not defined yet"}
+
+## The Solution (What We Offer)
+${messaging.solution || "Not defined yet"}
+
+## Success Vision (What Happens When They Win)
+${messaging.successVision || "Not defined yet"}
+
+## Failure Vision (What Happens If They Don't Act)
+${messaging.failureVision || "Not defined yet"}
+
+## Call to Action
+${messaging.callToAction || "Not defined yet"}
+
+Use this messaging framework in ALL content. Position the customer as the hero and our brand as the guide. Address their problem, show the solution, paint the success vision, and always include a clear CTA.`,
+          },
+        ]
+      : []),
+    // Section 8: Brand Positioning
+    ...(positioning && (positioning.uniqueValue || positioning.category)
+      ? [
+          {
+            title: "Brand Positioning",
+            content: `# Brand Positioning — ${profile.companyName}
+
+## Unique Value Proposition
+${positioning.uniqueValue || "Not defined yet"}
+
+## Market Category
+${positioning.category || "Not defined yet"}
+
+## Key Differentiators
+${positioning.differentiators?.map((d: string) => `- ${d}`).join("\n") || "None defined"}
+
+## Proof Points
+${positioning.proofPoints?.map((p: string) => `- ${p}`).join("\n") || "None defined"}
+
+Use this positioning to differentiate our content from competitors. Every piece should reinforce our unique value and back it up with proof points.`,
+          },
+        ]
+      : []),
   ];
 }

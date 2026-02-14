@@ -9,6 +9,7 @@ import {
   buildEnhancedSystemPrompt,
   buildUserMessage,
 } from "./lib/agentHelpers";
+import { callLLM } from "./lib/llm";
 
 /**
  * Action para llamar a Claude API
@@ -35,57 +36,19 @@ export const callClaude = action({
       );
     }
 
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-    if (!apiKey) {
-      throw new Error("ANTHROPIC_API_KEY not configured");
-    }
-
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: args.model || "claude-sonnet-4-20250514",
-        max_tokens: args.maxTokens || 4096,
-        temperature: args.temperature || 0.7,
-        system: args.systemPrompt,
-        messages: [
-          {
-            role: "user",
-            content: args.userMessage,
-          },
-        ],
-      }),
+    const result = await callLLM({
+      system: args.systemPrompt,
+      user: args.userMessage,
+      model: args.model,
+      temperature: args.temperature,
+      maxTokens: args.maxTokens,
     });
 
-    if (!response.ok) {
-      const error = await response.text();
-      throw new Error(`Claude API error: ${error}`);
-    }
-
-    const data = await response.json();
-
-    // Safety check: validate Claude API response structure
-    if (!data.content || !Array.isArray(data.content) || data.content.length === 0) {
-      throw new Error("Claude API returned empty response — no content blocks");
-    }
-    const textBlock = data.content[0];
-    if (!textBlock || textBlock.type !== "text" || !textBlock.text) {
-      throw new Error("Claude API returned non-text response block");
-    }
-
     return {
-      content: textBlock.text,
-      usage: {
-        inputTokens: data.usage?.input_tokens ?? 0,
-        outputTokens: data.usage?.output_tokens ?? 0,
-        totalTokens: (data.usage?.input_tokens ?? 0) + (data.usage?.output_tokens ?? 0),
-      },
-      model: data.model,
-      stopReason: data.stop_reason,
+      content: result.content,
+      usage: result.usage,
+      model: result.model,
+      stopReason: result.stopReason,
     };
   },
 });
