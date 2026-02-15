@@ -92,7 +92,7 @@ function DepartmentCard({
               </span>
             )}
             {errorCount > 0 && (
-              <span className="flex items-center gap-0.5 text-[10px] text-red-400">
+              <span className="flex items-center gap-0.5 text-[10px] text-[var(--error)]">
                 <span className="relative h-1.5 w-1.5">
                   <span className="absolute inset-0 rounded-full bg-red-500" />
                   <span className="absolute inset-0 rounded-full bg-red-500 animate-status-ping" />
@@ -144,7 +144,7 @@ function DepartmentCard({
             onClick={() => setExpanded(!expanded)}
             className={cn(
               "w-full flex items-center justify-center gap-1 py-1.5 mt-1.5 rounded-md text-xs",
-              "text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] hover:bg-white/[0.03] transition-colors"
+              "text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] hover:bg-[var(--card-bg)]/[0.03] transition-colors"
             )}
           >
             {expanded ? (
@@ -208,7 +208,7 @@ export function AgentCommandGrid({ agentsByDepartment, lastActivityByAgent, rece
 function AgentCommandGridSkeleton() {
   return (
     <div className="space-y-4">
-      <div className="h-4 w-48 rounded bg-stone-100 animate-pulse" />
+      <div className="h-4 w-48 rounded bg-[var(--surface-1)] animate-pulse" />
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
         {[...Array(6)].map((_, i) => (
           <div key={i} className="h-24 rounded-lg border border-[var(--border)] bg-[var(--surface-raised)] animate-pulse" />

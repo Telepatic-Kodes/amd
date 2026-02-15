@@ -21,9 +21,9 @@ export function Stepper({ currentStep }: StepperProps) {
               <div
                 className={cn(
                   "w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-xs font-semibold transition-all duration-300 border",
-                  done && "bg-orange-600 border-orange-500 text-white",
-                  active && "bg-orange-600/20 border-orange-500 text-orange-400 ring-2 ring-orange-500/30",
-                  !done && !active && "bg-stone-100 border-stone-300 text-stone-500"
+                  done && "bg-[var(--accent)] border-[var(--accent)] text-white",
+                  active && "bg-[var(--accent)]/20 border-[var(--accent)] text-[var(--accent)] ring-2 ring-[var(--accent)]/30",
+                  !done && !active && "bg-[var(--surface-1)] border-[var(--border)] text-[var(--text-tertiary)]"
                 )}
               >
                 {done ? <Check className="w-4 h-4" /> : i + 1}
@@ -31,7 +31,7 @@ export function Stepper({ currentStep }: StepperProps) {
               <span
                 className={cn(
                   "text-[10px] sm:text-xs font-medium hidden sm:block",
-                  active ? "text-orange-400" : done ? "text-stone-600" : "text-stone-500"
+                  active ? "text-[var(--accent)]" : done ? "text-[var(--text-secondary)]" : "text-[var(--text-tertiary)]"
                 )}
               >
                 {label}
@@ -41,7 +41,7 @@ export function Stepper({ currentStep }: StepperProps) {
               <div
                 className={cn(
                   "w-6 sm:w-12 h-px transition-colors duration-300 mb-4 sm:mb-5",
-                  i < currentStep ? "bg-orange-600" : "bg-stone-200"
+                  i < currentStep ? "bg-[var(--accent)]" : "bg-[var(--surface-2)]"
                 )}
               />
             )}

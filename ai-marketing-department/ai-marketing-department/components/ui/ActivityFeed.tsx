@@ -42,18 +42,18 @@ const activityConfig: Record<ActivityType, {
 }> = {
   task_completed: {
     icon: CheckCircle2,
-    color: "text-green-400",
+    color: "text-[var(--success)]",
     bgColor: "bg-green-500/10",
   },
   task_failed: {
     icon: AlertCircle,
-    color: "text-red-400",
+    color: "text-[var(--error)]",
     bgColor: "bg-red-500/10",
   },
   task_started: {
     icon: PlayCircle,
-    color: "text-orange-400",
-    bgColor: "bg-orange-500/10",
+    color: "text-[var(--accent)]",
+    bgColor: "bg-[var(--accent)]/10",
   },
   content_generated: {
     icon: FileText,
@@ -62,8 +62,8 @@ const activityConfig: Record<ActivityType, {
   },
   agent_activated: {
     icon: Bot,
-    color: "text-orange-400",
-    bgColor: "bg-orange-500/10",
+    color: "text-[var(--accent)]",
+    bgColor: "bg-[var(--accent)]/10",
   },
   agent_paused: {
     icon: Clock,
@@ -77,8 +77,8 @@ const activityConfig: Record<ActivityType, {
   },
   execution: {
     icon: Zap,
-    color: "text-orange-400",
-    bgColor: "bg-orange-500/10",
+    color: "text-[var(--accent)]",
+    bgColor: "bg-[var(--accent)]/10",
   },
 };
 
@@ -128,7 +128,7 @@ function ActivityItemComponent({ activity, isLast }: ActivityItemProps) {
           <Icon className={cn("h-4 w-4", config.color)} />
         </div>
         {!isLast && (
-          <div className="w-px flex-1 bg-stone-200 mt-2" />
+          <div className="w-px flex-1 bg-[var(--surface-2)] mt-2" />
         )}
       </div>
 
@@ -136,21 +136,21 @@ function ActivityItemComponent({ activity, isLast }: ActivityItemProps) {
       <div className="flex-1 pb-4">
         <div className="flex items-start justify-between gap-2">
           <div>
-            <p className="text-sm font-medium text-stone-900">
+            <p className="text-sm font-medium text-[var(--text-primary)]">
               {activity.title}
             </p>
             {activity.description && (
-              <p className="text-xs text-stone-500 mt-0.5">
+              <p className="text-xs text-[var(--text-tertiary)] mt-0.5">
                 {activity.description}
               </p>
             )}
             {activity.agent && (
-              <p className="text-xs text-stone-600 mt-1 font-mono">
+              <p className="text-xs text-[var(--text-secondary)] mt-1 font-mono">
                 {activity.agent}
               </p>
             )}
           </div>
-          <span className="text-xs text-stone-600 shrink-0">
+          <span className="text-xs text-[var(--text-secondary)] shrink-0">
             {formatRelativeTime(activity.timestamp)}
           </span>
         </div>
@@ -194,8 +194,8 @@ export function ActivityFeed({
             exit={{ opacity: 0 }}
             className="flex flex-col items-center justify-center py-8 text-center"
           >
-            <RefreshCw className="h-8 w-8 text-stone-700 mb-2" />
-            <p className="text-sm text-stone-500">{emptyMessage}</p>
+            <RefreshCw className="h-8 w-8 text-[var(--text-secondary)] mb-2" />
+            <p className="text-sm text-[var(--text-tertiary)]">{emptyMessage}</p>
           </motion.div>
         ) : null}
       </AnimatePresence>
@@ -228,7 +228,7 @@ export function CompactActivityFeed({
               initial={{ opacity: 0, y: -5 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 5 }}
-              className="flex items-center gap-2 p-2 rounded-lg bg-stone-100/50 hover:bg-stone-100 transition-colors"
+              className="flex items-center gap-2 p-2 rounded-lg bg-[var(--surface-1)]/50 hover:bg-[var(--surface-1)] transition-colors"
             >
               <div className={cn(
                 "flex h-6 w-6 items-center justify-center rounded",
@@ -237,11 +237,11 @@ export function CompactActivityFeed({
                 <Icon className={cn("h-3 w-3", config.color)} />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs text-stone-900 truncate">
+                <p className="text-xs text-[var(--text-primary)] truncate">
                   {activity.title}
                 </p>
               </div>
-              <span className="text-[10px] text-stone-600 shrink-0">
+              <span className="text-[10px] text-[var(--text-secondary)] shrink-0">
                 {formatRelativeTime(activity.timestamp)}
               </span>
             </motion.div>

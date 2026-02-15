@@ -55,7 +55,7 @@ export function NeedsAttention({
       type: "error",
       label: `${agentErrors} agente${agentErrors > 1 ? "s" : ""} con error`,
       detail: "Requiere atencion inmediata",
-      href: "/control-center",
+      href: "/",
     });
   }
 
@@ -64,7 +64,7 @@ export function NeedsAttention({
       type: "error",
       label: `${failedExecutions} ejecución${failedExecutions > 1 ? "es" : ""} fallida${failedExecutions > 1 ? "s" : ""}`,
       detail: "En las últimas 24 horas",
-      href: "/results",
+      href: "/",
     });
   }
 
@@ -82,7 +82,7 @@ export function NeedsAttention({
       type: "info",
       label: `${pendingTasks} tarea${pendingTasks > 1 ? "s" : ""} pendiente${pendingTasks > 1 ? "s" : ""}`,
       detail: "Sin asignar o en cola",
-      href: "/control-center",
+      href: "/",
     });
   }
 

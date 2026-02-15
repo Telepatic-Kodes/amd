@@ -31,7 +31,7 @@ export function FAQSection() {
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
               ¿Tienes Preguntas?
             </h2>
-            <p className="text-xl text-stone-400">
+            <p className="text-xl text-[var(--text-tertiary)]">
               Respondemos las dudas más comunes sobre AMD.
             </p>
           </motion.div>

@@ -25,8 +25,8 @@ export function StepChannels({ selected, onChange }: Props) {
   return (
     <div className="space-y-6 max-w-lg mx-auto">
       <div className="text-center space-y-2">
-        <h2 className="text-2xl font-bold text-stone-900">Canales Activos</h2>
-        <p className="text-stone-500 text-sm">¿Que canales deben gestionar tus agentes?</p>
+        <h2 className="text-2xl font-bold text-[var(--text-primary)]">Canales Activos</h2>
+        <p className="text-[var(--text-tertiary)] text-sm">¿Que canales deben gestionar tus agentes?</p>
       </div>
 
       <div className="space-y-2">
@@ -39,23 +39,23 @@ export function StepChannels({ selected, onChange }: Props) {
               className={cn(
                 "w-full flex items-center justify-between p-4 rounded-xl border transition-all duration-200",
                 active
-                  ? "border-orange-500 bg-orange-500/10"
-                  : "border-stone-200 bg-white hover:border-stone-300"
+                  ? "border-[var(--accent)] bg-[var(--accent)]/10"
+                  : "border-[var(--border)] bg-[var(--card-bg)] hover:border-[var(--border)]"
               )}
             >
               <div className="flex items-center gap-3">
-                <Icon className={cn("w-5 h-5", active ? "text-orange-400" : "text-stone-500")} />
-                <span className="font-medium text-sm text-stone-900">{label}</span>
+                <Icon className={cn("w-5 h-5", active ? "text-[var(--accent)]" : "text-[var(--text-tertiary)]")} />
+                <span className="font-medium text-sm text-[var(--text-primary)]">{label}</span>
               </div>
               <div
                 className={cn(
                   "w-10 h-6 rounded-full transition-colors duration-200 relative",
-                  active ? "bg-orange-600" : "bg-stone-300"
+                  active ? "bg-[var(--accent)]" : "bg-[var(--surface-2)]"
                 )}
               >
                 <div
                   className={cn(
-                    "absolute top-1 w-4 h-4 rounded-full bg-white transition-transform duration-200",
+                    "absolute top-1 w-4 h-4 rounded-full bg-[var(--card-bg)] transition-transform duration-200",
                     active ? "translate-x-5" : "translate-x-1"
                   )}
                 />

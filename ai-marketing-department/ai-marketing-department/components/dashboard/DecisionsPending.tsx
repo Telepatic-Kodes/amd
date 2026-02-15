@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import Link from 'next/link';
 import { AlertCircle, FileCheck, Bot, XCircle } from 'lucide-react';
 
@@ -9,7 +10,7 @@ interface DecisionsPendingProps {
   failedExecutions: number;
 }
 
-export function DecisionsPending({
+export const DecisionsPending = memo(function DecisionsPending({
   contentInReview,
   agentErrors,
   failedExecutions,
@@ -19,8 +20,9 @@ export function DecisionsPending({
   if (total === 0) {
     return (
       <div
-        className="rounded-lg border-2 border-green-500 dark:border-green-500 p-4"
+        className="rounded-lg border-2 p-4"
         style={{
+          borderColor: 'var(--success)',
           backgroundColor: 'var(--card-bg)',
         }}
       >
@@ -31,7 +33,7 @@ export function DecisionsPending({
               backgroundColor: 'var(--surface-1)',
             }}
           >
-            <FileCheck className="w-5 h-5 text-green-500" />
+            <FileCheck className="w-5 h-5" style={{ color: 'var(--success)' }} />
           </div>
           <div>
             <p
@@ -50,14 +52,15 @@ export function DecisionsPending({
 
   return (
     <div
-      className="rounded-lg border-2 border-amber-500 dark:border-amber-500 p-4"
+      className="rounded-lg border-2 p-4"
       style={{
+        borderColor: 'var(--warning)',
         backgroundColor: 'var(--card-bg)',
       }}
     >
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <AlertCircle className="w-5 h-5 text-amber-500" />
+          <AlertCircle className="w-5 h-5" style={{ color: 'var(--warning)' }} />
           <h3
             className="text-sm font-semibold"
             style={{
@@ -70,7 +73,7 @@ export function DecisionsPending({
         <span
           className="inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold text-white"
           style={{
-            backgroundColor: 'rgb(217, 119, 6)',
+            backgroundColor: 'var(--warning)',
           }}
         >
           {total}
@@ -89,10 +92,10 @@ export function DecisionsPending({
               <div
                 className="rounded-lg p-2 flex-shrink-0"
                 style={{
-                  backgroundColor: 'rgba(217, 119, 6, 0.1)',
+                  backgroundColor: 'var(--badge-amber-bg)',
                 }}
               >
-                <FileCheck className="w-4 h-4 text-amber-600" />
+                <FileCheck className="w-4 h-4" style={{ color: 'var(--badge-amber-text)' }} />
               </div>
               <div className="flex-1">
                 <p
@@ -127,10 +130,10 @@ export function DecisionsPending({
               <div
                 className="rounded-lg p-2 flex-shrink-0"
                 style={{
-                  backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                  backgroundColor: 'var(--badge-red-bg)',
                 }}
               >
-                <Bot className="w-4 h-4 text-red-600" />
+                <Bot className="w-4 h-4" style={{ color: 'var(--badge-red-text)' }} />
               </div>
               <div className="flex-1">
                 <p
@@ -165,10 +168,10 @@ export function DecisionsPending({
               <div
                 className="rounded-lg p-2 flex-shrink-0"
                 style={{
-                  backgroundColor: 'rgba(234, 88, 12, 0.1)',
+                  backgroundColor: 'var(--accent-subtle)',
                 }}
               >
-                <XCircle className="w-4 h-4 text-orange-600" />
+                <XCircle className="w-4 h-4" style={{ color: 'var(--accent)' }} />
               </div>
               <div className="flex-1">
                 <p
@@ -194,4 +197,4 @@ export function DecisionsPending({
       </div>
     </div>
   );
-}
+});

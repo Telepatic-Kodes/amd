@@ -28,7 +28,7 @@ function TrendBadge({ trend }: { trend: number }) {
       ? "text-[#2FCC71]"
       : "text-[#E5484D]";
   const bgColor = isNeutral
-    ? "bg-white/[0.04]"
+    ? "bg-[var(--surface-1)]"
     : isPositive
       ? "bg-[#2FCC71]/10"
       : "bg-[#E5484D]/10";

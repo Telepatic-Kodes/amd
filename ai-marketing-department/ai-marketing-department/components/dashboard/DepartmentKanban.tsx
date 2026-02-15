@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { cn } from "@/lib/utils";
 import { AgentMiniCard } from "./AgentMiniCard";
 
@@ -38,10 +39,10 @@ function getHealthDot(agents: Agent[]) {
     return "bg-green-500";
   }
   // Gray otherwise
-  return "bg-gray-400";
+  return "bg-[var(--text-tertiary)]";
 }
 
-export function DepartmentKanban({ agentsByDepartment }: DepartmentKanbanProps) {
+export const DepartmentKanban = memo(function DepartmentKanban({ agentsByDepartment }: DepartmentKanbanProps) {
   const isLoading = !agentsByDepartment;
 
   if (isLoading) {
@@ -121,7 +122,7 @@ export function DepartmentKanban({ agentsByDepartment }: DepartmentKanbanProps) 
       </div>
     </div>
   );
-}
+});
 
 export function DepartmentKanbanSkeleton() {
   return (

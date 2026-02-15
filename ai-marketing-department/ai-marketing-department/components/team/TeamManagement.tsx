@@ -39,13 +39,13 @@ export function TeamManagement() {
     return (
       <Card>
         <CardHeader>
-          <h3 className="text-lg font-semibold text-stone-900">{translate("team")}</h3>
-          <p className="text-sm text-stone-400">{translate("teamManagement")}</p>
+          <h3 className="text-lg font-semibold text-[var(--text-primary)]">{translate("team")}</h3>
+          <p className="text-sm text-[var(--text-tertiary)]">{translate("teamManagement")}</p>
         </CardHeader>
         <CardContent className="p-6 pt-0">
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-16 rounded-lg bg-stone-100/50 animate-pulse" />
+              <div key={i} className="h-16 rounded-lg bg-[var(--surface-1)]/50 animate-pulse" />
             ))}
           </div>
         </CardContent>
@@ -58,11 +58,11 @@ export function TeamManagement() {
     return (
       <Card>
         <CardHeader>
-          <h3 className="text-lg font-semibold text-stone-900">{translate("team")}</h3>
-          <p className="text-sm text-stone-400">{translate("teamManagement")}</p>
+          <h3 className="text-lg font-semibold text-[var(--text-primary)]">{translate("team")}</h3>
+          <p className="text-sm text-[var(--text-tertiary)]">{translate("teamManagement")}</p>
         </CardHeader>
         <CardContent className="p-6 pt-0">
-          <p className="text-sm text-stone-500">
+          <p className="text-sm text-[var(--text-tertiary)]">
             Solo los administradores pueden gestionar el equipo.
           </p>
         </CardContent>
@@ -73,8 +73,8 @@ export function TeamManagement() {
   return (
     <Card>
       <CardHeader>
-        <h3 className="text-lg font-semibold text-stone-900">{translate("team")}</h3>
-        <p className="text-sm text-stone-400">Gestiona los roles de tu equipo</p>
+        <h3 className="text-lg font-semibold text-[var(--text-primary)]">{translate("team")}</h3>
+        <p className="text-sm text-[var(--text-tertiary)]">Gestiona los roles de tu equipo</p>
       </CardHeader>
       <CardContent className="p-6 pt-0">
         <div className="space-y-3">
@@ -82,7 +82,7 @@ export function TeamManagement() {
           <div className="hidden md:block overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="text-left text-xs text-stone-500 uppercase tracking-wider border-b border-stone-200">
+                <tr className="text-left text-xs text-[var(--text-tertiary)] uppercase tracking-wider border-b border-[var(--border)]">
                   <th className="pb-3 font-medium">Usuario</th>
                   <th className="pb-3 font-medium">Email</th>
                   <th className="pb-3 font-medium">Rol</th>
@@ -122,15 +122,15 @@ export function TeamManagement() {
                               className="h-10 w-10 rounded-full object-cover"
                             />
                           ) : (
-                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-500/10 text-orange-400 font-medium text-sm">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--accent)]/10 text-[var(--accent)] font-medium text-sm">
                               {initials}
                             </div>
                           )}
                           <div>
-                            <p className="text-sm font-medium text-stone-900">
+                            <p className="text-sm font-medium text-[var(--text-primary)]">
                               {user.name || "Usuario"}
                               {isCurrentUser && (
-                                <span className="ml-2 text-xs text-stone-500">(Tú)</span>
+                                <span className="ml-2 text-xs text-[var(--text-tertiary)]">(Tú)</span>
                               )}
                             </p>
                           </div>
@@ -139,7 +139,7 @@ export function TeamManagement() {
 
                       {/* Email */}
                       <td className="py-3">
-                        <p className="text-sm text-stone-400">{user.email}</p>
+                        <p className="text-sm text-[var(--text-tertiary)]">{user.email}</p>
                       </td>
 
                       {/* Role Badge */}
@@ -154,7 +154,7 @@ export function TeamManagement() {
                             value={user.role}
                             onChange={(e) => handleRoleChange(user._id, e.target.value)}
                             disabled={isDisabled}
-                            className="appearance-none rounded-lg border border-stone-200 bg-white py-1.5 pl-3 pr-8 text-sm text-stone-900 disabled:opacity-50 disabled:cursor-not-allowed focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                            className="appearance-none rounded-lg border border-[var(--border)] bg-[var(--card-bg)] py-1.5 pl-3 pr-8 text-sm text-[var(--text-primary)] disabled:opacity-50 disabled:cursor-not-allowed focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
                           >
                             {/* Show current role even if it's "owner" */}
                             {user.role === "owner" && (
@@ -166,13 +166,13 @@ export function TeamManagement() {
                               </option>
                             ))}
                           </select>
-                          <ChevronDown className="absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-500 pointer-events-none" />
+                          <ChevronDown className="absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-tertiary)] pointer-events-none" />
                         </div>
                         {isSystemOwner && (
-                          <p className="text-xs text-stone-500 mt-1">Propietario del sistema</p>
+                          <p className="text-xs text-[var(--text-tertiary)] mt-1">Propietario del sistema</p>
                         )}
                         {isCurrentUser && !isSystemOwner && (
-                          <p className="text-xs text-stone-500 mt-1">No puedes cambiar tu propio rol</p>
+                          <p className="text-xs text-[var(--text-tertiary)] mt-1">No puedes cambiar tu propio rol</p>
                         )}
                       </td>
                     </tr>
@@ -204,7 +204,7 @@ export function TeamManagement() {
               return (
                 <div
                   key={user._id}
-                  className="rounded-lg border border-stone-200 bg-stone-100/50 p-4 space-y-3"
+                  className="rounded-lg border border-[var(--border)] bg-[var(--surface-1)]/50 p-4 space-y-3"
                 >
                   {/* User Info */}
                   <div className="flex items-center gap-3">
@@ -217,18 +217,18 @@ export function TeamManagement() {
                         className="h-12 w-12 rounded-full object-cover"
                       />
                     ) : (
-                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-500/10 text-orange-400 font-medium">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--accent)]/10 text-[var(--accent)] font-medium">
                         {initials}
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-stone-900 truncate">
+                      <p className="text-sm font-medium text-[var(--text-primary)] truncate">
                         {user.name || "Usuario"}
                         {isCurrentUser && (
-                          <span className="ml-2 text-xs text-stone-500">(Tú)</span>
+                          <span className="ml-2 text-xs text-[var(--text-tertiary)]">(Tú)</span>
                         )}
                       </p>
-                      <p className="text-xs text-stone-400 truncate">{user.email}</p>
+                      <p className="text-xs text-[var(--text-tertiary)] truncate">{user.email}</p>
                     </div>
                   </div>
 
@@ -239,13 +239,13 @@ export function TeamManagement() {
 
                   {/* Role Selector */}
                   <div>
-                    <label className="block text-xs text-stone-500 mb-1">Cambiar rol</label>
+                    <label className="block text-xs text-[var(--text-tertiary)] mb-1">Cambiar rol</label>
                     <div className="relative">
                       <select
                         value={user.role}
                         onChange={(e) => handleRoleChange(user._id, e.target.value)}
                         disabled={isDisabled}
-                        className="w-full appearance-none rounded-lg border border-stone-200 bg-white py-2 pl-3 pr-8 text-sm text-stone-900 disabled:opacity-50 disabled:cursor-not-allowed focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                        className="w-full appearance-none rounded-lg border border-[var(--border)] bg-[var(--card-bg)] py-2 pl-3 pr-8 text-sm text-[var(--text-primary)] disabled:opacity-50 disabled:cursor-not-allowed focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
                       >
                         {user.role === "owner" && (
                           <option value="owner">{ROLE_LABELS.owner}</option>
@@ -256,13 +256,13 @@ export function TeamManagement() {
                           </option>
                         ))}
                       </select>
-                      <ChevronDown className="absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-500 pointer-events-none" />
+                      <ChevronDown className="absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-tertiary)] pointer-events-none" />
                     </div>
                     {isSystemOwner && (
-                      <p className="text-xs text-stone-500 mt-1">Propietario del sistema</p>
+                      <p className="text-xs text-[var(--text-tertiary)] mt-1">Propietario del sistema</p>
                     )}
                     {isCurrentUser && !isSystemOwner && (
-                      <p className="text-xs text-stone-500 mt-1">No puedes cambiar tu propio rol</p>
+                      <p className="text-xs text-[var(--text-tertiary)] mt-1">No puedes cambiar tu propio rol</p>
                     )}
                   </div>
                 </div>

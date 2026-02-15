@@ -93,9 +93,9 @@ export function DonutChart({
                       className="w-3 h-3 rounded-full"
                       style={{ backgroundColor: item.color || seriesColors[data.indexOf(item) % seriesColors.length] }}
                     />
-                    <span className="text-stone-900 font-medium">{item.name}</span>
+                    <span className="text-[var(--text-primary)] font-medium">{item.name}</span>
                   </div>
-                  <div className="mt-1 text-stone-500 text-sm">
+                  <div className="mt-1 text-[var(--text-tertiary)] text-sm">
                     {valueFormatter(item.value)} ({percent}%)
                   </div>
                 </div>
@@ -113,7 +113,7 @@ export function DonutChart({
               paddingLeft: '20px',
             }}
             formatter={(value) => (
-              <span className="text-stone-500">{value}</span>
+              <span className="text-[var(--text-tertiary)]">{value}</span>
             )}
           />
         )}

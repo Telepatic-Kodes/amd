@@ -50,7 +50,7 @@ const SETUP_STEPS: SetupStep[] = [
     key: "feedsConfigured",
     label: "Agregar fuentes",
     description: "Al menos una fuente de contenido",
-    href: "/feeds",
+    href: "/settings",
     icon: Rss,
     weight: 15,
   },
@@ -66,7 +66,7 @@ const SETUP_STEPS: SetupStep[] = [
     key: "firstCampaignCreated",
     label: "Lanzar campaña",
     description: "Tu primera campaña de marketing",
-    href: "/campaigns",
+    href: "/strategy",
     icon: Megaphone,
     weight: 15,
   },
@@ -74,7 +74,7 @@ const SETUP_STEPS: SetupStep[] = [
     key: "analyticsViewed",
     label: "Ver resultados",
     description: "Revisa tus métricas",
-    href: "/analytics",
+    href: "/",
     icon: BarChart3,
     weight: 10,
   },
@@ -105,40 +105,40 @@ export function SetupProgress() {
   );
 
   return (
-    <div className="rounded-xl border border-stone-200 bg-white overflow-hidden">
+    <div className="rounded-xl border border-[var(--border)] bg-[var(--card-bg)] overflow-hidden">
       {/* Progress Header */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-between p-4 hover:bg-stone-100/50 transition-colors"
+        className="w-full flex items-center justify-between p-4 hover:bg-[var(--surface-1)]/50 transition-colors"
       >
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-orange-500/10">
-            <Sparkles className="w-4 h-4 text-orange-400" />
+          <div className="p-2 rounded-lg bg-[var(--accent)]/10">
+            <Sparkles className="w-4 h-4 text-[var(--accent)]" />
           </div>
           <div className="text-left">
-            <p className="text-sm font-medium text-stone-900">
+            <p className="text-sm font-medium text-[var(--text-primary)]">
               Progreso de Configuración
             </p>
-            <p className="text-xs text-stone-500">
+            <p className="text-xs text-[var(--text-tertiary)]">
               {completedCount}/{totalCount} pasos completados
             </p>
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-sm font-semibold text-orange-400">
+          <span className="text-sm font-semibold text-[var(--accent)]">
             {progress}%
           </span>
           {expanded ? (
-            <ChevronUp className="w-4 h-4 text-stone-500" />
+            <ChevronUp className="w-4 h-4 text-[var(--text-tertiary)]" />
           ) : (
-            <ChevronDown className="w-4 h-4 text-stone-500" />
+            <ChevronDown className="w-4 h-4 text-[var(--text-tertiary)]" />
           )}
         </div>
       </button>
 
       {/* Progress Bar */}
       <div className="px-4 pb-3">
-        <div className="h-1.5 rounded-full bg-stone-200 overflow-hidden">
+        <div className="h-1.5 rounded-full bg-[var(--surface-2)] overflow-hidden">
           <motion.div
             className="h-full rounded-full bg-gradient-to-r from-orange-500 to-purple-500"
             initial={{ width: 0 }}
@@ -172,26 +172,26 @@ export function SetupProgress() {
                       completed
                         ? "opacity-60"
                         : isNext
-                        ? "bg-orange-500/10 border border-orange-500/20"
-                        : "hover:bg-stone-100/50"
+                        ? "bg-[var(--accent)]/10 border border-[var(--accent)]/20"
+                        : "hover:bg-[var(--surface-1)]/50"
                     }`}
                   >
                     {completed ? (
-                      <CheckCircle2 className="w-4 h-4 text-green-400 flex-shrink-0" />
+                      <CheckCircle2 className="w-4 h-4 text-[var(--success)] flex-shrink-0" />
                     ) : (
-                      <Circle className={`w-4 h-4 flex-shrink-0 ${isNext ? "text-orange-400" : "text-stone-600"}`} />
+                      <Circle className={`w-4 h-4 flex-shrink-0 ${isNext ? "text-[var(--accent)]" : "text-[var(--text-secondary)]"}`} />
                     )}
-                    <StepIcon className={`w-4 h-4 flex-shrink-0 ${completed ? "text-stone-500" : isNext ? "text-orange-400" : "text-stone-500"}`} />
+                    <StepIcon className={`w-4 h-4 flex-shrink-0 ${completed ? "text-[var(--text-tertiary)]" : isNext ? "text-[var(--accent)]" : "text-[var(--text-tertiary)]"}`} />
                     <div className="flex-1 min-w-0">
-                      <p className={`text-sm ${completed ? "line-through text-stone-500" : "text-stone-900"}`}>
+                      <p className={`text-sm ${completed ? "line-through text-[var(--text-tertiary)]" : "text-[var(--text-primary)]"}`}>
                         {step.label}
                       </p>
-                      <p className="text-xs text-stone-500 truncate">
+                      <p className="text-xs text-[var(--text-tertiary)] truncate">
                         {step.description}
                       </p>
                     </div>
                     {isNext && (
-                      <span className="text-xs text-orange-400 font-medium flex-shrink-0">
+                      <span className="text-xs text-[var(--accent)] font-medium flex-shrink-0">
                         Siguiente
                       </span>
                     )}
@@ -208,7 +208,7 @@ export function SetupProgress() {
         <div className="px-4 pb-3">
           <Link
             href={nextStep.href}
-            className="text-xs text-stone-500 hover:text-orange-400 transition-colors"
+            className="text-xs text-[var(--text-tertiary)] hover:text-[var(--accent)] transition-colors"
           >
             Siguiente: {nextStep.label} →
           </Link>

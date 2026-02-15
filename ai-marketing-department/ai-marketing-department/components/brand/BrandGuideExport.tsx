@@ -44,7 +44,7 @@ export function BrandGuideExport() {
     <>
       <button
         onClick={handleExport}
-        className="flex items-center gap-2 text-xs px-3 py-1.5 rounded-lg border border-stone-200 text-stone-600 hover:bg-stone-100 transition-colors"
+        className="flex items-center gap-2 text-xs px-3 py-1.5 rounded-lg border border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--surface-1)] transition-colors"
       >
         <Download className="h-3.5 w-3.5" />
         Exportar Guía
@@ -52,23 +52,23 @@ export function BrandGuideExport() {
 
       {/* Print-optimized view - full overlay on screen, clean for printing */}
       {showPreview && (
-        <div className="fixed inset-0 z-[100] bg-white overflow-auto print:static">
+        <div className="fixed inset-0 z-[100] bg-[var(--card-bg)] overflow-auto print:static">
           {/* Close button (hidden in print) */}
           <button
             onClick={() => setShowPreview(false)}
-            className="fixed top-4 right-4 z-[101] p-2 bg-stone-100 rounded-full hover:bg-stone-200 print:hidden"
+            className="fixed top-4 right-4 z-[101] p-2 bg-[var(--surface-1)] rounded-full hover:bg-[var(--surface-2)] print:hidden"
           >
             <X className="h-5 w-5" />
           </button>
 
           {/* Print action bar (hidden in print) */}
-          <div className="sticky top-0 z-[100] bg-white border-b border-stone-200 px-6 py-3 flex items-center justify-between print:hidden">
-            <span className="text-sm font-medium text-stone-700">
+          <div className="sticky top-0 z-[100] bg-[var(--card-bg)] border-b border-[var(--border)] px-6 py-3 flex items-center justify-between print:hidden">
+            <span className="text-sm font-medium text-[var(--text-secondary)]">
               Vista previa — Guía de Marca
             </span>
             <button
               onClick={() => window.print()}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-orange-600 hover:bg-orange-700 text-white text-sm font-medium transition-colors"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-sm font-medium transition-colors"
             >
               <Download className="h-4 w-4" />
               Imprimir / Guardar PDF
@@ -82,9 +82,9 @@ export function BrandGuideExport() {
                 className="h-2 w-32 mx-auto rounded-full mb-8"
                 style={{ backgroundColor: primaryColor }}
               />
-              <h1 className="text-4xl font-bold text-stone-900">{profile.companyName}</h1>
-              <p className="text-lg text-stone-500 mt-2">Guía de Marca</p>
-              <p className="text-sm text-stone-400 mt-1">
+              <h1 className="text-4xl font-bold text-[var(--text-primary)]">{profile.companyName}</h1>
+              <p className="text-lg text-[var(--text-tertiary)] mt-2">Guía de Marca</p>
+              <p className="text-sm text-[var(--text-tertiary)] mt-1">
                 {new Date().toLocaleDateString("es-CL", {
                   year: "numeric",
                   month: "long",
@@ -96,28 +96,28 @@ export function BrandGuideExport() {
             {/* 1. Identity */}
             <section className="mb-12 print:break-inside-avoid">
               <h2
-                className="text-2xl font-bold text-stone-900 border-b-2 pb-2 mb-4"
+                className="text-2xl font-bold text-[var(--text-primary)] border-b-2 pb-2 mb-4"
                 style={{ borderColor: primaryColor }}
               >
                 1. Identidad
               </h2>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <p className="font-medium text-stone-500">Empresa</p>
-                  <p className="text-stone-900">{profile.companyName}</p>
+                  <p className="font-medium text-[var(--text-tertiary)]">Empresa</p>
+                  <p className="text-[var(--text-primary)]">{profile.companyName}</p>
                 </div>
                 <div>
-                  <p className="font-medium text-stone-500">Industria</p>
-                  <p className="text-stone-900">{profile.industry}</p>
+                  <p className="font-medium text-[var(--text-tertiary)]">Industria</p>
+                  <p className="text-[var(--text-primary)]">{profile.industry}</p>
                 </div>
                 <div className="col-span-2">
-                  <p className="font-medium text-stone-500">Descripción</p>
-                  <p className="text-stone-900">{profile.description}</p>
+                  <p className="font-medium text-[var(--text-tertiary)]">Descripción</p>
+                  <p className="text-[var(--text-primary)]">{profile.description}</p>
                 </div>
                 {profile.website && (
                   <div className="col-span-2">
-                    <p className="font-medium text-stone-500">Website</p>
-                    <p className="text-stone-900">{profile.website}</p>
+                    <p className="font-medium text-[var(--text-tertiary)]">Website</p>
+                    <p className="text-[var(--text-primary)]">{profile.website}</p>
                   </div>
                 )}
               </div>
@@ -126,19 +126,19 @@ export function BrandGuideExport() {
             {/* 2. Voice */}
             <section className="mb-12 print:break-inside-avoid">
               <h2
-                className="text-2xl font-bold text-stone-900 border-b-2 pb-2 mb-4"
+                className="text-2xl font-bold text-[var(--text-primary)] border-b-2 pb-2 mb-4"
                 style={{ borderColor: primaryColor }}
               >
                 2. Voz de Marca
               </h2>
               <div className="space-y-3 text-sm">
                 <div>
-                  <p className="font-medium text-stone-500">Tono</p>
+                  <p className="font-medium text-[var(--text-tertiary)]">Tono</p>
                   <div className="flex flex-wrap gap-2 mt-1">
                     {voice.tone.map((t: string) => (
                       <span
                         key={t}
-                        className="px-2 py-1 bg-stone-100 rounded text-stone-700"
+                        className="px-2 py-1 bg-[var(--surface-1)] rounded text-[var(--text-secondary)]"
                       >
                         {t}
                       </span>
@@ -146,12 +146,12 @@ export function BrandGuideExport() {
                   </div>
                 </div>
                 <div>
-                  <p className="font-medium text-stone-500">Personalidad</p>
+                  <p className="font-medium text-[var(--text-tertiary)]">Personalidad</p>
                   <div className="flex flex-wrap gap-2 mt-1">
                     {voice.personality.map((p: string) => (
                       <span
                         key={p}
-                        className="px-2 py-1 bg-stone-100 rounded text-stone-700"
+                        className="px-2 py-1 bg-[var(--surface-1)] rounded text-[var(--text-secondary)]"
                       >
                         {p}
                       </span>
@@ -160,16 +160,16 @@ export function BrandGuideExport() {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="font-medium text-green-600">Hacer</p>
-                    <ul className="list-disc list-inside mt-1 text-stone-700">
+                    <p className="font-medium text-[var(--badge-green-text)]">Hacer</p>
+                    <ul className="list-disc list-inside mt-1 text-[var(--text-secondary)]">
                       {voice.dos.map((d: string) => (
                         <li key={d}>{d}</li>
                       ))}
                     </ul>
                   </div>
                   <div>
-                    <p className="font-medium text-red-600">No hacer</p>
-                    <ul className="list-disc list-inside mt-1 text-stone-700">
+                    <p className="font-medium text-[var(--badge-red-text)]">No hacer</p>
+                    <ul className="list-disc list-inside mt-1 text-[var(--text-secondary)]">
                       {voice.donts.map((d: string) => (
                         <li key={d}>{d}</li>
                       ))}
@@ -182,7 +182,7 @@ export function BrandGuideExport() {
             {/* 3. Audience */}
             <section className="mb-12 print:break-inside-avoid">
               <h2
-                className="text-2xl font-bold text-stone-900 border-b-2 pb-2 mb-4"
+                className="text-2xl font-bold text-[var(--text-primary)] border-b-2 pb-2 mb-4"
                 style={{ borderColor: primaryColor }}
               >
                 3. Audiencia
@@ -197,11 +197,11 @@ export function BrandGuideExport() {
                   i: number
                 ) => (
                   <div key={i} className="mb-3 text-sm">
-                    <p className="font-medium text-stone-900">{seg.name}</p>
+                    <p className="font-medium text-[var(--text-primary)]">{seg.name}</p>
                     {seg.demographics && (
-                      <p className="text-stone-500">{seg.demographics}</p>
+                      <p className="text-[var(--text-tertiary)]">{seg.demographics}</p>
                     )}
-                    <p className="text-stone-500 mt-1">
+                    <p className="text-[var(--text-tertiary)] mt-1">
                       Pain points: {seg.painPoints.join(", ")}
                     </p>
                   </div>
@@ -213,7 +213,7 @@ export function BrandGuideExport() {
             {messaging?.guide && (
               <section className="mb-12 print:break-inside-avoid">
                 <h2
-                  className="text-2xl font-bold text-stone-900 border-b-2 pb-2 mb-4"
+                  className="text-2xl font-bold text-[var(--text-primary)] border-b-2 pb-2 mb-4"
                   style={{ borderColor: primaryColor }}
                 >
                   4. Messaging (StoryBrand)
@@ -221,44 +221,44 @@ export function BrandGuideExport() {
                 <div className="space-y-3 text-sm">
                   {messaging.guide && (
                     <div>
-                      <p className="font-medium text-stone-500">Guía</p>
-                      <p className="text-stone-900">{messaging.guide}</p>
+                      <p className="font-medium text-[var(--text-tertiary)]">Guía</p>
+                      <p className="text-[var(--text-primary)]">{messaging.guide}</p>
                     </div>
                   )}
                   {messaging.problem && (
                     <div>
-                      <p className="font-medium text-stone-500">Problema</p>
-                      <p className="text-stone-900">{messaging.problem}</p>
+                      <p className="font-medium text-[var(--text-tertiary)]">Problema</p>
+                      <p className="text-[var(--text-primary)]">{messaging.problem}</p>
                     </div>
                   )}
                   {messaging.solution && (
                     <div>
-                      <p className="font-medium text-stone-500">Solución</p>
-                      <p className="text-stone-900">{messaging.solution}</p>
+                      <p className="font-medium text-[var(--text-tertiary)]">Solución</p>
+                      <p className="text-[var(--text-primary)]">{messaging.solution}</p>
                     </div>
                   )}
                   {messaging.successVision && (
                     <div>
-                      <p className="font-medium text-stone-500">
+                      <p className="font-medium text-[var(--text-tertiary)]">
                         Visión de éxito
                       </p>
-                      <p className="text-stone-900">{messaging.successVision}</p>
+                      <p className="text-[var(--text-primary)]">{messaging.successVision}</p>
                     </div>
                   )}
                   {messaging.failureVision && (
                     <div>
-                      <p className="font-medium text-stone-500">
+                      <p className="font-medium text-[var(--text-tertiary)]">
                         Visión de fracaso
                       </p>
-                      <p className="text-stone-900">{messaging.failureVision}</p>
+                      <p className="text-[var(--text-primary)]">{messaging.failureVision}</p>
                     </div>
                   )}
                   {messaging.callToAction && (
                     <div>
-                      <p className="font-medium text-stone-500">
+                      <p className="font-medium text-[var(--text-tertiary)]">
                         Call to Action
                       </p>
-                      <p className="font-bold text-stone-900">
+                      <p className="font-bold text-[var(--text-primary)]">
                         {messaging.callToAction}
                       </p>
                     </div>
@@ -270,7 +270,7 @@ export function BrandGuideExport() {
             {/* 5. Visual */}
             <section className="mb-12 print:break-inside-avoid">
               <h2
-                className="text-2xl font-bold text-stone-900 border-b-2 pb-2 mb-4"
+                className="text-2xl font-bold text-[var(--text-primary)] border-b-2 pb-2 mb-4"
                 style={{ borderColor: primaryColor }}
               >
                 5. Identidad Visual
@@ -287,37 +287,37 @@ export function BrandGuideExport() {
                   .map((c) => (
                     <div key={c.label} className="text-center">
                       <div
-                        className="w-12 h-12 rounded-lg border border-stone-200 print:border-stone-300"
+                        className="w-12 h-12 rounded-lg border border-[var(--border)] print:border-[var(--border-hover)]"
                         style={{ backgroundColor: c.color }}
                       />
-                      <p className="text-[10px] text-stone-500 mt-1">
+                      <p className="text-[10px] text-[var(--text-tertiary)] mt-1">
                         {c.label}
                       </p>
-                      <p className="text-[10px] text-stone-400">{c.color}</p>
+                      <p className="text-[10px] text-[var(--text-tertiary)]">{c.color}</p>
                     </div>
                   ))}
               </div>
               {visual.fontPrimary && (
                 <p className="text-sm">
-                  <span className="text-stone-500">Fuente primaria:</span>{" "}
+                  <span className="text-[var(--text-tertiary)]">Fuente primaria:</span>{" "}
                   {visual.fontPrimary}
                 </p>
               )}
               {visual.fontSecondary && (
                 <p className="text-sm">
-                  <span className="text-stone-500">Fuente secundaria:</span>{" "}
+                  <span className="text-[var(--text-tertiary)]">Fuente secundaria:</span>{" "}
                   {visual.fontSecondary}
                 </p>
               )}
               {visual.logoDescription && (
                 <p className="text-sm mt-2">
-                  <span className="text-stone-500">Logo:</span>{" "}
+                  <span className="text-[var(--text-tertiary)]">Logo:</span>{" "}
                   {visual.logoDescription}
                 </p>
               )}
               {visual.styleNotes && (
                 <p className="text-sm mt-1">
-                  <span className="text-stone-500">Notas de estilo:</span>{" "}
+                  <span className="text-[var(--text-tertiary)]">Notas de estilo:</span>{" "}
                   {visual.styleNotes}
                 </p>
               )}
@@ -327,31 +327,31 @@ export function BrandGuideExport() {
             {positioning?.uniqueValue && (
               <section className="mb-12 print:break-inside-avoid">
                 <h2
-                  className="text-2xl font-bold text-stone-900 border-b-2 pb-2 mb-4"
+                  className="text-2xl font-bold text-[var(--text-primary)] border-b-2 pb-2 mb-4"
                   style={{ borderColor: primaryColor }}
                 >
                   6. Posicionamiento
                 </h2>
                 <div className="space-y-3 text-sm">
                   <div>
-                    <p className="font-medium text-stone-500">
+                    <p className="font-medium text-[var(--text-tertiary)]">
                       Propuesta de valor única
                     </p>
-                    <p className="text-stone-900">{positioning.uniqueValue}</p>
+                    <p className="text-[var(--text-primary)]">{positioning.uniqueValue}</p>
                   </div>
                   {positioning.category && (
                     <div>
-                      <p className="font-medium text-stone-500">Categoría</p>
-                      <p className="text-stone-900">{positioning.category}</p>
+                      <p className="font-medium text-[var(--text-tertiary)]">Categoría</p>
+                      <p className="text-[var(--text-primary)]">{positioning.category}</p>
                     </div>
                   )}
                   {positioning.differentiators &&
                     positioning.differentiators.length > 0 && (
                       <div>
-                        <p className="font-medium text-stone-500">
+                        <p className="font-medium text-[var(--text-tertiary)]">
                           Diferenciadores
                         </p>
-                        <ul className="list-disc list-inside text-stone-900">
+                        <ul className="list-disc list-inside text-[var(--text-primary)]">
                           {positioning.differentiators.map((d: string) => (
                             <li key={d}>{d}</li>
                           ))}
@@ -361,10 +361,10 @@ export function BrandGuideExport() {
                   {positioning.proofPoints &&
                     positioning.proofPoints.length > 0 && (
                       <div>
-                        <p className="font-medium text-stone-500">
+                        <p className="font-medium text-[var(--text-tertiary)]">
                           Proof Points
                         </p>
-                        <ul className="list-disc list-inside text-stone-900">
+                        <ul className="list-disc list-inside text-[var(--text-primary)]">
                           {positioning.proofPoints.map((p: string) => (
                             <li key={p}>{p}</li>
                           ))}
@@ -378,19 +378,19 @@ export function BrandGuideExport() {
             {/* 7. Strategy Overview */}
             <section className="mb-12 print:break-inside-avoid">
               <h2
-                className="text-2xl font-bold text-stone-900 border-b-2 pb-2 mb-4"
+                className="text-2xl font-bold text-[var(--text-primary)] border-b-2 pb-2 mb-4"
                 style={{ borderColor: primaryColor }}
               >
                 7. Estrategia de Contenido
               </h2>
               <div className="space-y-3 text-sm">
                 <div>
-                  <p className="font-medium text-stone-500">Temas clave</p>
+                  <p className="font-medium text-[var(--text-tertiary)]">Temas clave</p>
                   <div className="flex flex-wrap gap-2 mt-1">
                     {profile.strategy.topics.map((t: string) => (
                       <span
                         key={t}
-                        className="px-2 py-1 bg-stone-100 rounded text-stone-700"
+                        className="px-2 py-1 bg-[var(--surface-1)] rounded text-[var(--text-secondary)]"
                       >
                         {t}
                       </span>
@@ -398,12 +398,12 @@ export function BrandGuideExport() {
                   </div>
                 </div>
                 <div>
-                  <p className="font-medium text-stone-500">Canales activos</p>
+                  <p className="font-medium text-[var(--text-tertiary)]">Canales activos</p>
                   <div className="flex flex-wrap gap-2 mt-1">
                     {profile.strategy.channels.map((c: string) => (
                       <span
                         key={c}
-                        className="px-2 py-1 bg-stone-100 rounded text-stone-700 capitalize"
+                        className="px-2 py-1 bg-[var(--surface-1)] rounded text-[var(--text-secondary)] capitalize"
                       >
                         {c}
                       </span>
@@ -412,8 +412,8 @@ export function BrandGuideExport() {
                 </div>
                 {profile.strategy.postingFrequency && (
                   <div>
-                    <p className="font-medium text-stone-500">Frecuencia</p>
-                    <p className="text-stone-900">
+                    <p className="font-medium text-[var(--text-tertiary)]">Frecuencia</p>
+                    <p className="text-[var(--text-primary)]">
                       {profile.strategy.postingFrequency}
                     </p>
                   </div>
@@ -425,7 +425,7 @@ export function BrandGuideExport() {
             {profile.competitors.length > 0 && (
               <section className="mb-12 print:break-inside-avoid">
                 <h2
-                  className="text-2xl font-bold text-stone-900 border-b-2 pb-2 mb-4"
+                  className="text-2xl font-bold text-[var(--text-primary)] border-b-2 pb-2 mb-4"
                   style={{ borderColor: primaryColor }}
                 >
                   8. Competencia
@@ -438,14 +438,14 @@ export function BrandGuideExport() {
                     ) => (
                       <div
                         key={i}
-                        className="p-2 rounded border border-stone-100"
+                        className="p-2 rounded border border-[var(--border)]"
                       >
-                        <p className="font-medium text-stone-900">{c.name}</p>
+                        <p className="font-medium text-[var(--text-primary)]">{c.name}</p>
                         {c.url && (
-                          <p className="text-stone-400 text-xs">{c.url}</p>
+                          <p className="text-[var(--text-tertiary)] text-xs">{c.url}</p>
                         )}
                         {c.notes && (
-                          <p className="text-stone-500 mt-0.5">{c.notes}</p>
+                          <p className="text-[var(--text-tertiary)] mt-0.5">{c.notes}</p>
                         )}
                       </div>
                     )
@@ -455,7 +455,7 @@ export function BrandGuideExport() {
             )}
 
             {/* Footer */}
-            <div className="text-center text-xs text-stone-400 mt-16 pt-4 border-t">
+            <div className="text-center text-xs text-[var(--text-tertiary)] mt-16 pt-4 border-t">
               <p>Generado automáticamente por AI Marketing Department</p>
               <p>
                 {profile.companyName} · {new Date().getFullYear()}

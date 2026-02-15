@@ -54,14 +54,14 @@ export function TrendIndicator({
 
   const colors = {
     positive: showBackground
-      ? 'bg-green-500/10 text-green-400'
-      : 'text-green-400',
+      ? 'bg-green-500/10 text-[var(--success)]'
+      : 'text-[var(--success)]',
     negative: showBackground
-      ? 'bg-red-500/10 text-red-400'
-      : 'text-red-400',
+      ? 'bg-red-500/10 text-[var(--error)]'
+      : 'text-[var(--error)]',
     neutral: showBackground
-      ? 'bg-stone-500/10 text-stone-400'
-      : 'text-stone-400',
+      ? 'bg-[var(--surface-2)]/10 text-[var(--text-tertiary)]'
+      : 'text-[var(--text-tertiary)]',
   };
 
   const color = isPositive
@@ -120,10 +120,10 @@ export function CompactTrend({ value, suffix = '%', className }: CompactTrendPro
   const isNegative = value < 0;
 
   const color = isPositive
-    ? 'text-green-400'
+    ? 'text-[var(--success)]'
     : isNegative
-    ? 'text-red-400'
-    : 'text-stone-400';
+    ? 'text-[var(--error)]'
+    : 'text-[var(--text-tertiary)]';
 
   const arrow = isPositive ? '↑' : isNegative ? '↓' : '→';
 
@@ -150,7 +150,7 @@ export function TrendBadge({ value, label, suffix = '%', className }: TrendBadge
     ? 'bg-green-500/10 border-green-500/20'
     : isNegative
     ? 'bg-red-500/10 border-red-500/20'
-    : 'bg-stone-500/10 border-stone-500/20';
+    : 'bg-[var(--surface-2)]/10 border-[var(--border)]/20';
 
   return (
     <div
@@ -166,7 +166,7 @@ export function TrendBadge({ value, label, suffix = '%', className }: TrendBadge
         showBackground={false}
         size="sm"
       />
-      <span className="text-xs text-stone-400">{label}</span>
+      <span className="text-xs text-[var(--text-tertiary)]">{label}</span>
     </div>
   );
 }

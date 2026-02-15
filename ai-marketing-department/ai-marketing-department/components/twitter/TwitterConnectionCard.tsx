@@ -68,7 +68,7 @@ export function TwitterConnectionCard({ convexSiteUrl }: TwitterConnectionCardPr
   const statusConfig = {
     connected: {
       icon: CheckCircle2,
-      color: "text-green-400",
+      color: "text-[var(--success)]",
       bg: "bg-green-400/10",
       border: "border-green-500/30",
       label: "Conectado",
@@ -82,9 +82,9 @@ export function TwitterConnectionCard({ convexSiteUrl }: TwitterConnectionCardPr
     },
     disconnected: {
       icon: XCircle,
-      color: "text-stone-400",
-      bg: "bg-stone-400/10",
-      border: "border-stone-300",
+      color: "text-[var(--text-tertiary)]",
+      bg: "bg-[var(--surface-2)]/10",
+      border: "border-[var(--border)]",
       label: "Desconectado",
     },
   };
@@ -101,7 +101,7 @@ export function TwitterConnectionCard({ convexSiteUrl }: TwitterConnectionCardPr
             <Twitter className="h-5 w-5 text-[#1DA1F2]" />
           </div>
           <div>
-            <h4 className="font-medium text-stone-900 flex items-center gap-2">
+            <h4 className="font-medium text-[var(--text-primary)] flex items-center gap-2">
               Twitter/X
               <span className={cn("inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full", config.bg, config.color)}>
                 <StatusIcon className="h-3 w-3" />
@@ -110,9 +110,9 @@ export function TwitterConnectionCard({ convexSiteUrl }: TwitterConnectionCardPr
             </h4>
             {connection ? (
               <div className="mt-1 space-y-1">
-                <p className="text-sm text-stone-500">@{connection.username}</p>
+                <p className="text-sm text-[var(--text-tertiary)]">@{connection.username}</p>
                 {connection.displayName && (
-                  <p className="text-xs text-stone-500">{connection.displayName}</p>
+                  <p className="text-xs text-[var(--text-tertiary)]">{connection.displayName}</p>
                 )}
                 {connection.isExpiringSoon && (
                   <p className="text-xs text-yellow-400 flex items-center gap-1">
@@ -125,12 +125,12 @@ export function TwitterConnectionCard({ convexSiteUrl }: TwitterConnectionCardPr
                     Token expirado, reconecta tu cuenta
                   </p>
                 )}
-                <p className="text-xs text-stone-500">
+                <p className="text-xs text-[var(--text-tertiary)]">
                   Publicaciones hoy: {connection.dailyTweetCount}/50
                 </p>
               </div>
             ) : (
-              <p className="text-sm text-stone-400 mt-1">
+              <p className="text-sm text-[var(--text-tertiary)] mt-1">
                 Conecta tu cuenta de Twitter/X para publicar tweets y threads.
               </p>
             )}
@@ -160,7 +160,7 @@ export function TwitterConnectionCard({ convexSiteUrl }: TwitterConnectionCardPr
                   href={`https://twitter.com/${connection.username}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1 text-xs text-stone-400 hover:text-stone-900 transition-colors"
+                  className="flex items-center gap-1 text-xs text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors"
                 >
                   Ver perfil <ExternalLink className="h-3 w-3" />
                 </a>
@@ -168,7 +168,7 @@ export function TwitterConnectionCard({ convexSiteUrl }: TwitterConnectionCardPr
               <button
                 onClick={handleDisconnect}
                 disabled={isDisconnecting}
-                className="text-xs text-stone-500 hover:text-red-400 transition-colors disabled:opacity-50"
+                className="text-xs text-[var(--text-tertiary)] hover:text-[var(--error)] transition-colors disabled:opacity-50"
               >
                 {isDisconnecting ? (
                   <Loader2 className="h-3 w-3 animate-spin inline mr-1" />

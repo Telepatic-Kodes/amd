@@ -38,7 +38,7 @@ export function PricingSection() {
             transition={{ duration: 0.6 }}
           >
             <motion.div
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-400 text-sm font-medium mb-6"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--accent)]/10 border border-[var(--accent)]/20 text-[var(--accent)] text-sm font-medium mb-6"
               initial={{ opacity: 0, scale: 0.8 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
@@ -49,9 +49,9 @@ export function PricingSection() {
             </motion.div>
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
               Planes para Cada Etapa de{" "}
-              <span className="text-orange-400">Crecimiento</span>
+              <span className="text-[var(--accent)]">Crecimiento</span>
             </h2>
-            <p className="text-xl text-stone-400 max-w-3xl mx-auto">
+            <p className="text-xl text-[var(--text-tertiary)] max-w-3xl mx-auto">
               Desde startups hasta enterprises, tenemos un plan que se ajusta a
               tus necesidades.
             </p>
@@ -80,7 +80,7 @@ export function PricingSection() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6, delay: 0.5 }}
           >
-            <p className="text-stone-500 text-sm">
+            <p className="text-[var(--text-tertiary)] text-sm">
               Todos los planes incluyen setup gratuito y onboarding completo.
               <br />
               Sin contratos, cancela cuando quieras.

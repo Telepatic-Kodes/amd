@@ -39,9 +39,9 @@ interface FeedCardProps {
 }
 
 const statusConfig = {
-  active: { icon: CheckCircle2, color: "text-green-400", bg: "bg-green-500/10" },
+  active: { icon: CheckCircle2, color: "text-[var(--success)]", bg: "bg-green-500/10" },
   paused: { icon: Pause, color: "text-yellow-400", bg: "bg-yellow-500/10" },
-  error: { icon: AlertCircle, color: "text-red-400", bg: "bg-red-500/10" },
+  error: { icon: AlertCircle, color: "text-[var(--error)]", bg: "bg-red-500/10" },
 };
 
 export function FeedCard({ feed, onSelect, isSelected }: FeedCardProps) {
@@ -98,7 +98,7 @@ export function FeedCard({ feed, onSelect, isSelected }: FeedCardProps) {
         hover
         className={cn(
           "cursor-pointer transition-all",
-          isSelected && "border-orange-500 shadow-lg shadow-orange-500/20"
+          isSelected && "border-[var(--accent)] shadow-lg shadow-orange-500/20"
         )}
         onClick={onSelect}
       >
@@ -113,8 +113,8 @@ export function FeedCard({ feed, onSelect, isSelected }: FeedCardProps) {
                 <Rss className={cn("h-5 w-5", statusConfig[feed.status].color)} />
               </div>
               <div>
-                <h3 className="font-semibold text-stone-900 text-sm">{feed.name}</h3>
-                <p className="text-xs text-stone-500 truncate max-w-[200px]">{feed.url}</p>
+                <h3 className="font-semibold text-[var(--text-primary)] text-sm">{feed.name}</h3>
+                <p className="text-xs text-[var(--text-tertiary)] truncate max-w-[200px]">{feed.url}</p>
               </div>
             </div>
             <div className={cn(
@@ -129,43 +129,43 @@ export function FeedCard({ feed, onSelect, isSelected }: FeedCardProps) {
 
           {/* Stats */}
           <div className="grid grid-cols-3 gap-2 mb-3 text-xs">
-            <div className="rounded-lg bg-stone-100/50 p-2 border border-stone-200/50">
-              <p className="text-stone-500">Elementos</p>
-              <p className="text-stone-900 font-mono">{feed.itemCount ?? 0}</p>
+            <div className="rounded-lg bg-[var(--surface-1)]/50 p-2 border border-[var(--border)]/50">
+              <p className="text-[var(--text-tertiary)]">Elementos</p>
+              <p className="text-[var(--text-primary)] font-mono">{feed.itemCount ?? 0}</p>
             </div>
-            <div className="rounded-lg bg-stone-100/50 p-2 border border-stone-200/50">
-              <p className="text-stone-500">Frecuencia</p>
-              <p className="text-stone-900 font-mono">{feed.syncFrequency}</p>
+            <div className="rounded-lg bg-[var(--surface-1)]/50 p-2 border border-[var(--border)]/50">
+              <p className="text-[var(--text-tertiary)]">Frecuencia</p>
+              <p className="text-[var(--text-primary)] font-mono">{feed.syncFrequency}</p>
             </div>
-            <div className="rounded-lg bg-stone-100/50 p-2 border border-stone-200/50">
-              <p className="text-stone-500">Errores</p>
-              <p className={cn("font-mono", feed.consecutiveErrors > 0 ? "text-red-400" : "text-stone-900")}>
+            <div className="rounded-lg bg-[var(--surface-1)]/50 p-2 border border-[var(--border)]/50">
+              <p className="text-[var(--text-tertiary)]">Errores</p>
+              <p className={cn("font-mono", feed.consecutiveErrors > 0 ? "text-[var(--error)]" : "text-[var(--text-primary)]")}>
                 {feed.consecutiveErrors}
               </p>
             </div>
           </div>
 
           {/* Last Sync */}
-          <div className="flex items-center gap-1 text-xs text-stone-500 mb-3">
+          <div className="flex items-center gap-1 text-xs text-[var(--text-tertiary)] mb-3">
             <Clock className="h-3 w-3" />
             Última sync: {formatLastSync(feed.lastSyncAt)}
           </div>
 
           {/* Error message if any */}
           {feed.lastErrorMessage && (
-            <div className="text-xs text-red-400 bg-red-500/10 rounded p-2 mb-3 truncate">
+            <div className="text-xs text-[var(--error)] bg-red-500/10 rounded p-2 mb-3 truncate">
               {feed.lastErrorMessage}
             </div>
           )}
 
           {/* Actions */}
-          <div className="flex items-center gap-2 pt-2 border-t border-stone-200">
-            <Badge className="bg-stone-200 text-stone-400">{feed.category}</Badge>
+          <div className="flex items-center gap-2 pt-2 border-t border-[var(--border)]">
+            <Badge className="bg-[var(--surface-2)] text-[var(--text-tertiary)]">{feed.category}</Badge>
             <div className="flex gap-1 ml-auto">
               <button
                 onClick={(e) => { e.stopPropagation(); handleSync(); }}
                 disabled={isLoading || feed.status === "paused"}
-                className="p-2 rounded-lg bg-stone-200 hover:bg-stone-100 text-stone-400 hover:text-stone-900 transition-colors disabled:opacity-50 min-h-[44px] min-w-[44px]"
+                className="p-2 rounded-lg bg-[var(--surface-2)] hover:bg-[var(--surface-1)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-50 min-h-[44px] min-w-[44px]"
                 title="Sincronizar ahora"
               >
                 <RefreshCw className={cn("h-4 w-4", isLoading && "animate-spin")} />
@@ -173,7 +173,7 @@ export function FeedCard({ feed, onSelect, isSelected }: FeedCardProps) {
               <button
                 onClick={(e) => { e.stopPropagation(); handlePauseResume(); }}
                 disabled={isLoading}
-                className="p-2 rounded-lg bg-stone-200 hover:bg-stone-100 text-stone-400 hover:text-stone-900 transition-colors disabled:opacity-50 min-h-[44px] min-w-[44px]"
+                className="p-2 rounded-lg bg-[var(--surface-2)] hover:bg-[var(--surface-1)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-50 min-h-[44px] min-w-[44px]"
                 title={feed.status === "active" ? "Pausar" : "Reanudar"}
               >
                 {feed.status === "active" ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
@@ -183,7 +183,7 @@ export function FeedCard({ feed, onSelect, isSelected }: FeedCardProps) {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="p-2 rounded-lg bg-stone-200 hover:bg-stone-100 text-stone-400 hover:text-stone-900 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+                className="p-2 rounded-lg bg-[var(--surface-2)] hover:bg-[var(--surface-1)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
                 title="Abrir URL del feed"
               >
                 <ExternalLink className="h-4 w-4" />
@@ -191,7 +191,7 @@ export function FeedCard({ feed, onSelect, isSelected }: FeedCardProps) {
               <button
                 onClick={(e) => { e.stopPropagation(); handleDelete(); }}
                 disabled={isLoading}
-                className="p-2 rounded-lg bg-stone-200 hover:bg-red-900/50 text-stone-400 hover:text-red-400 transition-colors disabled:opacity-50 min-h-[44px] min-w-[44px]"
+                className="p-2 rounded-lg bg-[var(--surface-2)] hover:bg-red-900/50 text-[var(--text-tertiary)] hover:text-[var(--error)] transition-colors disabled:opacity-50 min-h-[44px] min-w-[44px]"
                 title="Eliminar feed"
               >
                 <Trash2 className="h-4 w-4" />

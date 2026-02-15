@@ -79,7 +79,7 @@ const RULES: NextActionRule[] = [
           id: "agents-need-attention",
           title: `${state.agentsInError} agente${state.agentsInError > 1 ? "s" : ""} necesita${state.agentsInError > 1 ? "n" : ""} atención`,
           description: "Revisa los agentes con errores para restaurar las operaciones.",
-          href: "/agents",
+          href: "/",
           icon: "alertcircle",
           priority: 3,
         };
@@ -96,7 +96,7 @@ const RULES: NextActionRule[] = [
           id: "review-pending-content",
           title: `Aprueba ${state.reviewContent} contenido${state.reviewContent > 1 ? "s" : ""} en revisión`,
           description: "Hay contenido esperando tu aprobación para ser publicado.",
-          href: "/content/pipeline",
+          href: "/content",
           icon: "checkcircle",
           priority: 4,
         };
@@ -130,7 +130,7 @@ const RULES: NextActionRule[] = [
           id: "feeds-unhealthy",
           title: `Verifica ${state.feedsWithErrors} fuente${state.feedsWithErrors > 1 ? "s" : ""} con problemas`,
           description: "Algunas fuentes de contenido tienen errores de sincronización.",
-          href: "/feeds",
+          href: "/settings",
           icon: "alertcircle",
           priority: 6,
         };
@@ -147,7 +147,7 @@ const RULES: NextActionRule[] = [
           id: "create-campaign",
           title: "Crea tu primera campaña de marketing",
           description: "Ya tienes contenido. Organízalo en una campaña para maximizar el impacto.",
-          href: "/campaigns",
+          href: "/strategy",
           icon: "target",
           priority: 7,
         };
@@ -184,7 +184,7 @@ const RULES: NextActionRule[] = [
       id: "all-good",
       title: "¡Todo al día!",
       description: "Tu marketing está funcionando bien. Revisa tus resultados.",
-      href: "/analytics",
+      href: "/",
       icon: "trendingup",
       priority: 99,
     }),

@@ -65,14 +65,14 @@ export function KanbanColumn({ status, title, items, count, color, onDrop, onAct
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
       className={cn(
-        "flex flex-col min-w-[280px] max-w-[320px] w-full bg-stone-50/30 rounded-xl border transition-colors snap-center",
-        isDropTarget && !isInvalidDrop && "border-orange-500/50 bg-orange-500/5",
+        "flex flex-col min-w-[280px] max-w-[320px] w-full bg-[var(--surface-0)]/30 rounded-xl border transition-colors snap-center",
+        isDropTarget && !isInvalidDrop && "border-[var(--accent)]/50 bg-[var(--accent)]/5",
         isInvalidDrop && "border-red-500/30",
-        !isDropTarget && "border-stone-200/50"
+        !isDropTarget && "border-[var(--border)]/50"
       )}
     >
       {/* Column Header */}
-      <div className="px-4 py-3 border-b border-stone-200/50 flex items-center justify-between">
+      <div className="px-4 py-3 border-b border-[var(--border)]/50 flex items-center justify-between">
         <div className="flex items-center gap-2">
           {/* P6: Select All checkbox */}
           {batchMode && items.length > 0 && (
@@ -80,21 +80,21 @@ export function KanbanColumn({ status, title, items, count, color, onDrop, onAct
               type="checkbox"
               checked={items.length > 0 && items.every((item) => selectedIds?.has(item._id))}
               onChange={(e) => onSelectAll?.(status, e.target.checked)}
-              className="h-3.5 w-3.5 rounded border-stone-300 text-orange-500 focus:ring-orange-500 cursor-pointer"
+              className="h-3.5 w-3.5 rounded border-[var(--border-hover)] text-orange-500 focus:ring-[var(--accent)] cursor-pointer"
               title={`Seleccionar todos en ${title}`}
             />
           )}
           <span className={cn("h-2.5 w-2.5 rounded-full", color)} />
-          <span className="text-sm font-medium text-stone-900">{title}</span>
+          <span className="text-sm font-medium text-[var(--text-primary)]">{title}</span>
         </div>
-        <span className="text-xs text-stone-500 bg-stone-200 px-2 py-0.5 rounded-full">{count}</span>
+        <span className="text-xs text-[var(--text-tertiary)] bg-[var(--surface-2)] px-2 py-0.5 rounded-full">{count}</span>
       </div>
 
       {/* Cards Area */}
       <div className="flex-1 overflow-y-auto p-3 space-y-2 min-h-[200px] max-h-[calc(100vh-320px)]">
         {items.length === 0 ? (
           <div className="flex items-center justify-center h-full min-h-[100px]">
-            <p className="text-xs text-stone-600">{translate("noContent")}</p>
+            <p className="text-xs text-[var(--text-secondary)]">{translate("noContent")}</p>
           </div>
         ) : (
           items.map((item) => (
@@ -111,8 +111,8 @@ export function KanbanColumn({ status, title, items, count, color, onDrop, onAct
 
         {/* Drop zone hint */}
         {isDropTarget && (
-          <div className="border-2 border-dashed border-orange-500/30 rounded-lg p-4 text-center">
-            <p className="text-xs text-orange-400">{translate("dropHere")}</p>
+          <div className="border-2 border-dashed border-[var(--accent)]/30 rounded-lg p-4 text-center">
+            <p className="text-xs text-[var(--accent)]">{translate("dropHere")}</p>
           </div>
         )}
       </div>

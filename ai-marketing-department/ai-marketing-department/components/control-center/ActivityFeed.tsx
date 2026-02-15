@@ -26,24 +26,24 @@ interface ActivityFeedProps {
 
 // Status color configuration
 const statusConfig: Record<string, { dot: string; text: string; pulse?: boolean }> = {
-  success: { dot: "bg-green-500", text: "text-green-400" },
-  completed: { dot: "bg-green-500", text: "text-green-400" },
-  failure: { dot: "bg-red-500", text: "text-red-400" },
-  failed: { dot: "bg-red-500", text: "text-red-400" },
-  error: { dot: "bg-red-500", text: "text-red-400" },
-  running: { dot: "bg-orange-500", text: "text-orange-400", pulse: true },
-  pending: { dot: "bg-stone-500", text: "text-stone-500" },
-  queued: { dot: "bg-stone-500", text: "text-stone-500" },
+  success: { dot: "bg-green-500", text: "text-[var(--success)]" },
+  completed: { dot: "bg-green-500", text: "text-[var(--success)]" },
+  failure: { dot: "bg-red-500", text: "text-[var(--error)]" },
+  failed: { dot: "bg-red-500", text: "text-[var(--error)]" },
+  error: { dot: "bg-red-500", text: "text-[var(--error)]" },
+  running: { dot: "bg-[var(--accent)]", text: "text-[var(--accent)]", pulse: true },
+  pending: { dot: "bg-[var(--surface-2)]", text: "text-[var(--text-tertiary)]" },
+  queued: { dot: "bg-[var(--surface-2)]", text: "text-[var(--text-tertiary)]" },
 };
 
 // Loading skeleton component
 function ActivitySkeleton() {
   return (
-    <div className="flex items-start gap-3 py-3 border-b border-stone-100 last:border-0 animate-pulse">
-      <div className="w-16 h-4 bg-stone-100 rounded"></div>
+    <div className="flex items-start gap-3 py-3 border-b border-[var(--border)] last:border-0 animate-pulse">
+      <div className="w-16 h-4 bg-[var(--surface-1)] rounded"></div>
       <div className="flex-1 space-y-2">
-        <div className="h-4 bg-stone-100 rounded w-3/4"></div>
-        <div className="h-3 bg-stone-100 rounded w-1/2"></div>
+        <div className="h-4 bg-[var(--surface-1)] rounded w-3/4"></div>
+        <div className="h-3 bg-[var(--surface-1)] rounded w-1/2"></div>
       </div>
     </div>
   );
@@ -53,10 +53,10 @@ function ActivitySkeleton() {
 function EmptyState() {
   return (
     <div className="flex flex-col items-center justify-center py-12 text-center">
-      <div className="rounded-full bg-stone-100/50 p-4 mb-4">
-        <Clock className="h-8 w-8 text-stone-400" />
+      <div className="rounded-full bg-[var(--surface-1)]/50 p-4 mb-4">
+        <Clock className="h-8 w-8 text-[var(--text-tertiary)]" />
       </div>
-      <p className="text-sm text-stone-400">Sin actividad reciente</p>
+      <p className="text-sm text-[var(--text-tertiary)]">Sin actividad reciente</p>
     </div>
   );
 }
@@ -64,8 +64,8 @@ function EmptyState() {
 // Individual activity item component
 function ActivityItemRow({ activity }: { activity: ActivityItem }) {
   const config = statusConfig[activity.status] || {
-    dot: "bg-stone-500",
-    text: "text-stone-500"
+    dot: "bg-[var(--surface-2)]",
+    text: "text-[var(--text-tertiary)]"
   };
 
   // Format relative time
@@ -75,9 +75,9 @@ function ActivityItemRow({ activity }: { activity: ActivityItem }) {
   });
 
   return (
-    <div className="flex items-start gap-3 py-3 border-b border-stone-100 last:border-0">
+    <div className="flex items-start gap-3 py-3 border-b border-[var(--border)] last:border-0">
       {/* Timestamp - Left column */}
-      <div className="text-xs text-stone-400 whitespace-nowrap pt-0.5 w-20 shrink-0">
+      <div className="text-xs text-[var(--text-tertiary)] whitespace-nowrap pt-0.5 w-20 shrink-0">
         {relativeTime}
       </div>
 
@@ -94,7 +94,7 @@ function ActivityItemRow({ activity }: { activity: ActivityItem }) {
         {/* Content */}
         <div className="flex-1 min-w-0">
           <div className="flex items-baseline gap-2 flex-wrap">
-            <span className="text-sm font-medium text-stone-900">
+            <span className="text-sm font-medium text-[var(--text-primary)]">
               {activity.agentName}
             </span>
             <span className={`text-sm ${config.text}`}>
@@ -127,8 +127,8 @@ export function ActivityFeed({ activities, isLoading = false }: ActivityFeedProp
   return (
     <Card>
       <CardHeader className="flex flex-row items-center gap-2">
-        <Activity className="h-5 w-5 text-stone-500" />
-        <h3 className="text-lg font-semibold text-stone-900">Actividad Reciente</h3>
+        <Activity className="h-5 w-5 text-[var(--text-tertiary)]" />
+        <h3 className="text-lg font-semibold text-[var(--text-primary)]">Actividad Reciente</h3>
       </CardHeader>
       <CardContent className="p-0">
         <div className="max-h-[500px] overflow-y-auto px-4 md:px-6">

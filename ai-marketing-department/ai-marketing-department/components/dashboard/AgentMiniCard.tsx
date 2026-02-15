@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { cn } from "@/lib/utils";
 
 interface AgentMiniCardProps {
@@ -10,13 +11,13 @@ interface AgentMiniCardProps {
 }
 
 const statusConfig: Record<string, { color: string; pulse?: boolean }> = {
-  active: { color: "bg-green-500", pulse: false },
-  paused: { color: "bg-gray-400", pulse: false },
-  error: { color: "bg-red-500", pulse: true },
-  maintenance: { color: "bg-amber-500", pulse: false },
+  active: { color: "bg-[var(--success)]", pulse: false },
+  paused: { color: "bg-[var(--text-tertiary)]", pulse: false },
+  error: { color: "bg-[var(--error)]", pulse: true },
+  maintenance: { color: "bg-[var(--warning)]", pulse: false },
 };
 
-export function AgentMiniCard({ name, role, status, currentTask }: AgentMiniCardProps) {
+export const AgentMiniCard = memo(function AgentMiniCard({ name, role, status, currentTask }: AgentMiniCardProps) {
   const config = statusConfig[status] || statusConfig.paused;
   const isActive = status === "active" && currentTask;
 
@@ -24,7 +25,7 @@ export function AgentMiniCard({ name, role, status, currentTask }: AgentMiniCard
     <div
       className={cn(
         "relative rounded-lg border border-[var(--border)] bg-[var(--surface-1)] p-2",
-        "transition-all duration-200 hover:border-orange-300"
+        "transition-all duration-200 hover:border-[var(--accent-muted)]"
       )}
     >
       {/* Status dot with pulse for error state */}
@@ -51,9 +52,9 @@ export function AgentMiniCard({ name, role, status, currentTask }: AgentMiniCard
       {/* Current task (only if active and exists) */}
       {isActive && currentTask && (
         <div className="mt-1.5 pl-4">
-          <p className="text-[10px] text-orange-500 truncate">{currentTask}</p>
+          <p className="text-[10px] text-[var(--accent)] truncate">{currentTask}</p>
         </div>
       )}
     </div>
   );
-}
+});

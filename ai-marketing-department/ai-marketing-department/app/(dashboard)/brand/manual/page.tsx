@@ -18,7 +18,7 @@ export default function BrandManualPage() {
   if (brandProfile === undefined) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="h-8 w-8 animate-spin text-stone-400" />
+        <Loader2 className="h-8 w-8 animate-spin text-[var(--text-tertiary)]" />
       </div>
     );
   }
@@ -26,8 +26,8 @@ export default function BrandManualPage() {
   if (!brandProfile) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-        <p className="text-stone-500">No hay perfil de marca configurado.</p>
-        <Link href="/brand" className="text-orange-600 hover:underline">
+        <p className="text-[var(--text-tertiary)]">No hay perfil de marca configurado.</p>
+        <Link href="/brand" className="text-[var(--accent)] hover:underline">
           Crear perfil de marca
         </Link>
       </div>
@@ -53,11 +53,11 @@ export default function BrandManualPage() {
   return (
     <div className="min-h-screen">
       {/* Top Bar — hidden in print */}
-      <div className="brand-manual-doc no-print sticky top-0 z-10 bg-white/80 backdrop-blur border-b border-stone-200 px-6 py-3">
+      <div className="brand-manual-doc no-print sticky top-0 z-10 bg-[var(--card-bg)]/80 backdrop-blur border-b border-[var(--border)] px-6 py-3">
         <div className="max-w-3xl mx-auto flex items-center justify-between">
           <Link
             href="/brand"
-            className="inline-flex items-center gap-2 text-sm text-stone-500 hover:text-stone-900 transition-colors"
+            className="inline-flex items-center gap-2 text-sm text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             Volver a Marca
@@ -66,14 +66,14 @@ export default function BrandManualPage() {
             <button
               onClick={handleShare}
               disabled={sharing}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-stone-300 text-stone-700 hover:bg-stone-50 transition-colors disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--surface-0)] transition-colors disabled:opacity-50"
             >
               {sharing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Link2 className="h-3.5 w-3.5" />}
               Copiar Link Público
             </button>
             <button
               onClick={handlePrint}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-stone-900 text-white hover:bg-stone-800 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-[var(--surface-3)] text-white hover:bg-[var(--surface-2)] transition-colors"
             >
               <Download className="h-3.5 w-3.5" />
               Descargar PDF

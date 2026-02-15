@@ -17,11 +17,11 @@ export function ReportHistory({ onViewReport }: ReportHistoryProps) {
   if (!reports) {
     // Loading skeleton
     return (
-      <div className="bg-stone-100 border border-stone-200 rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-stone-900 mb-4">{LABELS.reportHistory}</h3>
+      <div className="bg-[var(--surface-1)] border border-[var(--border)] rounded-xl p-6">
+        <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-4">{LABELS.reportHistory}</h3>
         <div className="space-y-3">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="h-16 bg-stone-200 rounded-lg animate-pulse" />
+            <div key={i} className="h-16 bg-[var(--surface-2)] rounded-lg animate-pulse" />
           ))}
         </div>
       </div>
@@ -30,14 +30,14 @@ export function ReportHistory({ onViewReport }: ReportHistoryProps) {
 
   if (reports.length === 0) {
     return (
-      <div className="bg-stone-100 border border-stone-200 rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-stone-900 mb-4">{LABELS.reportHistory}</h3>
+      <div className="bg-[var(--surface-1)] border border-[var(--border)] rounded-xl p-6">
+        <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-4">{LABELS.reportHistory}</h3>
         <div className="flex flex-col items-center justify-center py-8 text-center">
-          <div className="w-16 h-16 rounded-full bg-stone-200 flex items-center justify-center mb-4">
-            <FileText className="h-8 w-8 text-stone-600" />
+          <div className="w-16 h-16 rounded-full bg-[var(--surface-2)] flex items-center justify-center mb-4">
+            <FileText className="h-8 w-8 text-[var(--text-secondary)]" />
           </div>
-          <p className="text-stone-400 text-sm">{LABELS.noReports}</p>
-          <p className="text-stone-500 text-xs mt-1">
+          <p className="text-[var(--text-tertiary)] text-sm">{LABELS.noReports}</p>
+          <p className="text-[var(--text-tertiary)] text-xs mt-1">
             Configura reportes en Ajustes.
           </p>
         </div>
@@ -46,8 +46,8 @@ export function ReportHistory({ onViewReport }: ReportHistoryProps) {
   }
 
   return (
-    <div className="bg-stone-100 border border-stone-200 rounded-xl p-6">
-      <h3 className="text-lg font-semibold text-stone-900 mb-4">{LABELS.reportHistory}</h3>
+    <div className="bg-[var(--surface-1)] border border-[var(--border)] rounded-xl p-6">
+      <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-4">{LABELS.reportHistory}</h3>
       <div className="space-y-2">
         {reports.map((report) => {
           const typeLabel = report.type === "weekly" ? LABELS.weeklyReport : LABELS.monthlyReport;
@@ -66,14 +66,14 @@ export function ReportHistory({ onViewReport }: ReportHistoryProps) {
             <div
               key={report._id}
               onClick={() => onViewReport(report._id)}
-              className="flex items-center gap-3 p-3 hover:bg-stone-200/50 rounded-lg cursor-pointer transition-colors group"
+              className="flex items-center gap-3 p-3 hover:bg-[var(--surface-2)]/50 rounded-lg cursor-pointer transition-colors group"
             >
               {/* Type Badge */}
               <Badge
                 variant={report.type === "weekly" ? "info" : "default"}
                 className={
                   report.type === "weekly"
-                    ? "bg-orange-500/10 text-orange-400 border-orange-500/20"
+                    ? "bg-[var(--accent)]/10 text-[var(--accent)] border-[var(--accent)]/20"
                     : "bg-purple-500/10 text-purple-400 border-purple-500/20"
                 }
               >
@@ -82,8 +82,8 @@ export function ReportHistory({ onViewReport }: ReportHistoryProps) {
 
               {/* Title and Period */}
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-stone-900 truncate">{report.title}</p>
-                <p className="text-xs text-stone-500">
+                <p className="text-sm font-medium text-[var(--text-primary)] truncate">{report.title}</p>
+                <p className="text-xs text-[var(--text-tertiary)]">
                   {periodStart} - {periodEnd}
                 </p>
               </div>
@@ -91,7 +91,7 @@ export function ReportHistory({ onViewReport }: ReportHistoryProps) {
               {/* Email Status */}
               <div className="flex items-center gap-2">
                 {report.emailSent ? (
-                  <div className="flex items-center gap-1 text-xs text-green-400">
+                  <div className="flex items-center gap-1 text-xs text-[var(--success)]">
                     <CheckCircle className="h-3.5 w-3.5" />
                     <span className="hidden sm:inline">{LABELS.emailSent}</span>
                   </div>
@@ -103,7 +103,7 @@ export function ReportHistory({ onViewReport }: ReportHistoryProps) {
                 )}
 
                 {/* View Button */}
-                <button className="text-orange-400 hover:text-orange-300 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                <button className="text-[var(--accent)] hover:text-orange-300 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
                   {LABELS.viewReport}
                 </button>
               </div>

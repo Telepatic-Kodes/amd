@@ -251,7 +251,7 @@ export function OnboardingActivation({
   }, [activationData, runActivation]);
 
   return (
-    <div className="fixed inset-0 bg-stone-950 flex flex-col items-center justify-center overflow-auto">
+    <div className="fixed inset-0 bg-[var(--surface-3)] flex flex-col items-center justify-center overflow-auto">
       <div className="max-w-3xl w-full px-4 py-8 space-y-8">
         {/* Phase A: Brand Processing */}
         <AnimatePresence mode="wait">
@@ -262,8 +262,8 @@ export function OnboardingActivation({
               className="space-y-3"
             >
               <div className="flex items-center gap-2 mb-4">
-                <Database className="w-5 h-5 text-orange-400" />
-                <h2 className="text-sm font-semibold text-stone-300">
+                <Database className="w-5 h-5 text-[var(--accent)]" />
+                <h2 className="text-sm font-semibold text-[var(--text-tertiary)]">
                   Procesamiento de marca
                 </h2>
               </div>
@@ -277,20 +277,20 @@ export function OnboardingActivation({
                     className="flex items-center gap-3"
                   >
                     {item.status === "pending" && (
-                      <div className="w-5 h-5 rounded-full border border-stone-700" />
+                      <div className="w-5 h-5 rounded-full border border-[var(--border)]" />
                     )}
                     {item.status === "running" && (
-                      <Loader2 className="w-5 h-5 text-orange-400 animate-spin" />
+                      <Loader2 className="w-5 h-5 text-[var(--accent)] animate-spin" />
                     )}
                     {item.status === "done" && (
-                      <CheckCircle2 className="w-5 h-5 text-green-400" />
+                      <CheckCircle2 className="w-5 h-5 text-[var(--success)]" />
                     )}
                     <span
                       className={cn(
                         "text-sm",
-                        item.status === "done" && "text-green-300",
+                        item.status === "done" && "text-[var(--success)]",
                         item.status === "running" && "text-orange-300",
-                        item.status === "pending" && "text-stone-500"
+                        item.status === "pending" && "text-[var(--text-tertiary)]"
                       )}
                     >
                       {item.label}
@@ -311,11 +311,11 @@ export function OnboardingActivation({
               className="space-y-4"
             >
               <div className="flex items-center gap-2 mb-2">
-                <Shield className="w-5 h-5 text-orange-400" />
-                <h2 className="text-sm font-semibold text-stone-300">
+                <Shield className="w-5 h-5 text-[var(--accent)]" />
+                <h2 className="text-sm font-semibold text-[var(--text-tertiary)]">
                   Departamentos online
                 </h2>
-                <span className="text-xs text-stone-500 ml-auto">
+                <span className="text-xs text-[var(--text-tertiary)] ml-auto">
                   {Object.values(deptStatuses).filter((s) => s === "online").length}/
                   {activationData.length}
                 </span>
@@ -343,27 +343,27 @@ export function OnboardingActivation({
             className="space-y-4"
           >
             <div className="flex items-center gap-2 mb-2">
-              <Zap className="w-5 h-5 text-orange-400" />
-              <h2 className="text-sm font-semibold text-stone-300">
+              <Zap className="w-5 h-5 text-[var(--accent)]" />
+              <h2 className="text-sm font-semibold text-[var(--text-tertiary)]">
                 {activationMode === "real" ? "Ejecución CMO Agent" : "Demo de ejecución"}
               </h2>
             </div>
 
             {/* Stats bar */}
             {executionStats && (
-              <div className="flex gap-6 text-xs text-stone-400">
+              <div className="flex gap-6 text-xs text-[var(--text-tertiary)]">
                 <span>
-                  Tokens: <strong className="text-stone-200">{executionStats.tokens.toLocaleString()}</strong>
+                  Tokens: <strong className="text-[var(--text-primary)]">{executionStats.tokens.toLocaleString()}</strong>
                 </span>
                 <span>
                   Duracion:{" "}
-                  <strong className="text-stone-200">
+                  <strong className="text-[var(--text-primary)]">
                     {(executionStats.duration / 1000).toFixed(1)}s
                   </strong>
                 </span>
                 <span>
                   Costo:{" "}
-                  <strong className="text-stone-200">
+                  <strong className="text-[var(--text-primary)]">
                     {activationMode === "demo" ? "Gratis" : `$${executionStats.cost.toFixed(4)}`}
                   </strong>
                 </span>
@@ -372,16 +372,16 @@ export function OnboardingActivation({
 
             {/* Content preview */}
             {executionContent ? (
-              <div className="p-4 rounded-xl bg-stone-800/50 border border-stone-700 max-h-48 overflow-y-auto">
-                <pre className="text-xs text-stone-300 whitespace-pre-wrap font-sans leading-relaxed">
+              <div className="p-4 rounded-xl bg-[var(--surface-2)]/50 border border-[var(--border)] max-h-48 overflow-y-auto">
+                <pre className="text-xs text-[var(--text-tertiary)] whitespace-pre-wrap font-sans leading-relaxed">
                   {executionContent.substring(0, 600)}
                   {executionContent.length > 600 && "..."}
                 </pre>
               </div>
             ) : (
-              <div className="flex items-center gap-2 p-4 rounded-xl bg-stone-800/50 border border-stone-700">
-                <Loader2 className="w-4 h-4 text-orange-400 animate-spin" />
-                <span className="text-sm text-stone-400">
+              <div className="flex items-center gap-2 p-4 rounded-xl bg-[var(--surface-2)]/50 border border-[var(--border)]">
+                <Loader2 className="w-4 h-4 text-[var(--accent)] animate-spin" />
+                <span className="text-sm text-[var(--text-tertiary)]">
                   {activationMode === "real"
                     ? "CMO Agent analizando tu marca..."
                     : "Simulando ejecución..."}
@@ -405,14 +405,14 @@ export function OnboardingActivation({
               transition={{ type: "spring", stiffness: 200, damping: 12 }}
               className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-500/20"
             >
-              <CheckCircle2 className="w-8 h-8 text-green-400" />
+              <CheckCircle2 className="w-8 h-8 text-[var(--success)]" />
             </motion.div>
 
             <div>
               <h2 className="text-2xl font-bold text-white">
                 Departamento activado
               </h2>
-              <p className="text-stone-400 mt-2">
+              <p className="text-[var(--text-tertiary)] mt-2">
                 {brandData.companyName} tiene {activationData?.reduce((sum, d) => sum + d.agentCount, 0) || 37} agentes listos para trabajar.
               </p>
             </div>
@@ -420,7 +420,7 @@ export function OnboardingActivation({
             <div className="flex gap-3 justify-center">
               <button
                 onClick={onComplete}
-                className="flex items-center gap-2 px-8 py-3 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-semibold transition text-sm"
+                className="flex items-center gap-2 px-8 py-3 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold transition text-sm"
               >
                 Ir al Dashboard <ArrowRight className="w-4 h-4" />
               </button>
@@ -431,8 +431,8 @@ export function OnboardingActivation({
         {/* Loading state while waiting for activation data */}
         {!activationData && (
           <div className="flex items-center justify-center gap-3 py-12">
-            <Loader2 className="w-6 h-6 text-orange-400 animate-spin" />
-            <span className="text-stone-400">Preparando activacion...</span>
+            <Loader2 className="w-6 h-6 text-[var(--accent)] animate-spin" />
+            <span className="text-[var(--text-tertiary)]">Preparando activacion...</span>
           </div>
         )}
       </div>

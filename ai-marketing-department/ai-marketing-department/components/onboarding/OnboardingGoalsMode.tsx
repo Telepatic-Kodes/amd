@@ -71,10 +71,10 @@ export function OnboardingGoalsMode({
           animate={{ opacity: 1, y: 0 }}
         >
           <div className="text-center space-y-2 mb-6">
-            <h1 className="text-2xl font-bold text-stone-900">
+            <h1 className="text-2xl font-bold text-[var(--text-primary)]">
               Mision del departamento
             </h1>
-            <p className="text-stone-500 text-sm">
+            <p className="text-[var(--text-tertiary)] text-sm">
               Selecciona tus objetivos. Los agentes los priorizaran.
             </p>
           </div>
@@ -89,26 +89,26 @@ export function OnboardingGoalsMode({
                   className={cn(
                     "flex items-start gap-3 p-4 rounded-xl border text-left transition-all duration-200",
                     active
-                      ? "border-orange-500 bg-orange-50 ring-1 ring-orange-500/30"
-                      : "border-stone-200 bg-white hover:border-stone-300"
+                      ? "border-[var(--accent)] bg-[var(--accent-subtle)] ring-1 ring-[var(--accent)]/30"
+                      : "border-[var(--border)] bg-[var(--card-bg)] hover:border-[var(--border)]"
                   )}
                 >
                   <div
                     className={cn(
                       "p-2 rounded-lg",
-                      active ? "bg-orange-600" : "bg-stone-100"
+                      active ? "bg-[var(--accent)]" : "bg-[var(--surface-1)]"
                     )}
                   >
                     <Icon
                       className={cn(
                         "w-5 h-5",
-                        active ? "text-white" : "text-stone-500"
+                        active ? "text-white" : "text-[var(--text-tertiary)]"
                       )}
                     />
                   </div>
                   <div>
-                    <p className="font-semibold text-sm text-stone-900">{label}</p>
-                    <p className="text-xs text-stone-500 mt-0.5">{desc}</p>
+                    <p className="font-semibold text-sm text-[var(--text-primary)]">{label}</p>
+                    <p className="text-xs text-[var(--text-tertiary)] mt-0.5">{desc}</p>
                   </div>
                 </button>
               );
@@ -122,7 +122,7 @@ export function OnboardingGoalsMode({
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <h2 className="text-lg font-semibold text-stone-900 mb-3">
+          <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-3">
             Modo de activacion
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -132,30 +132,30 @@ export function OnboardingGoalsMode({
               className={cn(
                 "flex flex-col gap-3 p-4 rounded-xl border text-left transition-all duration-200",
                 activationMode === "demo"
-                  ? "border-orange-500 bg-orange-50 ring-1 ring-orange-500/30"
-                  : "border-stone-200 bg-white hover:border-stone-300"
+                  ? "border-[var(--accent)] bg-[var(--accent-subtle)] ring-1 ring-[var(--accent)]/30"
+                  : "border-[var(--border)] bg-[var(--card-bg)] hover:border-[var(--border)]"
               )}
             >
               <div className="flex items-center gap-2">
                 <div
                   className={cn(
                     "p-2 rounded-lg",
-                    activationMode === "demo" ? "bg-orange-600" : "bg-stone-100"
+                    activationMode === "demo" ? "bg-[var(--accent)]" : "bg-[var(--surface-1)]"
                   )}
                 >
                   <Play
                     className={cn(
                       "w-4 h-4",
-                      activationMode === "demo" ? "text-white" : "text-stone-500"
+                      activationMode === "demo" ? "text-white" : "text-[var(--text-tertiary)]"
                     )}
                   />
                 </div>
                 <div>
-                  <p className="font-semibold text-sm text-stone-900">Demo</p>
-                  <p className="text-xs text-green-600 font-medium">Gratis</p>
+                  <p className="font-semibold text-sm text-[var(--text-primary)]">Demo</p>
+                  <p className="text-xs text-[var(--success)] font-medium">Gratis</p>
                 </div>
               </div>
-              <p className="text-xs text-stone-500">
+              <p className="text-xs text-[var(--text-tertiary)]">
                 Animacion visual de los departamentos activandose. Contenido de ejemplo pre-generado.
               </p>
             </button>
@@ -166,30 +166,30 @@ export function OnboardingGoalsMode({
               className={cn(
                 "flex flex-col gap-3 p-4 rounded-xl border text-left transition-all duration-200",
                 activationMode === "real"
-                  ? "border-orange-500 bg-orange-50 ring-1 ring-orange-500/30"
-                  : "border-stone-200 bg-white hover:border-stone-300"
+                  ? "border-[var(--accent)] bg-[var(--accent-subtle)] ring-1 ring-[var(--accent)]/30"
+                  : "border-[var(--border)] bg-[var(--card-bg)] hover:border-[var(--border)]"
               )}
             >
               <div className="flex items-center gap-2">
                 <div
                   className={cn(
                     "p-2 rounded-lg",
-                    activationMode === "real" ? "bg-orange-600" : "bg-stone-100"
+                    activationMode === "real" ? "bg-[var(--accent)]" : "bg-[var(--surface-1)]"
                   )}
                 >
                   <Zap
                     className={cn(
                       "w-4 h-4",
-                      activationMode === "real" ? "text-white" : "text-stone-500"
+                      activationMode === "real" ? "text-white" : "text-[var(--text-tertiary)]"
                     )}
                   />
                 </div>
                 <div>
-                  <p className="font-semibold text-sm text-stone-900">Real</p>
-                  <p className="text-xs text-orange-600 font-medium">~$0.50-2.00</p>
+                  <p className="font-semibold text-sm text-[var(--text-primary)]">Real</p>
+                  <p className="text-xs text-[var(--accent)] font-medium">~$0.50-2.00</p>
                 </div>
               </div>
-              <p className="text-xs text-stone-500">
+              <p className="text-xs text-[var(--text-tertiary)]">
                 Ejecuta al CMO Agent con tu información real. Genera un análisis personalizado en vivo.
               </p>
             </button>
@@ -204,7 +204,7 @@ export function OnboardingGoalsMode({
         >
           <button
             onClick={() => setShowFeeds(!showFeeds)}
-            className="flex items-center gap-2 text-sm font-medium text-stone-600 hover:text-stone-900 transition mb-3"
+            className="flex items-center gap-2 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition mb-3"
           >
             <ChevronDown
               className={cn(
@@ -219,7 +219,7 @@ export function OnboardingGoalsMode({
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              className="rounded-xl border border-stone-200 bg-white p-4"
+              className="rounded-xl border border-[var(--border)] bg-[var(--card-bg)] p-4"
             >
               <StepFeeds
                 feeds={feeds}
@@ -232,11 +232,11 @@ export function OnboardingGoalsMode({
       </div>
 
       {/* Footer */}
-      <div className="border-t border-stone-200 p-4 bg-white/80 backdrop-blur mt-auto">
+      <div className="border-t border-[var(--border)] p-4 bg-[var(--card-bg)]/80 backdrop-blur mt-auto">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <button
             onClick={onBack}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium text-stone-500 hover:text-stone-700 hover:bg-stone-50 transition"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] hover:bg-[var(--surface-0)] transition"
           >
             <ArrowLeft className="w-4 h-4" /> Atras
           </button>
@@ -246,8 +246,8 @@ export function OnboardingGoalsMode({
             className={cn(
               "flex items-center gap-2 px-8 py-2.5 rounded-lg text-sm font-semibold transition",
               canProceed
-                ? "bg-green-600 hover:bg-green-500 text-white"
-                : "bg-stone-200 text-stone-400 cursor-not-allowed"
+                ? "bg-[var(--success)] hover:bg-[var(--success)] text-white"
+                : "bg-[var(--surface-2)] text-[var(--text-tertiary)] cursor-not-allowed"
             )}
           >
             Activar departamento <ArrowRight className="w-4 h-4" />

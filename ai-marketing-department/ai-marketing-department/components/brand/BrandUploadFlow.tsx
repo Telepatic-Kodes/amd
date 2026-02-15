@@ -179,14 +179,14 @@ export function BrandUploadFlow({ onExtracted, onBack, onSkip }: BrandUploadFlow
         className="pb-6"
       >
         <div className="flex items-center gap-3 mb-2">
-          <div className="p-2 rounded-xl bg-orange-50">
-            <Sparkles className="h-6 w-6 text-orange-600" />
+          <div className="p-2 rounded-xl bg-[var(--accent-muted)]">
+            <Sparkles className="h-6 w-6 text-[var(--accent)]" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-stone-900">
+            <h1 className="text-2xl font-bold text-[var(--text-primary)]">
               Importar información de marca
             </h1>
-            <p className="text-stone-500 text-sm">
+            <p className="text-[var(--text-tertiary)] text-sm">
               Proporciona al menos una fuente para extraer la información de tu marca
             </p>
           </div>
@@ -202,11 +202,11 @@ export function BrandUploadFlow({ onExtracted, onBack, onSkip }: BrandUploadFlow
           transition={{ delay: 0.1 }}
         >
           <div className="flex items-center gap-2 mb-3">
-            <Globe className="w-5 h-5 text-stone-600" />
-            <h2 className="text-sm font-semibold text-stone-700">
+            <Globe className="w-5 h-5 text-[var(--text-secondary)]" />
+            <h2 className="text-sm font-semibold text-[var(--text-secondary)]">
               URL del sitio web
             </h2>
-            <span className="text-xs text-stone-400 ml-auto">Opcional</span>
+            <span className="text-xs text-[var(--text-tertiary)] ml-auto">Opcional</span>
           </div>
           <div className="flex gap-2">
             <input
@@ -227,9 +227,9 @@ export function BrandUploadFlow({ onExtracted, onBack, onSkip }: BrandUploadFlow
               disabled={extracting}
               className={cn(
                 "flex-1 px-4 py-2.5 rounded-lg border text-sm transition",
-                "bg-white text-stone-900 placeholder:text-stone-400",
-                "focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500",
-                urlStatus === "error" ? "border-red-300" : "border-stone-200",
+                "bg-[var(--card-bg)] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]",
+                "focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-[var(--accent)]",
+                urlStatus === "error" ? "border-red-300" : "border-[var(--border)]",
                 extracting && "opacity-50"
               )}
             />
@@ -239,8 +239,8 @@ export function BrandUploadFlow({ onExtracted, onBack, onSkip }: BrandUploadFlow
               className={cn(
                 "flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition",
                 url.trim() && urlStatus !== "analyzing"
-                  ? "bg-stone-900 text-white hover:bg-stone-800"
-                  : "bg-stone-200 text-stone-400 cursor-not-allowed"
+                  ? "bg-[var(--surface-3)] text-white hover:bg-[var(--surface-2)]"
+                  : "bg-[var(--surface-2)] text-[var(--text-tertiary)] cursor-not-allowed"
               )}
             >
               {urlStatus === "analyzing" ? (
@@ -254,19 +254,19 @@ export function BrandUploadFlow({ onExtracted, onBack, onSkip }: BrandUploadFlow
 
           {/* URL Status */}
           {urlStatus === "analyzing" && (
-            <p className="text-xs text-orange-600 mt-2 flex items-center gap-1.5">
+            <p className="text-xs text-[var(--accent)] mt-2 flex items-center gap-1.5">
               <Loader2 className="w-3 h-3 animate-spin" />
               Analizando sitio web...
             </p>
           )}
           {urlStatus === "done" && (
-            <p className="text-xs text-green-600 mt-2 flex items-center gap-1.5">
+            <p className="text-xs text-[var(--badge-green-text)] mt-2 flex items-center gap-1.5">
               <CheckCircle2 className="w-3 h-3" />
               Sitio web analizado con éxito
             </p>
           )}
           {urlStatus === "error" && urlError && (
-            <p className="text-xs text-red-600 mt-2 flex items-center gap-1.5">
+            <p className="text-xs text-[var(--badge-red-text)] mt-2 flex items-center gap-1.5">
               <AlertCircle className="w-3 h-3" />
               {urlError}
             </p>
@@ -280,11 +280,11 @@ export function BrandUploadFlow({ onExtracted, onBack, onSkip }: BrandUploadFlow
           transition={{ delay: 0.2 }}
         >
           <div className="flex items-center gap-2 mb-3">
-            <FileText className="w-5 h-5 text-stone-600" />
-            <h2 className="text-sm font-semibold text-stone-700">
+            <FileText className="w-5 h-5 text-[var(--text-secondary)]" />
+            <h2 className="text-sm font-semibold text-[var(--text-secondary)]">
               Documentos de marca
             </h2>
-            <span className="text-xs text-stone-400 ml-auto">Opcional</span>
+            <span className="text-xs text-[var(--text-tertiary)] ml-auto">Opcional</span>
           </div>
 
           {/* Uploaded docs list */}
@@ -293,14 +293,14 @@ export function BrandUploadFlow({ onExtracted, onBack, onSkip }: BrandUploadFlow
               {docs.map((doc, i) => (
                 <div
                   key={i}
-                  className="flex items-center gap-3 px-3 py-2 rounded-lg bg-stone-50 border border-stone-200"
+                  className="flex items-center gap-3 px-3 py-2 rounded-lg bg-[var(--surface-0)] border border-[var(--border)]"
                 >
-                  <FileText className="w-4 h-4 text-stone-500 shrink-0" />
+                  <FileText className="w-4 h-4 text-[var(--text-tertiary)] shrink-0" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-stone-700 truncate">
+                    <p className="text-sm font-medium text-[var(--text-secondary)] truncate">
                       {doc.fileName}
                     </p>
-                    <p className="text-xs text-stone-400">
+                    <p className="text-xs text-[var(--text-tertiary)]">
                       {doc.wordCount.toLocaleString()} palabras
                     </p>
                   </div>
@@ -308,9 +308,9 @@ export function BrandUploadFlow({ onExtracted, onBack, onSkip }: BrandUploadFlow
                   <button
                     onClick={() => handleRemoveDoc(i)}
                     disabled={extracting}
-                    className="p-1 rounded hover:bg-stone-200 transition shrink-0"
+                    className="p-1 rounded hover:bg-[var(--surface-2)] transition shrink-0"
                   >
-                    <X className="w-3.5 h-3.5 text-stone-400" />
+                    <X className="w-3.5 h-3.5 text-[var(--text-tertiary)]" />
                   </button>
                 </div>
               ))}
@@ -321,9 +321,9 @@ export function BrandUploadFlow({ onExtracted, onBack, onSkip }: BrandUploadFlow
             onFileProcessed={handleFileProcessed}
             maxSizeMB={10}
             className={cn(
-              "!min-h-[140px] !border-stone-200 !bg-white",
-              "[&_p]:!text-stone-600 [&_span]:!text-stone-400",
-              "[&_svg]:!text-stone-400"
+              "!min-h-[140px] !border-[var(--border)] !bg-[var(--card-bg)]",
+              "[&_p]:!text-[var(--text-secondary)] [&_span]:!text-[var(--text-tertiary)]",
+              "[&_svg]:!text-[var(--text-tertiary)]"
             )}
           />
         </motion.section>
@@ -335,11 +335,11 @@ export function BrandUploadFlow({ onExtracted, onBack, onSkip }: BrandUploadFlow
           transition={{ delay: 0.3 }}
         >
           {extractError && (
-            <div className="flex items-start gap-2 p-3 rounded-lg bg-red-50 border border-red-200 mb-4">
-              <AlertCircle className="w-4 h-4 text-red-500 mt-0.5 shrink-0" />
+            <div className="flex items-start gap-2 p-3 rounded-lg bg-[var(--badge-red-bg)] border border-[var(--badge-red-bg)] mb-4">
+              <AlertCircle className="w-4 h-4 text-[var(--error)] mt-0.5 shrink-0" />
               <div>
-                <p className="text-sm font-medium text-red-700">Error en la extracción</p>
-                <p className="text-xs text-red-600 mt-0.5">{extractError}</p>
+                <p className="text-sm font-medium text-[var(--badge-red-text)]">Error en la extracción</p>
+                <p className="text-xs text-[var(--badge-red-text)] mt-0.5">{extractError}</p>
               </div>
             </div>
           )}
@@ -350,8 +350,8 @@ export function BrandUploadFlow({ onExtracted, onBack, onSkip }: BrandUploadFlow
             className={cn(
               "w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold transition",
               hasAnySources && !extracting
-                ? "bg-orange-600 hover:bg-orange-700 text-white"
-                : "bg-stone-200 text-stone-400 cursor-not-allowed"
+                ? "bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white"
+                : "bg-[var(--surface-2)] text-[var(--text-tertiary)] cursor-not-allowed"
             )}
           >
             {extracting ? (
@@ -368,7 +368,7 @@ export function BrandUploadFlow({ onExtracted, onBack, onSkip }: BrandUploadFlow
           </button>
 
           {!hasAnySources && (
-            <p className="text-xs text-stone-400 text-center mt-2">
+            <p className="text-xs text-[var(--text-tertiary)] text-center mt-2">
               Agrega al menos una URL o documento para continuar
             </p>
           )}
@@ -376,19 +376,19 @@ export function BrandUploadFlow({ onExtracted, onBack, onSkip }: BrandUploadFlow
       </div>
 
       {/* Footer */}
-      <div className="border-t border-stone-200 py-4 mt-auto">
+      <div className="border-t border-[var(--border)] py-4 mt-auto">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <button
             onClick={onBack}
             disabled={extracting}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium text-stone-500 hover:text-stone-700 hover:bg-stone-50 transition"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] hover:bg-[var(--surface-0)] transition"
           >
             <ArrowLeft className="w-4 h-4" /> Volver
           </button>
           <button
             onClick={onSkip}
             disabled={extracting}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium text-stone-400 hover:text-stone-600 hover:bg-stone-50 transition"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] hover:bg-[var(--surface-0)] transition"
           >
             Saltar y llenar manualmente <SkipForward className="w-4 h-4" />
           </button>

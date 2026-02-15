@@ -78,7 +78,7 @@ export function QuickExecuteModal({ agentId, agentName, onClose }: QuickExecuteM
             <Zap className="h-4 w-4 text-emerald-400" />
             <h3 className="text-sm font-semibold text-[var(--text-primary)]">Ejecutar Agente</h3>
           </div>
-          <button onClick={onClose} className="text-stone-400 hover:text-stone-900 transition-colors">
+          <button onClick={onClose} className="text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors">
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -96,7 +96,7 @@ export function QuickExecuteModal({ agentId, agentName, onClose }: QuickExecuteM
               value={taskType}
               onChange={(e) => setTaskType(e.target.value)}
               disabled={state === "executing"}
-              className="w-full rounded-md border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm text-[var(--text-primary)] focus:outline-none focus:ring-1 focus:ring-emerald-500/50"
+              className="w-full rounded-md border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm text-[var(--text-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--success)]/50"
             >
               <option value="manual_execution">Ejecución manual</option>
               <option value="write_blog">Escribir blog</option>
@@ -115,13 +115,13 @@ export function QuickExecuteModal({ agentId, agentName, onClose }: QuickExecuteM
               disabled={state === "executing"}
               placeholder="Describe lo que quieres que haga el agente..."
               rows={3}
-              className="w-full rounded-md border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm text-[var(--text-primary)] placeholder:text-stone-400 focus:outline-none focus:ring-1 focus:ring-emerald-500/50 resize-none"
+              className="w-full rounded-md border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:outline-none focus:ring-1 focus:ring-[var(--success)]/50 resize-none"
             />
           </div>
 
           {/* Execution progress stages */}
           {state === "executing" && (
-            <div className="rounded-md bg-emerald-500/5 border border-emerald-500/20 p-3 space-y-2">
+            <div className="rounded-md bg-emerald-500/5 border border-[var(--success)]/20 p-3 space-y-2">
               {EXECUTION_STAGES.map((stage, i) => (
                 <div key={i} className="flex items-center gap-2">
                   {i < stageIndex ? (
@@ -129,11 +129,11 @@ export function QuickExecuteModal({ agentId, agentName, onClose }: QuickExecuteM
                   ) : i === stageIndex ? (
                     <Loader2 className="h-3.5 w-3.5 text-emerald-400 animate-spin shrink-0" />
                   ) : (
-                    <Circle className="h-3.5 w-3.5 text-stone-400 shrink-0" />
+                    <Circle className="h-3.5 w-3.5 text-[var(--text-tertiary)] shrink-0" />
                   )}
                   <span className={cn(
                     "text-xs transition-colors",
-                    i <= stageIndex ? "text-stone-700" : "text-stone-400"
+                    i <= stageIndex ? "text-[var(--text-primary)]" : "text-[var(--text-tertiary)]"
                   )}>
                     {stage.label}
                   </span>
@@ -144,15 +144,15 @@ export function QuickExecuteModal({ agentId, agentName, onClose }: QuickExecuteM
 
           {/* Result feedback */}
           {state === "success" && (
-            <div className="flex items-start gap-2 rounded-md bg-emerald-500/10 border border-emerald-500/20 p-3">
+            <div className="flex items-start gap-2 rounded-md bg-emerald-500/10 border border-[var(--success)]/20 p-3">
               <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
-              <p className="text-xs text-emerald-700 line-clamp-3">{result}</p>
+              <p className="text-xs text-[var(--badge-green-text)] line-clamp-3">{result}</p>
             </div>
           )}
           {state === "error" && (
             <div className="flex items-start gap-2 rounded-md bg-red-500/10 border border-red-500/20 p-3">
-              <XCircle className="h-4 w-4 text-red-400 shrink-0 mt-0.5" />
-              <p className="text-xs text-red-700 line-clamp-3">{result}</p>
+              <XCircle className="h-4 w-4 text-[var(--error)] shrink-0 mt-0.5" />
+              <p className="text-xs text-[var(--badge-red-text)] line-clamp-3">{result}</p>
             </div>
           )}
         </div>
@@ -161,7 +161,7 @@ export function QuickExecuteModal({ agentId, agentName, onClose }: QuickExecuteM
         <div className="flex items-center justify-end gap-2 px-5 py-3 border-t border-[var(--border)]">
           <button
             onClick={onClose}
-            className="px-3 py-1.5 text-xs font-medium text-[var(--text-secondary)] hover:text-stone-900 transition-colors rounded-md"
+            className="px-3 py-1.5 text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors rounded-md"
           >
             {state === "success" || state === "error" ? "Cerrar" : "Cancelar"}
           </button>
@@ -180,7 +180,7 @@ export function QuickExecuteModal({ agentId, agentName, onClose }: QuickExecuteM
             </button>
           )}
           {state === "executing" && (
-            <div className="inline-flex items-center gap-1.5 px-4 py-1.5 text-xs font-medium text-emerald-600">
+            <div className="inline-flex items-center gap-1.5 px-4 py-1.5 text-xs font-medium text-[var(--success)]">
               <Loader2 className="h-3 w-3 animate-spin" />
               {EXECUTION_STAGES[stageIndex]?.label ?? "Ejecutando..."}
             </div>

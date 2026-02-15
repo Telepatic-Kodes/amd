@@ -73,7 +73,7 @@ export function TopAgentsTable({ agents }: TopAgentsTableProps) {
             <div
               key={agent.name}
               className={cn(
-                "flex items-center gap-3 px-5 py-3.5 transition-colors hover:bg-white/[0.03] group",
+                "flex items-center gap-3 px-5 py-3.5 transition-colors hover:bg-[var(--card-bg)]/[0.03] group",
                 i < top5.length - 1 && "border-b border-white/[0.04]"
               )}
             >
@@ -124,8 +124,8 @@ export function TopAgentsTable({ agents }: TopAgentsTableProps) {
         {/* "See all" link */}
         {agents.length > 5 && (
           <Link
-            href="/results"
-            className="flex items-center justify-center gap-1 px-5 py-2.5 text-[11px] text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] hover:bg-white/[0.02] transition-colors border-t border-white/[0.04]"
+            href="/"
+            className="flex items-center justify-center gap-1 px-5 py-2.5 text-[11px] text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] hover:bg-[var(--card-bg)]/[0.02] transition-colors border-t border-white/[0.04]"
           >
             Ver los {agents.length} agentes
             <ChevronRight className="h-3 w-3" />

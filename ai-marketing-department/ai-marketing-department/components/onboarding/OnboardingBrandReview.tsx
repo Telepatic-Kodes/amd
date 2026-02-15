@@ -168,8 +168,8 @@ export function OnboardingBrandReview({
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-stone-100 to-white">
       {/* Prefilled banner */}
       {prefilled && (
-        <div className="mx-4 mt-4 px-4 py-3 rounded-xl bg-orange-50 border border-orange-200 flex items-center gap-3">
-          <Sparkles className="w-4 h-4 text-orange-600 shrink-0" />
+        <div className="mx-4 mt-4 px-4 py-3 rounded-xl bg-[var(--accent-subtle)] border border-orange-200 flex items-center gap-3">
+          <Sparkles className="w-4 h-4 text-[var(--accent)] shrink-0" />
           <p className="text-sm text-orange-800">
             Pre-llenado con IA. Revisa y ajusta cada paso antes de continuar.
           </p>
@@ -180,10 +180,10 @@ export function OnboardingBrandReview({
       <div className="pt-8 pb-6 px-4">
         <div className="max-w-2xl mx-auto">
           <div className="mb-6">
-            <h1 className="text-2xl font-bold text-stone-900">
+            <h1 className="text-2xl font-bold text-[var(--text-primary)]">
               {currentLabel.title}
             </h1>
-            <p className="text-stone-500 text-sm">{currentLabel.subtitle}</p>
+            <p className="text-[var(--text-tertiary)] text-sm">{currentLabel.subtitle}</p>
           </div>
 
           {/* Progress Bar - 6 segments */}
@@ -193,12 +193,12 @@ export function OnboardingBrandReview({
                 key={i}
                 className={cn(
                   "flex-1 h-1.5 rounded-full transition-all duration-300",
-                  i <= step ? "bg-orange-600" : "bg-stone-200"
+                  i <= step ? "bg-[var(--accent)]" : "bg-[var(--surface-2)]"
                 )}
               />
             ))}
           </div>
-          <p className="text-xs text-stone-400 mt-2">
+          <p className="text-xs text-[var(--text-tertiary)] mt-2">
             Paso {step + 1} de {TOTAL_STEPS}
           </p>
         </div>
@@ -223,11 +223,11 @@ export function OnboardingBrandReview({
       </div>
 
       {/* Navigation Footer */}
-      <div className="border-t border-stone-200 p-4 bg-white/80 backdrop-blur mt-auto">
+      <div className="border-t border-[var(--border)] p-4 bg-[var(--card-bg)]/80 backdrop-blur mt-auto">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <button
             onClick={back}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium text-stone-500 hover:text-stone-700 hover:bg-stone-50 transition"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] hover:bg-[var(--surface-0)] transition"
           >
             <ArrowLeft className="w-4 h-4" /> Atras
           </button>
@@ -239,8 +239,8 @@ export function OnboardingBrandReview({
               className={cn(
                 "flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold transition",
                 canNext()
-                  ? "bg-orange-600 hover:bg-orange-700 text-white"
-                  : "bg-stone-200 text-stone-400 cursor-not-allowed"
+                  ? "bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white"
+                  : "bg-[var(--surface-2)] text-[var(--text-tertiary)] cursor-not-allowed"
               )}
             >
               Siguiente <ArrowRight className="w-4 h-4" />
@@ -251,7 +251,7 @@ export function OnboardingBrandReview({
                 localStorage.removeItem("amd-unified-brand-draft");
                 onComplete();
               }}
-              className="flex items-center gap-2 px-8 py-2.5 rounded-lg text-sm font-semibold bg-orange-600 hover:bg-orange-700 text-white transition"
+              className="flex items-center gap-2 px-8 py-2.5 rounded-lg text-sm font-semibold bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white transition"
             >
               Continuar <ArrowRight className="w-4 h-4" />
             </button>

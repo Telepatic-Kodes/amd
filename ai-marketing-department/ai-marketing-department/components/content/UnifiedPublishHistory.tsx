@@ -125,10 +125,10 @@ export function UnifiedPublishHistory({
   };
 
   return (
-    <Card className={cn("border-stone-200 bg-white", className)}>
+    <Card className={cn("border-[var(--border)] bg-[var(--card-bg)]", className)}>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <h3 className="flex items-center gap-2 text-lg font-semibold text-stone-900">
+          <h3 className="flex items-center gap-2 text-lg font-semibold text-[var(--text-primary)]">
             <Share2 className="h-5 w-5 text-orange-500" />
             {translate("publishHistory")}
           </h3>
@@ -143,14 +143,14 @@ export function UnifiedPublishHistory({
             <div className="rounded-lg border border-[#0A66C2]/20 bg-[#0A66C2]/10 p-3">
               <div className="flex items-center gap-2 mb-1">
                 <Linkedin className="h-4 w-4 text-[#0A66C2]" />
-                <span className="text-xs font-medium text-stone-400">
+                <span className="text-xs font-medium text-[var(--text-tertiary)]">
                   LinkedIn
                 </span>
               </div>
-              <p className="text-lg font-bold text-stone-900">
+              <p className="text-lg font-bold text-[var(--text-primary)]">
                 {summary.linkedin.published}
               </p>
-              <p className="text-xs text-stone-500">
+              <p className="text-xs text-[var(--text-tertiary)]">
                 {translate("publishedCount").replace(
                   "{N}",
                   summary.linkedin.published.toString()
@@ -162,14 +162,14 @@ export function UnifiedPublishHistory({
             <div className="rounded-lg border border-[#1DA1F2]/20 bg-[#1DA1F2]/10 p-3">
               <div className="flex items-center gap-2 mb-1">
                 <Twitter className="h-4 w-4 text-[#1DA1F2]" />
-                <span className="text-xs font-medium text-stone-400">
+                <span className="text-xs font-medium text-[var(--text-tertiary)]">
                   Twitter/X
                 </span>
               </div>
-              <p className="text-lg font-bold text-stone-900">
+              <p className="text-lg font-bold text-[var(--text-primary)]">
                 {summary.twitter.published}
               </p>
-              <p className="text-xs text-stone-500">
+              <p className="text-xs text-[var(--text-tertiary)]">
                 {translate("publishedCount").replace(
                   "{N}",
                   summary.twitter.published.toString()
@@ -181,14 +181,14 @@ export function UnifiedPublishHistory({
             <div className="rounded-lg border border-[#E4405F]/20 bg-[#E4405F]/10 p-3">
               <div className="flex items-center gap-2 mb-1">
                 <Instagram className="h-4 w-4 text-[#E4405F]" />
-                <span className="text-xs font-medium text-stone-400">
+                <span className="text-xs font-medium text-[var(--text-tertiary)]">
                   Instagram
                 </span>
               </div>
-              <p className="text-lg font-bold text-stone-900">
+              <p className="text-lg font-bold text-[var(--text-primary)]">
                 {summary.instagram.published}
               </p>
-              <p className="text-xs text-stone-500">
+              <p className="text-xs text-[var(--text-tertiary)]">
                 {translate("publishedCount").replace(
                   "{N}",
                   summary.instagram.published.toString()
@@ -204,12 +204,12 @@ export function UnifiedPublishHistory({
             {[...Array(5)].map((_, i) => (
               <div
                 key={i}
-                className="flex items-center gap-3 p-3 rounded-lg border border-stone-200 bg-stone-100/30 animate-pulse"
+                className="flex items-center gap-3 p-3 rounded-lg border border-[var(--border)] bg-[var(--surface-1)]/30 animate-pulse"
               >
-                <div className="w-10 h-10 rounded-lg bg-stone-200" />
+                <div className="w-10 h-10 rounded-lg bg-[var(--surface-2)]" />
                 <div className="flex-1 space-y-2">
-                  <div className="h-4 w-3/4 bg-stone-200 rounded" />
-                  <div className="h-3 w-1/2 bg-stone-200 rounded" />
+                  <div className="h-4 w-3/4 bg-[var(--surface-2)] rounded" />
+                  <div className="h-3 w-1/2 bg-[var(--surface-2)] rounded" />
                 </div>
               </div>
             ))}
@@ -235,8 +235,8 @@ export function UnifiedPublishHistory({
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ delay: index * 0.05 }}
                     className={cn(
-                      "flex items-start gap-3 p-3 rounded-lg border transition-all hover:bg-stone-100/30",
-                      "border-stone-200",
+                      "flex items-start gap-3 p-3 rounded-lg border transition-all hover:bg-[var(--surface-1)]/30",
+                      "border-[var(--border)]",
                       `border-l-2 ${platformConfig.borderColor}`
                     )}
                   >
@@ -254,7 +254,7 @@ export function UnifiedPublishHistory({
                     <div className="flex-1 min-w-0">
                       {/* Title */}
                       <div className="flex items-center gap-2 mb-1">
-                        <h4 className="text-sm font-medium text-stone-900 truncate">
+                        <h4 className="text-sm font-medium text-[var(--text-primary)] truncate">
                           {entry.contentTitle.length > 40
                             ? `${entry.contentTitle.slice(0, 40)}...`
                             : entry.contentTitle}
@@ -264,7 +264,7 @@ export function UnifiedPublishHistory({
                             href={entry.platformUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-orange-400 hover:text-orange-300 transition-colors"
+                            className="text-[var(--accent)] hover:text-orange-300 transition-colors"
                             onClick={(e) => e.stopPropagation()}
                           >
                             <ExternalLink className="h-3.5 w-3.5" />
@@ -278,7 +278,7 @@ export function UnifiedPublishHistory({
                           <StatusIcon className="h-3 w-3" />
                           {statusBadge.label}
                         </Badge>
-                        <span className="text-stone-500 flex items-center gap-1">
+                        <span className="text-[var(--text-tertiary)] flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
                           {formatRelativeTime(entry.createdAt)}
                         </span>
@@ -286,7 +286,7 @@ export function UnifiedPublishHistory({
 
                       {/* Error Message */}
                       {entry.status === "failed" && entry.error && (
-                        <p className="text-xs text-red-400 mt-2 line-clamp-2">
+                        <p className="text-xs text-[var(--error)] mt-2 line-clamp-2">
                           {entry.error}
                         </p>
                       )}
@@ -302,14 +302,14 @@ export function UnifiedPublishHistory({
         {history && history.length === 0 && (
           <div className="py-12 text-center">
             <div className="mb-4 flex justify-center">
-              <div className="rounded-full bg-stone-100 p-6">
-                <Share2 className="h-12 w-12 text-stone-700" />
+              <div className="rounded-full bg-[var(--surface-1)] p-6">
+                <Share2 className="h-12 w-12 text-[var(--text-secondary)]" />
               </div>
             </div>
-            <h4 className="text-lg font-semibold text-stone-900 mb-2">
+            <h4 className="text-lg font-semibold text-[var(--text-primary)] mb-2">
               {translate("noPublicationsYet")}
             </h4>
-            <p className="text-sm text-stone-500">
+            <p className="text-sm text-[var(--text-tertiary)]">
               {translate("publishFromDetail")}
             </p>
           </div>
@@ -319,7 +319,7 @@ export function UnifiedPublishHistory({
         {history && history.length > 0 && history.length === currentLimit && (
           <button
             onClick={loadMore}
-            className="w-full px-4 py-2 rounded-lg border border-stone-200 bg-white text-stone-400 hover:bg-stone-100 hover:text-stone-900 transition-colors text-sm font-medium"
+            className="w-full px-4 py-2 rounded-lg border border-[var(--border)] bg-[var(--card-bg)] text-[var(--text-tertiary)] hover:bg-[var(--surface-1)] hover:text-[var(--text-primary)] transition-colors text-sm font-medium"
           >
             {translate("viewMore")}
           </button>

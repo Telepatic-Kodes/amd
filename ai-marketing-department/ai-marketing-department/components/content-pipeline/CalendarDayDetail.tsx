@@ -52,19 +52,19 @@ export function CalendarDayDetail({
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: 20 }}
         transition={{ duration: 0.2 }}
-        className="fixed right-0 top-0 bottom-0 w-96 bg-white border-l border-stone-200 shadow-xl z-50 flex flex-col overflow-hidden"
+        className="fixed right-0 top-0 bottom-0 w-96 bg-[var(--card-bg)] border-l border-[var(--border)] shadow-xl z-50 flex flex-col overflow-hidden"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-stone-200 shrink-0">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--border)] shrink-0">
           <div>
-            <h3 className="text-sm font-semibold text-stone-900 capitalize">{dateLabel}</h3>
-            <p className="text-xs text-stone-400 mt-0.5">
+            <h3 className="text-sm font-semibold text-[var(--text-primary)] capitalize">{dateLabel}</h3>
+            <p className="text-xs text-[var(--text-tertiary)] mt-0.5">
               {items.length} {items.length === 1 ? "contenido" : "contenidos"}
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg hover:bg-stone-100 text-stone-400 hover:text-stone-700 transition-colors"
+            className="p-1.5 rounded-lg hover:bg-[var(--surface-1)] text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] transition-colors"
           >
             <X className="h-4 w-4" />
           </button>
@@ -74,9 +74,9 @@ export function CalendarDayDetail({
         <div className="flex-1 overflow-y-auto p-4 space-y-3">
           {items.length === 0 ? (
             <div className="text-center py-12">
-              <Clock className="h-8 w-8 text-stone-300 mx-auto mb-3" />
-              <p className="text-sm text-stone-400">{translate("noContentForDay")}</p>
-              <p className="text-xs text-stone-300 mt-1">{translate("dragToSchedule")}</p>
+              <Clock className="h-8 w-8 text-[var(--text-tertiary)] mx-auto mb-3" />
+              <p className="text-sm text-[var(--text-tertiary)]">{translate("noContentForDay")}</p>
+              <p className="text-xs text-[var(--text-tertiary)] mt-1">{translate("dragToSchedule")}</p>
             </div>
           ) : (
             items.map((item) => {
@@ -86,21 +86,21 @@ export function CalendarDayDetail({
               return (
                 <div
                   key={item._id}
-                  className="rounded-lg border border-stone-200 bg-stone-50/50 p-3.5 space-y-2.5"
+                  className="rounded-lg border border-[var(--border)] bg-[var(--surface-0)]/50 p-3.5 space-y-2.5"
                 >
                   {/* Header */}
                   <div className="flex items-start gap-2.5">
                     <div className={cn(
                       "flex h-8 w-8 items-center justify-center rounded-lg shrink-0",
-                      typeColors[item.type] || "bg-stone-100 text-stone-500"
+                      typeColors[item.type] || "bg-[var(--surface-1)] text-[var(--text-tertiary)]"
                     )}>
                       <TypeIcon className="h-4 w-4" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="text-sm font-medium text-stone-900 line-clamp-2 flex items-center gap-1.5">
+                      <h4 className="text-sm font-medium text-[var(--text-primary)] line-clamp-2 flex items-center gap-1.5">
                         {item.title}
                         {isAIGenerated && (
-                          <span className="inline-flex items-center gap-0.5 rounded-full bg-orange-50 border border-orange-200 px-1.5 py-0.5 text-[9px] font-medium text-orange-600 shrink-0">
+                          <span className="inline-flex items-center gap-0.5 rounded-full bg-[var(--accent-subtle)] border border-orange-200 px-1.5 py-0.5 text-[9px] font-medium text-[var(--accent)] shrink-0">
                             <Sparkles className="h-2 w-2" />
                             IA
                           </span>
@@ -119,14 +119,14 @@ export function CalendarDayDetail({
 
                   {/* Summary */}
                   {(item.summary || item.body) && (
-                    <p className="text-xs text-stone-500 line-clamp-2">
+                    <p className="text-xs text-[var(--text-tertiary)] line-clamp-2">
                       {item.summary || item.body.slice(0, 150)}
                     </p>
                   )}
 
                   {/* AI lineage */}
                   {isAIGenerated && (
-                    <div className="flex items-center gap-1.5 text-[10px] text-orange-500 bg-orange-50/50 rounded px-2 py-1">
+                    <div className="flex items-center gap-1.5 text-[10px] text-orange-500 bg-[var(--accent-subtle)]/50 rounded px-2 py-1">
                       <Sparkles className="h-3 w-3" />
                       <span>{translate("generatedBy")}: Agente IA</span>
                     </div>
@@ -134,7 +134,7 @@ export function CalendarDayDetail({
 
                   {/* Scheduled time */}
                   {item.scheduledFor && (
-                    <div className="flex items-center gap-1.5 text-xs text-stone-400">
+                    <div className="flex items-center gap-1.5 text-xs text-[var(--text-tertiary)]">
                       <Clock className="h-3 w-3" />
                       {format(new Date(item.scheduledFor), "HH:mm", { locale: es })}
                     </div>
@@ -145,7 +145,7 @@ export function CalendarDayDetail({
                     {(item.status === "scheduled" || item.status === "approved") && (
                       <button
                         onClick={() => onPublishNow(item._id)}
-                        className="flex-1 text-xs px-3 py-1.5 rounded-lg font-medium bg-orange-500/10 text-orange-600 hover:bg-orange-500/20 transition-colors flex items-center justify-center gap-1.5"
+                        className="flex-1 text-xs px-3 py-1.5 rounded-lg font-medium bg-[var(--accent)]/10 text-[var(--accent)] hover:bg-[var(--accent)]/20 transition-colors flex items-center justify-center gap-1.5"
                       >
                         <Zap className="h-3 w-3" />
                         {translate("publishNow")}
@@ -154,7 +154,7 @@ export function CalendarDayDetail({
                     {item.status === "scheduled" && (
                       <button
                         onClick={() => onUnschedule(item._id)}
-                        className="flex-1 text-xs px-3 py-1.5 rounded-lg font-medium border border-stone-300 text-stone-500 hover:bg-stone-100 transition-colors"
+                        className="flex-1 text-xs px-3 py-1.5 rounded-lg font-medium border border-[var(--border-hover)] text-[var(--text-tertiary)] hover:bg-[var(--surface-1)] transition-colors"
                       >
                         {translate("unschedule")}
                       </button>

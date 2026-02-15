@@ -77,10 +77,10 @@ export function DateRangeFilter({ value, onChange }: DateRangeFilterProps) {
             onClick={() => handlePresetClick(key)}
             className={cn(
               "rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-200",
-              "border border-stone-200 hover:border-stone-300",
+              "border border-[var(--border)] hover:border-[var(--border)]",
               isActive(key)
-                ? "bg-orange-600 text-white border-orange-600 shadow-lg shadow-orange-500/30"
-                : "bg-stone-100 text-stone-600 hover:bg-stone-200"
+                ? "bg-[var(--accent)] text-white border-orange-600 shadow-lg shadow-orange-500/30"
+                : "bg-[var(--surface-1)] text-[var(--text-secondary)] hover:bg-[var(--surface-2)]"
             )}
           >
             {key === "custom" && <Calendar className="inline-block w-3.5 h-3.5 mr-1.5" />}
@@ -91,9 +91,9 @@ export function DateRangeFilter({ value, onChange }: DateRangeFilterProps) {
 
       {/* Custom date inputs */}
       {showCustom && (
-        <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center p-3 rounded-lg bg-stone-100/50 border border-stone-200">
+        <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center p-3 rounded-lg bg-[var(--surface-1)]/50 border border-[var(--border)]">
           <div className="flex flex-col gap-1.5 flex-1">
-            <label className="text-xs text-stone-500 font-medium">Fecha inicial</label>
+            <label className="text-xs text-[var(--text-tertiary)] font-medium">Fecha inicial</label>
             <input
               type="date"
               value={customStart}
@@ -103,12 +103,12 @@ export function DateRangeFilter({ value, onChange }: DateRangeFilterProps) {
                   setTimeout(() => handleCustomDateChange(), 50);
                 }
               }}
-              className="px-3 py-2 rounded-lg bg-stone-50 border border-stone-200 text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+              className="px-3 py-2 rounded-lg bg-[var(--surface-0)] border border-[var(--border)] text-[var(--text-primary)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent"
             />
           </div>
 
           <div className="flex flex-col gap-1.5 flex-1">
-            <label className="text-xs text-stone-500 font-medium">Fecha final</label>
+            <label className="text-xs text-[var(--text-tertiary)] font-medium">Fecha final</label>
             <input
               type="date"
               value={customEnd}
@@ -118,7 +118,7 @@ export function DateRangeFilter({ value, onChange }: DateRangeFilterProps) {
                   setTimeout(() => handleCustomDateChange(), 50);
                 }
               }}
-              className="px-3 py-2 rounded-lg bg-stone-50 border border-stone-200 text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+              className="px-3 py-2 rounded-lg bg-[var(--surface-0)] border border-[var(--border)] text-[var(--text-primary)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent"
             />
           </div>
         </div>

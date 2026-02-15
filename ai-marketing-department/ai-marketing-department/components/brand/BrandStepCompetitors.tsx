@@ -29,15 +29,15 @@ function CompetitorCard({
   onRemove: () => void;
 }) {
   return (
-    <div className="p-4 rounded-lg bg-stone-50 border border-stone-200 space-y-3">
+    <div className="p-4 rounded-lg bg-[var(--surface-0)] border border-[var(--border)] space-y-3">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-medium text-orange-400 uppercase tracking-wider">
+        <span className="text-xs font-medium text-[var(--accent)] uppercase tracking-wider">
           Competidor {index + 1}
         </span>
         <button
           type="button"
           onClick={onRemove}
-          className="text-stone-400 hover:text-red-400 transition"
+          className="text-[var(--text-tertiary)] hover:text-[var(--error)] transition"
         >
           <X className="w-4 h-4" />
         </button>
@@ -48,29 +48,29 @@ function CompetitorCard({
         value={competitor.name}
         onChange={(e) => onUpdate({ ...competitor, name: e.target.value })}
         placeholder="Nombre del competidor"
-        className="w-full px-3 py-2 rounded-lg bg-white border border-stone-200 text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-orange-500/50 text-sm transition"
+        className="w-full px-3 py-2 rounded-lg bg-[var(--card-bg)] border border-[var(--border)] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/50 text-sm transition"
       />
 
       <div className="flex items-center gap-2">
-        <Globe className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+        <Globe className="w-3.5 h-3.5 text-[var(--text-tertiary)] shrink-0" />
         <input
           type="url"
           inputMode="url"
           value={competitor.url}
           onChange={(e) => onUpdate({ ...competitor, url: e.target.value })}
           placeholder="https://competidor.com"
-          className="flex-1 px-3 py-2 rounded-lg bg-white border border-stone-200 text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-orange-500/50 text-sm transition"
+          className="flex-1 px-3 py-2 rounded-lg bg-[var(--card-bg)] border border-[var(--border)] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/50 text-sm transition"
         />
       </div>
 
       <div className="flex items-start gap-2">
-        <StickyNote className="w-3.5 h-3.5 text-stone-400 shrink-0 mt-2.5" />
+        <StickyNote className="w-3.5 h-3.5 text-[var(--text-tertiary)] shrink-0 mt-2.5" />
         <textarea
           value={competitor.notes}
           onChange={(e) => onUpdate({ ...competitor, notes: e.target.value })}
           placeholder="Notas: qué hacen bien, qué hacen mal..."
           rows={2}
-          className="flex-1 px-3 py-2 rounded-lg bg-white border border-stone-200 text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-orange-500/50 text-sm transition resize-none"
+          className="flex-1 px-3 py-2 rounded-lg bg-[var(--card-bg)] border border-[var(--border)] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/50 text-sm transition resize-none"
         />
       </div>
     </div>
@@ -109,7 +109,7 @@ export function BrandStepCompetitors({ data, onChange }: Props) {
         <h2 className="text-3xl font-bold bg-gradient-to-r from-orange-400 to-purple-400 bg-clip-text text-transparent">
           Competencia
         </h2>
-        <p className="text-stone-500">
+        <p className="text-[var(--text-tertiary)]">
           ¿Contra quién compites y a quién admiras?
         </p>
       </div>
@@ -117,8 +117,8 @@ export function BrandStepCompetitors({ data, onChange }: Props) {
       <div className="space-y-6">
         {/* Competitors */}
         <div className="space-y-3">
-          <label className="text-sm font-medium text-stone-700 flex items-center gap-2">
-            <Swords className="w-4 h-4 text-orange-400" /> Competidores
+          <label className="text-sm font-medium text-[var(--text-secondary)] flex items-center gap-2">
+            <Swords className="w-4 h-4 text-[var(--accent)]" /> Competidores
           </label>
 
           {data.competitors.map((comp, i) => (
@@ -134,7 +134,7 @@ export function BrandStepCompetitors({ data, onChange }: Props) {
           <button
             type="button"
             onClick={addCompetitor}
-            className="w-full py-3 rounded-lg border-2 border-dashed border-stone-200 text-stone-400 hover:border-orange-500/50 hover:text-orange-400 transition flex items-center justify-center gap-2 text-sm font-medium"
+            className="w-full py-3 rounded-lg border-2 border-dashed border-[var(--border)] text-[var(--text-tertiary)] hover:border-[var(--accent)]/50 hover:text-[var(--accent)] transition flex items-center justify-center gap-2 text-sm font-medium"
           >
             <Plus className="w-4 h-4" />
             Agregar competidor
@@ -143,10 +143,10 @@ export function BrandStepCompetitors({ data, onChange }: Props) {
 
         {/* Reference URLs */}
         <div className="space-y-3">
-          <label className="text-sm font-medium text-stone-700 flex items-center gap-2">
-            <Globe className="w-4 h-4 text-orange-400" /> URLs de referencia
+          <label className="text-sm font-medium text-[var(--text-secondary)] flex items-center gap-2">
+            <Globe className="w-4 h-4 text-[var(--accent)]" /> URLs de referencia
           </label>
-          <p className="text-xs text-stone-400">
+          <p className="text-xs text-[var(--text-tertiary)]">
             Marcas o contenido que admiras y quieres emular.
           </p>
           <div className="flex gap-2">
@@ -157,12 +157,12 @@ export function BrandStepCompetitors({ data, onChange }: Props) {
               onChange={(e) => setRefInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addReference())}
               placeholder="https://ejemplo.com/referencia"
-              className="flex-1 px-4 py-2.5 rounded-lg bg-stone-50 border border-stone-200 text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-orange-500/50 text-sm transition"
+              className="flex-1 px-4 py-2.5 rounded-lg bg-[var(--surface-0)] border border-[var(--border)] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/50 text-sm transition"
             />
             <button
               type="button"
               onClick={addReference}
-              className="px-3 py-2.5 rounded-lg bg-orange-500/10 text-orange-400 hover:bg-orange-500/20 transition"
+              className="px-3 py-2.5 rounded-lg bg-[var(--accent-muted)]0/10 text-[var(--accent)] hover:bg-[var(--accent-muted)]0/20 transition"
             >
               <Plus className="w-4 h-4" />
             </button>
@@ -172,16 +172,16 @@ export function BrandStepCompetitors({ data, onChange }: Props) {
               {data.references.map((ref, i) => (
                 <div
                   key={i}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg bg-stone-50 border border-stone-200 text-sm"
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--surface-0)] border border-[var(--border)] text-sm"
                 >
-                  <Globe className="w-3.5 h-3.5 text-stone-400 shrink-0" />
-                  <span className="flex-1 text-stone-700 truncate">{ref}</span>
+                  <Globe className="w-3.5 h-3.5 text-[var(--text-tertiary)] shrink-0" />
+                  <span className="flex-1 text-[var(--text-secondary)] truncate">{ref}</span>
                   <button
                     type="button"
                     onClick={() =>
                       onChange({ references: data.references.filter((_, idx) => idx !== i) })
                     }
-                    className="text-stone-400 hover:text-red-400 transition"
+                    className="text-[var(--text-tertiary)] hover:text-[var(--error)] transition"
                   >
                     <X className="w-3.5 h-3.5" />
                   </button>

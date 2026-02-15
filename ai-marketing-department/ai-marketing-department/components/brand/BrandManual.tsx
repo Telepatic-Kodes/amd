@@ -22,11 +22,11 @@ function ManualSection({
 }) {
   return (
     <section className="relative pt-12 pb-8 print-break">
-      <div className="flex items-center gap-3 border-b border-stone-200 pb-4 mb-8">
-        <span className="text-[64px] font-bold text-stone-100 leading-none select-none">{number}</span>
+      <div className="flex items-center gap-3 border-b border-[var(--border)] pb-4 mb-8">
+        <span className="text-[64px] font-bold text-[var(--text-primary)] leading-none select-none">{number}</span>
         <div className="flex items-center gap-2">
-          <Icon className="h-5 w-5 text-stone-400" />
-          <h2 className="text-2xl font-semibold text-stone-900">{title}</h2>
+          <Icon className="h-5 w-5 text-[var(--text-tertiary)]" />
+          <h2 className="text-2xl font-semibold text-[var(--text-primary)]">{title}</h2>
         </div>
       </div>
       {children}
@@ -39,12 +39,12 @@ function ColorSwatch({ color, label }: { color?: string; label: string }) {
   return (
     <div className="flex flex-col items-center gap-2">
       <div
-        className="w-14 h-14 rounded-full border border-stone-200 shadow-sm"
+        className="w-14 h-14 rounded-full border border-[var(--border)] shadow-sm"
         style={{ backgroundColor: color }}
       />
       <div className="text-center">
-        <p className="text-[11px] text-stone-500 uppercase tracking-wider">{label}</p>
-        <p className="text-xs font-mono text-stone-700">{color}</p>
+        <p className="text-[11px] text-[var(--text-tertiary)] uppercase tracking-wider">{label}</p>
+        <p className="text-xs font-mono text-[var(--text-secondary)]">{color}</p>
       </div>
     </div>
   );
@@ -52,9 +52,9 @@ function ColorSwatch({ color, label }: { color?: string; label: string }) {
 
 function Badge({ children, variant = "default" }: { children: React.ReactNode; variant?: "default" | "green" | "red" }) {
   const colors = {
-    default: "bg-stone-100 text-stone-700",
-    green: "bg-emerald-50 text-emerald-700",
-    red: "bg-red-50 text-red-700",
+    default: "bg-[var(--surface-1)] text-[var(--text-secondary)]",
+    green: "bg-[var(--badge-green-bg)] text-[var(--badge-green-text)]",
+    red: "bg-[var(--badge-red-bg)] text-[var(--badge-red-text)]",
   };
   return (
     <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${colors[variant]}`}>
@@ -65,9 +65,9 @@ function Badge({ children, variant = "default" }: { children: React.ReactNode; v
 
 function InfoCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-lg border border-stone-200 p-5 space-y-2">
-      <h4 className="text-sm font-semibold text-stone-500 uppercase tracking-wider">{title}</h4>
-      <div className="text-[15px] leading-relaxed text-stone-700">{children}</div>
+    <div className="rounded-lg border border-[var(--border)] p-5 space-y-2">
+      <h4 className="text-sm font-semibold text-[var(--text-tertiary)] uppercase tracking-wider">{title}</h4>
+      <div className="text-[15px] leading-relaxed text-[var(--text-secondary)]">{children}</div>
     </div>
   );
 }
@@ -76,20 +76,20 @@ export function BrandManual({ brandProfile: bp, strategy: strategyDoc }: BrandMa
   // Strategy data is nested inside the document's `strategy` field
   const strategy = (strategyDoc as Record<string, unknown>)?.strategy ?? null;
   return (
-    <div className="brand-manual-doc bg-white text-stone-900 max-w-3xl mx-auto px-12 py-16 print:px-0 print:py-8 print:max-w-none">
+    <div className="brand-manual-doc bg-[var(--card-bg)] text-[var(--text-primary)] max-w-3xl mx-auto px-12 py-16 print:px-0 print:py-8 print:max-w-none">
 
       {/* ── 01 COVER ── */}
-      <section className="text-center py-20 border-b border-stone-200 mb-8">
+      <section className="text-center py-20 border-b border-[var(--border)] mb-8">
         {bp.visual?.logoDescription && (
-          <p className="text-sm text-stone-400 mb-4 italic">{bp.visual.logoDescription}</p>
+          <p className="text-sm text-[var(--text-tertiary)] mb-4 italic">{bp.visual.logoDescription}</p>
         )}
-        <h1 className="text-5xl font-bold text-stone-900 mb-3">{bp.companyName}</h1>
-        <p className="text-lg text-stone-500 font-medium mb-6">{bp.industry}</p>
+        <h1 className="text-5xl font-bold text-[var(--text-primary)] mb-3">{bp.companyName}</h1>
+        <p className="text-lg text-[var(--text-tertiary)] font-medium mb-6">{bp.industry}</p>
         {bp.website && (
-          <p className="text-sm text-stone-400 mb-8">{bp.website}</p>
+          <p className="text-sm text-[var(--text-tertiary)] mb-8">{bp.website}</p>
         )}
-        <p className="text-[15px] leading-relaxed text-stone-600 max-w-xl mx-auto">{bp.description}</p>
-        <div className="mt-12 text-xs text-stone-300 uppercase tracking-[0.2em]">Manual de Marca</div>
+        <p className="text-[15px] leading-relaxed text-[var(--text-secondary)] max-w-xl mx-auto">{bp.description}</p>
+        <div className="mt-12 text-xs text-[var(--text-tertiary)] uppercase tracking-[0.2em]">Manual de Marca</div>
       </section>
 
       {/* ── 02 VISUAL IDENTITY ── */}
@@ -97,7 +97,7 @@ export function BrandManual({ brandProfile: bp, strategy: strategyDoc }: BrandMa
         <ManualSection number="02" title="Identidad Visual" icon={Palette}>
           {/* Colors */}
           <div className="mb-8">
-            <h3 className="text-sm font-semibold text-stone-500 uppercase tracking-wider mb-4">Paleta de Colores</h3>
+            <h3 className="text-sm font-semibold text-[var(--text-tertiary)] uppercase tracking-wider mb-4">Paleta de Colores</h3>
             <div className="flex flex-wrap gap-8">
               <ColorSwatch color={bp.visual.primaryColor} label="Primario" />
               <ColorSwatch color={bp.visual.secondaryColor} label="Secundario" />
@@ -110,20 +110,20 @@ export function BrandManual({ brandProfile: bp, strategy: strategyDoc }: BrandMa
           {/* Typography */}
           {(bp.visual.fontPrimary || bp.visual.fontSecondary) && (
             <div className="mb-8">
-              <h3 className="text-sm font-semibold text-stone-500 uppercase tracking-wider mb-4">Tipografía</h3>
+              <h3 className="text-sm font-semibold text-[var(--text-tertiary)] uppercase tracking-wider mb-4">Tipografía</h3>
               <div className="grid grid-cols-2 gap-6">
                 {bp.visual.fontPrimary && (
-                  <div className="rounded-lg border border-stone-200 p-5">
-                    <p className="text-xs text-stone-400 mb-1">Font Primaria</p>
-                    <p className="text-2xl font-semibold text-stone-900">{bp.visual.fontPrimary}</p>
-                    <p className="text-sm text-stone-500 mt-2">Aa Bb Cc Dd Ee Ff Gg</p>
+                  <div className="rounded-lg border border-[var(--border)] p-5">
+                    <p className="text-xs text-[var(--text-tertiary)] mb-1">Font Primaria</p>
+                    <p className="text-2xl font-semibold text-[var(--text-primary)]">{bp.visual.fontPrimary}</p>
+                    <p className="text-sm text-[var(--text-tertiary)] mt-2">Aa Bb Cc Dd Ee Ff Gg</p>
                   </div>
                 )}
                 {bp.visual.fontSecondary && (
-                  <div className="rounded-lg border border-stone-200 p-5">
-                    <p className="text-xs text-stone-400 mb-1">Font Secundaria</p>
-                    <p className="text-2xl font-semibold text-stone-900">{bp.visual.fontSecondary}</p>
-                    <p className="text-sm text-stone-500 mt-2">Aa Bb Cc Dd Ee Ff Gg</p>
+                  <div className="rounded-lg border border-[var(--border)] p-5">
+                    <p className="text-xs text-[var(--text-tertiary)] mb-1">Font Secundaria</p>
+                    <p className="text-2xl font-semibold text-[var(--text-primary)]">{bp.visual.fontSecondary}</p>
+                    <p className="text-sm text-[var(--text-tertiary)] mt-2">Aa Bb Cc Dd Ee Ff Gg</p>
                   </div>
                 )}
               </div>
@@ -133,8 +133,8 @@ export function BrandManual({ brandProfile: bp, strategy: strategyDoc }: BrandMa
           {/* Style Notes */}
           {bp.visual.styleNotes && (
             <div>
-              <h3 className="text-sm font-semibold text-stone-500 uppercase tracking-wider mb-3">Notas de Estilo</h3>
-              <p className="text-[15px] leading-relaxed text-stone-600">{bp.visual.styleNotes}</p>
+              <h3 className="text-sm font-semibold text-[var(--text-tertiary)] uppercase tracking-wider mb-3">Notas de Estilo</h3>
+              <p className="text-[15px] leading-relaxed text-[var(--text-secondary)]">{bp.visual.styleNotes}</p>
             </div>
           )}
         </ManualSection>
@@ -145,7 +145,7 @@ export function BrandManual({ brandProfile: bp, strategy: strategyDoc }: BrandMa
         <div className="space-y-6">
           {/* Tone */}
           <div>
-            <h3 className="text-sm font-semibold text-stone-500 uppercase tracking-wider mb-3">Tono</h3>
+            <h3 className="text-sm font-semibold text-[var(--text-tertiary)] uppercase tracking-wider mb-3">Tono</h3>
             <div className="flex flex-wrap gap-2">
               {bp.voice.tone.map((t) => <Badge key={t}>{t}</Badge>)}
             </div>
@@ -153,7 +153,7 @@ export function BrandManual({ brandProfile: bp, strategy: strategyDoc }: BrandMa
 
           {/* Personality */}
           <div>
-            <h3 className="text-sm font-semibold text-stone-500 uppercase tracking-wider mb-3">Personalidad</h3>
+            <h3 className="text-sm font-semibold text-[var(--text-tertiary)] uppercase tracking-wider mb-3">Personalidad</h3>
             <div className="flex flex-wrap gap-2">
               {bp.voice.personality.map((p) => <Badge key={p}>{p}</Badge>)}
             </div>
@@ -162,10 +162,10 @@ export function BrandManual({ brandProfile: bp, strategy: strategyDoc }: BrandMa
           {/* Dos and Don'ts */}
           <div className="grid grid-cols-2 gap-6">
             <div>
-              <h3 className="text-sm font-semibold text-emerald-600 uppercase tracking-wider mb-3">Hacer</h3>
+              <h3 className="text-sm font-semibold text-[var(--success)] uppercase tracking-wider mb-3">Hacer</h3>
               <ul className="space-y-2">
                 {bp.voice.dos.map((d) => (
-                  <li key={d} className="flex items-start gap-2 text-[15px] text-stone-700">
+                  <li key={d} className="flex items-start gap-2 text-[15px] text-[var(--text-secondary)]">
                     <span className="text-emerald-500 mt-0.5">✓</span>
                     {d}
                   </li>
@@ -176,8 +176,8 @@ export function BrandManual({ brandProfile: bp, strategy: strategyDoc }: BrandMa
               <h3 className="text-sm font-semibold text-red-600 uppercase tracking-wider mb-3">No Hacer</h3>
               <ul className="space-y-2">
                 {bp.voice.donts.map((d) => (
-                  <li key={d} className="flex items-start gap-2 text-[15px] text-stone-700">
-                    <span className="text-red-500 mt-0.5">✕</span>
+                  <li key={d} className="flex items-start gap-2 text-[15px] text-[var(--text-secondary)]">
+                    <span className="text-[var(--error)] mt-0.5">✕</span>
                     {d}
                   </li>
                 ))}
@@ -197,8 +197,8 @@ export function BrandManual({ brandProfile: bp, strategy: strategyDoc }: BrandMa
             {bp.messaging.successVision && <InfoCard title="Visión de Éxito">{bp.messaging.successVision}</InfoCard>}
             {bp.messaging.failureVision && <InfoCard title="Qué Pasa Sin Nosotros">{bp.messaging.failureVision}</InfoCard>}
             {bp.messaging.callToAction && (
-              <div className="md:col-span-2 rounded-lg bg-stone-900 text-white p-6 text-center">
-                <p className="text-xs text-stone-400 uppercase tracking-wider mb-2">Call to Action</p>
+              <div className="md:col-span-2 rounded-lg bg-[var(--surface-3)] text-white p-6 text-center">
+                <p className="text-xs text-[var(--text-tertiary)] uppercase tracking-wider mb-2">Call to Action</p>
                 <p className="text-xl font-semibold">{bp.messaging.callToAction}</p>
               </div>
             )}
@@ -211,26 +211,26 @@ export function BrandManual({ brandProfile: bp, strategy: strategyDoc }: BrandMa
         <ManualSection number="05" title="Posicionamiento" icon={Lightbulb}>
           <div className="space-y-6">
             {bp.positioning.uniqueValue && (
-              <blockquote className="border-l-4 border-stone-900 pl-6 py-2">
-                <p className="text-xl font-medium text-stone-900 italic">{bp.positioning.uniqueValue}</p>
-                <p className="text-sm text-stone-400 mt-2">Propuesta de Valor Única</p>
+              <blockquote className="border-l-4 border-[var(--text-primary)] pl-6 py-2">
+                <p className="text-xl font-medium text-[var(--text-primary)] italic">{bp.positioning.uniqueValue}</p>
+                <p className="text-sm text-[var(--text-tertiary)] mt-2">Propuesta de Valor Única</p>
               </blockquote>
             )}
 
             {bp.positioning.category && (
               <div>
-                <h3 className="text-sm font-semibold text-stone-500 uppercase tracking-wider mb-2">Categoría de Mercado</h3>
-                <p className="text-[15px] text-stone-700">{bp.positioning.category}</p>
+                <h3 className="text-sm font-semibold text-[var(--text-tertiary)] uppercase tracking-wider mb-2">Categoría de Mercado</h3>
+                <p className="text-[15px] text-[var(--text-secondary)]">{bp.positioning.category}</p>
               </div>
             )}
 
             {bp.positioning.differentiators && bp.positioning.differentiators.length > 0 && (
               <div>
-                <h3 className="text-sm font-semibold text-stone-500 uppercase tracking-wider mb-3">Diferenciadores</h3>
+                <h3 className="text-sm font-semibold text-[var(--text-tertiary)] uppercase tracking-wider mb-3">Diferenciadores</h3>
                 <ol className="space-y-2">
                   {bp.positioning.differentiators.map((d, i) => (
-                    <li key={i} className="flex items-start gap-3 text-[15px] text-stone-700">
-                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-stone-900 text-white text-xs flex items-center justify-center font-medium">{i + 1}</span>
+                    <li key={i} className="flex items-start gap-3 text-[15px] text-[var(--text-secondary)]">
+                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[var(--surface-3)] text-white text-xs flex items-center justify-center font-medium">{i + 1}</span>
                       {d}
                     </li>
                   ))}
@@ -240,11 +240,11 @@ export function BrandManual({ brandProfile: bp, strategy: strategyDoc }: BrandMa
 
             {bp.positioning.proofPoints && bp.positioning.proofPoints.length > 0 && (
               <div>
-                <h3 className="text-sm font-semibold text-stone-500 uppercase tracking-wider mb-3">Proof Points</h3>
+                <h3 className="text-sm font-semibold text-[var(--text-tertiary)] uppercase tracking-wider mb-3">Proof Points</h3>
                 <div className="space-y-3">
                   {bp.positioning.proofPoints.map((p, i) => (
-                    <div key={i} className="rounded-lg bg-stone-50 p-4 border-l-2 border-stone-300">
-                      <p className="text-[15px] text-stone-700 italic">&ldquo;{p}&rdquo;</p>
+                    <div key={i} className="rounded-lg bg-[var(--surface-0)] p-4 border-l-2 border-[var(--border)]">
+                      <p className="text-[15px] text-[var(--text-secondary)] italic">&ldquo;{p}&rdquo;</p>
                     </div>
                   ))}
                 </div>
@@ -258,17 +258,17 @@ export function BrandManual({ brandProfile: bp, strategy: strategyDoc }: BrandMa
       <ManualSection number="06" title="Audiencia" icon={Users}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {bp.audience.segments.map((seg) => (
-            <div key={seg.name} className="rounded-lg border border-stone-200 p-5 space-y-3">
-              <h4 className="text-lg font-semibold text-stone-900">{seg.name}</h4>
+            <div key={seg.name} className="rounded-lg border border-[var(--border)] p-5 space-y-3">
+              <h4 className="text-lg font-semibold text-[var(--text-primary)]">{seg.name}</h4>
               {seg.demographics && (
-                <p className="text-sm text-stone-500">{seg.demographics}</p>
+                <p className="text-sm text-[var(--text-tertiary)]">{seg.demographics}</p>
               )}
               {seg.painPoints.length > 0 && (
                 <div>
-                  <p className="text-xs text-stone-400 uppercase tracking-wider mb-2">Pain Points</p>
+                  <p className="text-xs text-[var(--text-tertiary)] uppercase tracking-wider mb-2">Pain Points</p>
                   <ul className="space-y-1">
                     {seg.painPoints.map((pp) => (
-                      <li key={pp} className="flex items-start gap-2 text-sm text-stone-600">
+                      <li key={pp} className="flex items-start gap-2 text-sm text-[var(--text-secondary)]">
                         <span className="text-orange-500 mt-0.5">•</span>
                         {pp}
                       </li>
@@ -287,18 +287,18 @@ export function BrandManual({ brandProfile: bp, strategy: strategyDoc }: BrandMa
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
-                <tr className="border-b border-stone-200">
-                  <th className="py-3 pr-4 text-xs font-semibold text-stone-500 uppercase tracking-wider">Nombre</th>
-                  <th className="py-3 pr-4 text-xs font-semibold text-stone-500 uppercase tracking-wider">URL</th>
-                  <th className="py-3 text-xs font-semibold text-stone-500 uppercase tracking-wider">Notas</th>
+                <tr className="border-b border-[var(--border)]">
+                  <th className="py-3 pr-4 text-xs font-semibold text-[var(--text-tertiary)] uppercase tracking-wider">Nombre</th>
+                  <th className="py-3 pr-4 text-xs font-semibold text-[var(--text-tertiary)] uppercase tracking-wider">URL</th>
+                  <th className="py-3 text-xs font-semibold text-[var(--text-tertiary)] uppercase tracking-wider">Notas</th>
                 </tr>
               </thead>
               <tbody>
                 {bp.competitors.map((c) => (
-                  <tr key={c.name} className="border-b border-stone-100">
-                    <td className="py-3 pr-4 text-[15px] font-medium text-stone-900">{c.name}</td>
-                    <td className="py-3 pr-4 text-sm text-stone-500">{c.url || "—"}</td>
-                    <td className="py-3 text-sm text-stone-600">{c.notes || "—"}</td>
+                  <tr key={c.name} className="border-b border-[var(--border)]">
+                    <td className="py-3 pr-4 text-[15px] font-medium text-[var(--text-primary)]">{c.name}</td>
+                    <td className="py-3 pr-4 text-sm text-[var(--text-tertiary)]">{c.url || "—"}</td>
+                    <td className="py-3 text-sm text-[var(--text-secondary)]">{c.notes || "—"}</td>
                   </tr>
                 ))}
               </tbody>
@@ -313,7 +313,7 @@ export function BrandManual({ brandProfile: bp, strategy: strategyDoc }: BrandMa
           <div className="space-y-8">
             {/* Summary / Goal */}
             {(strategy.summary || (strategyDoc as Record<string, unknown>)?.goal) && (
-              <p className="text-[15px] leading-relaxed text-stone-600 italic border-l-4 border-orange-300 pl-4">
+              <p className="text-[15px] leading-relaxed text-[var(--text-secondary)] italic border-l-4 border-orange-300 pl-4">
                 {strategy.summary || (strategyDoc as Record<string, unknown>)?.goal}
               </p>
             )}
@@ -321,12 +321,12 @@ export function BrandManual({ brandProfile: bp, strategy: strategyDoc }: BrandMa
             {/* Content Pillars */}
             {strategy.contentPillars && strategy.contentPillars.length > 0 && (
               <div>
-                <h3 className="text-sm font-semibold text-stone-500 uppercase tracking-wider mb-4">Pilares de Contenido</h3>
+                <h3 className="text-sm font-semibold text-[var(--text-tertiary)] uppercase tracking-wider mb-4">Pilares de Contenido</h3>
                 <div className="space-y-4">
                   {strategy.contentPillars.map((pillar: Record<string, unknown>) => (
-                    <div key={pillar.name} className="rounded-lg border border-stone-200 p-5 space-y-3">
-                      <h4 className="text-lg font-semibold text-stone-900">{pillar.name}</h4>
-                      <p className="text-sm text-stone-600">{pillar.description}</p>
+                    <div key={pillar.name} className="rounded-lg border border-[var(--border)] p-5 space-y-3">
+                      <h4 className="text-lg font-semibold text-[var(--text-primary)]">{pillar.name}</h4>
+                      <p className="text-sm text-[var(--text-secondary)]">{pillar.description}</p>
                       <div className="flex flex-wrap gap-2">
                         {pillar.channels?.map((ch: string) => (
                           <Badge key={ch}>{ch}</Badge>
@@ -341,21 +341,21 @@ export function BrandManual({ brandProfile: bp, strategy: strategyDoc }: BrandMa
             {/* Weekly Calendar */}
             {strategy.weeklyCalendar && strategy.weeklyCalendar.length > 0 && (
               <div>
-                <h3 className="text-sm font-semibold text-stone-500 uppercase tracking-wider mb-4">Calendario Semanal</h3>
+                <h3 className="text-sm font-semibold text-[var(--text-tertiary)] uppercase tracking-wider mb-4">Calendario Semanal</h3>
                 <div className="overflow-x-auto">
                   <table className="w-full text-left">
                     <thead>
-                      <tr className="border-b border-stone-200">
-                        <th className="py-3 pr-4 text-xs font-semibold text-stone-500 uppercase w-16">Día</th>
-                        <th className="py-3 pr-4 text-xs font-semibold text-stone-500 uppercase">Contenido</th>
-                        <th className="py-3 text-xs font-semibold text-stone-500 uppercase w-24">Canal</th>
+                      <tr className="border-b border-[var(--border)]">
+                        <th className="py-3 pr-4 text-xs font-semibold text-[var(--text-tertiary)] uppercase w-16">Día</th>
+                        <th className="py-3 pr-4 text-xs font-semibold text-[var(--text-tertiary)] uppercase">Contenido</th>
+                        <th className="py-3 text-xs font-semibold text-[var(--text-tertiary)] uppercase w-24">Canal</th>
                       </tr>
                     </thead>
                     <tbody>
                       {strategy.weeklyCalendar.map((item: Record<string, unknown>, i: number) => (
-                        <tr key={i} className="border-b border-stone-100">
-                          <td className="py-3 pr-4 text-sm font-medium text-stone-900 capitalize">{item.dayOfWeek}</td>
-                          <td className="py-3 pr-4 text-sm text-stone-600">{item.description}</td>
+                        <tr key={i} className="border-b border-[var(--border)]">
+                          <td className="py-3 pr-4 text-sm font-medium text-[var(--text-primary)] capitalize">{item.dayOfWeek}</td>
+                          <td className="py-3 pr-4 text-sm text-[var(--text-secondary)]">{item.description}</td>
                           <td className="py-3">
                             <Badge>{item.channel}</Badge>
                           </td>
@@ -376,11 +376,11 @@ export function BrandManual({ brandProfile: bp, strategy: strategyDoc }: BrandMa
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* SEO */}
             {strategy.seoStrategy && (
-              <div className="rounded-lg border border-stone-200 p-5 space-y-4">
-                <h4 className="text-sm font-semibold text-stone-900 uppercase tracking-wider">SEO</h4>
+              <div className="rounded-lg border border-[var(--border)] p-5 space-y-4">
+                <h4 className="text-sm font-semibold text-[var(--text-primary)] uppercase tracking-wider">SEO</h4>
                 {strategy.seoStrategy.primaryKeywords && (
                   <div>
-                    <p className="text-xs text-stone-400 mb-2">Keywords</p>
+                    <p className="text-xs text-[var(--text-tertiary)] mb-2">Keywords</p>
                     <div className="flex flex-wrap gap-1">
                       {strategy.seoStrategy.primaryKeywords.map((kw: string) => (
                         <span key={kw} className="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded">{kw}</span>
@@ -390,10 +390,10 @@ export function BrandManual({ brandProfile: bp, strategy: strategyDoc }: BrandMa
                 )}
                 {strategy.seoStrategy.contentGaps && (
                   <div>
-                    <p className="text-xs text-stone-400 mb-2">Gaps</p>
+                    <p className="text-xs text-[var(--text-tertiary)] mb-2">Gaps</p>
                     <ul className="space-y-1">
                       {strategy.seoStrategy.contentGaps.map((gap: string) => (
-                        <li key={gap} className="text-xs text-stone-600">• {gap}</li>
+                        <li key={gap} className="text-xs text-[var(--text-secondary)]">• {gap}</li>
                       ))}
                     </ul>
                   </div>
@@ -403,24 +403,24 @@ export function BrandManual({ brandProfile: bp, strategy: strategyDoc }: BrandMa
 
             {/* Ads */}
             {strategy.adStrategy && (
-              <div className="rounded-lg border border-stone-200 p-5 space-y-4">
-                <h4 className="text-sm font-semibold text-stone-900 uppercase tracking-wider">Ads</h4>
+              <div className="rounded-lg border border-[var(--border)] p-5 space-y-4">
+                <h4 className="text-sm font-semibold text-[var(--text-primary)] uppercase tracking-wider">Ads</h4>
                 {strategy.adStrategy.budgetSplit && (
                   <div className="space-y-2">
                     {strategy.adStrategy.budgetSplit.map((p: Record<string, unknown>) => (
                       <div key={p.platform} className="flex items-center justify-between text-sm">
-                        <span className="text-stone-700">{p.platform}</span>
-                        <span className="text-stone-500 font-medium">{p.percentage}%</span>
+                        <span className="text-[var(--text-secondary)]">{p.platform}</span>
+                        <span className="text-[var(--text-tertiary)] font-medium">{p.percentage}%</span>
                       </div>
                     ))}
                   </div>
                 )}
                 {strategy.adStrategy.objectives && (
                   <div>
-                    <p className="text-xs text-stone-400 mb-2">Objetivos</p>
+                    <p className="text-xs text-[var(--text-tertiary)] mb-2">Objetivos</p>
                     <ul className="space-y-1">
                       {strategy.adStrategy.objectives.map((obj: string) => (
-                        <li key={obj} className="text-xs text-stone-600">• {obj}</li>
+                        <li key={obj} className="text-xs text-[var(--text-secondary)]">• {obj}</li>
                       ))}
                     </ul>
                   </div>
@@ -430,20 +430,20 @@ export function BrandManual({ brandProfile: bp, strategy: strategyDoc }: BrandMa
 
             {/* Email */}
             {strategy.emailStrategy && (
-              <div className="rounded-lg border border-stone-200 p-5 space-y-4">
-                <h4 className="text-sm font-semibold text-stone-900 uppercase tracking-wider">Email</h4>
+              <div className="rounded-lg border border-[var(--border)] p-5 space-y-4">
+                <h4 className="text-sm font-semibold text-[var(--text-primary)] uppercase tracking-wider">Email</h4>
                 {strategy.emailStrategy.sequences && (
                   <div>
-                    <p className="text-xs text-stone-400 mb-2">Secuencias</p>
+                    <p className="text-xs text-[var(--text-tertiary)] mb-2">Secuencias</p>
                     <ul className="space-y-1">
                       {strategy.emailStrategy.sequences.map((seq: string) => (
-                        <li key={seq} className="text-xs text-stone-600">• {seq}</li>
+                        <li key={seq} className="text-xs text-[var(--text-secondary)]">• {seq}</li>
                       ))}
                     </ul>
                   </div>
                 )}
                 {strategy.emailStrategy.frequency && (
-                  <p className="text-xs text-stone-500">Frecuencia: {strategy.emailStrategy.frequency}</p>
+                  <p className="text-xs text-[var(--text-tertiary)]">Frecuencia: {strategy.emailStrategy.frequency}</p>
                 )}
                 {strategy.emailStrategy.segments && (
                   <div className="flex flex-wrap gap-1">
@@ -459,11 +459,11 @@ export function BrandManual({ brandProfile: bp, strategy: strategyDoc }: BrandMa
       )}
 
       {/* Footer */}
-      <div className="border-t border-stone-200 pt-8 mt-12 text-center">
-        <p className="text-xs text-stone-300 uppercase tracking-[0.2em]">
+      <div className="border-t border-[var(--border)] pt-8 mt-12 text-center">
+        <p className="text-xs text-[var(--text-tertiary)] uppercase tracking-[0.2em]">
           {bp.companyName} · Manual de Marca · {new Date().getFullYear()}
         </p>
-        <p className="text-[10px] text-stone-300 mt-1">
+        <p className="text-[10px] text-[var(--text-tertiary)] mt-1">
           Generado con AI Marketing Department
         </p>
       </div>

@@ -8,7 +8,7 @@ export default function SignUpPage() {
           <h1 className="text-3xl font-bold text-white mb-2">
             AI Marketing Department
           </h1>
-          <p className="text-stone-400">
+          <p className="text-[var(--text-tertiary)]">
             Departamento de marketing automatizado con 37 agentes de IA
           </p>
         </div>
@@ -27,14 +27,14 @@ export default function SignUpPage() {
               colorInputText: '#ffffff',
             },
             elements: {
-              formButtonPrimary: 'bg-orange-600 hover:bg-orange-700 text-white',
-              card: 'bg-stone-900 border border-stone-700',
+              formButtonPrimary: 'bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white',
+              card: 'bg-[var(--surface-3)] border border-[var(--border)]',
               headerTitle: 'text-white',
-              headerSubtitle: 'text-stone-400',
-              socialButtonsBlockButton: 'bg-stone-800 border-stone-600 text-stone-200 hover:bg-stone-700',
-              formFieldLabel: 'text-stone-300',
-              formFieldInput: 'bg-stone-800 border-stone-600 text-white',
-              footerActionLink: 'text-orange-500 hover:text-orange-400',
+              headerSubtitle: 'text-[var(--text-tertiary)]',
+              socialButtonsBlockButton: 'bg-[var(--surface-2)] border-[var(--border)] text-[var(--text-primary)] hover:bg-[var(--surface-2)]',
+              formFieldLabel: 'text-[var(--text-tertiary)]',
+              formFieldInput: 'bg-[var(--surface-2)] border-[var(--border)] text-white',
+              footerActionLink: 'text-orange-500 hover:text-[var(--accent)]',
             },
           }}
         />

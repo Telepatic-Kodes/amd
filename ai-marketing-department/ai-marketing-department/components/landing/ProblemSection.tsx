@@ -13,7 +13,7 @@ const problems = [
     costValue: 350,
     description:
       "Un equipo de marketing completo requiere 5-7 especialistas con salarios, beneficios, y overhead operativo.",
-    color: "text-red-500",
+    color: "text-[var(--error)]",
   },
   {
     icon: DollarSign,
@@ -69,9 +69,9 @@ export function ProblemSection() {
           >
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
               El Marketing Tradicional es{" "}
-              <span className="text-red-500">Ineficiente y Caro</span>
+              <span className="text-[var(--error)]">Ineficiente y Caro</span>
             </h2>
-            <p className="text-xl text-stone-400 max-w-3xl mx-auto">
+            <p className="text-xl text-[var(--text-tertiary)] max-w-3xl mx-auto">
               Las empresas gastan cientos de miles de dólares en equipos o
               agencias que no pueden escalar ni mantener la consistencia.
             </p>
@@ -91,7 +91,7 @@ export function ProblemSection() {
                   <CardContent className="p-8">
                     {/* Icon */}
                     <motion.div
-                      className={`inline-flex p-4 rounded-lg bg-stone-100 mb-6 ${problem.color}`}
+                      className={`inline-flex p-4 rounded-lg bg-[var(--surface-1)] mb-6 ${problem.color}`}
                       whileHover={{ scale: 1.1, rotate: 5 }}
                       transition={{ duration: 0.2 }}
                     >
@@ -109,7 +109,7 @@ export function ProblemSection() {
                     </div>
 
                     {/* Description */}
-                    <p className="text-stone-400 leading-relaxed">
+                    <p className="text-[var(--text-tertiary)] leading-relaxed">
                       {problem.description}
                     </p>
                   </CardContent>
@@ -128,10 +128,10 @@ export function ProblemSection() {
           >
             <Card className="inline-block">
               <CardContent className="px-12 py-8">
-                <p className="text-stone-400 text-lg mb-2">
+                <p className="text-[var(--text-tertiary)] text-lg mb-2">
                   Costo promedio anual de marketing tradicional:
                 </p>
-                <div className="text-5xl font-bold text-red-500">
+                <div className="text-5xl font-bold text-[var(--error)]">
                   $<SimpleCounter value={150} duration={2000} />k - $
                   <SimpleCounter value={500} duration={2000} />k
                 </div>

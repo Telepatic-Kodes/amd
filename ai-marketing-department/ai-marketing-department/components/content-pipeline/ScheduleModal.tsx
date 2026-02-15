@@ -44,52 +44,52 @@ export function ScheduleModal({ contentId, isOpen, onClose, onSchedule }: Schedu
 
   return (
     <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
-      <div className="bg-stone-100 border border-stone-200 rounded-xl p-6 w-full max-w-md shadow-xl" onClick={(e) => e.stopPropagation()}>
+      <div className="bg-[var(--surface-1)] border border-[var(--border)] rounded-xl p-6 w-full max-w-md shadow-xl" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
-            <Calendar className="h-5 w-5 text-orange-400" />
-            <h3 className="text-lg font-semibold text-stone-900">{translate("schedulePublication")}</h3>
+            <Calendar className="h-5 w-5 text-[var(--accent)]" />
+            <h3 className="text-lg font-semibold text-[var(--text-primary)]">{translate("schedulePublication")}</h3>
           </div>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-stone-200 text-stone-500 hover:text-stone-900 transition-colors">
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-[var(--surface-2)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors">
             <X className="h-4 w-4" />
           </button>
         </div>
 
-        <p className="text-sm text-stone-400 mb-4">{translate("selectDateTime")}</p>
+        <p className="text-sm text-[var(--text-tertiary)] mb-4">{translate("selectDateTime")}</p>
 
         {/* Date Input */}
         <div className="space-y-3 mb-4">
           <div>
-            <label className="text-xs text-stone-500 mb-1 block">Fecha</label>
+            <label className="text-xs text-[var(--text-tertiary)] mb-1 block">Fecha</label>
             <input
               type="date"
               value={date}
               min={today}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full rounded-lg border border-stone-300 bg-white px-4 py-2.5 text-stone-900 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+              className="w-full rounded-lg border border-[var(--border-hover)] bg-[var(--card-bg)] px-4 py-2.5 text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
             />
           </div>
           <div>
-            <label className="text-xs text-stone-500 mb-1 block">Hora</label>
+            <label className="text-xs text-[var(--text-tertiary)] mb-1 block">Hora</label>
             <input
               type="time"
               value={time}
               onChange={(e) => setTime(e.target.value)}
-              className="w-full rounded-lg border border-stone-300 bg-white px-4 py-2.5 text-stone-900 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+              className="w-full rounded-lg border border-[var(--border-hover)] bg-[var(--card-bg)] px-4 py-2.5 text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
             />
           </div>
         </div>
 
         {/* Error */}
-        {error && <p className="text-sm text-red-400 mb-4">{error}</p>}
+        {error && <p className="text-sm text-[var(--error)] mb-4">{error}</p>}
 
         {/* Actions */}
         <div className="flex gap-3">
-          <button onClick={onClose} className="flex-1 px-4 py-2.5 rounded-lg border border-stone-300 text-stone-600 hover:bg-stone-200 transition-colors font-medium text-sm">
+          <button onClick={onClose} className="flex-1 px-4 py-2.5 rounded-lg border border-[var(--border-hover)] text-[var(--text-secondary)] hover:bg-[var(--surface-2)] transition-colors font-medium text-sm">
             {translate("cancel")}
           </button>
-          <button onClick={handleSchedule} className="flex-1 px-4 py-2.5 rounded-lg bg-orange-500 hover:bg-orange-600 text-white transition-colors font-medium text-sm">
+          <button onClick={handleSchedule} className="flex-1 px-4 py-2.5 rounded-lg bg-[var(--accent)] hover:bg-[var(--accent)] text-white transition-colors font-medium text-sm">
             {translate("schedule")}
           </button>
         </div>

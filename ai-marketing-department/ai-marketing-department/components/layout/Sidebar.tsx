@@ -12,6 +12,13 @@ import {
     Brain,
     Sun,
     Moon,
+    BarChart3,
+    TrendingUp,
+    Users,
+    Shield,
+    ListTodo,
+    Send,
+    BookOpen,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -20,11 +27,19 @@ import { UserMenu } from "./UserMenu";
 import { NotificationCenter } from "@/components/dashboard/NotificationCenter";
 import { useTheme } from "@/hooks/useTheme";
 import { BrandSwitcher } from "./BrandSwitcher";
+import { BrandContextBar } from "./BrandContextBar";
 
 const mainNavigation = [
     { name: translate("home"), href: "/", icon: Home, label: "Dashboard ejecutivo", badgeKey: null },
     { name: translate("content"), href: "/content", icon: FileText, label: "Pipeline, lista y calendario", badgeKey: "content" as const },
     { name: "Estrategia", href: "/strategy", icon: Brain, label: "Autopilot, marca e insights", badgeKey: "strategy" as const },
+    { name: "Reportes", href: "/reports", icon: BarChart3, label: "Reportes y métricas", badgeKey: null },
+    { name: "Analíticas", href: "/analytics", icon: TrendingUp, label: "Rendimiento de agentes", badgeKey: null },
+    { name: "Agentes", href: "/agents", icon: Users, label: "37 agentes IA", badgeKey: null },
+    { name: "Monitoreo", href: "/monitoring", icon: Shield, label: "Alertas y menciones", badgeKey: null },
+    { name: "Tareas", href: "/tasks", icon: ListTodo, label: "Cola de tareas y ejecuciones", badgeKey: null },
+    { name: "Publicaciones", href: "/publishing", icon: Send, label: "Hub de publicación multicanal", badgeKey: null },
+    { name: "Base de Conocimiento", href: "/knowledge-base", icon: BookOpen, label: "Documentos y contexto IA", badgeKey: null },
     { name: translate("settings"), href: "/settings", icon: Settings, label: "API keys y apariencia", badgeKey: null },
 ];
 
@@ -35,7 +50,7 @@ function ThemeToggle() {
     return (
         <button
             onClick={toggleTheme}
-            className="flex items-center justify-center gap-2 w-full py-1.5 px-3 rounded-lg text-[10px] font-medium text-stone-500 hover:text-stone-300 hover:bg-[#292524] transition-colors"
+            className="flex items-center justify-center gap-2 w-full py-1.5 px-3 rounded-lg text-[10px] font-medium text-[var(--text-tertiary)] hover:text-[var(--text-tertiary)] hover:bg-[#292524] transition-colors"
             title={isDark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
             aria-label={isDark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
         >
@@ -85,6 +100,7 @@ export function Sidebar() {
                         <NotificationCenter />
                     </div>
                 </div>
+                <BrandContextBar />
             </div>
 
             {/* Navigation */}
@@ -101,26 +117,26 @@ export function Sidebar() {
                             className={cn(
                                 "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors mb-0.5 relative",
                                 isActive
-                                    ? "bg-[#292524] text-orange-400"
-                                    : "text-stone-400 hover:text-stone-200 hover:bg-[#292524]"
+                                    ? "bg-[var(--sidebar-active-bg)] text-[var(--sidebar-text-active)]"
+                                    : "text-[var(--sidebar-text)] hover:text-[var(--sidebar-text-active)] hover:bg-[var(--sidebar-active-bg)]"
                             )}
                             title={item.label}
                             aria-label={item.label}
                             aria-current={isActive ? "page" : undefined}
                         >
                             {isActive && (
-                                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-orange-500 rounded-r" />
+                                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-[var(--accent)] rounded-r" />
                             )}
                             <Icon className={cn(
                                 "h-4 w-4 flex-shrink-0",
-                                isActive ? "text-orange-400" : ""
+                                isActive ? "text-[var(--accent)]" : ""
                             )} />
                             <span className="flex-1">{item.name}</span>
                             {badgeCount > 0 && (
                                 <span className={cn(
                                     "text-[10px] font-semibold min-w-[18px] h-[18px] flex items-center justify-center rounded-full",
                                     item.badgeKey === "strategy"
-                                        ? "bg-orange-900/40 text-orange-400"
+                                        ? "bg-orange-900/40 text-[var(--accent)]"
                                         : "bg-amber-900/40 text-amber-400"
                                 )}>
                                     {badgeCount}
@@ -134,12 +150,12 @@ export function Sidebar() {
             {/* Theme Toggle + Keyboard hints */}
             <div className="px-4 py-2 space-y-2">
                 <ThemeToggle />
-                <div className="flex items-center justify-center gap-1.5 text-[10px] text-stone-500">
-                    <kbd className="border border-[#44403c] rounded px-1.5 py-0.5 text-stone-500 bg-[#292524]">⌘K</kbd>
+                <div className="flex items-center justify-center gap-1.5 text-[10px] text-[var(--text-tertiary)]">
+                    <kbd className="border border-[#44403c] rounded px-1.5 py-0.5 text-[var(--text-tertiary)] bg-[#292524]">⌘K</kbd>
                     <span>Buscar</span>
                 </div>
-                <div className="flex items-center justify-center gap-1.5 text-[10px] text-stone-500">
-                    <kbd className="border border-[#44403c] rounded px-1.5 py-0.5 text-stone-500 bg-[#292524]">?</kbd>
+                <div className="flex items-center justify-center gap-1.5 text-[10px] text-[var(--text-tertiary)]">
+                    <kbd className="border border-[#44403c] rounded px-1.5 py-0.5 text-[var(--text-tertiary)] bg-[#292524]">?</kbd>
                     <span>Atajos</span>
                 </div>
             </div>

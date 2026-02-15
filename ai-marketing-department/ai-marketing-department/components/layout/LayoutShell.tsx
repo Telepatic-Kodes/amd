@@ -16,6 +16,31 @@ import { useConvexAuth } from "convex/react";
 import { useAuthSync } from "@/hooks/useAuthSync";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { BrandProvider } from "@/hooks/useBrandContext";
+import dynamic from "next/dynamic";
+import React from "react";
+
+const CopilotSidebar = dynamic(
+  () => import("@/components/copilot/CopilotSidebar").then((m) => m.CopilotSidebar),
+  { ssr: false }
+);
+
+/** Silently catches errors from features that depend on un-deployed Convex tables */
+class FeatureErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  render() {
+    if (this.state.hasError) return null;
+    return this.props.children;
+  }
+}
 
 const DEV_BYPASS =
   process.env.NODE_ENV !== "production" &&
@@ -77,7 +102,7 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
   if (!devBypass && (isLoading || !isAuthenticated)) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[var(--surface-0)]">
-        <div className="text-stone-400 animate-pulse">Cargando...</div>
+        <div className="text-[var(--text-tertiary)] animate-pulse">Cargando...</div>
       </div>
     );
   }
@@ -98,6 +123,7 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
         </div>
         <MobileNav />
         <CommandPalette />
+        <FeatureErrorBoundary><CopilotSidebar /></FeatureErrorBoundary>
         <SessionTimeout />
         <KeyboardShortcutsHelp open={showShortcutsHelp} onClose={() => setShowShortcutsHelp(false)} />
 

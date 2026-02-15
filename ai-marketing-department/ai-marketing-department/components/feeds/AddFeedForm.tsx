@@ -54,7 +54,7 @@ export function AddFeedForm({ onSuccess }: { onSuccess?: () => void }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setIsOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-orange-500 hover:bg-orange-600 text-white font-medium transition-colors"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--accent)] hover:bg-[var(--accent)] text-white font-medium transition-colors"
           >
             <Plus className="h-4 w-4" />
             Agregar Feed
@@ -65,28 +65,28 @@ export function AddFeedForm({ onSuccess }: { onSuccess?: () => void }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             onSubmit={handleSubmit}
-            className="p-4 rounded-lg border border-stone-200 bg-white space-y-4"
+            className="p-4 rounded-lg border border-[var(--border)] bg-[var(--card-bg)] space-y-4"
           >
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-stone-900 font-medium">Agregar Nuevo Feed</h3>
+              <h3 className="text-[var(--text-primary)] font-medium">Agregar Nuevo Feed</h3>
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="p-1 rounded hover:bg-stone-200 text-stone-400"
+                className="p-1 rounded hover:bg-[var(--surface-2)] text-[var(--text-tertiary)]"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
             {error && (
-              <div className="text-sm text-red-400 bg-red-500/10 rounded p-2">
+              <div className="text-sm text-[var(--error)] bg-red-500/10 rounded p-2">
                 {error}
               </div>
             )}
 
             <div className="grid grid-cols-2 gap-4">
               <div className="col-span-2">
-                <label className="block text-xs text-stone-500 mb-1">URL del Feed</label>
+                <label className="block text-xs text-[var(--text-tertiary)] mb-1">URL del Feed</label>
                 <input
                   type="url"
                   inputMode="url"
@@ -94,28 +94,28 @@ export function AddFeedForm({ onSuccess }: { onSuccess?: () => void }) {
                   onChange={(e) => setUrl(e.target.value)}
                   placeholder="https://example.com/feed.xml"
                   required
-                  className="w-full rounded-lg border border-stone-200 bg-white py-2 px-3 text-sm text-stone-900 placeholder-stone-400 focus:border-orange-500 focus:outline-none"
+                  className="w-full rounded-lg border border-[var(--border)] bg-[var(--card-bg)] py-2 px-3 text-sm text-[var(--text-primary)] placeholder-stone-400 focus:border-[var(--accent)] focus:outline-none"
                 />
               </div>
 
               <div className="col-span-2">
-                <label className="block text-xs text-stone-500 mb-1">Nombre</label>
+                <label className="block text-xs text-[var(--text-tertiary)] mb-1">Nombre</label>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Mi Feed"
                   required
-                  className="w-full rounded-lg border border-stone-200 bg-white py-2 px-3 text-sm text-stone-900 placeholder-stone-400 focus:border-orange-500 focus:outline-none"
+                  className="w-full rounded-lg border border-[var(--border)] bg-[var(--card-bg)] py-2 px-3 text-sm text-[var(--text-primary)] placeholder-stone-400 focus:border-[var(--accent)] focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs text-stone-500 mb-1">Categoría</label>
+                <label className="block text-xs text-[var(--text-tertiary)] mb-1">Categoría</label>
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full rounded-lg border border-stone-200 bg-white py-2 px-3 text-sm text-stone-900 focus:border-orange-500 focus:outline-none"
+                  className="w-full rounded-lg border border-[var(--border)] bg-[var(--card-bg)] py-2 px-3 text-sm text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none"
                 >
                   {CATEGORIES.map((cat) => (
                     <option key={cat} value={cat}>{cat}</option>
@@ -124,11 +124,11 @@ export function AddFeedForm({ onSuccess }: { onSuccess?: () => void }) {
               </div>
 
               <div>
-                <label className="block text-xs text-stone-500 mb-1">Frecuencia de Sincronización</label>
+                <label className="block text-xs text-[var(--text-tertiary)] mb-1">Frecuencia de Sincronización</label>
                 <select
                   value={syncFrequency}
                   onChange={(e) => setSyncFrequency(e.target.value as typeof syncFrequency)}
-                  className="w-full rounded-lg border border-stone-200 bg-white py-2 px-3 text-sm text-stone-900 focus:border-orange-500 focus:outline-none"
+                  className="w-full rounded-lg border border-[var(--border)] bg-[var(--card-bg)] py-2 px-3 text-sm text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none"
                 >
                   {FREQUENCIES.map((freq) => (
                     <option key={freq.value} value={freq.value}>{freq.label}</option>
@@ -141,14 +141,14 @@ export function AddFeedForm({ onSuccess }: { onSuccess?: () => void }) {
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="flex-1 py-2 rounded-lg border border-stone-200 text-stone-400 hover:bg-stone-200 transition-colors"
+                className="flex-1 py-2 rounded-lg border border-[var(--border)] text-[var(--text-tertiary)] hover:bg-[var(--surface-2)] transition-colors"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 disabled={isLoading}
-                className="flex-1 py-2 rounded-lg bg-orange-500 hover:bg-orange-600 text-white font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                className="flex-1 py-2 rounded-lg bg-[var(--accent)] hover:bg-[var(--accent)] text-white font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
                 Agregar Feed

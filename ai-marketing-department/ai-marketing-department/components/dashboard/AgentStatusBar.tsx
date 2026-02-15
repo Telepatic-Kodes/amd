@@ -65,7 +65,7 @@ export function AgentStatusBar({ agentsByDepartment }: AgentStatusBarProps) {
               title={`${departmentLabels[dept] || dept}: ${agents.length} agentes`}
             >
               {hasError && (
-                <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-1 w-1 rounded-full bg-white" />
+                <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-1 w-1 rounded-full bg-[var(--card-bg)]" />
               )}
             </button>
           );

@@ -192,8 +192,8 @@ export function FileDropZone({
         "relative border-2 border-dashed rounded-lg p-8 transition-all cursor-pointer",
         "min-h-[200px] flex flex-col items-center justify-center gap-4",
         isDragging
-          ? "border-orange-500 bg-orange-500/10"
-          : "border-stone-300 hover:border-stone-600 hover:bg-stone-100/50",
+          ? "border-[var(--accent)] bg-[var(--accent)]/10"
+          : "border-[var(--border-hover)] hover:border-[var(--border-hover)] hover:bg-[var(--surface-1)]/50",
         isProcessing && "opacity-50 pointer-events-none",
         success && "border-green-500 bg-green-500/10",
         error && "border-red-500",
@@ -217,13 +217,13 @@ export function FileDropZone({
       {/* Estado de procesando */}
       {isProcessing && selectedFile && (
         <>
-          <Loader2 className="w-12 h-12 text-orange-400 animate-spin" />
+          <Loader2 className="w-12 h-12 text-[var(--accent)] animate-spin" />
           <div className="text-center">
-            <p className="text-base font-medium text-stone-700">
+            <p className="text-base font-medium text-[var(--text-secondary)]">
               Procesando archivo...
             </p>
-            <p className="text-sm text-stone-400 mt-1">{selectedFile.name}</p>
-            <p className="text-xs text-stone-500 mt-1">
+            <p className="text-sm text-[var(--text-tertiary)] mt-1">{selectedFile.name}</p>
+            <p className="text-xs text-[var(--text-tertiary)] mt-1">
               {getFileTypeLabel(selectedFile.type)} •{" "}
               {(selectedFile.size / 1024).toFixed(1)} KB
             </p>
@@ -234,12 +234,12 @@ export function FileDropZone({
       {/* Estado de éxito */}
       {!isProcessing && success && selectedFile && (
         <>
-          <CheckCircle2 className="w-12 h-12 text-green-400" />
+          <CheckCircle2 className="w-12 h-12 text-[var(--success)]" />
           <div className="text-center">
-            <p className="text-base font-medium text-green-400">
+            <p className="text-base font-medium text-[var(--success)]">
               ¡Archivo procesado con éxito!
             </p>
-            <p className="text-sm text-stone-400 mt-1">{selectedFile.name}</p>
+            <p className="text-sm text-[var(--text-tertiary)] mt-1">{selectedFile.name}</p>
           </div>
         </>
       )}
@@ -247,16 +247,16 @@ export function FileDropZone({
       {/* Estado de error */}
       {!isProcessing && error && (
         <>
-          <AlertCircle className="w-12 h-12 text-red-400" />
+          <AlertCircle className="w-12 h-12 text-[var(--error)]" />
           <div className="text-center max-w-md">
-            <p className="text-base font-medium text-red-400">Error</p>
-            <p className="text-sm text-stone-500 mt-2">{error}</p>
+            <p className="text-base font-medium text-[var(--error)]">Error</p>
+            <p className="text-sm text-[var(--text-tertiary)] mt-2">{error}</p>
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 handleRetry();
               }}
-              className="mt-4 px-4 py-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition-colors text-sm font-medium"
+              className="mt-4 px-4 py-2 bg-red-500/20 text-[var(--error)] rounded-lg hover:bg-red-500/30 transition-colors text-sm font-medium"
             >
               Reintentar
             </button>
@@ -268,37 +268,37 @@ export function FileDropZone({
       {!isProcessing && !success && !error && (
         <>
           <div className="relative">
-            <Upload className="w-16 h-16 text-stone-500" />
+            <Upload className="w-16 h-16 text-[var(--text-tertiary)]" />
             {isDragging && (
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-20 h-20 border-4 border-orange-500 border-dashed rounded-full animate-pulse" />
+                <div className="w-20 h-20 border-4 border-[var(--accent)] border-dashed rounded-full animate-pulse" />
               </div>
             )}
           </div>
 
           <div className="text-center space-y-2">
-            <p className="text-base font-medium text-stone-700">
+            <p className="text-base font-medium text-[var(--text-secondary)]">
               {isDragging
                 ? "Suelta el archivo aquí"
                 : "Arrastra un archivo o haz clic para seleccionar"}
             </p>
-            <p className="text-sm text-stone-400">
+            <p className="text-sm text-[var(--text-tertiary)]">
               Formatos soportados: PDF, DOCX, TXT
             </p>
-            <p className="text-xs text-stone-500">Tamaño máximo: {maxSizeMB}MB</p>
+            <p className="text-xs text-[var(--text-tertiary)]">Tamaño máximo: {maxSizeMB}MB</p>
           </div>
 
           {/* Indicador visual de archivos soportados */}
           <div className="flex gap-4 mt-2">
-            <div className="flex items-center gap-1.5 text-xs text-stone-500">
+            <div className="flex items-center gap-1.5 text-xs text-[var(--text-tertiary)]">
               <FileText className="w-4 h-4" />
               <span>PDF</span>
             </div>
-            <div className="flex items-center gap-1.5 text-xs text-stone-500">
+            <div className="flex items-center gap-1.5 text-xs text-[var(--text-tertiary)]">
               <FileText className="w-4 h-4" />
               <span>DOCX</span>
             </div>
-            <div className="flex items-center gap-1.5 text-xs text-stone-500">
+            <div className="flex items-center gap-1.5 text-xs text-[var(--text-tertiary)]">
               <FileText className="w-4 h-4" />
               <span>TXT</span>
             </div>

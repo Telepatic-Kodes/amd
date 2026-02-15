@@ -28,6 +28,8 @@ import {
 import { LinkedInConnectionCard } from "@/components/linkedin/LinkedInConnectionCard";
 import { TwitterConnectionCard } from "@/components/twitter/TwitterConnectionCard";
 import { InstagramConnectionCard } from "@/components/instagram/InstagramConnectionCard";
+import { EmailConnectionCard } from "@/components/email/EmailConnectionCard";
+import { SubscriberListPanel } from "@/components/email/SubscriberListPanel";
 import { QuickModeToggle } from "@/components/guided-ux/QuickModeToggle";
 import { TeamManagement } from "@/components/team/TeamManagement";
 import { ReportSettings } from "@/components/reports/ReportSettings";
@@ -114,16 +116,16 @@ export default function SettingsPage() {
     return (
       <div className="space-y-8">
         <div>
-          <h1 className="text-3xl font-bold text-stone-900">
+          <h1 className="text-3xl font-bold text-[var(--text-primary)]">
             Configuración
           </h1>
-          <p className="text-stone-500 mt-2">
+          <p className="text-[var(--text-tertiary)] mt-2">
             Configura las preferencias del sistema.
           </p>
         </div>
         <div className="grid gap-6 md:grid-cols-4">
-          <div className="h-64 rounded-xl border border-stone-200 bg-white animate-pulse" />
-          <div className="md:col-span-3 h-64 rounded-xl border border-stone-200 bg-white animate-pulse" />
+          <div className="h-64 rounded-xl border border-[var(--border)] bg-[var(--card-bg)] animate-pulse" />
+          <div className="md:col-span-3 h-64 rounded-xl border border-[var(--border)] bg-[var(--card-bg)] animate-pulse" />
         </div>
       </div>
     );
@@ -134,14 +136,14 @@ export default function SettingsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <div className="p-3 rounded-xl bg-stone-100">
-            <Settings className="w-8 h-8 text-stone-500" />
+          <div className="p-3 rounded-xl bg-[var(--surface-1)]">
+            <Settings className="w-8 h-8 text-[var(--text-tertiary)]" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-stone-900">
+            <h1 className="text-2xl font-bold text-[var(--text-primary)]">
               Configuración
             </h1>
-            <p className="text-stone-500 text-sm">
+            <p className="text-[var(--text-tertiary)] text-sm">
               Configura preferencias del sistema e integraciones
             </p>
           </div>
@@ -191,8 +193,8 @@ export default function SettingsPage() {
                     className={cn(
                       "flex items-center gap-2 w-full px-3 py-2 rounded-lg text-sm font-medium transition-colors",
                       activeCategory === category.id
-                        ? "bg-orange-50 text-orange-600"
-                        : "text-stone-500 hover:bg-stone-50 hover:text-stone-700"
+                        ? "bg-[var(--accent-muted)] text-[var(--accent)]"
+                        : "text-[var(--text-tertiary)] hover:bg-[var(--surface-0)] hover:text-[var(--text-secondary)]"
                     )}
                   >
                     <category.icon className="h-4 w-4" />
@@ -215,15 +217,15 @@ export default function SettingsPage() {
             >
               <Card>
                 <CardHeader>
-                  <h3 className="flex items-center gap-2 font-semibold text-lg text-stone-900">
-                    <Key className="h-5 w-5 text-orange-600" />
+                  <h3 className="flex items-center gap-2 font-semibold text-lg text-[var(--text-primary)]">
+                    <Key className="h-5 w-5 text-[var(--accent)]" />
                     Claves API
                   </h3>
                 </CardHeader>
                 <CardContent className="p-6 pt-0 space-y-4">
                   {/* Anthropic API Key */}
                   <div>
-                    <label className="block text-sm font-medium text-stone-700 mb-2">
+                    <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
                       Anthropic API Key
                     </label>
                     <div className="flex gap-2">
@@ -234,7 +236,7 @@ export default function SettingsPage() {
                           updateFormState("anthropic_api_key", e.target.value)
                         }
                         placeholder="sk-ant-..."
-                        className="flex-1 rounded-lg border border-stone-300 bg-white py-2 px-3 text-sm text-stone-900 placeholder-stone-400 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                        className="flex-1 rounded-lg border border-[var(--border-hover)] bg-[var(--card-bg)] py-2 px-3 text-sm text-[var(--text-primary)] placeholder-stone-400 focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
                       />
                       <button
                         onClick={() =>
@@ -244,19 +246,19 @@ export default function SettingsPage() {
                             "Anthropic API key for Claude"
                           )
                         }
-                        className="px-4 py-2 rounded-lg bg-orange-600 text-white text-sm font-medium hover:bg-orange-700 transition-colors"
+                        className="px-4 py-2 rounded-lg bg-[var(--accent)] text-white text-sm font-medium hover:bg-[var(--accent-hover)] transition-colors"
                       >
                         <Save className="h-4 w-4" />
                       </button>
                     </div>
-                    <p className="text-xs text-stone-500 mt-1">
+                    <p className="text-xs text-[var(--text-tertiary)] mt-1">
                       Requerida para operaciones de agentes IA
                     </p>
                   </div>
 
                   {/* OpenAI API Key (optional) */}
                   <div>
-                    <label className="block text-sm font-medium text-stone-700 mb-2">
+                    <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
                       OpenAI API Key (Opcional)
                     </label>
                     <div className="flex gap-2">
@@ -267,7 +269,7 @@ export default function SettingsPage() {
                           updateFormState("openai_api_key", e.target.value)
                         }
                         placeholder="sk-..."
-                        className="flex-1 rounded-lg border border-stone-300 bg-white py-2 px-3 text-sm text-stone-900 placeholder-stone-400 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                        className="flex-1 rounded-lg border border-[var(--border-hover)] bg-[var(--card-bg)] py-2 px-3 text-sm text-[var(--text-primary)] placeholder-stone-400 focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
                       />
                       <button
                         onClick={() =>
@@ -277,12 +279,12 @@ export default function SettingsPage() {
                             "OpenAI API key for embeddings"
                           )
                         }
-                        className="px-4 py-2 rounded-lg bg-orange-600 text-white text-sm font-medium hover:bg-orange-700 transition-colors"
+                        className="px-4 py-2 rounded-lg bg-[var(--accent)] text-white text-sm font-medium hover:bg-[var(--accent-hover)] transition-colors"
                       >
                         <Save className="h-4 w-4" />
                       </button>
                     </div>
-                    <p className="text-xs text-stone-500 mt-1">
+                    <p className="text-xs text-[var(--text-tertiary)] mt-1">
                       Usado para embeddings y operaciones de respaldo
                     </p>
                   </div>
@@ -291,15 +293,15 @@ export default function SettingsPage() {
 
               <Card>
                 <CardHeader>
-                  <h3 className="flex items-center gap-2 font-semibold text-lg text-stone-900">
-                    <Zap className="h-5 w-5 text-amber-600" />
+                  <h3 className="flex items-center gap-2 font-semibold text-lg text-[var(--text-primary)]">
+                    <Zap className="h-5 w-5 text-[var(--badge-amber-text)]" />
                     Servicios Externos
                   </h3>
                 </CardHeader>
                 <CardContent className="p-6 pt-0 space-y-4">
                   {/* Webhook URL */}
                   <div>
-                    <label className="block text-sm font-medium text-stone-700 mb-2">
+                    <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
                       Webhook URL
                     </label>
                     <div className="flex gap-2">
@@ -311,7 +313,7 @@ export default function SettingsPage() {
                           updateFormState("webhook_url", e.target.value)
                         }
                         placeholder="https://..."
-                        className="flex-1 rounded-lg border border-stone-300 bg-white py-2 px-3 text-sm text-stone-900 placeholder-stone-400 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                        className="flex-1 rounded-lg border border-[var(--border-hover)] bg-[var(--card-bg)] py-2 px-3 text-sm text-[var(--text-primary)] placeholder-stone-400 focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
                       />
                       <button
                         onClick={() =>
@@ -321,12 +323,12 @@ export default function SettingsPage() {
                             "Webhook URL for notifications"
                           )
                         }
-                        className="px-4 py-2 rounded-lg bg-orange-600 text-white text-sm font-medium hover:bg-orange-700 transition-colors"
+                        className="px-4 py-2 rounded-lg bg-[var(--accent)] text-white text-sm font-medium hover:bg-[var(--accent-hover)] transition-colors"
                       >
                         <Save className="h-4 w-4" />
                       </button>
                     </div>
-                    <p className="text-xs text-stone-500 mt-1">
+                    <p className="text-xs text-[var(--text-tertiary)] mt-1">
                       Recibe notificaciones sobre actividad de agentes
                     </p>
                   </div>
@@ -344,11 +346,11 @@ export default function SettingsPage() {
             >
               <Card>
                 <CardHeader>
-                  <h3 className="flex items-center gap-2 font-semibold text-lg text-stone-900">
-                    <Share2 className="h-5 w-5 text-orange-600" />
+                  <h3 className="flex items-center gap-2 font-semibold text-lg text-[var(--text-primary)]">
+                    <Share2 className="h-5 w-5 text-[var(--accent)]" />
                     Plataformas de Publicacion
                   </h3>
-                  <p className="text-sm text-stone-500 mt-1">
+                  <p className="text-sm text-[var(--text-tertiary)] mt-1">
                     Conecta tus cuentas para publicar contenido directamente desde AMD.
                   </p>
                 </CardHeader>
@@ -374,6 +376,23 @@ export default function SettingsPage() {
                         : undefined
                     }
                   />
+                  <EmailConnectionCard />
+                </CardContent>
+              </Card>
+
+              {/* Subscribers Section */}
+              <Card>
+                <CardHeader>
+                  <h3 className="flex items-center gap-2 font-semibold text-lg text-[var(--text-primary)]">
+                    <Users className="h-5 w-5 text-emerald-500" />
+                    Suscriptores de Email
+                  </h3>
+                  <p className="text-sm text-[var(--text-tertiary)] mt-1">
+                    Gestiona tu lista de suscriptores para newsletters y campañas.
+                  </p>
+                </CardHeader>
+                <CardContent className="p-6 pt-0">
+                  <SubscriberListPanel />
                 </CardContent>
               </Card>
             </motion.div>
@@ -388,11 +407,11 @@ export default function SettingsPage() {
             >
               <Card>
                 <CardHeader>
-                  <h3 className="flex items-center gap-2 font-semibold text-lg text-stone-900">
-                    <Palette className="h-5 w-5 text-orange-600" />
+                  <h3 className="flex items-center gap-2 font-semibold text-lg text-[var(--text-primary)]">
+                    <Palette className="h-5 w-5 text-[var(--accent)]" />
                     Tema de la Aplicacion
                   </h3>
-                  <p className="text-sm text-stone-500 mt-1">
+                  <p className="text-sm text-[var(--text-tertiary)] mt-1">
                     Elige entre modo claro, oscuro o automático según tu sistema.
                   </p>
                 </CardHeader>
@@ -404,16 +423,16 @@ export default function SettingsPage() {
                       className={cn(
                         "flex flex-col items-center gap-3 p-4 rounded-xl border-2 transition-all",
                         theme === "light"
-                          ? "border-orange-500 bg-orange-50 shadow-sm"
-                          : "border-stone-200 bg-white hover:border-stone-300"
+                          ? "border-[var(--accent)] bg-[var(--accent-muted)] shadow-sm"
+                          : "border-[var(--border)] bg-[var(--card-bg)] hover:border-[var(--border-hover)]"
                       )}
                     >
-                      <div className="w-12 h-12 rounded-full bg-amber-50 border border-stone-200 flex items-center justify-center">
+                      <div className="w-12 h-12 rounded-full bg-[var(--badge-amber-bg)] border border-[var(--border)] flex items-center justify-center">
                         <Sun className="w-6 h-6 text-amber-500" />
                       </div>
-                      <span className="text-sm font-medium text-stone-900">Claro</span>
+                      <span className="text-sm font-medium text-[var(--text-primary)]">Claro</span>
                       {theme === "light" && (
-                        <span className="text-xs text-orange-600 font-medium">Activo</span>
+                        <span className="text-xs text-[var(--accent)] font-medium">Activo</span>
                       )}
                     </button>
 
@@ -423,16 +442,16 @@ export default function SettingsPage() {
                       className={cn(
                         "flex flex-col items-center gap-3 p-4 rounded-xl border-2 transition-all",
                         theme === "dark"
-                          ? "border-orange-500 bg-orange-50 shadow-sm"
-                          : "border-stone-200 bg-white hover:border-stone-300"
+                          ? "border-[var(--accent)] bg-[var(--accent-muted)] shadow-sm"
+                          : "border-[var(--border)] bg-[var(--card-bg)] hover:border-[var(--border-hover)]"
                       )}
                     >
-                      <div className="w-12 h-12 rounded-full bg-stone-800 border border-stone-600 flex items-center justify-center">
-                        <Moon className="w-6 h-6 text-stone-300" />
+                      <div className="w-12 h-12 rounded-full bg-[var(--surface-2)] border border-[var(--border)] flex items-center justify-center">
+                        <Moon className="w-6 h-6 text-[var(--text-tertiary)]" />
                       </div>
-                      <span className="text-sm font-medium text-stone-900">Oscuro</span>
+                      <span className="text-sm font-medium text-[var(--text-primary)]">Oscuro</span>
                       {theme === "dark" && (
-                        <span className="text-xs text-orange-600 font-medium">Activo</span>
+                        <span className="text-xs text-[var(--accent)] font-medium">Activo</span>
                       )}
                     </button>
 
@@ -442,16 +461,16 @@ export default function SettingsPage() {
                       className={cn(
                         "flex flex-col items-center gap-3 p-4 rounded-xl border-2 transition-all",
                         theme === "system"
-                          ? "border-orange-500 bg-orange-50 shadow-sm"
-                          : "border-stone-200 bg-white hover:border-stone-300"
+                          ? "border-[var(--accent)] bg-[var(--accent-muted)] shadow-sm"
+                          : "border-[var(--border)] bg-[var(--card-bg)] hover:border-[var(--border-hover)]"
                       )}
                     >
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-50 to-stone-800 border border-stone-300 flex items-center justify-center">
-                        <Monitor className="w-6 h-6 text-stone-500" />
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-50 to-stone-800 border border-[var(--border-hover)] flex items-center justify-center">
+                        <Monitor className="w-6 h-6 text-[var(--text-tertiary)]" />
                       </div>
-                      <span className="text-sm font-medium text-stone-900">Sistema</span>
+                      <span className="text-sm font-medium text-[var(--text-primary)]">Sistema</span>
                       {theme === "system" && (
-                        <span className="text-xs text-orange-600 font-medium">
+                        <span className="text-xs text-[var(--accent)] font-medium">
                           Activo ({resolved === "dark" ? "oscuro" : "claro"})
                         </span>
                       )}
@@ -470,19 +489,19 @@ export default function SettingsPage() {
             >
             <Card>
               <CardHeader>
-                <h3 className="flex items-center gap-2 font-semibold text-lg text-stone-900">
-                  <Bell className="h-5 w-5 text-orange-600" />
+                <h3 className="flex items-center gap-2 font-semibold text-lg text-[var(--text-primary)]">
+                  <Bell className="h-5 w-5 text-[var(--accent)]" />
                   Preferencias de Notificaciones
                 </h3>
               </CardHeader>
               <CardContent className="p-6 pt-0 space-y-4">
                 {/* Email Notifications */}
-                <div className="flex items-center justify-between p-3 rounded-lg bg-stone-50">
+                <div className="flex items-center justify-between p-3 rounded-lg bg-[var(--surface-0)]">
                   <div>
-                    <p className="text-sm font-medium text-stone-900">
+                    <p className="text-sm font-medium text-[var(--text-primary)]">
                       Notificaciones por Email
                     </p>
-                    <p className="text-xs text-stone-500">
+                    <p className="text-xs text-[var(--text-tertiary)]">
                       Recibe resúmenes diarios por correo
                     </p>
                   </div>
@@ -500,17 +519,17 @@ export default function SettingsPage() {
                       }}
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-stone-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-600"></div>
+                    <div className="w-11 h-6 bg-[var(--surface-2)] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[var(--card-bg)] after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--accent)]"></div>
                   </label>
                 </div>
 
                 {/* Slack Notifications */}
-                <div className="flex items-center justify-between p-3 rounded-lg bg-stone-50">
+                <div className="flex items-center justify-between p-3 rounded-lg bg-[var(--surface-0)]">
                   <div>
-                    <p className="text-sm font-medium text-stone-900">
+                    <p className="text-sm font-medium text-[var(--text-primary)]">
                       Notificaciones Slack
                     </p>
-                    <p className="text-xs text-stone-500">
+                    <p className="text-xs text-[var(--text-tertiary)]">
                       Envía alertas al canal de Slack
                     </p>
                   </div>
@@ -528,15 +547,15 @@ export default function SettingsPage() {
                       }}
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-stone-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-600"></div>
+                    <div className="w-11 h-6 bg-[var(--surface-2)] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[var(--card-bg)] after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--accent)]"></div>
                   </label>
                 </div>
 
                 {/* Error Alerts */}
-                <div className="flex items-center justify-between p-3 rounded-lg bg-stone-50">
+                <div className="flex items-center justify-between p-3 rounded-lg bg-[var(--surface-0)]">
                   <div>
-                    <p className="text-sm font-medium text-stone-900">Alertas de Error</p>
-                    <p className="text-xs text-stone-500">
+                    <p className="text-sm font-medium text-[var(--text-primary)]">Alertas de Error</p>
+                    <p className="text-xs text-[var(--text-tertiary)]">
                       Recibe alertas cuando los agentes fallan
                     </p>
                   </div>
@@ -554,17 +573,17 @@ export default function SettingsPage() {
                       }}
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-stone-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-600"></div>
+                    <div className="w-11 h-6 bg-[var(--surface-2)] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[var(--card-bg)] after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--accent)]"></div>
                   </label>
                 </div>
 
                 {/* Task Completion */}
-                <div className="flex items-center justify-between p-3 rounded-lg bg-stone-50">
+                <div className="flex items-center justify-between p-3 rounded-lg bg-[var(--surface-0)]">
                   <div>
-                    <p className="text-sm font-medium text-stone-900">
+                    <p className="text-sm font-medium text-[var(--text-primary)]">
                       Tareas Completadas
                     </p>
-                    <p className="text-xs text-stone-500">
+                    <p className="text-xs text-[var(--text-tertiary)]">
                       Notifica cuando se completan tareas importantes
                     </p>
                   </div>
@@ -582,7 +601,7 @@ export default function SettingsPage() {
                       }}
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-stone-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-600"></div>
+                    <div className="w-11 h-6 bg-[var(--surface-2)] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[var(--card-bg)] after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--accent)]"></div>
                   </label>
                 </div>
               </CardContent>
@@ -599,7 +618,7 @@ export default function SettingsPage() {
             >
               <Card>
                 <CardHeader>
-                  <h3 className="flex items-center gap-2 font-semibold text-lg text-stone-900">
+                  <h3 className="flex items-center gap-2 font-semibold text-lg text-[var(--text-primary)]">
                     <Bot className="h-5 w-5 text-purple-600" />
                     Configuración de Agentes
                   </h3>
@@ -607,7 +626,7 @@ export default function SettingsPage() {
                 <CardContent className="p-6 pt-0 space-y-4">
                   {/* Default Model */}
                   <div>
-                    <label className="block text-sm font-medium text-stone-700 mb-2">
+                    <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
                       Modelo por Defecto
                     </label>
                     <select
@@ -620,21 +639,21 @@ export default function SettingsPage() {
                           "Default AI model for agents"
                         );
                       }}
-                      className="w-full rounded-lg border border-stone-300 bg-white py-2 px-3 text-sm text-stone-900 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                      className="w-full rounded-lg border border-[var(--border-hover)] bg-[var(--card-bg)] py-2 px-3 text-sm text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
                     >
                       <option value="claude-opus-4-5-20251101">Claude Opus 4.5 (Plan Max)</option>
                       <option value="claude-sonnet-4-20250514">Claude Sonnet 4 (Equilibrado)</option>
                       <option value="claude-opus-4-20250514">Claude Opus 4</option>
                       <option value="claude-haiku-3-20250514">Claude Haiku 3 (Rápido y Económico)</option>
                     </select>
-                    <p className="text-xs text-stone-500 mt-1">
+                    <p className="text-xs text-[var(--text-tertiary)] mt-1">
                       Modelo usado para nuevos agentes. Opus 4.5 es el más capaz pero cuesta más.
                     </p>
                   </div>
 
                   {/* Default Temperature */}
                   <div>
-                    <label className="block text-sm font-medium text-stone-700 mb-2">
+                    <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
                       Temperatura por Defecto: {getSetting("default_temperature", 0.7)}
                     </label>
                     <input
@@ -652,9 +671,9 @@ export default function SettingsPage() {
                           "Default temperature for agent responses"
                         );
                       }}
-                      className="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-orange-600"
+                      className="w-full h-2 bg-[var(--surface-2)] rounded-lg appearance-none cursor-pointer accent-orange-600"
                     />
-                    <div className="flex justify-between text-xs text-stone-500 mt-1">
+                    <div className="flex justify-between text-xs text-[var(--text-tertiary)] mt-1">
                       <span>Preciso (0)</span>
                       <span>Creativo (1)</span>
                     </div>
@@ -662,7 +681,7 @@ export default function SettingsPage() {
 
                   {/* Max Tokens */}
                   <div>
-                    <label className="block text-sm font-medium text-stone-700 mb-2">
+                    <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
                       Máximo de Tokens
                     </label>
                     <div className="flex gap-2">
@@ -675,7 +694,7 @@ export default function SettingsPage() {
                         onChange={(e) =>
                           updateFormState("default_max_tokens", parseInt(e.target.value))
                         }
-                        className="flex-1 rounded-lg border border-stone-300 bg-white py-2 px-3 text-sm text-stone-900 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                        className="flex-1 rounded-lg border border-[var(--border-hover)] bg-[var(--card-bg)] py-2 px-3 text-sm text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
                       />
                       <button
                         onClick={() =>
@@ -685,19 +704,19 @@ export default function SettingsPage() {
                             "Default max tokens for agent responses"
                           )
                         }
-                        className="px-4 py-2 rounded-lg bg-orange-600 text-white text-sm font-medium hover:bg-orange-700 transition-colors"
+                        className="px-4 py-2 rounded-lg bg-[var(--accent)] text-white text-sm font-medium hover:bg-[var(--accent-hover)] transition-colors"
                       >
                         <Save className="h-4 w-4" />
                       </button>
                     </div>
-                    <p className="text-xs text-stone-500 mt-1">
+                    <p className="text-xs text-[var(--text-tertiary)] mt-1">
                       Largo máximo de respuesta de los agentes
                     </p>
                   </div>
 
                   {/* Max Retries */}
                   <div>
-                    <label className="block text-sm font-medium text-stone-700 mb-2">
+                    <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
                       Reintentos Máximos
                     </label>
                     <div className="flex gap-2">
@@ -710,7 +729,7 @@ export default function SettingsPage() {
                         onChange={(e) =>
                           updateFormState("default_max_retries", parseInt(e.target.value))
                         }
-                        className="flex-1 rounded-lg border border-stone-300 bg-white py-2 px-3 text-sm text-stone-900 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                        className="flex-1 rounded-lg border border-[var(--border-hover)] bg-[var(--card-bg)] py-2 px-3 text-sm text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
                       />
                       <button
                         onClick={() =>
@@ -720,12 +739,12 @@ export default function SettingsPage() {
                             "Default max retries for failed tasks"
                           )
                         }
-                        className="px-4 py-2 rounded-lg bg-orange-600 text-white text-sm font-medium hover:bg-orange-700 transition-colors"
+                        className="px-4 py-2 rounded-lg bg-[var(--accent)] text-white text-sm font-medium hover:bg-[var(--accent-hover)] transition-colors"
                       >
                         <Save className="h-4 w-4" />
                       </button>
                     </div>
-                    <p className="text-xs text-stone-500 mt-1">
+                    <p className="text-xs text-[var(--text-tertiary)] mt-1">
                       Número de reintentos para tareas fallidas
                     </p>
                   </div>
@@ -735,17 +754,17 @@ export default function SettingsPage() {
               {/* Max Plan Upgrade */}
               <Card>
                 <CardHeader>
-                  <h3 className="flex items-center gap-2 font-semibold text-lg text-stone-900">
-                    <Zap className="h-5 w-5 text-amber-600" />
+                  <h3 className="flex items-center gap-2 font-semibold text-lg text-[var(--text-primary)]">
+                    <Zap className="h-5 w-5 text-[var(--badge-amber-text)]" />
                     Max Plan - Claude Opus 4.5
                   </h3>
                 </CardHeader>
                 <CardContent className="p-6 pt-0 space-y-4">
-                  <div className="p-4 rounded-lg border border-amber-200 bg-amber-50">
+                  <div className="p-4 rounded-lg border border-amber-200 bg-[var(--badge-amber-bg)]">
                     <p className="text-sm font-medium text-amber-700 mb-2">
                       Actualizar Todos los Agentes al Plan Max
                     </p>
-                    <p className="text-xs text-stone-500 mb-4">
+                    <p className="text-xs text-[var(--text-tertiary)] mb-4">
                       Claude Opus 4.5 es el modelo más potente con razonamiento, creatividad
                       y precisión superiores. Ideal para estrategias de marketing complejas.
                     </p>
@@ -783,19 +802,19 @@ export default function SettingsPage() {
                             }
                           }
                         }}
-                        className="px-4 py-2 rounded-lg bg-stone-200 text-stone-700 text-sm font-medium hover:bg-stone-300 transition-colors"
+                        className="px-4 py-2 rounded-lg bg-[var(--surface-2)] text-[var(--text-secondary)] text-sm font-medium hover:bg-[var(--surface-2)] transition-colors"
                       >
                         Resetear a Sonnet 4
                       </button>
                     </div>
                     <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
-                      <div className="p-2 rounded bg-stone-100">
-                        <span className="text-stone-500">Opus 4.5:</span>
-                        <span className="text-stone-900 ml-1">$15/M entrada, $75/M salida</span>
+                      <div className="p-2 rounded bg-[var(--surface-1)]">
+                        <span className="text-[var(--text-tertiary)]">Opus 4.5:</span>
+                        <span className="text-[var(--text-primary)] ml-1">$15/M entrada, $75/M salida</span>
                       </div>
-                      <div className="p-2 rounded bg-stone-100">
-                        <span className="text-stone-500">Sonnet 4:</span>
-                        <span className="text-stone-900 ml-1">$3/M entrada, $15/M salida</span>
+                      <div className="p-2 rounded bg-[var(--surface-1)]">
+                        <span className="text-[var(--text-tertiary)]">Sonnet 4:</span>
+                        <span className="text-[var(--text-primary)] ml-1">$3/M entrada, $15/M salida</span>
                       </div>
                     </div>
                   </div>
@@ -824,11 +843,11 @@ export default function SettingsPage() {
             >
               <Card>
                 <CardHeader>
-                  <h3 className="flex items-center gap-2 font-semibold text-lg text-stone-900">
-                    <FileText className="h-5 w-5 text-orange-600" />
+                  <h3 className="flex items-center gap-2 font-semibold text-lg text-[var(--text-primary)]">
+                    <FileText className="h-5 w-5 text-[var(--accent)]" />
                     Reportes Automáticos
                   </h3>
-                  <p className="text-sm text-stone-500 mt-1">
+                  <p className="text-sm text-[var(--text-tertiary)] mt-1">
                     Configura reportes automáticos semanales y mensuales.
                   </p>
                 </CardHeader>
@@ -848,20 +867,20 @@ export default function SettingsPage() {
             >
               <Card>
                 <CardHeader>
-                  <h3 className="flex items-center gap-2 font-semibold text-lg text-stone-900">
-                    <Sparkles className="h-5 w-5 text-orange-600" />
+                  <h3 className="flex items-center gap-2 font-semibold text-lg text-[var(--text-primary)]">
+                    <Sparkles className="h-5 w-5 text-[var(--accent)]" />
                     Guía y Onboarding
                   </h3>
-                  <p className="text-sm text-stone-500 mt-1">
+                  <p className="text-sm text-[var(--text-tertiary)] mt-1">
                     Configura la experiencia de guía del sistema.
                   </p>
                 </CardHeader>
                 <CardContent className="p-6 pt-0 space-y-4">
                   <QuickModeToggle />
 
-                  <div className="p-4 rounded-lg border border-stone-200 bg-stone-50 space-y-3">
-                    <h4 className="text-sm font-medium text-stone-700">Sobre el Modo Express</h4>
-                    <div className="space-y-2 text-xs text-stone-500">
+                  <div className="p-4 rounded-lg border border-[var(--border)] bg-[var(--surface-0)] space-y-3">
+                    <h4 className="text-sm font-medium text-[var(--text-secondary)]">Sobre el Modo Express</h4>
+                    <div className="space-y-2 text-xs text-[var(--text-tertiary)]">
                       <p>El Modo Express se desbloquea después de completar el onboarding 3 veces.</p>
                       <p>Cuando está activado:</p>
                       <ul className="ml-4 space-y-1 list-disc">
@@ -885,11 +904,11 @@ export default function SettingsPage() {
             >
               <Card>
                 <CardHeader>
-                  <h3 className="flex items-center gap-2 font-semibold text-lg text-stone-900">
-                    <Globe className="h-5 w-5 text-blue-600" />
+                  <h3 className="flex items-center gap-2 font-semibold text-lg text-[var(--text-primary)]">
+                    <Globe className="h-5 w-5 text-[var(--badge-blue-text)]" />
                     API Pública REST
                   </h3>
-                  <p className="text-sm text-stone-500 mt-1">
+                  <p className="text-sm text-[var(--text-tertiary)] mt-1">
                     Accede a contenido, agentes, analítica y estrategias vía API.
                     Ideal para integraciones con Zapier, Make, n8n o apps propias.
                   </p>
@@ -910,11 +929,11 @@ export default function SettingsPage() {
             >
               <Card>
                 <CardHeader>
-                  <h3 className="flex items-center gap-2 font-semibold text-lg text-stone-900">
+                  <h3 className="flex items-center gap-2 font-semibold text-lg text-[var(--text-primary)]">
                     <Webhook className="h-5 w-5 text-violet-600" />
                     Webhooks
                   </h3>
-                  <p className="text-sm text-stone-500 mt-1">
+                  <p className="text-sm text-[var(--text-tertiary)] mt-1">
                     Recibe notificaciones en tiempo real cuando ocurren eventos en AMD.
                     Ideal para integraciones con sistemas externos.
                   </p>
@@ -935,30 +954,30 @@ export default function SettingsPage() {
             >
               <Card>
                 <CardHeader>
-                  <h3 className="flex items-center gap-2 font-semibold text-lg text-stone-900">
-                    <Database className="h-5 w-5 text-green-600" />
+                  <h3 className="flex items-center gap-2 font-semibold text-lg text-[var(--text-primary)]">
+                    <Database className="h-5 w-5 text-[var(--badge-green-text)]" />
                     Información del Sistema
                   </h3>
                 </CardHeader>
                 <CardContent className="p-6 pt-0">
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="p-3 rounded-lg bg-stone-50">
-                      <p className="text-xs text-stone-500">Versión</p>
-                      <p className="text-sm font-medium text-stone-900">5.0.0</p>
+                    <div className="p-3 rounded-lg bg-[var(--surface-0)]">
+                      <p className="text-xs text-[var(--text-tertiary)]">Versión</p>
+                      <p className="text-sm font-medium text-[var(--text-primary)]">5.0.0</p>
                     </div>
-                    <div className="p-3 rounded-lg bg-stone-50">
-                      <p className="text-xs text-stone-500">Entorno</p>
-                      <p className="text-sm font-medium text-stone-900">Producción</p>
+                    <div className="p-3 rounded-lg bg-[var(--surface-0)]">
+                      <p className="text-xs text-[var(--text-tertiary)]">Entorno</p>
+                      <p className="text-sm font-medium text-[var(--text-primary)]">Producción</p>
                     </div>
-                    <div className="p-3 rounded-lg bg-stone-50">
-                      <p className="text-xs text-stone-500">Configuraciones</p>
-                      <p className="text-sm font-medium text-stone-900">
+                    <div className="p-3 rounded-lg bg-[var(--surface-0)]">
+                      <p className="text-xs text-[var(--text-tertiary)]">Configuraciones</p>
+                      <p className="text-sm font-medium text-[var(--text-primary)]">
                         <SimpleCounter value={settings.length} />
                       </p>
                     </div>
-                    <div className="p-3 rounded-lg bg-stone-50">
-                      <p className="text-xs text-stone-500">Última Actualización</p>
-                      <p className="text-sm font-medium text-stone-900">
+                    <div className="p-3 rounded-lg bg-[var(--surface-0)]">
+                      <p className="text-xs text-[var(--text-tertiary)]">Última Actualización</p>
+                      <p className="text-sm font-medium text-[var(--text-primary)]">
                         {settings.length > 0
                           ? new Date(
                               Math.max(...settings.map((s) => s.updatedAt))
@@ -969,11 +988,11 @@ export default function SettingsPage() {
                   </div>
 
                   {/* Demo Seed Button */}
-                  <div className="mt-4 p-4 rounded-lg border border-orange-200 bg-orange-50">
+                  <div className="mt-4 p-4 rounded-lg border border-orange-200 bg-[var(--accent-muted)]">
                     <p className="text-sm font-medium text-orange-700 mb-1">
                       Datos de demostración
                     </p>
-                    <p className="text-xs text-stone-500 mb-3">
+                    <p className="text-xs text-[var(--text-tertiary)] mb-3">
                       Carga agentes, tareas, contenido, campañas y ejecuciones de ejemplo para explorar el dashboard.
                     </p>
                     <button
@@ -998,7 +1017,7 @@ export default function SettingsPage() {
                         }
                       }}
                       disabled={seeding}
-                      className="px-4 py-2 rounded-lg bg-orange-600 text-white text-sm font-medium hover:bg-orange-500 transition-colors disabled:opacity-50"
+                      className="px-4 py-2 rounded-lg bg-[var(--accent)] text-white text-sm font-medium hover:bg-[var(--accent-muted)]0 transition-colors disabled:opacity-50"
                     >
                       {seeding ? "Cargando..." : "Cargar datos de demo"}
                     </button>
@@ -1008,17 +1027,17 @@ export default function SettingsPage() {
 
               <Card>
                 <CardHeader>
-                  <h3 className="flex items-center gap-2 font-semibold text-lg text-stone-900">
-                    <Shield className="h-5 w-5 text-red-600" />
+                  <h3 className="flex items-center gap-2 font-semibold text-lg text-[var(--text-primary)]">
+                    <Shield className="h-5 w-5 text-[var(--badge-red-text)]" />
                     Zona de Peligro
                   </h3>
                 </CardHeader>
                 <CardContent className="p-6 pt-0 space-y-4">
-                  <div className="p-4 rounded-lg border border-red-200 bg-red-50">
-                    <p className="text-sm font-medium text-red-700 mb-2">
+                  <div className="p-4 rounded-lg border border-[var(--badge-red-bg)] bg-[var(--badge-red-bg)]">
+                    <p className="text-sm font-medium text-[var(--badge-red-text)] mb-2">
                       Restablecer Configuración
                     </p>
-                    <p className="text-xs text-stone-500 mb-4">
+                    <p className="text-xs text-[var(--text-tertiary)] mb-4">
                       Esto restablecerá todas las configuraciones a sus valores por defecto.
                       Esta acción no se puede deshacer.
                     </p>
@@ -1044,7 +1063,7 @@ export default function SettingsPage() {
                           }
                         }
                       }}
-                      className="px-4 py-2 rounded-lg bg-red-50 text-red-700 text-sm font-medium hover:bg-red-500/20 transition-colors border border-red-200"
+                      className="px-4 py-2 rounded-lg bg-[var(--badge-red-bg)] text-[var(--badge-red-text)] text-sm font-medium hover:bg-[var(--badge-red-bg)]0/20 transition-colors border border-[var(--badge-red-bg)]"
                     >
                       Restablecer
                     </button>

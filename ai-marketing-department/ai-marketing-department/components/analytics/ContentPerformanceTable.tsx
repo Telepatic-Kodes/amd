@@ -50,10 +50,10 @@ function getTypeColor(type: string): "default" | "success" | "warning" | "error"
 }
 
 function getEngagementRateColor(rate: number | null | undefined): string {
-  if (!rate) return "text-stone-500";
-  if (rate > 3) return "text-green-400";
+  if (!rate) return "text-[var(--text-tertiary)]";
+  if (rate > 3) return "text-[var(--success)]";
   if (rate >= 1) return "text-yellow-400";
-  return "text-red-400";
+  return "text-[var(--error)]";
 }
 
 export function ContentPerformanceTable({ data, isLoading }: ContentPerformanceTableProps) {
@@ -61,7 +61,7 @@ export function ContentPerformanceTable({ data, isLoading }: ContentPerformanceT
     return (
       <div className="space-y-3">
         {[...Array(5)].map((_, i) => (
-          <div key={i} className="h-12 rounded-lg bg-stone-100/50 animate-pulse" />
+          <div key={i} className="h-12 rounded-lg bg-[var(--surface-1)]/50 animate-pulse" />
         ))}
       </div>
     );
@@ -70,7 +70,7 @@ export function ContentPerformanceTable({ data, isLoading }: ContentPerformanceT
   if (data.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-stone-500 text-sm">
+        <p className="text-[var(--text-tertiary)] text-sm">
           No hay contenido publicado con datos de LinkedIn en este rango de fechas
         </p>
       </div>
@@ -81,7 +81,7 @@ export function ContentPerformanceTable({ data, isLoading }: ContentPerformanceT
     <div className="overflow-x-auto -mx-6">
       <table className="w-full min-w-[800px]">
         <thead>
-          <tr className="text-left text-xs text-stone-500 border-b border-stone-200">
+          <tr className="text-left text-xs text-[var(--text-tertiary)] border-b border-[var(--border)]">
             <th className="pb-3 pl-6 font-medium">Titulo</th>
             <th className="pb-3 font-medium">Tipo</th>
             <th className="pb-3 font-medium text-center">Likes</th>
@@ -102,17 +102,17 @@ export function ContentPerformanceTable({ data, isLoading }: ContentPerformanceT
             return (
               <tr
                 key={item.contentId}
-                className="border-b border-stone-200/50 last:border-0 hover:bg-stone-100/30 transition-colors"
+                className="border-b border-[var(--border)]/50 last:border-0 hover:bg-[var(--surface-1)]/30 transition-colors"
               >
                 <td className="py-3 pl-6">
                   <div className="flex flex-col gap-1 max-w-md">
-                    <span className="text-sm text-stone-600 font-medium truncate">
+                    <span className="text-sm text-[var(--text-secondary)] font-medium truncate">
                       {item.title.length > 50
                         ? item.title.substring(0, 50) + "..."
                         : item.title}
                     </span>
                     {!hasEngagement && (
-                      <span className="text-xs text-stone-600">Sin datos de LinkedIn</span>
+                      <span className="text-xs text-[var(--text-secondary)]">Sin datos de LinkedIn</span>
                     )}
                   </div>
                 </td>
@@ -123,24 +123,24 @@ export function ContentPerformanceTable({ data, isLoading }: ContentPerformanceT
                 </td>
                 <td className="py-3 text-center">
                   <div className="flex items-center justify-center gap-1.5">
-                    <Heart className="w-3.5 h-3.5 text-red-400" />
-                    <span className="text-sm text-stone-600 font-mono">
+                    <Heart className="w-3.5 h-3.5 text-[var(--error)]" />
+                    <span className="text-sm text-[var(--text-secondary)] font-mono">
                       {hasEngagement && engagement ? formatNumber(engagement.likes) : "-"}
                     </span>
                   </div>
                 </td>
                 <td className="py-3 text-center">
                   <div className="flex items-center justify-center gap-1.5">
-                    <MessageCircle className="w-3.5 h-3.5 text-orange-400" />
-                    <span className="text-sm text-stone-600 font-mono">
+                    <MessageCircle className="w-3.5 h-3.5 text-[var(--accent)]" />
+                    <span className="text-sm text-[var(--text-secondary)] font-mono">
                       {hasEngagement && engagement ? formatNumber(engagement.comments) : "-"}
                     </span>
                   </div>
                 </td>
                 <td className="py-3 text-center">
                   <div className="flex items-center justify-center gap-1.5">
-                    <Share2 className="w-3.5 h-3.5 text-green-400" />
-                    <span className="text-sm text-stone-600 font-mono">
+                    <Share2 className="w-3.5 h-3.5 text-[var(--success)]" />
+                    <span className="text-sm text-[var(--text-secondary)] font-mono">
                       {hasEngagement && engagement ? formatNumber(engagement.shares) : "-"}
                     </span>
                   </div>
@@ -148,7 +148,7 @@ export function ContentPerformanceTable({ data, isLoading }: ContentPerformanceT
                 <td className="py-3 text-center">
                   <div className="flex items-center justify-center gap-1.5">
                     <Eye className="w-3.5 h-3.5 text-purple-400" />
-                    <span className="text-sm text-stone-600 font-mono">
+                    <span className="text-sm text-[var(--text-secondary)] font-mono">
                       {hasEngagement && engagement ? formatNumber(engagement.impressions) : "-"}
                     </span>
                   </div>
@@ -164,7 +164,7 @@ export function ContentPerformanceTable({ data, isLoading }: ContentPerformanceT
                       {engagement.engagement_rate.toFixed(2)}%
                     </span>
                   ) : (
-                    <span className="text-sm text-stone-600">-</span>
+                    <span className="text-sm text-[var(--text-secondary)]">-</span>
                   )}
                 </td>
               </tr>

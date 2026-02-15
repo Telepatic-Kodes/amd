@@ -86,7 +86,7 @@ export function ContextualHelp({
       <div ref={triggerRef}>
         <button
           onClick={handleToggle}
-          className="p-0.5 rounded-full text-stone-600 hover:text-stone-400 hover:bg-stone-200/50 transition-colors"
+          className="p-0.5 rounded-full text-[var(--text-secondary)] hover:text-[var(--text-tertiary)] hover:bg-[var(--surface-2)]/50 transition-colors"
           aria-label="Ayuda"
         >
           <HelpCircle className="w-3.5 h-3.5" />
@@ -103,20 +103,20 @@ export function ContextualHelp({
             transition={{ duration: 0.15 }}
             className={`absolute z-50 ${tooltipPosition} w-64`}
           >
-            <div className="rounded-lg border border-stone-300 bg-stone-100 shadow-xl p-3">
+            <div className="rounded-lg border border-[var(--border)] bg-[var(--surface-1)] shadow-xl p-3">
               <div className="flex items-start justify-between gap-2">
-                <p className="text-xs text-stone-500 leading-relaxed">
+                <p className="text-xs text-[var(--text-tertiary)] leading-relaxed">
                   {content}
                 </p>
                 <button
                   onClick={handleDismiss}
-                  className="p-0.5 rounded text-stone-600 hover:text-stone-400 transition-colors flex-shrink-0"
+                  className="p-0.5 rounded text-[var(--text-secondary)] hover:text-[var(--text-tertiary)] transition-colors flex-shrink-0"
                 >
                   <X className="w-3 h-3" />
                 </button>
               </div>
               {showOnce && (
-                <p className="text-[10px] text-stone-600 mt-2">
+                <p className="text-[10px] text-[var(--text-secondary)] mt-2">
                   No se mostrará de nuevo
                 </p>
               )}

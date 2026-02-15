@@ -360,22 +360,22 @@ export default function BrandPage() {
         {/* Header row */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-purple-50">
-              <Palette className="h-6 w-6 text-purple-600" />
+            <div className="p-2 rounded-xl bg-[var(--badge-purple-bg)]">
+              <Palette className="h-6 w-6 text-[var(--badge-purple-text)]" />
             </div>
             <div>
               <div className="flex items-center gap-3">
-                <h1 className="text-3xl font-bold text-stone-900">
+                <h1 className="text-3xl font-bold text-[var(--text-primary)]">
                   {profile.companyName}
                 </h1>
                 {maturity && (
                   <span
                     className={cn(
                       "px-2.5 py-0.5 rounded-full text-xs font-semibold border",
-                      maturity.level === "empty" && "bg-red-50 border-red-200 text-red-700",
-                      maturity.level === "partial" && "bg-amber-50 border-amber-200 text-amber-700",
-                      maturity.level === "complete" && "bg-green-50 border-green-200 text-green-700",
-                      maturity.level === "enriched" && "bg-orange-50 border-orange-200 text-orange-700"
+                      maturity.level === "empty" && "bg-[var(--badge-red-bg)] border-[var(--badge-red-bg)] text-[var(--badge-red-text)]",
+                      maturity.level === "partial" && "bg-[var(--badge-amber-bg)] border-amber-200 text-[var(--badge-amber-text)]",
+                      maturity.level === "complete" && "bg-[var(--badge-green-bg)] border-green-200 text-[var(--badge-green-text)]",
+                      maturity.level === "enriched" && "bg-[var(--accent-muted)] border-orange-200 text-orange-700"
                     )}
                   >
                     {maturity.level === "empty" && "Vacía"}
@@ -385,7 +385,7 @@ export default function BrandPage() {
                   </span>
                 )}
               </div>
-              <p className="text-stone-500 mt-0.5 text-sm">
+              <p className="text-[var(--text-tertiary)] mt-0.5 text-sm">
                 Centro de Inteligencia de Marca
               </p>
             </div>
@@ -393,7 +393,7 @@ export default function BrandPage() {
           <div className="flex items-center gap-2">
             <Link
               href="/brand/manual"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-stone-900 text-white text-sm font-medium hover:bg-stone-800 transition"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[var(--surface-3)] text-white text-sm font-medium hover:bg-[var(--surface-2)] transition"
             >
               <BookOpen className="h-4 w-4" />
               Manual de Marca
@@ -404,7 +404,7 @@ export default function BrandPage() {
                 setIsEditing(true);
                 setStep(0);
               }}
-              className="px-4 py-2 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 text-sm font-medium transition"
+              className="px-4 py-2 rounded-lg bg-[var(--surface-1)] hover:bg-[var(--surface-2)] text-[var(--text-secondary)] text-sm font-medium transition"
             >
               Editar perfil
             </button>
@@ -413,7 +413,7 @@ export default function BrandPage() {
 
         {/* Maturity bar */}
         {maturity && (
-          <div className="p-4 rounded-xl border border-stone-200 bg-white">
+          <div className="p-4 rounded-xl border border-[var(--border)] bg-[var(--card-bg)]">
             <BrandMaturityBar
               score={maturity.score}
               level={maturity.level}
@@ -437,8 +437,8 @@ export default function BrandPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left: Profile Summary */}
           <div className="space-y-3">
-            <h3 className="text-sm font-semibold text-stone-700 flex items-center gap-2">
-              <Palette className="w-4 h-4 text-purple-600" />
+            <h3 className="text-sm font-semibold text-[var(--text-secondary)] flex items-center gap-2">
+              <Palette className="w-4 h-4 text-[var(--badge-purple-text)]" />
               Perfil de Marca
             </h3>
             <BrandProfileSummary
@@ -466,7 +466,7 @@ export default function BrandPage() {
             />
 
             {/* B2: Version History */}
-            <div className="mt-4 p-4 rounded-xl border border-stone-200 bg-white">
+            <div className="mt-4 p-4 rounded-xl border border-[var(--border)] bg-[var(--card-bg)]">
               <BrandVersionHistory brandProfileId={profile._id} />
             </div>
           </div>
@@ -486,21 +486,21 @@ export default function BrandPage() {
         </div>
 
         {/* Footer row: KB Status + CTA */}
-        <div className="flex items-center justify-between p-4 rounded-xl border border-stone-200 bg-white">
+        <div className="flex items-center justify-between p-4 rounded-xl border border-[var(--border)] bg-[var(--card-bg)]">
           <div className="flex items-center gap-3">
-            <div className={cn("p-2 rounded-lg", profile.kbId ? "bg-green-50" : "bg-yellow-50")}>
-              <Database className={cn("w-5 h-5", profile.kbId ? "text-green-600" : "text-yellow-600")} />
+            <div className={cn("p-2 rounded-lg", profile.kbId ? "bg-[var(--badge-green-bg)]" : "bg-yellow-50")}>
+              <Database className={cn("w-5 h-5", profile.kbId ? "text-[var(--badge-green-text)]" : "text-yellow-600")} />
             </div>
             <div>
-              <p className="text-sm font-medium text-stone-900">Knowledge Base</p>
-              <p className="text-xs text-stone-500">
+              <p className="text-sm font-medium text-[var(--text-primary)]">Knowledge Base</p>
+              <p className="text-xs text-[var(--text-tertiary)]">
                 {profile.kbId ? "Activa — Todos los agentes tienen acceso" : "No sincronizada"}
               </p>
             </div>
             <button
               onClick={handleResync}
               disabled={kbSyncing}
-              className="px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-medium transition flex items-center gap-1.5 disabled:opacity-50 ml-2"
+              className="px-3 py-1.5 rounded-lg bg-[var(--surface-1)] hover:bg-[var(--surface-2)] text-[var(--text-secondary)] text-xs font-medium transition flex items-center gap-1.5 disabled:opacity-50 ml-2"
             >
               <RefreshCw className={cn("w-3.5 h-3.5", kbSyncing && "animate-spin")} />
               {kbSyncing ? "Sincronizando..." : "Re-sincronizar"}
@@ -508,7 +508,7 @@ export default function BrandPage() {
           </div>
           <button
             onClick={() => setShowGenerateModal(true)}
-            className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-medium transition-colors text-sm"
+            className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-medium transition-colors text-sm"
           >
             <Sparkles className="w-4 h-4" />
             Generar Contenido
@@ -541,7 +541,7 @@ export default function BrandPage() {
   if (profile === undefined) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
-        <Loader2 className="w-6 h-6 animate-spin text-stone-400" />
+        <Loader2 className="w-6 h-6 animate-spin text-[var(--text-tertiary)]" />
       </div>
     );
   }
@@ -552,14 +552,14 @@ export default function BrandPage() {
       {/* Header with Progress */}
       <div className="pb-8">
         <div className="flex items-center gap-3 mb-6">
-          <div className="p-2 rounded-xl bg-purple-50">
-            <Palette className="h-6 w-6 text-purple-600" />
+          <div className="p-2 rounded-xl bg-[var(--badge-purple-bg)]">
+            <Palette className="h-6 w-6 text-[var(--badge-purple-text)]" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-stone-900">
+            <h1 className="text-3xl font-bold text-[var(--text-primary)]">
               {currentLabel.title}
             </h1>
-            <p className="text-stone-500 text-sm">
+            <p className="text-[var(--text-tertiary)] text-sm">
               {currentLabel.subtitle}
             </p>
           </div>
@@ -572,12 +572,12 @@ export default function BrandPage() {
               key={i}
               className={cn(
                 "flex-1 h-1.5 rounded-full transition-all duration-300",
-                i <= step ? "bg-orange-600" : "bg-stone-200"
+                i <= step ? "bg-[var(--accent)]" : "bg-[var(--surface-2)]"
               )}
             />
           ))}
         </div>
-        <p className="text-xs text-stone-400 mt-3">
+        <p className="text-xs text-[var(--text-tertiary)] mt-3">
           Paso {step + 1} de {TOTAL_STEPS}
         </p>
       </div>
@@ -601,7 +601,7 @@ export default function BrandPage() {
       </div>
 
       {/* Navigation Footer */}
-      <div className="border-t border-stone-200 py-4 mt-auto">
+      <div className="border-t border-[var(--border)] py-4 mt-auto">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <button
             onClick={
@@ -609,7 +609,7 @@ export default function BrandPage() {
                 ? () => setIsEditing(false)
                 : back
             }
-            className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition text-stone-500 hover:text-stone-700 hover:bg-stone-50"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] hover:bg-[var(--surface-0)]"
           >
             <ArrowLeft className="w-4 h-4" /> Atrás
           </button>
@@ -621,8 +621,8 @@ export default function BrandPage() {
               className={cn(
                 "flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold transition",
                 canNext()
-                  ? "bg-orange-600 hover:bg-orange-700 text-white"
-                  : "bg-stone-200 text-stone-400 cursor-not-allowed"
+                  ? "bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white"
+                  : "bg-[var(--surface-2)] text-[var(--text-tertiary)] cursor-not-allowed"
               )}
             >
               Siguiente <ArrowRight className="w-4 h-4" />
@@ -634,8 +634,8 @@ export default function BrandPage() {
               className={cn(
                 "flex items-center gap-2 px-8 py-2.5 rounded-lg text-sm font-semibold transition",
                 saving || kbSyncing
-                  ? "bg-stone-200 text-stone-400 cursor-not-allowed"
-                  : "bg-green-600 hover:bg-green-500 text-white"
+                  ? "bg-[var(--surface-2)] text-[var(--text-tertiary)] cursor-not-allowed"
+                  : "bg-[var(--success)] hover:bg-[var(--badge-green-bg)]0 text-white"
               )}
             >
               {saving ? (

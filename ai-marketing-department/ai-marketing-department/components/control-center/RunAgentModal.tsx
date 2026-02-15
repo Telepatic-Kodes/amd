@@ -118,24 +118,24 @@ export function RunAgentModal({ agent, onClose }: RunAgentModalProps) {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="relative w-full max-w-lg mx-4 rounded-xl border border-stone-200 bg-white shadow-2xl max-h-[85vh] overflow-hidden flex flex-col"
+        className="relative w-full max-w-lg mx-4 rounded-xl border border-[var(--border)] bg-[var(--card-bg)] shadow-2xl max-h-[85vh] overflow-hidden flex flex-col"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-stone-200 shrink-0">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--border)] shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center">
-              <Zap className="h-4 w-4 text-orange-600" />
+            <div className="w-8 h-8 rounded-lg bg-[var(--accent-subtle)] flex items-center justify-center">
+              <Zap className="h-4 w-4 text-[var(--accent)]" />
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-stone-900">Ejecutar Agente</h3>
-              <p className="text-xs text-stone-500">{agent.name}</p>
+              <h3 className="text-sm font-semibold text-[var(--text-primary)]">Ejecutar Agente</h3>
+              <p className="text-xs text-[var(--text-tertiary)]">{agent.name}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <Badge variant="info">{agent.role}</Badge>
             <button
               onClick={onClose}
-              className="text-stone-400 hover:text-stone-900 transition-colors p-1"
+              className="text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors p-1"
             >
               <X className="h-4 w-4" />
             </button>
@@ -155,13 +155,13 @@ export function RunAgentModal({ agent, onClose }: RunAgentModalProps) {
               >
                 {/* Task Type Selector */}
                 <div>
-                  <label className="text-xs font-medium text-stone-600 mb-1.5 block">
+                  <label className="text-xs font-medium text-[var(--text-secondary)] mb-1.5 block">
                     Tipo de Tarea
                   </label>
                   <select
                     value={taskType}
                     onChange={(e) => handleTaskTypeChange(e.target.value)}
-                    className="w-full rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 text-sm text-stone-900 focus:outline-none focus:ring-2 focus:ring-orange-500/30 focus:border-orange-300"
+                    className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface-0)] px-3 py-2 text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/30 focus:border-orange-300"
                   >
                     {departmentTasks.map((t) => (
                       <option key={t.value} value={t.value}>
@@ -199,16 +199,16 @@ export function RunAgentModal({ agent, onClose }: RunAgentModalProps) {
                 {executionStatus?.status === "completed" && executionStatus.output?.content && (
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-medium text-stone-600">Resultado</span>
+                      <span className="text-xs font-medium text-[var(--text-secondary)]">Resultado</span>
                       <button
                         onClick={handleCopyOutput}
-                        className="inline-flex items-center gap-1 text-xs text-stone-500 hover:text-stone-900 transition-colors"
+                        className="inline-flex items-center gap-1 text-xs text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors"
                       >
                         <Copy className="h-3 w-3" />
                         {copied ? "Copiado" : "Copiar"}
                       </button>
                     </div>
-                    <div className="rounded-lg border border-stone-200 bg-stone-50 p-3 text-xs text-stone-700 max-h-48 overflow-y-auto whitespace-pre-wrap">
+                    <div className="rounded-lg border border-[var(--border)] bg-[var(--surface-0)] p-3 text-xs text-[var(--text-secondary)] max-h-48 overflow-y-auto whitespace-pre-wrap">
                       {executionStatus.output.content.slice(0, 1000)}
                       {executionStatus.output.content.length > 1000 && "..."}
                     </div>
@@ -217,15 +217,15 @@ export function RunAgentModal({ agent, onClose }: RunAgentModalProps) {
 
                 {/* Error Message */}
                 {executionStatus?.status === "failed" && executionStatus.error && (
-                  <div className="flex items-start gap-2 rounded-lg bg-red-50 border border-red-200 p-3">
-                    <XCircle className="h-4 w-4 text-red-500 shrink-0 mt-0.5" />
-                    <p className="text-xs text-red-700">{executionStatus.error.message}</p>
+                  <div className="flex items-start gap-2 rounded-lg bg-[var(--badge-red-bg)] border border-[var(--badge-red-bg)] p-3">
+                    <XCircle className="h-4 w-4 text-[var(--error)] shrink-0 mt-0.5" />
+                    <p className="text-xs text-[var(--badge-red-text)]">{executionStatus.error.message}</p>
                   </div>
                 )}
 
                 {/* Metrics */}
                 {executionStatus?.status === "completed" && (
-                  <div className="flex items-center gap-4 text-xs text-stone-500">
+                  <div className="flex items-center gap-4 text-xs text-[var(--text-tertiary)]">
                     {executionStatus.tokensUsed && (
                       <span>{executionStatus.tokensUsed.toLocaleString()} tokens</span>
                     )}
@@ -243,10 +243,10 @@ export function RunAgentModal({ agent, onClose }: RunAgentModalProps) {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-2 px-5 py-3 border-t border-stone-200 shrink-0">
+        <div className="flex items-center justify-end gap-2 px-5 py-3 border-t border-[var(--border)] shrink-0">
           <button
             onClick={onClose}
-            className="px-3 py-2 text-xs font-medium text-stone-600 hover:text-stone-900 transition-colors rounded-lg"
+            className="px-3 py-2 text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors rounded-lg"
           >
             {phase === "done" ? "Cerrar" : "Cancelar"}
           </button>
@@ -256,7 +256,7 @@ export function RunAgentModal({ agent, onClose }: RunAgentModalProps) {
               disabled={!isFormValid}
               className={cn(
                 "inline-flex items-center gap-1.5 px-4 py-2 text-xs font-medium rounded-lg transition-colors",
-                "bg-orange-600 hover:bg-orange-500 text-white",
+                "bg-[var(--accent)] hover:bg-[var(--accent)] text-white",
                 "disabled:opacity-40 disabled:cursor-not-allowed"
               )}
             >
@@ -265,7 +265,7 @@ export function RunAgentModal({ agent, onClose }: RunAgentModalProps) {
             </button>
           )}
           {phase === "tracking" && !executionStatus && (
-            <div className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-orange-600">
+            <div className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-[var(--accent)]">
               <Loader2 className="h-3 w-3 animate-spin" />
               Iniciando...
             </div>
@@ -288,13 +288,13 @@ function InputField({
   onChange: (val: string | number) => void;
 }) {
   const baseClass =
-    "w-full rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 text-sm text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-orange-500/30 focus:border-orange-300";
+    "w-full rounded-lg border border-[var(--border)] bg-[var(--surface-0)] px-3 py-2 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/30 focus:border-orange-300";
 
   return (
     <div>
-      <label className="text-xs font-medium text-stone-600 mb-1.5 block">
+      <label className="text-xs font-medium text-[var(--text-secondary)] mb-1.5 block">
         {field.label}
-        {field.required && <span className="text-red-400 ml-0.5">*</span>}
+        {field.required && <span className="text-[var(--error)] ml-0.5">*</span>}
       </label>
 
       {field.type === "textarea" ? (
@@ -367,7 +367,7 @@ function ExecutionTracker({
       : stages.findIndex((s) => s.key === currentStatus);
 
   return (
-    <div className="rounded-lg border border-stone-200 bg-stone-50 p-4">
+    <div className="rounded-lg border border-[var(--border)] bg-[var(--surface-0)] p-4">
       <div className="flex items-center gap-3">
         {stages.map((stage, i) => {
           const isActive = i === statusIndex;
@@ -381,7 +381,7 @@ function ExecutionTracker({
                 <div
                   className={cn(
                     "w-8 h-0.5 rounded",
-                    isDone || isActive ? "bg-orange-400" : "bg-stone-200"
+                    isDone || isActive ? "bg-orange-400" : "bg-[var(--surface-2)]"
                   )}
                 />
               )}
@@ -394,7 +394,7 @@ function ExecutionTracker({
                 className="flex items-center gap-1.5"
               >
                 {isFailed ? (
-                  <XCircle className="h-4 w-4 text-red-500" />
+                  <XCircle className="h-4 w-4 text-[var(--error)]" />
                 ) : isDone ? (
                   <CheckCircle2 className="h-4 w-4 text-green-500" />
                 ) : isActive && currentStatus === "running" ? (
@@ -403,7 +403,7 @@ function ExecutionTracker({
                   <Icon
                     className={cn(
                       "h-4 w-4",
-                      isActive ? "text-orange-500" : "text-stone-400"
+                      isActive ? "text-orange-500" : "text-[var(--text-tertiary)]"
                     )}
                   />
                 )}
@@ -413,10 +413,10 @@ function ExecutionTracker({
                     isFailed
                       ? "text-red-600"
                       : isDone
-                        ? "text-green-600"
+                        ? "text-[var(--success)]"
                         : isActive
-                          ? "text-orange-600"
-                          : "text-stone-400"
+                          ? "text-[var(--accent)]"
+                          : "text-[var(--text-tertiary)]"
                   )}
                 >
                   {isFailed ? "Error" : stage.label}

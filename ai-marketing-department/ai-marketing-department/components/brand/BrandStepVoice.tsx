@@ -45,8 +45,8 @@ function PillSelector({
             onClick={() => onToggle(option)}
             className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
               isSelected
-                ? "bg-orange-100 text-orange-700 border border-orange-300"
-                : "bg-stone-50 text-stone-500 border border-stone-200 hover:border-stone-300 hover:text-stone-700"
+                ? "bg-[var(--accent-muted)] text-orange-700 border border-orange-300"
+                : "bg-[var(--surface-0)] text-[var(--text-tertiary)] border border-[var(--border)] hover:border-[var(--border-hover)] hover:text-[var(--text-secondary)]"
             }`}
           >
             {option}
@@ -88,12 +88,12 @@ function DynamicList({
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleAdd())}
           placeholder={placeholder}
-          className="flex-1 px-4 py-2.5 rounded-lg bg-stone-50 border border-stone-200 text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 transition text-sm"
+          className="flex-1 px-4 py-2.5 rounded-lg bg-[var(--surface-0)] border border-[var(--border)] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/50 focus:border-[var(--accent)] transition text-sm"
         />
         <button
           type="button"
           onClick={handleAdd}
-          className="px-3 py-2.5 rounded-lg bg-orange-500/10 text-orange-400 hover:bg-orange-500/20 transition"
+          className="px-3 py-2.5 rounded-lg bg-[var(--accent-muted)]0/10 text-[var(--accent)] hover:bg-[var(--accent-muted)]0/20 transition"
         >
           <Plus className="w-4 h-4" />
         </button>
@@ -103,14 +103,14 @@ function DynamicList({
           {items.map((item, i) => (
             <div
               key={i}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-stone-50 border border-stone-200/50 text-sm"
+              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--surface-0)] border border-[var(--border)]/50 text-sm"
             >
-              <Icon className="w-3.5 h-3.5 text-stone-400 shrink-0" />
-              <span className="flex-1 text-stone-700">{item}</span>
+              <Icon className="w-3.5 h-3.5 text-[var(--text-tertiary)] shrink-0" />
+              <span className="flex-1 text-[var(--text-secondary)]">{item}</span>
               <button
                 type="button"
                 onClick={() => onRemove(i)}
-                className="text-stone-400 hover:text-red-400 transition"
+                className="text-[var(--text-tertiary)] hover:text-[var(--error)] transition"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -143,15 +143,15 @@ export function BrandStepVoice({ data, onChange }: Props) {
         <h2 className="text-3xl font-bold bg-gradient-to-r from-orange-400 to-purple-400 bg-clip-text text-transparent">
           Voz de Marca
         </h2>
-        <p className="text-stone-500">
+        <p className="text-[var(--text-tertiary)]">
           Define cómo habla tu marca al mundo.
         </p>
       </div>
 
       <div className="space-y-6">
         <div className="space-y-3">
-          <label className="text-sm font-medium text-stone-700 flex items-center gap-2">
-            <MessageSquare className="w-4 h-4 text-orange-400" /> Tono
+          <label className="text-sm font-medium text-[var(--text-secondary)] flex items-center gap-2">
+            <MessageSquare className="w-4 h-4 text-[var(--accent)]" /> Tono
           </label>
           <PillSelector
             options={TONE_OPTIONS}
@@ -161,7 +161,7 @@ export function BrandStepVoice({ data, onChange }: Props) {
         </div>
 
         <div className="space-y-3">
-          <label className="text-sm font-medium text-stone-700 flex items-center gap-2">
+          <label className="text-sm font-medium text-[var(--text-secondary)] flex items-center gap-2">
             <MessageSquare className="w-4 h-4 text-purple-400" /> Personalidad
           </label>
           <PillSelector
@@ -172,8 +172,8 @@ export function BrandStepVoice({ data, onChange }: Props) {
         </div>
 
         <div className="space-y-3">
-          <label className="text-sm font-medium text-stone-700 flex items-center gap-2">
-            <ThumbsUp className="w-4 h-4 text-green-400" /> Siempre hacer
+          <label className="text-sm font-medium text-[var(--text-secondary)] flex items-center gap-2">
+            <ThumbsUp className="w-4 h-4 text-[var(--success)]" /> Siempre hacer
           </label>
           <DynamicList
             items={data.dos}
@@ -185,8 +185,8 @@ export function BrandStepVoice({ data, onChange }: Props) {
         </div>
 
         <div className="space-y-3">
-          <label className="text-sm font-medium text-stone-700 flex items-center gap-2">
-            <ThumbsDown className="w-4 h-4 text-red-400" /> Nunca hacer
+          <label className="text-sm font-medium text-[var(--text-secondary)] flex items-center gap-2">
+            <ThumbsDown className="w-4 h-4 text-[var(--error)]" /> Nunca hacer
           </label>
           <DynamicList
             items={data.donts}

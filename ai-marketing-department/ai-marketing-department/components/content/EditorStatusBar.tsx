@@ -65,29 +65,29 @@ const EditorStatusBarComponent = ({
   return (
     <div
       className={cn(
-        "flex items-center justify-between px-4 py-3 border-t border-stone-200 bg-white",
+        "flex items-center justify-between px-4 py-3 border-t border-[var(--border)] bg-[var(--card-bg)]",
         className
       )}
     >
       {/* Metrics */}
-      <div className="flex items-center gap-4 text-xs text-stone-400">
+      <div className="flex items-center gap-4 text-xs text-[var(--text-tertiary)]">
         <span>
-          <span className="font-medium text-stone-900">{charCount.toLocaleString()}</span> caracteres
+          <span className="font-medium text-[var(--text-primary)]">{charCount.toLocaleString()}</span> caracteres
         </span>
-        <span className="text-stone-700">•</span>
+        <span className="text-[var(--text-secondary)]">•</span>
         <span>
-          <span className="font-medium text-stone-900">{wordCount.toLocaleString()}</span> palabras
+          <span className="font-medium text-[var(--text-primary)]">{wordCount.toLocaleString()}</span> palabras
         </span>
-        <span className="text-stone-700">•</span>
+        <span className="text-[var(--text-secondary)]">•</span>
         <span>
-          <span className="font-medium text-stone-900">{readingTime}</span> min lectura
+          <span className="font-medium text-[var(--text-primary)]">{readingTime}</span> min lectura
         </span>
       </div>
 
       {/* Validation Status */}
       <div className="flex items-center gap-2">
         {validation.isValid && !validation.warning ? (
-          <div className="flex items-center gap-1.5 text-xs text-green-400">
+          <div className="flex items-center gap-1.5 text-xs text-[var(--success)]">
             <CheckCircle2 className="h-3.5 w-3.5" />
             <span>Listo</span>
           </div>
@@ -97,7 +97,7 @@ const EditorStatusBarComponent = ({
             <span>{validation.warning}</span>
           </div>
         ) : (
-          <div className="flex items-center gap-1.5 text-xs text-red-400">
+          <div className="flex items-center gap-1.5 text-xs text-[var(--error)]">
             <AlertCircle className="h-3.5 w-3.5" />
             <span>{validation.error}</span>
           </div>

@@ -28,10 +28,10 @@ export function StepAgents({ selected, onChange }: Props) {
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
       <div className="text-center space-y-2">
-        <h2 className="text-2xl font-bold text-stone-900">Activar Departamentos</h2>
-        <p className="text-stone-500 text-sm">
+        <h2 className="text-2xl font-bold text-[var(--text-primary)]">Activar Departamentos</h2>
+        <p className="text-[var(--text-tertiary)] text-sm">
           Elige que equipos activar.{" "}
-          <span className="text-orange-400 font-medium">{totalAgents} agentes</span> seleccionados.
+          <span className="text-[var(--accent)] font-medium">{totalAgents} agentes</span> seleccionados.
         </p>
       </div>
 
@@ -45,19 +45,19 @@ export function StepAgents({ selected, onChange }: Props) {
               className={cn(
                 "flex items-start gap-3 p-4 rounded-xl border text-left transition-all duration-200",
                 active
-                  ? "border-orange-500 bg-orange-500/10 ring-1 ring-orange-500/30"
-                  : "border-stone-200 bg-white hover:border-stone-300"
+                  ? "border-[var(--accent)] bg-[var(--accent)]/10 ring-1 ring-[var(--accent)]/30"
+                  : "border-[var(--border)] bg-[var(--card-bg)] hover:border-[var(--border)]"
               )}
             >
-              <div className={cn("p-2 rounded-lg", active ? "bg-orange-600" : "bg-stone-200")}>
-                <Icon className={cn("w-5 h-5", active ? "text-white" : "text-stone-500")} />
+              <div className={cn("p-2 rounded-lg", active ? "bg-[var(--accent)]" : "bg-[var(--surface-2)]")}>
+                <Icon className={cn("w-5 h-5", active ? "text-white" : "text-[var(--text-tertiary)]")} />
               </div>
               <div className="flex-1">
                 <div className="flex items-center justify-between">
-                  <p className="font-semibold text-sm text-stone-900">{label}</p>
-                  <span className="text-[10px] text-stone-500">{agents} agentes</span>
+                  <p className="font-semibold text-sm text-[var(--text-primary)]">{label}</p>
+                  <span className="text-[10px] text-[var(--text-tertiary)]">{agents} agentes</span>
                 </div>
-                <p className="text-xs text-stone-500 mt-0.5">{desc}</p>
+                <p className="text-xs text-[var(--text-tertiary)] mt-0.5">{desc}</p>
               </div>
             </button>
           );

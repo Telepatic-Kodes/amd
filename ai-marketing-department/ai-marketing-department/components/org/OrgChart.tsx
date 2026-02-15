@@ -71,7 +71,7 @@ export function OrgChart({ agents, onAgentSelect, selectedAgentId }: OrgChartPro
     return (
       <div className="flex flex-col items-center gap-8 py-8">
         <AgentNodeSkeleton size="lg" />
-        <div className="w-px h-8 bg-stone-200" />
+        <div className="w-px h-8 bg-[var(--surface-2)]" />
         <div className="flex gap-4">
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <AgentNodeSkeleton key={i} size="md" />
@@ -159,7 +159,7 @@ export function OrgChart({ agents, onAgentSelect, selectedAgentId }: OrgChartPro
               {deptSpecialists.length > 0 && (
                 <button
                   onClick={() => toggleDepartment(dept)}
-                  className="mt-2 flex items-center gap-1 px-2 py-1 text-xs text-stone-500 hover:text-stone-400 transition-colors rounded-md hover:bg-stone-200/50"
+                  className="mt-2 flex items-center gap-1 px-2 py-1 text-xs text-[var(--text-tertiary)] hover:text-[var(--text-tertiary)] transition-colors rounded-md hover:bg-[var(--surface-2)]/50"
                 >
                   {isExpanded ? (
                     <ChevronDown className="w-3 h-3" />
@@ -180,7 +180,7 @@ export function OrgChart({ agents, onAgentSelect, selectedAgentId }: OrgChartPro
                     exit={{ opacity: 0, height: 0 }}
                     className="flex flex-col items-center mt-2"
                   >
-                    <div className="w-px h-4 bg-stone-200" />
+                    <div className="w-px h-4 bg-[var(--surface-2)]" />
                     <div className="flex flex-col gap-2">
                       {deptSpecialists.map((specialist, i) => (
                         <motion.div
@@ -212,7 +212,7 @@ export function OrgChart({ agents, onAgentSelect, selectedAgentId }: OrgChartPro
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
-        className="mt-8 flex flex-wrap justify-center gap-4 text-xs text-stone-500"
+        className="mt-8 flex flex-wrap justify-center gap-4 text-xs text-[var(--text-tertiary)]"
       >
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-green-500" />
@@ -227,7 +227,7 @@ export function OrgChart({ agents, onAgentSelect, selectedAgentId }: OrgChartPro
           <span>Error</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-orange-500" />
+          <div className="w-3 h-3 rounded-full bg-[var(--accent)]" />
           <span>Maintenance</span>
         </div>
       </motion.div>

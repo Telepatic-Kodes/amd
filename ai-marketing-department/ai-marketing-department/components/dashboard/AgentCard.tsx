@@ -38,7 +38,7 @@ const execColors: Record<string, string> = {
   failure: "bg-red-500",
   failed: "bg-red-500",
   running: "bg-amber-500",
-  pending: "bg-stone-300",
+  pending: "bg-[var(--text-tertiary)]",
 };
 
 export function AgentCard({ name, status, lastAction, lastActionTime, recentExecutions, onClick }: AgentCardProps) {
@@ -54,7 +54,7 @@ export function AgentCard({ name, status, lastAction, lastActionTime, recentExec
       className={cn(
         "w-full text-left rounded-lg border border-[var(--border)] bg-[var(--surface-raised)] p-3",
         "transition-colors hover:border-[var(--border-hover)]",
-        "focus:outline-none focus:ring-1 focus:ring-emerald-500/50"
+        "focus:outline-none focus:ring-1 focus:ring-[var(--success)]/50"
       )}
     >
       <div className="flex items-center gap-2 mb-1.5">
@@ -78,7 +78,7 @@ export function AgentCard({ name, status, lastAction, lastActionTime, recentExec
           {recentExecutions.map((exec, i) => (
             <div
               key={i}
-              className={cn("h-1 w-3 rounded-sm", execColors[exec] || "bg-stone-300")}
+              className={cn("h-1 w-3 rounded-sm", execColors[exec] || "bg-[var(--text-tertiary)]")}
             />
           ))}
         </div>

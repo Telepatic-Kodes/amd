@@ -46,16 +46,16 @@ export function MobileNav() {
               className={cn(
                 "relative flex flex-col items-center justify-center gap-1 min-h-[44px] min-w-[44px] transition-colors",
                 isActive
-                  ? "text-orange-600"
-                  : "text-stone-400 active:bg-stone-50"
+                  ? "text-[var(--accent)]"
+                  : "text-[var(--text-tertiary)] active:bg-[var(--surface-1)]"
               )}
             >
               <div className="relative">
                 <Icon className="h-5 w-5 flex-shrink-0" />
                 {badgeCount > 0 && (
                   <span className={cn(
-                    "absolute -top-1 -right-1.5 h-3.5 w-3.5 flex items-center justify-center rounded-full text-[8px] font-bold text-white",
-                    item.badgeKey === "strategy" ? "bg-orange-500" : "bg-[var(--warning)]"
+                    "absolute -top-1 -right-1.5 h-3.5 w-3.5 flex items-center justify-center rounded-full text-[8px] font-bold text-[var(--text-on-accent)]",
+                    item.badgeKey === "strategy" ? "bg-[var(--accent)]" : "bg-[var(--warning)]"
                   )}>
                     {badgeCount > 9 ? "9+" : badgeCount}
                   </span>

@@ -49,9 +49,9 @@ interface Props {
 }
 
 const PRIORITY_COLORS: Record<string, string> = {
-  high: "bg-red-500/10 text-red-400 border-red-500/20",
+  high: "bg-red-500/10 text-[var(--error)] border-red-500/20",
   medium: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
-  low: "bg-orange-500/10 text-orange-400 border-orange-500/20",
+  low: "bg-[var(--accent)]/10 text-[var(--accent)] border-[var(--accent)]/20",
 };
 
 const PRIORITY_LABELS: Record<string, string> = {
@@ -119,17 +119,17 @@ export function ContentAnalysisPanel({ contentId, isOpen, onClose }: Props) {
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 300 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
-      className="fixed right-0 top-0 h-full w-96 bg-stone-50 border-l border-stone-200 shadow-2xl z-40 flex flex-col"
+      className="fixed right-0 top-0 h-full w-96 bg-[var(--surface-0)] border-l border-[var(--border)] shadow-2xl z-40 flex flex-col"
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-5 py-4 border-b border-stone-200">
+      <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--border)]">
         <div className="flex items-center gap-2">
           <Sparkles className="w-5 h-5 text-purple-400" />
-          <h2 className="text-lg font-semibold text-stone-900">Análisis</h2>
+          <h2 className="text-lg font-semibold text-[var(--text-primary)]">Análisis</h2>
         </div>
         <button
           onClick={onClose}
-          className="p-1.5 rounded-lg hover:bg-stone-200 text-stone-500 hover:text-stone-900 transition"
+          className="p-1.5 rounded-lg hover:bg-[var(--surface-2)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition"
         >
           <X className="w-4 h-4" />
         </button>
@@ -143,8 +143,8 @@ export function ContentAnalysisPanel({ contentId, isOpen, onClose }: Props) {
               <Sparkles className="w-7 h-7 text-purple-400" />
             </div>
             <div>
-              <p className="text-stone-600 font-medium">Sin análisis aún</p>
-              <p className="text-stone-500 text-sm mt-1">
+              <p className="text-[var(--text-secondary)] font-medium">Sin análisis aún</p>
+              <p className="text-[var(--text-tertiary)] text-sm mt-1">
                 Analiza este contenido para ver scores y sugerencias de mejora.
               </p>
             </div>
@@ -153,10 +153,10 @@ export function ContentAnalysisPanel({ contentId, isOpen, onClose }: Props) {
         ) : (
           <>
             {/* Scores Section */}
-            <div className="rounded-lg border border-stone-200 overflow-hidden">
+            <div className="rounded-lg border border-[var(--border)] overflow-hidden">
               <button
                 onClick={() => toggleSection("scores")}
-                className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-stone-600 hover:bg-stone-100/50 transition"
+                className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--surface-1)]/50 transition"
               >
                 <span>Puntuaciones</span>
                 <ChevronDown
@@ -208,10 +208,10 @@ export function ContentAnalysisPanel({ contentId, isOpen, onClose }: Props) {
             </div>
 
             {/* Details Section */}
-            <div className="rounded-lg border border-stone-200 overflow-hidden">
+            <div className="rounded-lg border border-[var(--border)] overflow-hidden">
               <button
                 onClick={() => toggleSection("details")}
-                className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-stone-600 hover:bg-stone-100/50 transition"
+                className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--surface-1)]/50 transition"
               >
                 <span>Detalles</span>
                 <ChevronDown
@@ -232,10 +232,10 @@ export function ContentAnalysisPanel({ contentId, isOpen, onClose }: Props) {
                     <div className="px-4 pb-4 space-y-3">
                       {analysis.details.brandNotes.length > 0 && (
                         <div>
-                          <p className="text-xs font-medium text-orange-400 mb-1">Alineación de marca</p>
+                          <p className="text-xs font-medium text-[var(--accent)] mb-1">Alineación de marca</p>
                           {analysis.details.brandNotes.map((note: string, i: number) => (
-                            <p key={i} className="text-xs text-stone-400 flex items-start gap-1.5 mb-1">
-                              <ArrowRight className="w-3 h-3 mt-0.5 shrink-0 text-stone-600" />
+                            <p key={i} className="text-xs text-[var(--text-tertiary)] flex items-start gap-1.5 mb-1">
+                              <ArrowRight className="w-3 h-3 mt-0.5 shrink-0 text-[var(--text-secondary)]" />
                               {note}
                             </p>
                           ))}
@@ -243,10 +243,10 @@ export function ContentAnalysisPanel({ contentId, isOpen, onClose }: Props) {
                       )}
                       {analysis.details.engagementNotes.length > 0 && (
                         <div>
-                          <p className="text-xs font-medium text-green-400 mb-1">Engagement</p>
+                          <p className="text-xs font-medium text-[var(--success)] mb-1">Engagement</p>
                           {analysis.details.engagementNotes.map((note: string, i: number) => (
-                            <p key={i} className="text-xs text-stone-400 flex items-start gap-1.5 mb-1">
-                              <ArrowRight className="w-3 h-3 mt-0.5 shrink-0 text-stone-600" />
+                            <p key={i} className="text-xs text-[var(--text-tertiary)] flex items-start gap-1.5 mb-1">
+                              <ArrowRight className="w-3 h-3 mt-0.5 shrink-0 text-[var(--text-secondary)]" />
                               {note}
                             </p>
                           ))}
@@ -256,8 +256,8 @@ export function ContentAnalysisPanel({ contentId, isOpen, onClose }: Props) {
                         <div>
                           <p className="text-xs font-medium text-yellow-400 mb-1">Optimización de canal</p>
                           {analysis.details.channelNotes.map((note: string, i: number) => (
-                            <p key={i} className="text-xs text-stone-400 flex items-start gap-1.5 mb-1">
-                              <ArrowRight className="w-3 h-3 mt-0.5 shrink-0 text-stone-600" />
+                            <p key={i} className="text-xs text-[var(--text-tertiary)] flex items-start gap-1.5 mb-1">
+                              <ArrowRight className="w-3 h-3 mt-0.5 shrink-0 text-[var(--text-secondary)]" />
                               {note}
                             </p>
                           ))}
@@ -270,10 +270,10 @@ export function ContentAnalysisPanel({ contentId, isOpen, onClose }: Props) {
             </div>
 
             {/* Suggestions Section */}
-            <div className="rounded-lg border border-stone-200 overflow-hidden">
+            <div className="rounded-lg border border-[var(--border)] overflow-hidden">
               <button
                 onClick={() => toggleSection("suggestions")}
-                className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-stone-600 hover:bg-stone-100/50 transition"
+                className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--surface-1)]/50 transition"
               >
                 <span>Sugerencias ({analysis.suggestions.length})</span>
                 <ChevronDown
@@ -300,7 +300,7 @@ export function ContentAnalysisPanel({ contentId, isOpen, onClose }: Props) {
                             "w-full text-left p-3 rounded-lg border transition-all",
                             selectedSuggestions.includes(index)
                               ? "border-purple-500/40 bg-purple-500/5"
-                              : "border-stone-200 hover:border-stone-300"
+                              : "border-[var(--border)] hover:border-[var(--border-hover)]"
                           )}
                         >
                           <div className="flex items-start gap-2">
@@ -309,7 +309,7 @@ export function ContentAnalysisPanel({ contentId, isOpen, onClose }: Props) {
                                 "w-4 h-4 rounded border-2 shrink-0 mt-0.5 flex items-center justify-center transition-all",
                                 selectedSuggestions.includes(index)
                                   ? "border-purple-500 bg-purple-500"
-                                  : "border-stone-300"
+                                  : "border-[var(--border-hover)]"
                               )}
                             >
                               {selectedSuggestions.includes(index) && (
@@ -318,7 +318,7 @@ export function ContentAnalysisPanel({ contentId, isOpen, onClose }: Props) {
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-1">
-                                <span className="text-xs font-medium text-stone-600">
+                                <span className="text-xs font-medium text-[var(--text-secondary)]">
                                   {SUGGESTION_TYPE_LABELS[suggestion.type] || suggestion.type}
                                 </span>
                                 <span
@@ -330,12 +330,12 @@ export function ContentAnalysisPanel({ contentId, isOpen, onClose }: Props) {
                                   {PRIORITY_LABELS[suggestion.priority] || suggestion.priority}
                                 </span>
                               </div>
-                              <p className="text-xs text-stone-500 leading-relaxed">
+                              <p className="text-xs text-[var(--text-tertiary)] leading-relaxed">
                                 {suggestion.description}
                               </p>
                               {suggestion.suggestedText && (
-                                <div className="mt-2 p-2 rounded bg-stone-100/50 border border-stone-200/50">
-                                  <p className="text-xs text-stone-400 italic">
+                                <div className="mt-2 p-2 rounded bg-[var(--surface-1)]/50 border border-[var(--border)]/50">
+                                  <p className="text-xs text-[var(--text-tertiary)] italic">
                                     &ldquo;{suggestion.suggestedText}&rdquo;
                                   </p>
                                 </div>
@@ -357,7 +357,7 @@ export function ContentAnalysisPanel({ contentId, isOpen, onClose }: Props) {
             />
 
             {/* Timestamp */}
-            <p className="text-xs text-stone-600 text-center">
+            <p className="text-xs text-[var(--text-secondary)] text-center">
               Analizado: {new Date(analysis.analyzedAt).toLocaleString("es-CL")}
               {analysis.tokensUsed && ` · ${analysis.tokensUsed} tokens`}
             </p>
@@ -367,7 +367,7 @@ export function ContentAnalysisPanel({ contentId, isOpen, onClose }: Props) {
 
       {/* Footer with Apply Button */}
       {analysis && selectedSuggestions.length > 0 && (
-        <div className="border-t border-stone-200 px-5 py-4">
+        <div className="border-t border-[var(--border)] px-5 py-4">
           <button
             onClick={handleApply}
             disabled={applying}

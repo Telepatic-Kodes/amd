@@ -25,25 +25,25 @@ import { useToast } from "@/components/ui/Toast";
 
 // Department color map
 const DEPT_COLORS: Record<string, string> = {
-  content: "bg-blue-100 text-blue-700",
-  social: "bg-purple-100 text-purple-700",
-  demandgen: "bg-orange-100 text-orange-700",
-  seo: "bg-green-100 text-green-700",
-  ops: "bg-amber-100 text-amber-700",
-  brand: "bg-pink-100 text-pink-700",
-  leadership: "bg-stone-100 text-stone-700",
-  unknown: "bg-stone-100 text-stone-500",
+  content: "bg-[var(--badge-blue-bg)] text-[var(--badge-blue-text)]",
+  social: "bg-[var(--badge-purple-bg)] text-[var(--badge-purple-text)]",
+  demandgen: "bg-[var(--accent-subtle)] text-[var(--accent)]",
+  seo: "bg-[var(--badge-green-bg)] text-[var(--badge-green-text)]",
+  ops: "bg-[var(--badge-amber-bg)] text-[var(--badge-amber-text)]",
+  brand: "bg-[var(--badge-pink-bg)] text-[var(--badge-pink-text)]",
+  leadership: "bg-[var(--surface-1)] text-[var(--text-primary)]",
+  unknown: "bg-[var(--surface-1)] text-[var(--text-secondary)]",
 };
 
 // Status badge component
 function StatusBadge({ status }: { status: string }) {
   const config: Record<string, { icon: typeof CheckCircle2; color: string; label: string }> = {
-    generating: { icon: Loader2, color: "text-amber-500", label: "Generando" },
-    ready: { icon: Clock, color: "text-blue-500", label: "Lista" },
-    executing: { icon: Loader2, color: "text-orange-500", label: "Ejecutando" },
-    paused: { icon: Pause, color: "text-stone-400", label: "Pausada" },
-    completed: { icon: CheckCircle2, color: "text-green-500", label: "Completada" },
-    failed: { icon: XCircle, color: "text-red-500", label: "Fallida" },
+    generating: { icon: Loader2, color: "text-[var(--warning)]", label: "Generando" },
+    ready: { icon: Clock, color: "text-[var(--badge-blue-text)]", label: "Lista" },
+    executing: { icon: Loader2, color: "text-[var(--accent)]", label: "Ejecutando" },
+    paused: { icon: Pause, color: "text-[var(--text-tertiary)]", label: "Pausada" },
+    completed: { icon: CheckCircle2, color: "text-[var(--success)]", label: "Completada" },
+    failed: { icon: XCircle, color: "text-[var(--error)]", label: "Fallida" },
   };
 
   const c = config[status] || config.failed;
@@ -65,17 +65,17 @@ function ProgressBar({ completed, failed, total }: { completed: number; failed: 
 
   return (
     <div className="space-y-1">
-      <div className="flex items-center justify-between text-[10px] text-stone-500">
+      <div className="flex items-center justify-between text-[10px] text-[var(--text-secondary)]">
         <span>{completed} de {total} tareas completadas</span>
         <span>{Math.round(successPct)}%</span>
       </div>
-      <div className="h-2 bg-stone-100 rounded-full overflow-hidden flex">
+      <div className="h-2 bg-[var(--surface-1)] rounded-full overflow-hidden flex">
         <div
-          className="bg-green-500 transition-all duration-500"
+          className="bg-[var(--success)] transition-all duration-500"
           style={{ width: `${successPct}%` }}
         />
         <div
-          className="bg-red-400 transition-all duration-500"
+          className="bg-[var(--error)] transition-all duration-500"
           style={{ width: `${failPct}%` }}
         />
       </div>
@@ -86,12 +86,12 @@ function ProgressBar({ completed, failed, total }: { completed: number; failed: 
 // Pillar card
 function PillarCard({ pillar }: { pillar: { name: string; description: string; topics: string[]; channels: string[] } }) {
   return (
-    <div className="rounded-lg border border-stone-200 bg-white p-3 hover:shadow-sm transition-shadow">
-      <h4 className="text-xs font-semibold text-stone-900 mb-1">{pillar.name}</h4>
-      <p className="text-[10px] text-stone-500 mb-2 line-clamp-2">{pillar.description}</p>
+    <div className="rounded-lg border border-[var(--border)] bg-[var(--card-bg)] p-3 hover:shadow-sm transition-shadow">
+      <h4 className="text-xs font-semibold text-[var(--text-primary)] mb-1">{pillar.name}</h4>
+      <p className="text-[10px] text-[var(--text-secondary)] mb-2 line-clamp-2">{pillar.description}</p>
       <div className="flex flex-wrap gap-1">
         {pillar.channels.map((ch) => (
-          <span key={ch} className="px-1.5 py-0.5 rounded text-[9px] font-medium bg-orange-50 text-orange-600">
+          <span key={ch} className="px-1.5 py-0.5 rounded text-[9px] font-medium bg-[var(--accent-subtle)] text-[var(--accent)]">
             {ch}
           </span>
         ))}
@@ -103,16 +103,16 @@ function PillarCard({ pillar }: { pillar: { name: string; description: string; t
 // Calendar day
 function CalendarDay({ entry }: { entry: { dayOfWeek: string; contentType: string; channel: string; pillar: string; description: string } }) {
   return (
-    <div className="flex items-start gap-2 py-1.5 border-b border-stone-100 last:border-0">
-      <span className="text-[10px] font-medium text-stone-400 w-14 shrink-0 pt-0.5">
+    <div className="flex items-start gap-2 py-1.5 border-b border-[var(--surface-2)] last:border-0">
+      <span className="text-[10px] font-medium text-[var(--text-tertiary)] w-14 shrink-0 pt-0.5">
         {entry.dayOfWeek.slice(0, 3)}
       </span>
       <div className="flex-1 min-w-0">
-        <p className="text-xs text-stone-700 truncate">{entry.description}</p>
+        <p className="text-xs text-[var(--text-primary)] truncate">{entry.description}</p>
         <div className="flex items-center gap-1.5 mt-0.5">
-          <span className="text-[9px] text-stone-400">{entry.channel}</span>
-          <span className="text-[9px] text-stone-400">·</span>
-          <span className="text-[9px] text-stone-400">{entry.pillar}</span>
+          <span className="text-[9px] text-[var(--text-tertiary)]">{entry.channel}</span>
+          <span className="text-[9px] text-[var(--text-tertiary)]">·</span>
+          <span className="text-[9px] text-[var(--text-tertiary)]">{entry.pillar}</span>
         </div>
       </div>
     </div>
@@ -152,9 +152,9 @@ export function StrategyDashboard({ strategyDocId }: StrategyDashboardProps) {
 
   if (!strategy) {
     return (
-      <div className="rounded-xl border border-stone-200 bg-white p-6 animate-pulse">
-        <div className="h-4 bg-stone-100 rounded w-1/3 mb-4" />
-        <div className="h-20 bg-stone-50 rounded" />
+      <div className="rounded-xl border border-[var(--border)] bg-[var(--card-bg)] p-6 animate-pulse">
+        <div className="h-4 bg-[var(--surface-1)] rounded w-1/3 mb-4" />
+        <div className="h-20 bg-[var(--surface-0)] rounded" />
       </div>
     );
   }
@@ -162,19 +162,19 @@ export function StrategyDashboard({ strategyDocId }: StrategyDashboardProps) {
   // Generating state
   if (strategy.status === "generating") {
     return (
-      <div className="rounded-xl border border-orange-200 bg-gradient-to-br from-orange-50/80 via-white to-amber-50/60 p-6">
+      <div className="rounded-xl border border-[var(--accent-muted)] bg-gradient-to-br from-[var(--accent-subtle)] via-[var(--card-bg)] to-[var(--badge-amber-bg)] p-6">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-orange-100">
-            <Brain className="h-5 w-5 text-orange-600 animate-pulse" />
+          <div className="p-2 rounded-lg bg-[var(--accent-muted)]">
+            <Brain className="h-5 w-5 text-[var(--accent)] animate-pulse" />
           </div>
           <div>
-            <h2 className="text-sm font-semibold text-stone-900">CMO analizando tu marca...</h2>
-            <p className="text-xs text-stone-500">Generando estrategia de marketing personalizada. Esto toma ~30 segundos.</p>
+            <h2 className="text-sm font-semibold text-[var(--text-primary)]">CMO analizando tu marca...</h2>
+            <p className="text-xs text-[var(--text-secondary)]">Generando estrategia de marketing personalizada. Esto toma ~30 segundos.</p>
           </div>
         </div>
         <div className="mt-4 flex items-center gap-2">
           <Loader2 className="h-4 w-4 animate-spin text-orange-500" />
-          <span className="text-xs text-orange-600">Generando pilares de contenido, calendario, ads, SEO y email...</span>
+          <span className="text-xs text-[var(--accent)]">Generando pilares de contenido, calendario, ads, SEO y email...</span>
         </div>
       </div>
     );
@@ -183,12 +183,12 @@ export function StrategyDashboard({ strategyDocId }: StrategyDashboardProps) {
   // Failed state
   if (strategy.status === "failed") {
     return (
-      <div className="rounded-xl border border-red-200 bg-red-50/50 p-6">
+      <div className="rounded-xl border border-[var(--badge-red-bg)] bg-[var(--badge-red-bg)]/50 p-6">
         <div className="flex items-center gap-3">
-          <XCircle className="h-5 w-5 text-red-500" />
+          <XCircle className="h-5 w-5 text-[var(--error)]" />
           <div>
-            <h2 className="text-sm font-semibold text-stone-900">Error al generar estrategia</h2>
-            <p className="text-xs text-stone-500">Hubo un problema. Puedes intentar nuevamente desde el botón de activar.</p>
+            <h2 className="text-sm font-semibold text-[var(--text-primary)]">Error al generar estrategia</h2>
+            <p className="text-xs text-[var(--text-secondary)]">Hubo un problema. Puedes intentar nuevamente desde el botón de activar.</p>
           </div>
         </div>
       </div>
@@ -200,17 +200,17 @@ export function StrategyDashboard({ strategyDocId }: StrategyDashboardProps) {
   return (
     <div className="space-y-4">
       {/* Header with status + controls */}
-      <div className="rounded-xl border border-stone-200 bg-white p-4">
+      <div className="rounded-xl border border-[var(--border)] bg-[var(--card-bg)] p-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <Brain className="h-4 w-4 text-orange-600" />
-            <h2 className="text-sm font-semibold text-stone-900">Marketing Autopilot</h2>
+            <Brain className="h-4 w-4 text-[var(--accent)]" />
+            <h2 className="text-sm font-semibold text-[var(--text-primary)]">Marketing Autopilot</h2>
             <StatusBadge status={strategy.status} />
           </div>
           <div className="flex items-center gap-2">
             <Link
               href="/strategy"
-              className="inline-flex items-center gap-1 px-2 py-1 text-[10px] font-medium text-orange-600 hover:text-orange-800 rounded transition-colors"
+              className="inline-flex items-center gap-1 px-2 py-1 text-[10px] font-medium text-[var(--accent)] hover:text-[var(--accent-hover)] rounded transition-colors"
             >
               Ver detalle
               <ArrowUpRight className="h-3 w-3" />
@@ -226,7 +226,7 @@ export function StrategyDashboard({ strategyDocId }: StrategyDashboardProps) {
                     toastError("Error", msg);
                   }
                 }}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-orange-600 text-white hover:bg-orange-500 transition-colors"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)] transition-colors"
               >
                 <Play className="h-3.5 w-3.5" />
                 Ejecutar
@@ -243,7 +243,7 @@ export function StrategyDashboard({ strategyDocId }: StrategyDashboardProps) {
                     toastError("Error", msg);
                   }
                 }}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-stone-300 text-stone-700 hover:bg-stone-50 transition-colors"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-[var(--border-hover)] text-[var(--text-primary)] hover:bg-[var(--surface-1)] transition-colors"
               >
                 <Pause className="h-3.5 w-3.5" />
                 Pausar
@@ -260,7 +260,7 @@ export function StrategyDashboard({ strategyDocId }: StrategyDashboardProps) {
                     toastError("Error", msg);
                   }
                 }}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-orange-600 text-white hover:bg-orange-500 transition-colors"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)] transition-colors"
               >
                 <Play className="h-3.5 w-3.5" />
                 Reanudar
@@ -271,7 +271,7 @@ export function StrategyDashboard({ strategyDocId }: StrategyDashboardProps) {
 
         {/* Summary */}
         {data?.summary && (
-          <p className="text-xs text-stone-600 mb-3">{data.summary}</p>
+          <p className="text-xs text-[var(--text-secondary)] mb-3">{data.summary}</p>
         )}
 
         {/* Progress bar */}
@@ -289,7 +289,7 @@ export function StrategyDashboard({ strategyDocId }: StrategyDashboardProps) {
           <div className="lg:col-span-3 space-y-3">
             <div className="flex items-center gap-2">
               <Target className="h-4 w-4 text-blue-500" />
-              <h3 className="text-xs font-medium text-stone-700">Pilares de Contenido</h3>
+              <h3 className="text-xs font-medium text-[var(--text-primary)]">Pilares de Contenido</h3>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {data.contentPillars.map((pillar) => (
@@ -302,9 +302,9 @@ export function StrategyDashboard({ strategyDocId }: StrategyDashboardProps) {
           <div className="lg:col-span-2">
             <div className="flex items-center gap-2 mb-3">
               <Calendar className="h-4 w-4 text-green-500" />
-              <h3 className="text-xs font-medium text-stone-700">Calendario Semanal</h3>
+              <h3 className="text-xs font-medium text-[var(--text-primary)]">Calendario Semanal</h3>
             </div>
-            <div className="rounded-lg border border-stone-200 bg-white p-3">
+            <div className="rounded-lg border border-[var(--border)] bg-[var(--card-bg)] p-3">
               {data.weeklyCalendar.map((entry, i) => (
                 <CalendarDay key={`${entry.dayOfWeek}-${i}`} entry={entry} />
               ))}
@@ -318,25 +318,25 @@ export function StrategyDashboard({ strategyDocId }: StrategyDashboardProps) {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* SEO Strategy */}
           {data.seoStrategy && (
-            <div className="rounded-lg border border-stone-200 bg-white p-3">
+            <div className="rounded-lg border border-[var(--border)] bg-[var(--card-bg)] p-3">
               <div className="flex items-center gap-2 mb-2">
-                <Search className="h-3.5 w-3.5 text-green-600" />
-                <h4 className="text-xs font-medium text-stone-700">Estrategia SEO</h4>
+                <Search className="h-3.5 w-3.5 text-[var(--success)]" />
+                <h4 className="text-xs font-medium text-[var(--text-primary)]">Estrategia SEO</h4>
               </div>
               <div className="space-y-2">
                 <div>
-                  <p className="text-[10px] text-stone-400 mb-1">Keywords prioritarias</p>
+                  <p className="text-[10px] text-[var(--text-tertiary)] mb-1">Keywords prioritarias</p>
                   <div className="flex flex-wrap gap-1">
                     {data.seoStrategy.primaryKeywords.slice(0, 5).map((kw) => (
-                      <span key={kw} className="px-1.5 py-0.5 rounded text-[9px] bg-green-50 text-green-700">{kw}</span>
+                      <span key={kw} className="px-1.5 py-0.5 rounded text-[9px] bg-[var(--badge-green-bg)] text-green-700">{kw}</span>
                     ))}
                   </div>
                 </div>
                 <div>
-                  <p className="text-[10px] text-stone-400 mb-1">Gaps de contenido</p>
+                  <p className="text-[10px] text-[var(--text-tertiary)] mb-1">Gaps de contenido</p>
                   {data.seoStrategy.contentGaps.slice(0, 3).map((gap) => (
-                    <p key={gap} className="text-[10px] text-stone-600 flex items-center gap-1">
-                      <ChevronRight className="h-2.5 w-2.5 text-stone-400" />
+                    <p key={gap} className="text-[10px] text-[var(--text-secondary)] flex items-center gap-1">
+                      <ChevronRight className="h-2.5 w-2.5 text-[var(--text-tertiary)]" />
                       {gap}
                     </p>
                   ))}
@@ -347,31 +347,31 @@ export function StrategyDashboard({ strategyDocId }: StrategyDashboardProps) {
 
           {/* Ad Strategy */}
           {data.adStrategy && (
-            <div className="rounded-lg border border-stone-200 bg-white p-3">
+            <div className="rounded-lg border border-[var(--border)] bg-[var(--card-bg)] p-3">
               <div className="flex items-center gap-2 mb-2">
-                <Megaphone className="h-3.5 w-3.5 text-orange-600" />
-                <h4 className="text-xs font-medium text-stone-700">Estrategia de Ads</h4>
+                <Megaphone className="h-3.5 w-3.5 text-[var(--accent)]" />
+                <h4 className="text-xs font-medium text-[var(--text-primary)]">Estrategia de Ads</h4>
               </div>
               <div className="space-y-2">
                 {data.adStrategy.budgetSplit.map((bs) => (
                   <div key={bs.platform} className="flex items-center justify-between">
-                    <span className="text-[10px] text-stone-600">{bs.platform}</span>
+                    <span className="text-[10px] text-[var(--text-secondary)]">{bs.platform}</span>
                     <div className="flex items-center gap-2">
-                      <div className="w-16 h-1.5 bg-stone-100 rounded-full overflow-hidden">
+                      <div className="w-16 h-1.5 bg-[var(--surface-1)] rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-orange-500 rounded-full"
+                          className="h-full bg-[var(--accent-subtle)]0 rounded-full"
                           style={{ width: `${bs.percentage}%` }}
                         />
                       </div>
-                      <span className="text-[10px] text-stone-500 w-8 text-right">{bs.percentage}%</span>
+                      <span className="text-[10px] text-[var(--text-secondary)] w-8 text-right">{bs.percentage}%</span>
                     </div>
                   </div>
                 ))}
                 <div className="pt-1">
-                  <p className="text-[10px] text-stone-400">Objetivos</p>
+                  <p className="text-[10px] text-[var(--text-tertiary)]">Objetivos</p>
                   {data.adStrategy.objectives.map((obj) => (
-                    <p key={obj} className="text-[10px] text-stone-600 flex items-center gap-1">
-                      <ChevronRight className="h-2.5 w-2.5 text-stone-400" />
+                    <p key={obj} className="text-[10px] text-[var(--text-secondary)] flex items-center gap-1">
+                      <ChevronRight className="h-2.5 w-2.5 text-[var(--text-tertiary)]" />
                       {obj}
                     </p>
                   ))}
@@ -382,26 +382,26 @@ export function StrategyDashboard({ strategyDocId }: StrategyDashboardProps) {
 
           {/* Email Strategy */}
           {data.emailStrategy && (
-            <div className="rounded-lg border border-stone-200 bg-white p-3">
+            <div className="rounded-lg border border-[var(--border)] bg-[var(--card-bg)] p-3">
               <div className="flex items-center gap-2 mb-2">
                 <Mail className="h-3.5 w-3.5 text-amber-600" />
-                <h4 className="text-xs font-medium text-stone-700">Estrategia Email</h4>
+                <h4 className="text-xs font-medium text-[var(--text-primary)]">Estrategia Email</h4>
               </div>
               <div className="space-y-2">
                 <div>
-                  <p className="text-[10px] text-stone-400 mb-1">Secuencias</p>
+                  <p className="text-[10px] text-[var(--text-tertiary)] mb-1">Secuencias</p>
                   {data.emailStrategy.sequences.map((seq) => (
-                    <p key={seq} className="text-[10px] text-stone-600 flex items-center gap-1">
-                      <ChevronRight className="h-2.5 w-2.5 text-stone-400" />
+                    <p key={seq} className="text-[10px] text-[var(--text-secondary)] flex items-center gap-1">
+                      <ChevronRight className="h-2.5 w-2.5 text-[var(--text-tertiary)]" />
                       {seq}
                     </p>
                   ))}
                 </div>
                 <div>
-                  <p className="text-[10px] text-stone-400">Frecuencia: {data.emailStrategy.frequency}</p>
+                  <p className="text-[10px] text-[var(--text-tertiary)]">Frecuencia: {data.emailStrategy.frequency}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] text-stone-400 mb-1">Segmentos</p>
+                  <p className="text-[10px] text-[var(--text-tertiary)] mb-1">Segmentos</p>
                   <div className="flex flex-wrap gap-1">
                     {data.emailStrategy.segments.map((seg) => (
                       <span key={seg} className="px-1.5 py-0.5 rounded text-[9px] bg-amber-50 text-amber-700">{seg}</span>
@@ -416,8 +416,8 @@ export function StrategyDashboard({ strategyDocId }: StrategyDashboardProps) {
 
       {/* Task Execution Tracker by Department */}
       {strategyTasks && taskStats.byDept.length > 0 && (
-        <div className="rounded-xl border border-stone-200 bg-white p-4">
-          <h3 className="text-xs font-medium text-stone-700 mb-3">Ejecución por Departamento</h3>
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--card-bg)] p-4">
+          <h3 className="text-xs font-medium text-[var(--text-primary)] mb-3">Ejecución por Departamento</h3>
           <div className="space-y-2">
             {taskStats.byDept.map(({ dept, total, completed, running, failed }) => (
               <div key={dept} className="flex items-center gap-3">
@@ -425,9 +425,9 @@ export function StrategyDashboard({ strategyDocId }: StrategyDashboardProps) {
                   {dept}
                 </span>
                 <div className="flex-1">
-                  <div className="h-1.5 bg-stone-100 rounded-full overflow-hidden flex">
+                  <div className="h-1.5 bg-[var(--surface-1)] rounded-full overflow-hidden flex">
                     <div
-                      className="bg-green-500"
+                      className="bg-[var(--success)]"
                       style={{ width: `${total > 0 ? (completed / total) * 100 : 0}%` }}
                     />
                     <div
@@ -435,12 +435,12 @@ export function StrategyDashboard({ strategyDocId }: StrategyDashboardProps) {
                       style={{ width: `${total > 0 ? (running / total) * 100 : 0}%` }}
                     />
                     <div
-                      className="bg-red-400"
+                      className="bg-[var(--error)]"
                       style={{ width: `${total > 0 ? (failed / total) * 100 : 0}%` }}
                     />
                   </div>
                 </div>
-                <span className="text-[10px] text-stone-400 tabular-nums w-12 text-right">
+                <span className="text-[10px] text-[var(--text-tertiary)] tabular-nums w-12 text-right">
                   {completed}/{total}
                 </span>
               </div>

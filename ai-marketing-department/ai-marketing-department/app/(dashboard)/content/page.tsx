@@ -32,6 +32,7 @@ import {
   Columns3,
   History,
   LayoutTemplate,
+  ArrowLeft,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/Card";
@@ -74,6 +75,10 @@ const RollbackDialog = dynamic(
   () => import("@/components/content/RollbackDialog").then((m) => m.RollbackDialog),
   { ssr: false }
 );
+const SocialPostPreview = dynamic(
+  () => import("@/components/content/SocialPostPreview").then((m) => m.SocialPostPreview),
+  { ssr: false }
+);
 const TemplatePickerModal = dynamic(
   () => import("@/components/content/TemplatePickerModal").then((m) => m.TemplatePickerModal),
   { ssr: false }
@@ -106,18 +111,18 @@ const CONTENT_STATUSES = [
 ];
 
 const typeColors: Record<string, string> = {
-  blog: "bg-orange-50 text-orange-700 border-orange-200",
+  blog: "bg-[var(--accent-subtle)] text-[var(--accent)] border-orange-200",
   social_linkedin: "bg-sky-50 text-sky-700 border-sky-200",
   social_twitter: "bg-cyan-50 text-cyan-700 border-cyan-200",
   social_instagram: "bg-pink-50 text-pink-700 border-pink-200",
-  social_tiktok: "bg-purple-50 text-purple-700 border-purple-200",
-  email: "bg-green-50 text-green-700 border-green-200",
-  newsletter: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  ad_copy: "bg-orange-50 text-orange-700 border-orange-200",
-  landing_page: "bg-yellow-50 text-yellow-700 border-yellow-200",
-  whitepaper: "bg-orange-50 text-orange-700 border-orange-200",
+  social_tiktok: "bg-[var(--badge-purple-bg)] text-[var(--badge-purple-text)] border-purple-200",
+  email: "bg-[var(--badge-green-bg)] text-[var(--badge-green-text)] border-green-200",
+  newsletter: "bg-[var(--badge-green-bg)] text-[var(--badge-green-text)] border-[var(--badge-green-bg)]",
+  ad_copy: "bg-[var(--accent-subtle)] text-[var(--accent)] border-orange-200",
+  landing_page: "bg-yellow-50 text-[var(--badge-amber-text)] border-yellow-200",
+  whitepaper: "bg-[var(--accent-subtle)] text-[var(--accent)] border-orange-200",
   case_study: "bg-violet-50 text-violet-700 border-violet-200",
-  video_script: "bg-red-50 text-red-700 border-red-200",
+  video_script: "bg-[var(--badge-red-bg)] text-[var(--badge-red-text)] border-[var(--badge-red-bg)]",
 };
 
 const typeIcons: Record<string, React.ElementType> = {
@@ -177,7 +182,7 @@ function StatusActions({ content, onStatusChange }: { content: Doc<"content">; o
       <button
         onClick={() => handleStatusChange("review")}
         disabled={isLoading}
-        className="w-full px-3 py-1.5 rounded bg-orange-600 hover:bg-orange-700 disabled:opacity-50 text-white text-sm font-medium transition-colors flex items-center justify-center gap-2"
+        className="w-full px-3 py-1.5 rounded bg-[var(--accent)] hover:bg-[var(--accent-hover)] disabled:opacity-50 text-white text-sm font-medium transition-colors flex items-center justify-center gap-2"
       >
         {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
         Enviar a Revisión
@@ -192,14 +197,14 @@ function StatusActions({ content, onStatusChange }: { content: Doc<"content">; o
         <button
           onClick={() => handleStatusChange("revision_needed")}
           disabled={isLoading}
-          className="flex-1 px-3 py-1.5 rounded border border-stone-300 hover:bg-stone-50 disabled:opacity-50 text-stone-700 text-sm font-medium transition-colors"
+          className="flex-1 px-3 py-1.5 rounded border border-[var(--border-hover)] hover:bg-[var(--surface-0)] disabled:opacity-50 text-[var(--text-secondary)] text-sm font-medium transition-colors"
         >
           Solicitar Cambios
         </button>
         <button
           onClick={() => handleStatusChange("approved")}
           disabled={isLoading}
-          className="flex-1 px-3 py-1.5 rounded bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white text-sm font-medium transition-colors flex items-center justify-center gap-2"
+          className="flex-1 px-3 py-1.5 rounded bg-[var(--success)] hover:bg-green-700 disabled:opacity-50 text-white text-sm font-medium transition-colors flex items-center justify-center gap-2"
         >
           {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
           Aprobar
@@ -215,14 +220,14 @@ function StatusActions({ content, onStatusChange }: { content: Doc<"content">; o
         <button
           onClick={() => handleStatusChange("scheduled")}
           disabled={isLoading}
-          className="flex-1 px-3 py-1.5 rounded border border-stone-300 hover:bg-stone-50 disabled:opacity-50 text-stone-700 text-sm font-medium transition-colors"
+          className="flex-1 px-3 py-1.5 rounded border border-[var(--border-hover)] hover:bg-[var(--surface-0)] disabled:opacity-50 text-[var(--text-secondary)] text-sm font-medium transition-colors"
         >
           Programar
         </button>
         <button
           onClick={() => handleStatusChange("published")}
           disabled={isLoading}
-          className="flex-1 px-3 py-1.5 rounded bg-orange-600 hover:bg-orange-700 disabled:opacity-50 text-white text-sm font-medium transition-colors flex items-center justify-center gap-2"
+          className="flex-1 px-3 py-1.5 rounded bg-[var(--accent)] hover:bg-[var(--accent-hover)] disabled:opacity-50 text-white text-sm font-medium transition-colors flex items-center justify-center gap-2"
         >
           {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
           Publicar Ahora
@@ -237,7 +242,7 @@ function StatusActions({ content, onStatusChange }: { content: Doc<"content">; o
       <button
         onClick={() => handleStatusChange("archived")}
         disabled={isLoading}
-        className="w-full px-3 py-1.5 rounded border border-stone-300 hover:bg-stone-50 disabled:opacity-50 text-stone-500 text-sm font-medium transition-colors"
+        className="w-full px-3 py-1.5 rounded border border-[var(--border-hover)] hover:bg-[var(--surface-0)] disabled:opacity-50 text-[var(--text-tertiary)] text-sm font-medium transition-colors"
       >
         Archivar
       </button>
@@ -253,17 +258,17 @@ function TemplateOriginBadge({ templateId, onRegenerate }: { templateId: string;
   if (!template) return null;
 
   return (
-    <div className="flex items-center justify-between p-2.5 rounded-lg bg-purple-50 border border-purple-200">
+    <div className="flex items-center justify-between p-2.5 rounded-lg bg-[var(--badge-purple-bg)] border border-purple-200">
       <div className="flex items-center gap-2 min-w-0">
         <LayoutTemplate className="h-4 w-4 text-purple-500 shrink-0" />
         <div className="min-w-0">
-          <p className="text-xs text-purple-600 font-medium">Generado desde template</p>
+          <p className="text-xs text-[var(--badge-purple-text)] font-medium">Generado desde template</p>
           <p className="text-xs text-purple-500 truncate">{template.name}</p>
         </div>
       </div>
       <button
         onClick={() => onRegenerate(templateId)}
-        className="text-xs text-purple-600 hover:text-purple-800 font-medium shrink-0 ml-2"
+        className="text-xs text-[var(--badge-purple-text)] hover:text-purple-800 font-medium shrink-0 ml-2"
       >
         Regenerar
       </button>
@@ -415,14 +420,14 @@ export default function ContentPage() {
     return (
       <div className="space-y-8">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-orange-50">
-            <FileText className="h-6 w-6 text-orange-600" />
+          <div className="p-2 rounded-xl bg-[var(--accent-subtle)]">
+            <FileText className="h-6 w-6 text-[var(--accent)]" />
           </div>
           <div>
-            <h1 className="text-3xl md:text-5xl font-bold text-stone-900">
+            <h1 className="text-3xl md:text-5xl font-bold text-[var(--text-primary)]">
               Contenido
             </h1>
-            <p className="text-stone-500 mt-1 text-lg">
+            <p className="text-[var(--text-tertiary)] mt-1 text-lg">
               Cargando contenido...
             </p>
           </div>
@@ -437,14 +442,14 @@ export default function ContentPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-orange-50">
-            <FileText className="h-6 w-6 text-orange-600" />
+          <div className="p-2 rounded-xl bg-[var(--accent-subtle)]">
+            <FileText className="h-6 w-6 text-[var(--accent)]" />
           </div>
           <div>
-            <h1 className="text-3xl md:text-5xl font-bold text-stone-900">
+            <h1 className="text-3xl md:text-5xl font-bold text-[var(--text-primary)]">
               Contenido
             </h1>
-            <p className="text-stone-500 mt-1 text-lg">
+            <p className="text-[var(--text-tertiary)] mt-1 text-lg">
               Gestiona tus {content.length} piezas de contenido.
             </p>
           </div>
@@ -452,14 +457,14 @@ export default function ContentPage() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowGenerateModal(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-50 text-purple-700 hover:bg-purple-100 transition-colors text-sm font-medium"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--badge-purple-bg)] text-[var(--badge-purple-text)] hover:bg-purple-100 transition-colors text-sm font-medium"
           >
             <Sparkles className="h-4 w-4" />
             Generar Contenido
           </button>
           <button
             onClick={() => setShowTemplateModal(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-orange-50 text-orange-700 hover:bg-orange-100 transition-colors text-sm font-medium"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--accent-subtle)] text-[var(--accent)] hover:bg-orange-100 transition-colors text-sm font-medium"
           >
             <LayoutTemplate className="h-4 w-4" />
             Usar Template
@@ -476,7 +481,7 @@ export default function ContentPage() {
             className={cn(
               "inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors",
               activeTab === key
-                ? "bg-orange-600 text-white"
+                ? "bg-[var(--accent)] text-white"
                 : "text-[var(--text-secondary,#78716c)] hover:bg-[var(--surface-1,#e7e5e4)]"
             )}
           >
@@ -512,16 +517,16 @@ export default function ContentPage() {
               />
             </div>
             <div className="w-64 shrink-0 hidden lg:block">
-              <div className="rounded-xl border border-stone-200 bg-white p-4 sticky top-4">
-                <h4 className="text-sm font-semibold text-stone-900 mb-3">
+              <div className="rounded-xl border border-[var(--border)] bg-[var(--card-bg)] p-4 sticky top-4">
+                <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-3">
                   {translate("approvedSidebar")}
                 </h4>
-                <p className="text-[10px] text-stone-400 mb-3">
+                <p className="text-[10px] text-[var(--text-tertiary)] mb-3">
                   {translate("dragToSchedule")}
                 </p>
                 <div className="space-y-2 max-h-[600px] overflow-y-auto">
                   {unscheduledApproved.length === 0 ? (
-                    <p className="text-xs text-stone-400 text-center py-4">
+                    <p className="text-xs text-[var(--text-tertiary)] text-center py-4">
                       {translate("noContent")}
                     </p>
                   ) : (
@@ -533,10 +538,10 @@ export default function ContentPage() {
                           e.dataTransfer.setData("text/plain", item._id);
                           e.dataTransfer.effectAllowed = "move";
                         }}
-                        className="flex items-center gap-2 p-2 rounded-lg border border-stone-200 bg-stone-50 cursor-grab active:cursor-grabbing hover:border-orange-300 transition-colors"
+                        className="flex items-center gap-2 p-2 rounded-lg border border-[var(--border)] bg-[var(--surface-0)] cursor-grab active:cursor-grabbing hover:border-orange-300 transition-colors"
                       >
                         <div className="w-1.5 h-1.5 rounded-full bg-green-500 shrink-0" />
-                        <span className="text-xs text-stone-700 truncate">{item.title}</span>
+                        <span className="text-xs text-[var(--text-secondary)] truncate">{item.title}</span>
                       </div>
                     ))
                   )}
@@ -565,21 +570,21 @@ export default function ContentPage() {
 
         {/* Search */}
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-tertiary)]" />
           <input
             type="text"
             inputMode="search"
             placeholder="Buscar contenido..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-lg border border-stone-300 bg-white py-2 pl-10 pr-4 text-sm text-stone-900 placeholder-stone-400 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+            className="w-full rounded-lg border border-[var(--border-hover)] bg-[var(--card-bg)] py-2 pl-10 pr-4 text-sm text-[var(--text-primary)] placeholder-[var(--text-tertiary)] focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
           />
         </div>
 
         {/* Advanced Filters Toggle Button */}
         <button
           onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-          className="px-6 py-3 rounded-lg border border-stone-300 bg-white text-stone-700 hover:bg-stone-50 transition-colors flex items-center gap-2"
+          className="px-6 py-3 rounded-lg border border-[var(--border-hover)] bg-[var(--card-bg)] text-[var(--text-secondary)] hover:bg-[var(--surface-0)] transition-colors flex items-center gap-2"
         >
           <Filter className="h-4 w-4" />
           Filtros avanzados
@@ -587,14 +592,14 @@ export default function ContentPage() {
         </button>
 
         {/* View Mode Toggle */}
-        <div className="flex rounded-lg border border-stone-300 overflow-hidden">
+        <div className="flex rounded-lg border border-[var(--border-hover)] overflow-hidden">
           <button
             onClick={() => setViewMode("grid")}
             className={cn(
               "p-2 transition-colors",
               viewMode === "grid"
-                ? "bg-orange-50 text-orange-600"
-                : "text-stone-400 hover:bg-stone-100"
+                ? "bg-[var(--accent-subtle)] text-[var(--accent)]"
+                : "text-[var(--text-tertiary)] hover:bg-[var(--surface-1)]"
             )}
             title="Vista cuadrícula"
           >
@@ -605,8 +610,8 @@ export default function ContentPage() {
             className={cn(
               "p-2 transition-colors",
               viewMode === "list"
-                ? "bg-orange-50 text-orange-600"
-                : "text-stone-400 hover:bg-stone-100"
+                ? "bg-[var(--accent-subtle)] text-[var(--accent)]"
+                : "text-[var(--text-tertiary)] hover:bg-[var(--surface-1)]"
             )}
             title="Vista lista"
           >
@@ -625,14 +630,14 @@ export default function ContentPage() {
             transition={{ duration: 0.2 }}
             className="overflow-hidden"
           >
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center p-4 rounded-lg border border-stone-200 bg-white">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center p-4 rounded-lg border border-[var(--border)] bg-[var(--card-bg)]">
               {/* Type Filter */}
               <div className="relative flex-1">
-                <Filter className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
+                <Filter className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-tertiary)]" />
                 <select
                   value={typeFilter}
                   onChange={(e) => setTypeFilter(e.target.value)}
-                  className="w-full appearance-none rounded-lg border border-stone-300 bg-white py-2 pl-10 pr-8 text-sm text-stone-900 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                  className="w-full appearance-none rounded-lg border border-[var(--border-hover)] bg-[var(--card-bg)] py-2 pl-10 pr-8 text-sm text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
                 >
                   {CONTENT_TYPES.map((type) => (
                     <option key={type.value} value={type.value}>
@@ -640,7 +645,7 @@ export default function ContentPage() {
                     </option>
                   ))}
                 </select>
-                <ChevronDown className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400 pointer-events-none" />
+                <ChevronDown className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-tertiary)] pointer-events-none" />
               </div>
 
               {/* Status Filter */}
@@ -648,7 +653,7 @@ export default function ContentPage() {
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="w-full appearance-none rounded-lg border border-stone-300 bg-white py-2 pl-4 pr-8 text-sm text-stone-900 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                  className="w-full appearance-none rounded-lg border border-[var(--border-hover)] bg-[var(--card-bg)] py-2 pl-4 pr-8 text-sm text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
                 >
                   {CONTENT_STATUSES.map((status) => (
                     <option key={status.value} value={status.value}>
@@ -656,7 +661,7 @@ export default function ContentPage() {
                     </option>
                   ))}
                 </select>
-                <ChevronDown className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400 pointer-events-none" />
+                <ChevronDown className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-tertiary)] pointer-events-none" />
               </div>
             </div>
           </motion.div>
@@ -678,10 +683,10 @@ export default function ContentPage() {
 
       {/* Main Content */}
       <div className="flex gap-6">
-        {/* Content Grid/List */}
+        {/* Content Grid/List — hidden when detail is open */}
         <div className={cn(
           "flex-1 transition-all",
-          selectedContent ? "lg:w-2/3" : "w-full"
+          selectedContent ? "hidden" : "w-full"
         )}>
           <AnimatePresence mode="wait">
             {filteredContent.length === 0 ? (
@@ -717,7 +722,7 @@ export default function ContentPage() {
                         hover
                         className={cn(
                           "cursor-pointer transition-all h-full relative overflow-hidden",
-                          isSelected && "border-orange-500 ring-1 ring-orange-500"
+                          isSelected && "border-[var(--accent)] ring-1 ring-[var(--accent)]"
                         )}
                       >
                         {/* Quick Actions on Hover */}
@@ -727,7 +732,7 @@ export default function ContentPage() {
                               e.stopPropagation();
                               copyToClipboard(item.body);
                             }}
-                            className="p-1.5 rounded-lg bg-white/90 backdrop-blur-sm hover:bg-stone-100 text-stone-400 hover:text-stone-700 shadow-sm transition-colors"
+                            className="p-1.5 rounded-lg bg-[var(--card-bg)]/90 backdrop-blur-sm hover:bg-[var(--surface-1)] text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] shadow-sm transition-colors"
                             title="Copiar contenido"
                           >
                             <Copy className="h-3.5 w-3.5" />
@@ -737,7 +742,7 @@ export default function ContentPage() {
                               e.stopPropagation();
                               setSelectedContent(item.contentId);
                             }}
-                            className="p-1.5 rounded-lg bg-white/90 backdrop-blur-sm hover:bg-stone-100 text-stone-400 hover:text-stone-700 shadow-sm transition-colors"
+                            className="p-1.5 rounded-lg bg-[var(--card-bg)]/90 backdrop-blur-sm hover:bg-[var(--surface-1)] text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] shadow-sm transition-colors"
                             title="Vista previa"
                           >
                             <Eye className="h-3.5 w-3.5" />
@@ -747,7 +752,7 @@ export default function ContentPage() {
                               e.stopPropagation();
                               setEditingContent(item);
                             }}
-                            className="p-1.5 rounded-lg bg-white/90 backdrop-blur-sm hover:bg-stone-100 text-stone-400 hover:text-stone-700 shadow-sm transition-colors"
+                            className="p-1.5 rounded-lg bg-[var(--card-bg)]/90 backdrop-blur-sm hover:bg-[var(--surface-1)] text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] shadow-sm transition-colors"
                             title="Editar contenido"
                           >
                             <Edit2 className="h-3.5 w-3.5" />
@@ -766,7 +771,7 @@ export default function ContentPage() {
                             <div
                               className={cn(
                                 "flex h-10 w-10 items-center justify-center rounded-lg",
-                                typeColors[item.type] || "bg-stone-100 text-stone-500"
+                                typeColors[item.type] || "bg-[var(--surface-1)] text-[var(--text-tertiary)]"
                               )}
                             >
                               <TypeIcon className="h-5 w-5" />
@@ -775,22 +780,22 @@ export default function ContentPage() {
                           </div>
 
                           {/* Title */}
-                          <h3 className="font-semibold text-stone-900 text-sm line-clamp-2 mb-2 flex items-center gap-1.5">
+                          <h3 className="font-semibold text-[var(--text-primary)] text-sm line-clamp-2 mb-2 flex items-center gap-1.5">
                             {item.title}
                             {item.sourceTaskId && <AIGeneratedBadge />}
                           </h3>
 
                           {/* Preview */}
-                          <p className="text-xs text-stone-500 line-clamp-3 mb-3">
+                          <p className="text-xs text-[var(--text-tertiary)] line-clamp-3 mb-3">
                             {item.summary || item.body.slice(0, 150)}
                           </p>
 
                           {/* Footer */}
-                          <div className="flex items-center justify-between pt-3 border-t border-stone-100">
+                          <div className="flex items-center justify-between pt-3 border-t border-[var(--border)]">
                             <Badge className={typeColors[item.type]}>
                               {formatTypeName(item.type)}
                             </Badge>
-                            <div className="flex items-center gap-1 text-xs text-stone-400">
+                            <div className="flex items-center gap-1 text-xs text-[var(--text-tertiary)]">
                               <Calendar className="h-3 w-3" />
                               <span>{formatDate(item.createdAt)}</span>
                             </div>
@@ -824,7 +829,7 @@ export default function ContentPage() {
                         hover
                         className={cn(
                           "cursor-pointer transition-all",
-                          isSelected && "border-orange-500 ring-1 ring-orange-500"
+                          isSelected && "border-[var(--accent)] ring-1 ring-[var(--accent)]"
                         )}
                       >
                         <div
@@ -837,19 +842,19 @@ export default function ContentPage() {
                             <div
                               className={cn(
                                 "flex h-10 w-10 items-center justify-center rounded-lg shrink-0",
-                                typeColors[item.type] || "bg-stone-100 text-stone-500"
+                                typeColors[item.type] || "bg-[var(--surface-1)] text-[var(--text-tertiary)]"
                               )}
                             >
                               <TypeIcon className="h-5 w-5" />
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
-                                <h3 className="font-medium text-stone-900 text-sm truncate">
+                                <h3 className="font-medium text-[var(--text-primary)] text-sm truncate">
                                   {item.title}
                                 </h3>
                                 {item.sourceTaskId && <AIGeneratedBadge />}
                               </div>
-                              <p className="text-xs text-stone-400 truncate">
+                              <p className="text-xs text-[var(--text-tertiary)] truncate">
                                 {item.summary || item.body.slice(0, 100)}
                               </p>
                             </div>
@@ -859,7 +864,7 @@ export default function ContentPage() {
                                   e.stopPropagation();
                                   copyToClipboard(item.body);
                                 }}
-                                className="p-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-400 hover:text-stone-700 transition-colors"
+                                className="p-1.5 rounded-lg bg-[var(--surface-1)] hover:bg-[var(--surface-2)] text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] transition-colors"
                                 title="Copiar"
                               >
                                 <Copy className="h-3.5 w-3.5" />
@@ -869,7 +874,7 @@ export default function ContentPage() {
                                   e.stopPropagation();
                                   setSelectedContent(item.contentId);
                                 }}
-                                className="p-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-400 hover:text-stone-700 transition-colors"
+                                className="p-1.5 rounded-lg bg-[var(--surface-1)] hover:bg-[var(--surface-2)] text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] transition-colors"
                                 title="Vista previa"
                               >
                                 <Eye className="h-3.5 w-3.5" />
@@ -879,7 +884,7 @@ export default function ContentPage() {
                               {formatTypeName(item.type)}
                             </Badge>
                             <StatusBadge status={item.status} />
-                            <span className="text-xs text-stone-400 shrink-0">
+                            <span className="text-xs text-[var(--text-tertiary)] shrink-0">
                               {formatDate(item.createdAt)}
                             </span>
                           </div>
@@ -893,195 +898,173 @@ export default function ContentPage() {
           </AnimatePresence>
         </div>
 
-        {/* Content Details Panel */}
-        <AnimatePresence>
-          {selectedContentData && (
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              transition={{ duration: 0.2 }}
-              className="hidden lg:block w-1/3"
-            >
-              <Card className="sticky top-6">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-xl font-semibold text-stone-900 flex items-center gap-2">
-                      <Sparkles className="h-4 w-4 text-orange-600" />
-                      Detalles del Contenido
-                    </h3>
-                    <button
-                      onClick={() => setSelectedContent(null)}
-                      className="p-1.5 rounded-lg hover:bg-stone-100 text-stone-400 hover:text-stone-700 transition-colors"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  </div>
-
-                  <div className="space-y-4">
-                    {/* Title */}
-                    <div>
-                      <p className="text-xs text-stone-400 mb-1 uppercase tracking-wider">Título</p>
-                      <p className="text-stone-900 font-medium">
-                        {selectedContentData.title}
-                      </p>
-                    </div>
-
-                    {/* Type & Status */}
-                    <div className="flex gap-4">
-                      <div>
-                        <p className="text-xs text-stone-400 mb-1 uppercase tracking-wider">Tipo</p>
-                        <Badge className={typeColors[selectedContentData.type]}>
-                          {formatTypeName(selectedContentData.type)}
-                        </Badge>
-                      </div>
-                      <div>
-                        <p className="text-xs text-stone-400 mb-1 uppercase tracking-wider">Estado</p>
-                        <StatusBadge status={selectedContentData.status} />
-                      </div>
-                    </div>
-
-                    {/* Template Origin Badge */}
-                    {selectedContentData.sourceTemplateId && (
-                      <TemplateOriginBadge
-                        templateId={selectedContentData.sourceTemplateId}
-                        onRegenerate={(tplId) => {
-                          setTemplateModalPreselect(tplId);
-                          setShowTemplateModal(true);
-                        }}
-                      />
+        {/* Full-width Content Detail View — replaces grid when selected */}
+        {selectedContentData && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            transition={{ duration: 0.2 }}
+            className="flex-1 w-full"
+          >
+            {/* Top bar: back + title + badges + actions */}
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => setSelectedContent(null)}
+                  className="p-2 rounded-lg hover:bg-[var(--surface-1)] text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] transition-colors"
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                </button>
+                <div>
+                  <h2 className="text-xl font-semibold text-[var(--text-primary)]">
+                    {selectedContentData.title}
+                  </h2>
+                  <div className="flex items-center gap-3 mt-1">
+                    <Badge className={typeColors[selectedContentData.type]}>
+                      {formatTypeName(selectedContentData.type)}
+                    </Badge>
+                    <StatusBadge status={selectedContentData.status} />
+                    {selectedContentData.sourceTaskId && <AIGeneratedBadge />}
+                    {selectedContentData.metadata?.wordCount && (
+                      <span className="text-xs text-[var(--text-tertiary)]">
+                        {selectedContentData.metadata.wordCount} palabras
+                      </span>
                     )}
+                    {selectedContentData.metadata?.readingTime && (
+                      <span className="text-xs text-[var(--text-tertiary)]">
+                        {selectedContentData.metadata.readingTime} min lectura
+                      </span>
+                    )}
+                    <span className="text-xs text-[var(--text-tertiary)]">
+                      {formatDate(selectedContentData.createdAt)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => copyToClipboard(selectedContentData.body)}
+                  className="px-3 py-2 rounded-lg text-sm text-[var(--text-secondary)] hover:bg-[var(--surface-1)] transition-colors flex items-center gap-2"
+                >
+                  <Copy className="h-4 w-4" />
+                  Copiar
+                </button>
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setEditingContent(selectedContentData)}
+                  className="px-4 py-2 rounded-lg bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-medium transition-colors flex items-center gap-2"
+                >
+                  <Edit2 className="h-4 w-4" />
+                  Editar
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setAnalysisContentId(selectedContentData._id)}
+                  className="px-4 py-2 rounded-lg bg-[var(--badge-purple-bg)] hover:bg-purple-100 text-[var(--badge-purple-text)] font-medium transition-colors flex items-center gap-2 border border-purple-200"
+                >
+                  <Sparkles className="h-4 w-4" />
+                  Analizar
+                </motion.button>
+              </div>
+            </div>
 
-                    {/* Status Actions */}
-                    <div className="pt-3 border-t border-stone-200">
-                      <StatusActions
-                        content={selectedContentData}
-                        onStatusChange={async (status) => {
-                          await updateContentStatus({
-                            id: selectedContentData._id,
-                            status: status as "draft" | "review" | "revision_needed" | "approved" | "scheduled" | "published" | "archived"
-                          });
-                        }}
-                      />
-                    </div>
+            {/* Two-column layout: rendered content (main) + sidebar (meta) */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Main: Social post preview */}
+              <div className="lg:col-span-2">
+                <SocialPostPreview
+                  body={selectedContentData.body}
+                  type={selectedContentData.type}
+                  title={selectedContentData.title}
+                  imageUrl={(selectedContentData.assets as { type: string; url: string }[] | undefined)?.find((a) => a.type === "image")?.url}
+                  assets={selectedContentData.assets as { type: "image" | "video" | "document"; url: string; alt?: string }[] | undefined}
+                />
+              </div>
 
-                    {/* Multi-Platform Publish Panel */}
-                    <CrossPlatformPublishPanel
-                      contentId={selectedContentData._id}
-                      contentBody={selectedContentData.body}
-                      contentStatus={selectedContentData.status}
-                      contentHashtags={selectedContentData.metadata?.targetKeywords}
+              {/* Sidebar: metadata & actions */}
+              <div className="space-y-4">
+                {/* Template Origin Badge */}
+                {selectedContentData.sourceTemplateId && (
+                  <TemplateOriginBadge
+                    templateId={selectedContentData.sourceTemplateId}
+                    onRegenerate={(tplId) => {
+                      setTemplateModalPreselect(tplId);
+                      setShowTemplateModal(true);
+                    }}
+                  />
+                )}
+
+                {/* Status Actions */}
+                <Card>
+                  <CardContent className="p-4">
+                    <StatusActions
+                      content={selectedContentData}
+                      onStatusChange={async (status) => {
+                        await updateContentStatus({
+                          id: selectedContentData._id,
+                          status: status as "draft" | "review" | "revision_needed" | "approved" | "scheduled" | "published" | "archived"
+                        });
+                      }}
                     />
+                  </CardContent>
+                </Card>
 
-                    {/* Version History (Collapsible) */}
-                    <div className="pt-3 border-t border-stone-200">
-                      <button
-                        onClick={() => setShowVersionHistory(!showVersionHistory)}
-                        className="flex items-center justify-between w-full text-left"
-                      >
-                        <div className="flex items-center gap-2">
-                          <History className="h-4 w-4 text-stone-400" />
-                          <p className="text-sm font-medium text-stone-900">Historial de versiones</p>
-                        </div>
-                        <ChevronDown
-                          className={cn(
-                            "h-4 w-4 text-stone-400 transition-transform",
-                            showVersionHistory && "rotate-180"
-                          )}
-                        />
-                      </button>
-                      <AnimatePresence>
-                        {showVersionHistory && (
-                          <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: "auto" }}
-                            exit={{ opacity: 0, height: 0 }}
-                            transition={{ duration: 0.2 }}
-                            className="overflow-hidden"
-                          >
-                            <div className="mt-3">
-                              <VersionHistory
-                                contentId={selectedContentData._id}
-                                onCompare={(vA, vB) => setDiffVersions({ versionAId: vA, versionBId: vB })}
-                                onRollback={(vId, vNum) => setRollbackTarget({ versionId: vId, versionNumber: vNum })}
-                              />
-                            </div>
-                          </motion.div>
+                {/* Multi-Platform Publish */}
+                <CrossPlatformPublishPanel
+                  contentId={selectedContentData._id}
+                  contentBody={selectedContentData.body}
+                  contentStatus={selectedContentData.status}
+                  contentHashtags={selectedContentData.metadata?.targetKeywords}
+                />
+
+                {/* Version History */}
+                <Card>
+                  <CardContent className="p-4">
+                    <button
+                      onClick={() => setShowVersionHistory(!showVersionHistory)}
+                      className="flex items-center justify-between w-full text-left"
+                    >
+                      <div className="flex items-center gap-2">
+                        <History className="h-4 w-4 text-[var(--text-tertiary)]" />
+                        <p className="text-sm font-medium text-[var(--text-primary)]">Historial de versiones</p>
+                      </div>
+                      <ChevronDown
+                        className={cn(
+                          "h-4 w-4 text-[var(--text-tertiary)] transition-transform",
+                          showVersionHistory && "rotate-180"
                         )}
-                      </AnimatePresence>
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex gap-2">
-                      <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => setEditingContent(selectedContentData)}
-                        className="flex-1 px-4 py-2 rounded-lg bg-orange-600 hover:bg-orange-700 text-white font-medium transition-colors flex items-center justify-center gap-2"
-                      >
-                        <Edit2 className="h-4 w-4" />
-                        Editar
-                      </motion.button>
-                      <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => setAnalysisContentId(selectedContentData._id)}
-                        className="px-4 py-2 rounded-lg bg-purple-50 hover:bg-purple-100 text-purple-700 font-medium transition-colors flex items-center justify-center gap-2 border border-purple-200"
-                      >
-                        <Sparkles className="h-4 w-4" />
-                        Analizar
-                      </motion.button>
-                    </div>
-
-                    {/* Preview with copy button */}
-                    <div>
-                      <div className="flex items-center justify-between mb-1">
-                        <p className="text-xs text-stone-400 uppercase tracking-wider">Vista Previa</p>
-                        <button
-                          onClick={() => copyToClipboard(selectedContentData.body)}
-                          className="text-xs text-orange-600 hover:text-orange-700 flex items-center gap-1 transition-colors"
+                      />
+                    </button>
+                    <AnimatePresence>
+                      {showVersionHistory && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="overflow-hidden"
                         >
-                          <Copy className="h-3 w-3" />
-                          Copiar todo
-                        </button>
-                      </div>
-                      <div className="rounded-lg bg-stone-50 p-3 max-h-48 overflow-y-auto border border-stone-200">
-                        <p className="text-stone-700 text-sm whitespace-pre-wrap">
-                          {selectedContentData.body.slice(0, 500)}
-                          {selectedContentData.body.length > 500 && "..."}
-                        </p>
-                      </div>
-                    </div>
-
-                  {/* Metadata */}
-                  {selectedContentData.metadata && (
-                    <div>
-                      <p className="text-xs text-stone-400 mb-1">Metadatos</p>
-                      <div className="grid grid-cols-2 gap-2">
-                        {selectedContentData.metadata.wordCount && (
-                          <div className="rounded-lg bg-stone-50 p-2">
-                            <p className="text-xs text-stone-400">Palabras</p>
-                            <p className="text-stone-700 font-mono">
-                              {selectedContentData.metadata.wordCount}
-                            </p>
+                          <div className="mt-3">
+                            <VersionHistory
+                              contentId={selectedContentData._id}
+                              onCompare={(vA, vB) => setDiffVersions({ versionAId: vA, versionBId: vB })}
+                              onRollback={(vId, vNum) => setRollbackTarget({ versionId: vId, versionNumber: vNum })}
+                            />
                           </div>
-                        )}
-                        {selectedContentData.metadata.readingTime && (
-                          <div className="rounded-lg bg-stone-50 p-2">
-                            <p className="text-xs text-stone-400">Lectura</p>
-                            <p className="text-stone-700 font-mono">
-                              {selectedContentData.metadata.readingTime} min
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </CardContent>
+                </Card>
 
-                  {/* Keywords */}
-                  {selectedContentData.metadata?.targetKeywords && (
-                    <div>
-                      <p className="text-xs text-stone-400 mb-1">Palabras Clave</p>
+                {/* Keywords */}
+                {selectedContentData.metadata?.targetKeywords && (
+                  <Card>
+                    <CardContent className="p-4">
+                      <p className="text-xs text-[var(--text-tertiary)] mb-2 uppercase tracking-wider">Palabras Clave</p>
                       <div className="flex flex-wrap gap-1">
                         {selectedContentData.metadata.targetKeywords.map(
                           (keyword: string) => (
@@ -1092,68 +1075,47 @@ export default function ContentPage() {
                           )
                         )}
                       </div>
-                    </div>
-                  )}
+                    </CardContent>
+                  </Card>
+                )}
 
-                  {/* SEO */}
-                  {selectedContentData.seo && (
-                    <div>
-                      <p className="text-xs text-stone-400 mb-1">SEO</p>
-                      <div className="rounded-lg bg-stone-50 p-3 space-y-2">
-                        <div>
-                          <p className="text-xs text-stone-400">Meta Title</p>
-                          <p className="text-stone-700 text-sm">
-                            {selectedContentData.seo.metaTitle}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-stone-400">Meta Description</p>
-                          <p className="text-stone-700 text-sm">
-                            {selectedContentData.seo.metaDescription}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-stone-400">Slug</p>
-                          <p className="text-stone-700 font-mono text-sm">
-                            /{selectedContentData.seo.slug}
-                          </p>
-                        </div>
+                {/* SEO */}
+                {selectedContentData.seo && (
+                  <Card>
+                    <CardContent className="p-4 space-y-2">
+                      <p className="text-xs text-[var(--text-tertiary)] uppercase tracking-wider">SEO</p>
+                      <div>
+                        <p className="text-xs text-[var(--text-tertiary)]">Meta Title</p>
+                        <p className="text-[var(--text-secondary)] text-sm">{selectedContentData.seo.metaTitle}</p>
                       </div>
-                    </div>
-                  )}
+                      <div>
+                        <p className="text-xs text-[var(--text-tertiary)]">Meta Description</p>
+                        <p className="text-[var(--text-secondary)] text-sm">{selectedContentData.seo.metaDescription}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-[var(--text-tertiary)]">Slug</p>
+                        <p className="text-[var(--text-secondary)] font-mono text-sm">/{selectedContentData.seo.slug}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
 
-                  {/* Published URL */}
-                  {selectedContentData.publishedUrl && (
-                    <div>
-                      <p className="text-xs text-stone-400 mb-1">URL Publicada</p>
-                      <a
-                        href={selectedContentData.publishedUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-orange-600 hover:text-orange-700 text-sm flex items-center gap-1"
-                      >
-                        <Eye className="h-3 w-3" />
-                        Ver publicado
-                      </a>
-                    </div>
-                  )}
-
-                  {/* Dates */}
-                  <div>
-                    <p className="text-xs text-stone-400 mb-1 uppercase tracking-wider">Creado</p>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Calendar className="h-4 w-4 text-stone-400" />
-                      <span className="text-stone-700">
-                        {formatDate(selectedContentData.createdAt)}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                {/* Published URL */}
+                {selectedContentData.publishedUrl && (
+                  <a
+                    href={selectedContentData.publishedUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-[var(--accent)] hover:text-[var(--accent)] text-sm px-4 py-2 rounded-lg bg-[var(--accent-subtle)] border border-orange-200 transition-colors"
+                  >
+                    <Eye className="h-4 w-4" />
+                    Ver publicado
+                  </a>
+                )}
+              </div>
+            </div>
           </motion.div>
         )}
-        </AnimatePresence>
       </div>
 
       {/* Content Recycling — P7 */}

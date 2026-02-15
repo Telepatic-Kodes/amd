@@ -105,19 +105,19 @@ export function LinkDialog({ editor, isOpen, onClose }: LinkDialogProps) {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md bg-stone-100 border border-stone-200 rounded-lg shadow-xl"
+            className="w-full max-w-md bg-[var(--surface-1)] border border-[var(--border)] rounded-lg shadow-xl"
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-stone-200">
+            <div className="flex items-center justify-between p-4 border-b border-[var(--border)]">
               <div className="flex items-center gap-2">
-                <Link2 className="h-5 w-5 text-orange-400" />
-                <h3 className="text-lg font-semibold text-stone-900">
+                <Link2 className="h-5 w-5 text-[var(--accent)]" />
+                <h3 className="text-lg font-semibold text-[var(--text-primary)]">
                   {hasExistingLink ? "Editar Enlace" : "Insertar Enlace"}
                 </h3>
               </div>
               <button
                 onClick={onClose}
-                className="p-1 rounded hover:bg-stone-200 text-stone-400 transition-colors"
+                className="p-1 rounded hover:bg-[var(--surface-2)] text-[var(--text-tertiary)] transition-colors"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -126,7 +126,7 @@ export function LinkDialog({ editor, isOpen, onClose }: LinkDialogProps) {
             {/* Body */}
             <div className="p-4 space-y-4">
               <div>
-                <label className="block text-sm text-stone-400 mb-2">
+                <label className="block text-sm text-[var(--text-tertiary)] mb-2">
                   URL
                 </label>
                 <input
@@ -140,29 +140,29 @@ export function LinkDialog({ editor, isOpen, onClose }: LinkDialogProps) {
                   placeholder="https://example.com"
                   autoFocus
                   className={cn(
-                    "w-full rounded-lg border bg-white py-2 px-3",
-                    "text-sm text-stone-900 placeholder-stone-500",
+                    "w-full rounded-lg border bg-[var(--card-bg)] py-2 px-3",
+                    "text-sm text-[var(--text-primary)] placeholder-stone-500",
                     "focus:outline-none focus:ring-2",
                     error
                       ? "border-red-500 focus:ring-red-500/50"
-                      : "border-stone-200 focus:ring-orange-500/50"
+                      : "border-[var(--border)] focus:ring-[var(--accent)]/50"
                   )}
                 />
                 {error && (
-                  <p className="text-xs text-red-400 mt-1">{error}</p>
+                  <p className="text-xs text-[var(--error)] mt-1">{error}</p>
                 )}
-                <p className="text-xs text-stone-500 mt-1">
+                <p className="text-xs text-[var(--text-tertiary)] mt-1">
                   Soporta enlaces http://, https://, mailto: y tel:
                 </p>
               </div>
             </div>
 
             {/* Footer */}
-            <div className="flex gap-3 p-4 border-t border-stone-200 bg-white">
+            <div className="flex gap-3 p-4 border-t border-[var(--border)] bg-[var(--card-bg)]">
               {hasExistingLink && (
                 <button
                   onClick={handleRemove}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg border border-red-500/50 text-red-400 hover:bg-red-500/10 transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg border border-red-500/50 text-[var(--error)] hover:bg-red-500/10 transition-colors"
                 >
                   <Trash2 className="h-4 w-4" />
                   Quitar
@@ -170,13 +170,13 @@ export function LinkDialog({ editor, isOpen, onClose }: LinkDialogProps) {
               )}
               <button
                 onClick={onClose}
-                className="flex-1 py-2 rounded-lg border border-stone-200 text-stone-400 hover:bg-stone-200 transition-colors"
+                className="flex-1 py-2 rounded-lg border border-[var(--border)] text-[var(--text-tertiary)] hover:bg-[var(--surface-2)] transition-colors"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleSave}
-                className="flex-1 py-2 rounded-lg bg-orange-500 hover:bg-orange-600 text-white font-medium transition-colors"
+                className="flex-1 py-2 rounded-lg bg-[var(--accent)] hover:bg-[var(--accent)] text-white font-medium transition-colors"
               >
                 {hasExistingLink ? "Actualizar" : "Insertar"}
               </button>

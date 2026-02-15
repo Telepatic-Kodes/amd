@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 import { Activity, CheckCircle, XCircle, Clock, Zap } from "lucide-react";
@@ -21,11 +22,11 @@ interface ActivitySummaryProps {
 }
 
 const statusConfig: Record<string, { icon: typeof CheckCircle; color: string }> = {
-  success: { icon: CheckCircle, color: "text-[#2FCC71]" },
-  completed: { icon: CheckCircle, color: "text-[#2FCC71]" },
-  failure: { icon: XCircle, color: "text-[#E5484D]" },
-  failed: { icon: XCircle, color: "text-[#E5484D]" },
-  running: { icon: Zap, color: "text-[#F5A623]" },
+  success: { icon: CheckCircle, color: "text-[var(--success)]" },
+  completed: { icon: CheckCircle, color: "text-[var(--success)]" },
+  failure: { icon: XCircle, color: "text-[var(--error)]" },
+  failed: { icon: XCircle, color: "text-[var(--error)]" },
+  running: { icon: Zap, color: "text-[var(--warning)]" },
   pending: { icon: Clock, color: "text-[var(--text-tertiary)]" },
 };
 
@@ -38,7 +39,7 @@ function humanizeDescription(desc: string): string {
   return desc.length > 40 ? desc.slice(0, 37) + "..." : desc;
 }
 
-export function ActivitySummary({ activities }: ActivitySummaryProps) {
+export const ActivitySummary = memo(function ActivitySummary({ activities }: ActivitySummaryProps) {
   if (!activities) return <ActivitySummarySkeleton />;
 
   // Sort by timestamp descending, take 8 most recent
@@ -71,8 +72,8 @@ export function ActivitySummary({ activities }: ActivitySummaryProps) {
               <div
                 key={item.id}
                 className={cn(
-                  "flex items-start gap-3 px-5 py-3 transition-colors hover:bg-white/[0.02]",
-                  i < recent.length - 1 && "border-b border-white/[0.04]"
+                  "flex items-start gap-3 px-5 py-3 transition-colors hover:bg-[var(--surface-2)]",
+                  i < recent.length - 1 && "border-b border-[var(--surface-2)]"
                 )}
               >
                 {/* Status dot */}
@@ -99,7 +100,7 @@ export function ActivitySummary({ activities }: ActivitySummaryProps) {
       )}
     </div>
   );
-}
+});
 
 function ActivitySummarySkeleton() {
   return (
@@ -109,7 +110,7 @@ function ActivitySummarySkeleton() {
         {[...Array(5)].map((_, i) => (
           <div key={i} className={cn(
             "flex items-start gap-3 px-5 py-3",
-            i < 4 && "border-b border-white/[0.04]"
+            i < 4 && "border-b border-[var(--surface-2)]"
           )}>
             <div className="h-3.5 w-3.5 rounded-full bg-[var(--surface-3)] animate-pulse mt-0.5" />
             <div className="flex-1 space-y-1.5">

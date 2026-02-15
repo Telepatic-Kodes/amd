@@ -33,48 +33,48 @@ const notificationTypeConfig: Record<
 > = {
   content_review: {
     icon: Send,
-    color: "text-amber-400",
-    bgColor: "bg-amber-500/10",
+    color: "text-[var(--badge-amber-text)]",
+    bgColor: "bg-[var(--badge-amber-bg)]",
   },
   content_approved: {
     icon: FileCheck,
-    color: "text-emerald-400",
-    bgColor: "bg-emerald-500/10",
+    color: "text-[var(--success)]",
+    bgColor: "bg-[var(--badge-green-bg)]",
   },
   content_rejected: {
     icon: FileX,
-    color: "text-red-400",
-    bgColor: "bg-red-500/10",
+    color: "text-[var(--error)]",
+    bgColor: "bg-[var(--badge-red-bg)]",
   },
   content_published: {
     icon: Globe,
-    color: "text-blue-400",
-    bgColor: "bg-blue-500/10",
+    color: "text-[var(--badge-blue-text)]",
+    bgColor: "bg-[var(--badge-blue-bg)]",
   },
   content_scheduled: {
     icon: Calendar,
-    color: "text-purple-400",
-    bgColor: "bg-purple-500/10",
+    color: "text-[var(--badge-purple-text)]",
+    bgColor: "bg-[var(--badge-purple-bg)]",
   },
   agent_error: {
     icon: AlertTriangle,
-    color: "text-red-400",
-    bgColor: "bg-red-500/10",
+    color: "text-[var(--error)]",
+    bgColor: "bg-[var(--badge-red-bg)]",
   },
   brand_update: {
     icon: Zap,
-    color: "text-orange-400",
-    bgColor: "bg-orange-500/10",
+    color: "text-[var(--accent)]",
+    bgColor: "bg-[var(--accent-subtle)]",
   },
   strategy_insight: {
     icon: Info,
-    color: "text-cyan-400",
-    bgColor: "bg-cyan-500/10",
+    color: "text-[var(--badge-blue-text)]",
+    bgColor: "bg-[var(--badge-blue-bg)]",
   },
   system: {
     icon: Info,
-    color: "text-stone-400",
-    bgColor: "bg-stone-500/10",
+    color: "text-[var(--text-tertiary)]",
+    bgColor: "bg-[var(--surface-2)]",
   },
 };
 
@@ -95,17 +95,17 @@ const statusConfig: Record<
 > = {
   success: {
     icon: CheckCircle,
-    color: "text-emerald-400",
+    color: "text-[var(--success)]",
     label: "Exitoso",
   },
   completed: {
     icon: CheckCircle,
-    color: "text-emerald-400",
+    color: "text-[var(--success)]",
     label: "Completado",
   },
-  failure: { icon: XCircle, color: "text-red-400", label: "Fallido" },
-  failed: { icon: XCircle, color: "text-red-400", label: "Fallido" },
-  running: { icon: Zap, color: "text-amber-400", label: "En curso" },
+  failure: { icon: XCircle, color: "text-[var(--error)]", label: "Fallido" },
+  failed: { icon: XCircle, color: "text-[var(--error)]", label: "Fallido" },
+  running: { icon: Zap, color: "text-[var(--warning)]", label: "En curso" },
 };
 
 // Notification record type from the database
@@ -230,19 +230,19 @@ export function NotificationCenter() {
         onClick={() => setOpen(!open)}
         className={cn(
           "relative p-1.5 rounded-md transition-colors",
-          "text-stone-400 hover:text-stone-600 hover:bg-white/[0.05]"
+          "text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] hover:bg-[var(--surface-1)]"
         )}
       >
         <Bell className="h-4 w-4" />
         {totalBadge > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 h-3.5 w-3.5 flex items-center justify-center rounded-full bg-red-500 text-[8px] font-bold text-white">
+          <span className="absolute -top-0.5 -right-0.5 h-3.5 w-3.5 flex items-center justify-center rounded-full bg-[var(--error)] text-[8px] font-bold text-white">
             {totalBadge > 9 ? "9+" : totalBadge}
           </span>
         )}
       </button>
 
       {open && (
-        <div className="absolute left-full ml-2 top-0 w-80 rounded-lg border border-[var(--border)] bg-stone-50 shadow-xl z-50 overflow-hidden">
+        <div className="absolute left-full ml-2 top-0 w-80 rounded-lg border border-[var(--border)] bg-[var(--surface-0)] shadow-xl z-50 overflow-hidden">
           {/* Header */}
           <div className="px-3 py-2 border-b border-[var(--border)] flex items-center justify-between">
             <span className="text-xs font-medium text-[var(--text-secondary)]">
@@ -252,7 +252,7 @@ export function NotificationCenter() {
               {(unreadCount ?? 0) > 0 && (
                 <button
                   onClick={handleMarkAllAsRead}
-                  className="text-[10px] text-orange-500 hover:text-orange-400 flex items-center gap-1 transition-colors"
+                  className="text-[10px] text-[var(--accent)] hover:text-[var(--accent-hover)] flex items-center gap-1 transition-colors"
                   title="Marcar todas como leidas"
                 >
                   <CheckCheck className="h-3 w-3" />
@@ -260,7 +260,7 @@ export function NotificationCenter() {
                 </button>
               )}
               {totalBadge > 0 && (
-                <span className="text-[10px] text-red-400 bg-red-500/10 px-1.5 py-0.5 rounded">
+                <span className="text-[10px] text-[var(--error)] bg-[var(--badge-red-bg)] px-1.5 py-0.5 rounded">
                   {totalBadge}
                 </span>
               )}
@@ -276,8 +276,8 @@ export function NotificationCenter() {
                 className={cn(
                   "flex-1 px-2 py-1.5 text-[11px] font-medium transition-colors",
                   activeTab === tab.key
-                    ? "text-orange-500 border-b-2 border-orange-500"
-                    : "text-stone-400 hover:text-stone-600"
+                    ? "text-[var(--accent)] border-b-2 border-[var(--accent)]"
+                    : "text-[var(--text-tertiary)] hover:text-[var(--text-secondary)]"
                 )}
               >
                 {tab.label}
@@ -292,8 +292,8 @@ export function NotificationCenter() {
             (activeTab !== "sistema" || legacyAlertCount === 0) &&
             (activeTab !== "todas" || legacyAlertCount === 0) ? (
               <div className="py-8 text-center">
-                <CheckCircle className="h-5 w-5 text-emerald-500 mx-auto mb-2" />
-                <p className="text-xs text-stone-400">
+                <CheckCircle className="h-5 w-5 text-[var(--success)] mx-auto mb-2" />
+                <p className="text-xs text-[var(--text-tertiary)]">
                   {activeTab === "todas"
                     ? "Sin notificaciones"
                     : activeTab === "revisiones"
@@ -324,8 +324,8 @@ export function NotificationCenter() {
                         handleNotificationClick(notification)
                       }
                       className={cn(
-                        "flex items-start gap-2.5 px-3 py-2.5 w-full text-left transition-colors hover:bg-stone-100",
-                        !notification.read && "bg-orange-50/50"
+                        "flex items-start gap-2.5 px-3 py-2.5 w-full text-left transition-colors hover:bg-[var(--surface-1)]",
+                        !notification.read && "bg-[var(--accent-subtle)]"
                       )}
                     >
                       <div
@@ -354,13 +354,13 @@ export function NotificationCenter() {
                             {notification.title}
                           </p>
                           {!notification.read && (
-                            <span className="h-1.5 w-1.5 rounded-full bg-orange-500 shrink-0" />
+                            <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)] shrink-0" />
                           )}
                         </div>
                         <p className="text-[11px] text-[var(--text-tertiary)] truncate">
                           {notification.message}
                         </p>
-                        <p className="text-[10px] text-stone-400 mt-0.5">
+                        <p className="text-[10px] text-[var(--text-tertiary)] mt-0.5">
                           {timeAgo}
                         </p>
                       </div>
@@ -376,14 +376,14 @@ export function NotificationCenter() {
                         key={agent._id as string}
                         className="flex items-start gap-2.5 px-3 py-2.5"
                       >
-                        <div className="h-6 w-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 bg-red-500/10">
-                          <AlertTriangle className="h-3 w-3 text-red-400" />
+                        <div className="h-6 w-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 bg-[var(--badge-red-bg)]">
+                          <AlertTriangle className="h-3 w-3 text-[var(--error)]" />
                         </div>
                         <div className="min-w-0">
                           <p className="text-xs font-medium text-[var(--text-primary)]">
                             {agent.name as string}
                           </p>
-                          <p className="text-[11px] text-red-400">
+                          <p className="text-[11px] text-[var(--error)]">
                             Agente en estado de error
                           </p>
                         </div>
@@ -411,7 +411,7 @@ export function NotificationCenter() {
                         key={item.id}
                         className="flex items-start gap-2.5 px-3 py-2.5"
                       >
-                        <div className="h-6 w-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 bg-red-500/10">
+                        <div className="h-6 w-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 bg-[var(--badge-red-bg)]">
                           <LegacyIcon
                             className={cn(
                               "h-3 w-3",

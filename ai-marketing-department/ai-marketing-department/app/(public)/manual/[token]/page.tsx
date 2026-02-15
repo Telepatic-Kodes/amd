@@ -12,22 +12,22 @@ export default function PublicManualPage({ params }: { params: Promise<{ token: 
 
   if (data === undefined) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-white">
-        <Loader2 className="h-8 w-8 animate-spin text-stone-400" />
+      <div className="flex items-center justify-center min-h-screen bg-[var(--card-bg)]">
+        <Loader2 className="h-8 w-8 animate-spin text-[var(--text-tertiary)]" />
       </div>
     );
   }
 
   if (!data) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-white gap-4">
-        <p className="text-stone-500 text-lg">Este manual no existe o ha expirado.</p>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-[var(--card-bg)] gap-4">
+        <p className="text-[var(--text-tertiary)] text-lg">Este manual no existe o ha expirado.</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[var(--card-bg)]">
       <BrandManual brandProfile={data.profile} strategy={data.strategy} />
     </div>
   );

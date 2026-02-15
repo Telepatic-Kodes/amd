@@ -138,7 +138,7 @@ export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setIsOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-orange-500 hover:bg-orange-600 text-white font-medium transition-colors"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--accent)] hover:bg-[var(--accent)] text-white font-medium transition-colors"
           >
             <Plus className="h-4 w-4" />
             Agregar Contenido
@@ -149,15 +149,15 @@ export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             onSubmit={handleSubmit}
-            className="p-4 rounded-lg border border-stone-200 bg-white shadow-sm space-y-4"
+            className="p-4 rounded-lg border border-[var(--border)] bg-[var(--card-bg)] shadow-sm space-y-4"
           >
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-stone-900 font-medium">Crear Nuevo Contenido</h3>
+              <h3 className="text-[var(--text-primary)] font-medium">Crear Nuevo Contenido</h3>
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => setIsImportModalOpen(true)}
-                  className="flex items-center gap-2 px-3 py-1.5 bg-orange-600 hover:bg-orange-700 rounded text-xs font-medium text-white transition-colors"
+                  className="flex items-center gap-2 px-3 py-1.5 bg-[var(--accent)] hover:bg-[var(--accent-hover)] rounded text-xs font-medium text-white transition-colors"
                   title="Importar desde archivo"
                 >
                   <Upload className="w-3.5 h-3.5" />
@@ -170,7 +170,7 @@ export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {
                     setError(null);
                     setFieldErrors({});
                   }}
-                  className="p-1 rounded hover:bg-stone-100 text-stone-400"
+                  className="p-1 rounded hover:bg-[var(--surface-1)] text-[var(--text-tertiary)]"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -178,7 +178,7 @@ export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {
             </div>
 
             {error && (
-              <div className="text-sm text-red-600 bg-red-50 rounded p-2">
+              <div className="text-sm text-[var(--badge-red-text)] bg-[var(--badge-red-bg)] rounded p-2">
                 {error}
               </div>
             )}
@@ -186,11 +186,11 @@ export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {
             <div className="space-y-4">
               {/* Type */}
               <div>
-                <label className="block text-xs text-stone-500 mb-1">Tipo de Contenido *</label>
+                <label className="block text-xs text-[var(--text-tertiary)] mb-1">Tipo de Contenido *</label>
                 <select
                   value={type}
                   onChange={(e) => setType(e.target.value)}
-                  className="w-full rounded-lg border border-stone-300 bg-white py-2 px-3 text-sm text-stone-900 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                  className="w-full rounded-lg border border-[var(--border-hover)] bg-[var(--card-bg)] py-2 px-3 text-sm text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
                   required
                 >
                   {CONTENT_TYPES.map((opt) => (
@@ -203,63 +203,63 @@ export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {
 
               {/* Title */}
               <div>
-                <label className="block text-xs text-stone-500 mb-1">Título *</label>
+                <label className="block text-xs text-[var(--text-tertiary)] mb-1">Título *</label>
                 <input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Título del contenido"
                   required
-                  className="w-full rounded-lg border border-stone-300 bg-white py-2 px-3 text-sm text-stone-900 placeholder-stone-400 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                  className="w-full rounded-lg border border-[var(--border-hover)] bg-[var(--card-bg)] py-2 px-3 text-sm text-[var(--text-primary)] placeholder-[var(--text-tertiary)] focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
                 />
                 <p className="text-xs mt-1">
                   {fieldErrors["title"] ? (
-                    <span className="text-red-500">{fieldErrors["title"]}</span>
+                    <span className="text-[var(--error)]">{fieldErrors["title"]}</span>
                   ) : (
-                    <span className="text-stone-500">{title.length} caracteres</span>
+                    <span className="text-[var(--text-tertiary)]">{title.length} caracteres</span>
                   )}
                 </p>
               </div>
 
               {/* Body */}
               <div>
-                <label className="block text-xs text-stone-500 mb-1">Contenido *</label>
+                <label className="block text-xs text-[var(--text-tertiary)] mb-1">Contenido *</label>
                 <textarea
                   value={body}
                   onChange={(e) => setBody(e.target.value)}
                   placeholder="Escribe tu contenido aquí... (mínimo 50 caracteres)"
                   required
                   rows={8}
-                  className="w-full rounded-lg border border-stone-300 bg-white py-2 px-3 text-sm text-stone-900 placeholder-stone-400 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 font-mono"
+                  className="w-full rounded-lg border border-[var(--border-hover)] bg-[var(--card-bg)] py-2 px-3 text-sm text-[var(--text-primary)] placeholder-[var(--text-tertiary)] focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] font-mono"
                 />
                 <p className="text-xs mt-1">
                   {fieldErrors["body"] ? (
-                    <span className="text-red-500">{fieldErrors["body"]}</span>
+                    <span className="text-[var(--error)]">{fieldErrors["body"]}</span>
                   ) : (
-                    <span className="text-stone-500">{body.length} caracteres • {body.split(/\s+/).filter(w => w.length > 0).length} palabras</span>
+                    <span className="text-[var(--text-tertiary)]">{body.length} caracteres • {body.split(/\s+/).filter(w => w.length > 0).length} palabras</span>
                   )}
                 </p>
               </div>
 
               {/* Summary */}
               <div>
-                <label className="block text-xs text-stone-500 mb-1">Resumen (Opcional)</label>
+                <label className="block text-xs text-[var(--text-tertiary)] mb-1">Resumen (Opcional)</label>
                 <textarea
                   value={summary}
                   onChange={(e) => setSummary(e.target.value)}
                   placeholder="Breve resumen del contenido..."
                   rows={3}
-                  className="w-full rounded-lg border border-stone-300 bg-white py-2 px-3 text-sm text-stone-900 placeholder-stone-400 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                  className="w-full rounded-lg border border-[var(--border-hover)] bg-[var(--card-bg)] py-2 px-3 text-sm text-[var(--text-primary)] placeholder-[var(--text-tertiary)] focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
                 />
               </div>
             </div>
 
             {/* Framework Metadata (collapsible) */}
-            <div className="border-t border-stone-100 pt-3">
+            <div className="border-t border-[var(--border)] pt-3">
               <button
                 type="button"
                 onClick={() => setShowFramework(!showFramework)}
-                className="flex items-center gap-2 text-xs text-stone-500 hover:text-stone-700 transition-colors w-full"
+                className="flex items-center gap-2 text-xs text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] transition-colors w-full"
               >
                 <ChevronDown className={`h-3.5 w-3.5 transition-transform ${showFramework ? "rotate-180" : ""}`} />
                 Metadata de Estrategia (opcional)
@@ -269,11 +269,11 @@ export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {
                 <div className="grid grid-cols-2 gap-3 mt-3">
                   {/* Content Tier */}
                   <div>
-                    <label className="block text-xs text-stone-500 mb-1">Tier</label>
+                    <label className="block text-xs text-[var(--text-tertiary)] mb-1">Tier</label>
                     <select
                       value={contentTier}
                       onChange={(e) => setContentTier(e.target.value as typeof contentTier)}
-                      className="w-full rounded-lg border border-stone-300 bg-white py-1.5 px-2 text-xs text-stone-900 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                      className="w-full rounded-lg border border-[var(--border-hover)] bg-[var(--card-bg)] py-1.5 px-2 text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
                     >
                       <option value="">Sin tier</option>
                       <option value="hero">Hero (10%)</option>
@@ -284,11 +284,11 @@ export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {
 
                   {/* Funnel Stage */}
                   <div>
-                    <label className="block text-xs text-stone-500 mb-1">Etapa del Funnel</label>
+                    <label className="block text-xs text-[var(--text-tertiary)] mb-1">Etapa del Funnel</label>
                     <select
                       value={funnelStage}
                       onChange={(e) => setFunnelStage(e.target.value as typeof funnelStage)}
-                      className="w-full rounded-lg border border-stone-300 bg-white py-1.5 px-2 text-xs text-stone-900 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                      className="w-full rounded-lg border border-[var(--border-hover)] bg-[var(--card-bg)] py-1.5 px-2 text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
                     >
                       <option value="">Sin etapa</option>
                       <option value="reach">Reach</option>
@@ -300,11 +300,11 @@ export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {
 
                   {/* TAYA Category */}
                   <div>
-                    <label className="block text-xs text-stone-500 mb-1">TAYA</label>
+                    <label className="block text-xs text-[var(--text-tertiary)] mb-1">TAYA</label>
                     <select
                       value={tayaCategory}
                       onChange={(e) => setTayaCategory(e.target.value as typeof tayaCategory)}
-                      className="w-full rounded-lg border border-stone-300 bg-white py-1.5 px-2 text-xs text-stone-900 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                      className="w-full rounded-lg border border-[var(--border-hover)] bg-[var(--card-bg)] py-1.5 px-2 text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
                     >
                       <option value="">Sin categoría</option>
                       <option value="cost">Costos</option>
@@ -317,11 +317,11 @@ export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {
 
                   {/* Pillar */}
                   <div>
-                    <label className="block text-xs text-stone-500 mb-1">Pilar</label>
+                    <label className="block text-xs text-[var(--text-tertiary)] mb-1">Pilar</label>
                     <select
                       value={pillarId}
                       onChange={(e) => setPillarId(e.target.value)}
-                      className="w-full rounded-lg border border-stone-300 bg-white py-1.5 px-2 text-xs text-stone-900 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                      className="w-full rounded-lg border border-[var(--border-hover)] bg-[var(--card-bg)] py-1.5 px-2 text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
                     >
                       <option value="">Sin pilar</option>
                       {activePillars?.map((p) => (
@@ -340,14 +340,14 @@ export function UploadContentForm({ onSuccess }: { onSuccess?: () => void }) {
                   setIsOpen(false);
                   setError(null);
                 }}
-                className="flex-1 py-2 rounded-lg border border-stone-300 text-stone-500 hover:bg-stone-50 transition-colors"
+                className="flex-1 py-2 rounded-lg border border-[var(--border-hover)] text-[var(--text-tertiary)] hover:bg-[var(--surface-0)] transition-colors"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 disabled={isLoading}
-                className="flex-1 py-2 rounded-lg bg-orange-600 hover:bg-orange-700 text-white font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                className="flex-1 py-2 rounded-lg bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
                 Crear Contenido

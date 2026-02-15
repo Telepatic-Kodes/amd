@@ -15,10 +15,10 @@ export function ScoreCircle({ score, label, size = 80 }: Props) {
 
   const color =
     score >= 70
-      ? { stroke: "#22c55e", text: "text-green-400", bg: "text-green-500/10" }
+      ? { stroke: "#22c55e", text: "text-[var(--success)]", bg: "text-green-500/10" }
       : score >= 41
         ? { stroke: "#eab308", text: "text-yellow-400", bg: "text-yellow-500/10" }
-        : { stroke: "#ef4444", text: "text-red-400", bg: "text-red-500/10" };
+        : { stroke: "#ef4444", text: "text-[var(--error)]", bg: "text-[var(--error)]/10" };
 
   return (
     <div className="flex flex-col items-center gap-1.5">
@@ -32,7 +32,7 @@ export function ScoreCircle({ score, label, size = 80 }: Props) {
             fill="none"
             stroke="currentColor"
             strokeWidth={strokeWidth}
-            className="text-stone-800"
+            className="text-[var(--text-primary)]"
           />
           {/* Progress circle */}
           <circle
@@ -53,7 +53,7 @@ export function ScoreCircle({ score, label, size = 80 }: Props) {
           <span className={`text-lg font-bold ${color.text}`}>{score}</span>
         </div>
       </div>
-      <span className="text-xs text-stone-500 text-center leading-tight">{label}</span>
+      <span className="text-xs text-[var(--text-tertiary)] text-center leading-tight">{label}</span>
     </div>
   );
 }

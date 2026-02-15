@@ -14,10 +14,10 @@ interface MetricPillProps {
 }
 
 const indicatorColors = {
-  green: "bg-emerald-500",
-  amber: "bg-amber-500",
-  red: "bg-red-500",
-  neutral: "bg-stone-400",
+  green: "bg-[var(--success)]",
+  amber: "bg-[var(--warning)]",
+  red: "bg-[var(--error)]",
+  neutral: "bg-[var(--text-tertiary)]",
 };
 
 const defaultSparkColors: Record<string, string> = {

@@ -16,10 +16,10 @@ interface Props {
 }
 
 const levelLabels: Record<string, { label: string; color: string }> = {
-  empty: { label: "Vacía", color: "text-red-400" },
+  empty: { label: "Vacía", color: "text-[var(--error)]" },
   partial: { label: "Parcial", color: "text-yellow-400" },
-  complete: { label: "Completa", color: "text-green-400" },
-  enriched: { label: "Enriquecida", color: "text-orange-400" },
+  complete: { label: "Completa", color: "text-[var(--success)]" },
+  enriched: { label: "Enriquecida", color: "text-[var(--accent)]" },
 };
 
 const sectionLabels: Record<string, string> = {
@@ -33,17 +33,17 @@ const sectionLabels: Record<string, string> = {
 };
 
 function getBarColor(score: number): string {
-  if (score >= 80) return "bg-orange-500";
-  if (score >= 60) return "bg-green-500";
+  if (score >= 80) return "bg-[var(--accent-muted)]0";
+  if (score >= 60) return "bg-[var(--badge-green-bg)]0";
   if (score >= 30) return "bg-yellow-500";
-  return "bg-red-500";
+  return "bg-[var(--badge-red-bg)]0";
 }
 
 function getDotColor(score: number): string {
   if (score >= 75) return "bg-green-400";
   if (score >= 50) return "bg-yellow-400";
   if (score >= 25) return "bg-orange-400";
-  return "bg-stone-300";
+  return "bg-[var(--surface-3)]";
 }
 
 export function BrandMaturityBar({ score, level, breakdown }: Props) {
@@ -54,15 +54,15 @@ export function BrandMaturityBar({ score, level, breakdown }: Props) {
       {/* Score header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <span className="text-2xl font-bold text-stone-900">{score}</span>
-          <span className="text-stone-400 text-sm">/100</span>
+          <span className="text-2xl font-bold text-[var(--text-primary)]">{score}</span>
+          <span className="text-[var(--text-tertiary)] text-sm">/100</span>
           <span
             className={cn(
               "px-2.5 py-0.5 rounded-full text-xs font-semibold border",
-              level === "empty" && "bg-red-500/10 border-red-500/20 text-red-400",
+              level === "empty" && "bg-[var(--badge-red-bg)]0/10 border-red-500/20 text-[var(--error)]",
               level === "partial" && "bg-yellow-500/10 border-yellow-500/20 text-yellow-400",
-              level === "complete" && "bg-green-500/10 border-green-500/20 text-green-400",
-              level === "enriched" && "bg-orange-500/10 border-orange-500/20 text-orange-400"
+              level === "complete" && "bg-[var(--badge-green-bg)]0/10 border-green-500/20 text-[var(--success)]",
+              level === "enriched" && "bg-[var(--accent-muted)]0/10 border-[var(--accent)]/20 text-[var(--accent)]"
             )}
           >
             {levelConfig.label}
@@ -71,7 +71,7 @@ export function BrandMaturityBar({ score, level, breakdown }: Props) {
       </div>
 
       {/* Progress bar */}
-      <div className="w-full h-2.5 bg-stone-100 rounded-full overflow-hidden">
+      <div className="w-full h-2.5 bg-[var(--surface-1)] rounded-full overflow-hidden">
         <div
           className={cn("h-full rounded-full transition-all duration-700 ease-out", getBarColor(score))}
           style={{ width: `${Math.min(100, score)}%` }}
@@ -86,12 +86,12 @@ export function BrandMaturityBar({ score, level, breakdown }: Props) {
               <div
                 className={cn("w-full h-1.5 rounded-full transition-colors", getDotColor(section.score))}
               />
-              <span className="text-[10px] text-stone-400 group-hover:text-stone-500 transition-colors truncate">
+              <span className="text-[10px] text-[var(--text-tertiary)] group-hover:text-[var(--text-tertiary)] transition-colors truncate">
                 {sectionLabels[section.name] || section.name}
               </span>
             </div>
             {/* Tooltip on hover */}
-            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 rounded bg-stone-100 border border-stone-300 text-xs text-stone-700 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 rounded bg-[var(--surface-1)] border border-[var(--border-hover)] text-xs text-[var(--text-secondary)] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
               {sectionLabels[section.name]}: {section.score}%
             </div>
           </div>

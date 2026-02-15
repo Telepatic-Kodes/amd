@@ -21,11 +21,11 @@ interface Props {
 
 function SummaryRow({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) {
   return (
-    <div className="flex items-start gap-3 p-3 rounded-lg bg-stone-100/50">
-      <Icon className="w-4 h-4 text-orange-400 mt-0.5 shrink-0" />
+    <div className="flex items-start gap-3 p-3 rounded-lg bg-[var(--surface-1)]/50">
+      <Icon className="w-4 h-4 text-[var(--accent)] mt-0.5 shrink-0" />
       <div>
-        <p className="text-xs text-stone-500">{label}</p>
-        <p className="text-sm text-stone-700">{value}</p>
+        <p className="text-xs text-[var(--text-tertiary)]">{label}</p>
+        <p className="text-sm text-[var(--text-secondary)]">{value}</p>
       </div>
     </div>
   );
@@ -38,8 +38,8 @@ export function StepLaunch({ data, onLaunch, loading, simplified = false }: Prop
         <div className="inline-flex p-3 rounded-2xl bg-gradient-to-br from-orange-600 to-purple-600 mb-2">
           <Rocket className="w-8 h-8 text-white" />
         </div>
-        <h2 className="text-2xl font-bold text-stone-900">¡Listo para comenzar!</h2>
-        <p className="text-stone-500 text-sm">Revisa tu configuración y lanza tu departamento.</p>
+        <h2 className="text-2xl font-bold text-[var(--text-primary)]">¡Listo para comenzar!</h2>
+        <p className="text-[var(--text-tertiary)] text-sm">Revisa tu configuración y lanza tu departamento.</p>
       </div>
 
       {!simplified && (

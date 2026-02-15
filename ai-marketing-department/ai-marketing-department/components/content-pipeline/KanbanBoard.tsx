@@ -161,13 +161,13 @@ export function KanbanBoard({ columns, statusCounts }: KanbanBoardProps) {
     return (
       <div className="flex gap-4 overflow-x-auto pb-4">
         {[1, 2, 3, 4, 5, 6].map((i) => (
-          <div key={i} className="min-w-[280px] max-w-[320px] w-full bg-stone-50/30 rounded-xl border border-stone-200/50">
-            <div className="px-4 py-3 border-b border-stone-200/50">
-              <div className="h-5 w-24 bg-stone-200/50 rounded animate-pulse" />
+          <div key={i} className="min-w-[280px] max-w-[320px] w-full bg-[var(--surface-0)]/30 rounded-xl border border-[var(--border)]/50">
+            <div className="px-4 py-3 border-b border-[var(--border)]/50">
+              <div className="h-5 w-24 bg-[var(--surface-2)]/50 rounded animate-pulse" />
             </div>
             <div className="p-3 space-y-2">
               {[1, 2, 3].map((j) => (
-                <div key={j} className="h-28 bg-stone-200/30 rounded-lg animate-pulse" />
+                <div key={j} className="h-28 bg-[var(--surface-2)]/30 rounded-lg animate-pulse" />
               ))}
             </div>
           </div>
@@ -188,8 +188,8 @@ export function KanbanBoard({ columns, statusCounts }: KanbanBoardProps) {
           className={cn(
             "text-xs px-3 py-1.5 rounded-lg border transition-colors",
             batchMode
-              ? "bg-orange-500/10 text-orange-500 border-orange-500/30"
-              : "text-stone-400 border-stone-200 hover:border-stone-300"
+              ? "bg-[var(--accent)]/10 text-orange-500 border-[var(--accent)]/30"
+              : "text-[var(--text-tertiary)] border-[var(--border)] hover:border-[var(--border-hover)]"
           )}
         >
           {batchMode ? "Salir seleccion" : "Seleccion multiple"}
@@ -217,22 +217,22 @@ export function KanbanBoard({ columns, statusCounts }: KanbanBoardProps) {
 
       {/* P6: Floating batch action bar */}
       {batchMode && selectedIds.size > 0 && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-3 bg-stone-900 text-white px-5 py-3 rounded-xl shadow-2xl border border-stone-700">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-3 bg-[var(--surface-3)] text-white px-5 py-3 rounded-xl shadow-2xl border border-[var(--border)]">
           <span className="text-sm font-medium">
             {selectedIds.size} seleccionado{selectedIds.size !== 1 ? "s" : ""}
           </span>
-          <div className="w-px h-5 bg-stone-700" />
+          <div className="w-px h-5 bg-[var(--surface-2)]" />
           <button
             onClick={() => handleBulkAction("review")}
             disabled={isBulkLoading}
-            className="text-xs px-3 py-1.5 rounded-lg bg-orange-500/20 text-orange-400 hover:bg-orange-500/30 disabled:opacity-50 transition-colors"
+            className="text-xs px-3 py-1.5 rounded-lg bg-[var(--accent)]/20 text-[var(--accent)] hover:bg-[var(--accent)]/30 disabled:opacity-50 transition-colors"
           >
             Enviar a revision
           </button>
           <button
             onClick={() => handleBulkAction("approved")}
             disabled={isBulkLoading}
-            className="text-xs px-3 py-1.5 rounded-lg bg-green-500/20 text-green-400 hover:bg-green-500/30 disabled:opacity-50 transition-colors"
+            className="text-xs px-3 py-1.5 rounded-lg bg-green-500/20 text-[var(--success)] hover:bg-[var(--success)]/30 disabled:opacity-50 transition-colors"
           >
             Aprobar
           </button>
@@ -255,7 +255,7 @@ export function KanbanBoard({ columns, statusCounts }: KanbanBoardProps) {
               setSelectedIds(new Set());
             }}
             disabled={isBulkLoading}
-            className="text-xs px-3 py-1.5 rounded-lg text-stone-400 hover:text-white disabled:opacity-50 transition-colors"
+            className="text-xs px-3 py-1.5 rounded-lg text-[var(--text-tertiary)] hover:text-white disabled:opacity-50 transition-colors"
           >
             Cancelar
           </button>

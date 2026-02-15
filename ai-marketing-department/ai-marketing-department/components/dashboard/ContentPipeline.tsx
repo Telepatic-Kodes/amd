@@ -144,7 +144,7 @@ export function ContentPipeline({ counts, contentItems }: ContentPipelineProps) 
                   <button
                     key={item._id}
                     onClick={() => router.push(`/content?status=${expandedStage}`)}
-                    className="w-full flex items-center gap-2 rounded-md px-2.5 py-1.5 text-left hover:bg-white/[0.03] transition-colors group"
+                    className="w-full flex items-center gap-2 rounded-md px-2.5 py-1.5 text-left hover:bg-[var(--card-bg)]/[0.03] transition-colors group"
                   >
                     <span className="text-xs text-[var(--text-secondary)] truncate flex-1 group-hover:text-[var(--text-primary)] transition-colors">
                       {item.title}

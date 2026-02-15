@@ -34,15 +34,15 @@ interface Props {
 }
 
 const priorityConfig = {
-  immediate: { color: "bg-red-500", label: "Inmediato", textColor: "text-red-700", bgColor: "bg-red-50" },
-  short: { color: "bg-amber-500", label: "Corto plazo", textColor: "text-amber-700", bgColor: "bg-amber-50" },
-  medium: { color: "bg-blue-500", label: "Medio plazo", textColor: "text-blue-700", bgColor: "bg-blue-50" },
-  long: { color: "bg-green-500", label: "Largo plazo", textColor: "text-green-700", bgColor: "bg-green-50" },
+  immediate: { color: "bg-[var(--badge-red-bg)]0", label: "Inmediato", textColor: "text-[var(--badge-red-text)]", bgColor: "bg-[var(--badge-red-bg)]" },
+  short: { color: "bg-[var(--badge-amber-bg)]0", label: "Corto plazo", textColor: "text-[var(--badge-amber-text)]", bgColor: "bg-[var(--badge-amber-bg)]" },
+  medium: { color: "bg-[var(--badge-blue-bg)]0", label: "Medio plazo", textColor: "text-[var(--badge-blue-text)]", bgColor: "bg-[var(--badge-blue-bg)]" },
+  long: { color: "bg-[var(--badge-green-bg)]0", label: "Largo plazo", textColor: "text-[var(--badge-green-text)]", bgColor: "bg-[var(--badge-green-bg)]" },
 };
 
 const platformIcons: Record<string, React.ReactNode> = {
   instagram: <Instagram className="w-4 h-4 text-pink-500" />,
-  linkedin: <Linkedin className="w-4 h-4 text-blue-600" />,
+  linkedin: <Linkedin className="w-4 h-4 text-[var(--badge-blue-text)]" />,
   twitter: <Twitter className="w-4 h-4 text-sky-500" />,
   website: <Globe className="w-4 h-4 text-green-500" />,
 };
@@ -165,11 +165,11 @@ export function BrandAuditPanel({ brandProfileId, instagramHandle: defaultIgHand
   const auditedPlatforms = hasAudit ? (audit.platforms as string[] | undefined) : undefined;
 
   return (
-    <div className="rounded-xl border border-stone-200 bg-white overflow-hidden">
+    <div className="rounded-xl border border-[var(--border)] bg-[var(--card-bg)] overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-5 py-4 border-b border-stone-100">
+      <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--border)]">
         <div>
-          <h3 className="text-sm font-semibold text-stone-900 flex items-center gap-2">
+          <h3 className="text-sm font-semibold text-[var(--text-primary)] flex items-center gap-2">
             <Search className="w-4 h-4 text-orange-500" />
             Audit de Presencia Digital
             {auditedPlatforms && auditedPlatforms.length > 0 && (
@@ -183,10 +183,10 @@ export function BrandAuditPanel({ brandProfileId, instagramHandle: defaultIgHand
             )}
           </h3>
           {hasAudit && (
-            <p className="text-xs text-stone-400 mt-0.5">
+            <p className="text-xs text-[var(--text-tertiary)] mt-0.5">
               Ultimo: {formatTimeAgo(audit.createdAt)}
               {audit.tokensUsed && (
-                <span className="ml-2 text-stone-500">
+                <span className="ml-2 text-[var(--text-tertiary)]">
                   ({audit.tokensUsed.toLocaleString()} tokens)
                 </span>
               )}
@@ -196,7 +196,7 @@ export function BrandAuditPanel({ brandProfileId, instagramHandle: defaultIgHand
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowInputs(!showInputs)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-stone-500 hover:bg-stone-50 transition border border-stone-200"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-[var(--text-tertiary)] hover:bg-[var(--surface-0)] transition border border-[var(--border)]"
           >
             {showInputs ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
             Plataformas
@@ -207,8 +207,8 @@ export function BrandAuditPanel({ brandProfileId, instagramHandle: defaultIgHand
             className={cn(
               "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition",
               status === "scraping" || status === "analyzing"
-                ? "bg-stone-100 text-stone-400 cursor-not-allowed"
-                : "bg-orange-50 text-orange-600 hover:bg-orange-100"
+                ? "bg-[var(--surface-1)] text-[var(--text-tertiary)] cursor-not-allowed"
+                : "bg-[var(--accent-muted)] text-[var(--accent)] hover:bg-[var(--accent-muted)]"
             )}
           >
             {status === "scraping" ? (
@@ -238,10 +238,10 @@ export function BrandAuditPanel({ brandProfileId, instagramHandle: defaultIgHand
 
       {/* B6: Multi-platform input fields */}
       {showInputs && (
-        <div className="px-5 py-4 border-b border-stone-100 bg-stone-50/50">
+        <div className="px-5 py-4 border-b border-[var(--border)] bg-[var(--surface-0)]/50">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-medium text-stone-500 flex items-center gap-1.5 mb-1">
+              <label className="text-xs font-medium text-[var(--text-tertiary)] flex items-center gap-1.5 mb-1">
                 <Instagram className="w-3.5 h-3.5 text-pink-500" />
                 Instagram
               </label>
@@ -250,12 +250,12 @@ export function BrandAuditPanel({ brandProfileId, instagramHandle: defaultIgHand
                 placeholder="@tu_cuenta"
                 value={igHandle}
                 onChange={(e) => setIgHandle(e.target.value)}
-                className="w-full px-3 py-2 text-sm rounded-lg border border-stone-200 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-400 placeholder:text-stone-300"
+                className="w-full px-3 py-2 text-sm rounded-lg border border-[var(--border)] bg-[var(--card-bg)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/20 focus:border-orange-400 placeholder:text-[var(--text-tertiary)]"
               />
             </div>
             <div>
-              <label className="text-xs font-medium text-stone-500 flex items-center gap-1.5 mb-1">
-                <Linkedin className="w-3.5 h-3.5 text-blue-600" />
+              <label className="text-xs font-medium text-[var(--text-tertiary)] flex items-center gap-1.5 mb-1">
+                <Linkedin className="w-3.5 h-3.5 text-[var(--badge-blue-text)]" />
                 LinkedIn (URL de empresa)
               </label>
               <input
@@ -263,11 +263,11 @@ export function BrandAuditPanel({ brandProfileId, instagramHandle: defaultIgHand
                 placeholder="https://linkedin.com/company/..."
                 value={linkedinHandle}
                 onChange={(e) => setLinkedinHandle(e.target.value)}
-                className="w-full px-3 py-2 text-sm rounded-lg border border-stone-200 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-400 placeholder:text-stone-300"
+                className="w-full px-3 py-2 text-sm rounded-lg border border-[var(--border)] bg-[var(--card-bg)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/20 focus:border-orange-400 placeholder:text-[var(--text-tertiary)]"
               />
             </div>
             <div>
-              <label className="text-xs font-medium text-stone-500 flex items-center gap-1.5 mb-1">
+              <label className="text-xs font-medium text-[var(--text-tertiary)] flex items-center gap-1.5 mb-1">
                 <Twitter className="w-3.5 h-3.5 text-sky-500" />
                 Twitter/X
               </label>
@@ -276,11 +276,11 @@ export function BrandAuditPanel({ brandProfileId, instagramHandle: defaultIgHand
                 placeholder="@tu_cuenta"
                 value={twitterHandle}
                 onChange={(e) => setTwitterHandle(e.target.value)}
-                className="w-full px-3 py-2 text-sm rounded-lg border border-stone-200 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-400 placeholder:text-stone-300"
+                className="w-full px-3 py-2 text-sm rounded-lg border border-[var(--border)] bg-[var(--card-bg)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/20 focus:border-orange-400 placeholder:text-[var(--text-tertiary)]"
               />
             </div>
             <div>
-              <label className="text-xs font-medium text-stone-500 flex items-center gap-1.5 mb-1">
+              <label className="text-xs font-medium text-[var(--text-tertiary)] flex items-center gap-1.5 mb-1">
                 <Globe className="w-3.5 h-3.5 text-green-500" />
                 Website
               </label>
@@ -289,11 +289,11 @@ export function BrandAuditPanel({ brandProfileId, instagramHandle: defaultIgHand
                 placeholder="https://..."
                 value={webUrl}
                 onChange={(e) => setWebUrl(e.target.value)}
-                className="w-full px-3 py-2 text-sm rounded-lg border border-stone-200 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-400 placeholder:text-stone-300"
+                className="w-full px-3 py-2 text-sm rounded-lg border border-[var(--border)] bg-[var(--card-bg)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/20 focus:border-orange-400 placeholder:text-[var(--text-tertiary)]"
               />
             </div>
           </div>
-          <p className="text-[11px] text-stone-400 mt-2">
+          <p className="text-[11px] text-[var(--text-tertiary)] mt-2">
             Selecciona las plataformas a auditar. Instagram y Website se scrapean directamente; LinkedIn y Twitter se analizan por referencia.
           </p>
         </div>
@@ -301,13 +301,13 @@ export function BrandAuditPanel({ brandProfileId, instagramHandle: defaultIgHand
 
       {/* Error state */}
       {status === "error" && error && (
-        <div className="mx-5 mt-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-600 text-sm flex items-start gap-2">
+        <div className="mx-5 mt-4 p-3 rounded-lg bg-[var(--badge-red-bg)] border border-[var(--badge-red-bg)] text-[var(--badge-red-text)] text-sm flex items-start gap-2">
           <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
           <div>
             <p>{error}</p>
             <button
               onClick={handleAudit}
-              className="text-xs font-medium text-red-700 hover:text-red-800 mt-1 underline"
+              className="text-xs font-medium text-[var(--badge-red-text)] hover:text-red-800 mt-1 underline"
             >
               Reintentar
             </button>
@@ -320,12 +320,12 @@ export function BrandAuditPanel({ brandProfileId, instagramHandle: defaultIgHand
         <div className="p-5 space-y-4">
           <div className="grid grid-cols-4 gap-3">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-16 rounded-lg bg-stone-100 animate-pulse" />
+              <div key={i} className="h-16 rounded-lg bg-[var(--surface-1)] animate-pulse" />
             ))}
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <div className="h-32 rounded-lg bg-stone-100 animate-pulse" />
-            <div className="h-32 rounded-lg bg-stone-100 animate-pulse" />
+            <div className="h-32 rounded-lg bg-[var(--surface-1)] animate-pulse" />
+            <div className="h-32 rounded-lg bg-[var(--surface-1)] animate-pulse" />
           </div>
         </div>
       )}
@@ -334,7 +334,7 @@ export function BrandAuditPanel({ brandProfileId, instagramHandle: defaultIgHand
       {hasAudit && (
         <div className="p-5 space-y-5">
           {/* Summary */}
-          <p className="text-sm text-stone-600 leading-relaxed">{audit.summary}</p>
+          <p className="text-sm text-[var(--text-secondary)] leading-relaxed">{audit.summary}</p>
 
           {/* Overall Metrics row */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -363,21 +363,21 @@ export function BrandAuditPanel({ brandProfileId, instagramHandle: defaultIgHand
 
           {/* B6: Per-platform metrics (collapsible) */}
           {auditPlatformMetrics && Object.keys(auditPlatformMetrics).length > 0 && (
-            <div className="border border-stone-100 rounded-lg overflow-hidden">
+            <div className="border border-[var(--border)] rounded-lg overflow-hidden">
               <button
                 onClick={() => setShowPlatformDetails(!showPlatformDetails)}
-                className="w-full flex items-center justify-between px-4 py-2.5 text-xs font-semibold text-stone-600 uppercase tracking-wider bg-stone-50/50 hover:bg-stone-50 transition"
+                className="w-full flex items-center justify-between px-4 py-2.5 text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider bg-[var(--surface-0)]/50 hover:bg-[var(--surface-0)] transition"
               >
                 <span className="flex items-center gap-1.5">
                   Detalle por Plataforma
-                  <span className="text-stone-400 normal-case font-normal">
+                  <span className="text-[var(--text-tertiary)] normal-case font-normal">
                     ({Object.keys(auditPlatformMetrics).length} plataformas)
                   </span>
                 </span>
                 {showPlatformDetails ? (
-                  <ChevronUp className="w-4 h-4 text-stone-400" />
+                  <ChevronUp className="w-4 h-4 text-[var(--text-tertiary)]" />
                 ) : (
-                  <ChevronDown className="w-4 h-4 text-stone-400" />
+                  <ChevronDown className="w-4 h-4 text-[var(--text-tertiary)]" />
                 )}
               </button>
               {showPlatformDetails && (
@@ -398,7 +398,7 @@ export function BrandAuditPanel({ brandProfileId, instagramHandle: defaultIgHand
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Strengths */}
             <div className="space-y-2">
-              <h4 className="text-xs font-semibold text-green-700 uppercase tracking-wider flex items-center gap-1.5">
+              <h4 className="text-xs font-semibold text-[var(--badge-green-text)] uppercase tracking-wider flex items-center gap-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5" />
                 Fortalezas
               </h4>
@@ -406,10 +406,10 @@ export function BrandAuditPanel({ brandProfileId, instagramHandle: defaultIgHand
                 {audit.strengths.map((s, i) => (
                   <div
                     key={i}
-                    className="p-2.5 rounded-lg bg-green-50/50 border border-green-100"
+                    className="p-2.5 rounded-lg bg-[var(--badge-green-bg)]/50 border border-green-100"
                   >
-                    <p className="text-sm font-medium text-stone-800">{s.title}</p>
-                    <p className="text-xs text-stone-500 mt-0.5">{s.description}</p>
+                    <p className="text-sm font-medium text-[var(--text-primary)]">{s.title}</p>
+                    <p className="text-xs text-[var(--text-tertiary)] mt-0.5">{s.description}</p>
                   </div>
                 ))}
               </div>
@@ -417,7 +417,7 @@ export function BrandAuditPanel({ brandProfileId, instagramHandle: defaultIgHand
 
             {/* Weaknesses */}
             <div className="space-y-2">
-              <h4 className="text-xs font-semibold text-amber-700 uppercase tracking-wider flex items-center gap-1.5">
+              <h4 className="text-xs font-semibold text-[var(--badge-amber-text)] uppercase tracking-wider flex items-center gap-1.5">
                 <AlertTriangle className="w-3.5 h-3.5" />
                 Debilidades
               </h4>
@@ -425,10 +425,10 @@ export function BrandAuditPanel({ brandProfileId, instagramHandle: defaultIgHand
                 {audit.weaknesses.map((w, i) => (
                   <div
                     key={i}
-                    className="p-2.5 rounded-lg bg-amber-50/50 border border-amber-100"
+                    className="p-2.5 rounded-lg bg-[var(--badge-amber-bg)]/50 border border-amber-100"
                   >
-                    <p className="text-sm font-medium text-stone-800">{w.title}</p>
-                    <p className="text-xs text-stone-500 mt-0.5">{w.description}</p>
+                    <p className="text-sm font-medium text-[var(--text-primary)]">{w.title}</p>
+                    <p className="text-xs text-[var(--text-tertiary)] mt-0.5">{w.description}</p>
                   </div>
                 ))}
               </div>
@@ -437,7 +437,7 @@ export function BrandAuditPanel({ brandProfileId, instagramHandle: defaultIgHand
 
           {/* Action Plan */}
           <div className="space-y-2">
-            <h4 className="text-xs font-semibold text-stone-700 uppercase tracking-wider flex items-center gap-1.5">
+            <h4 className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider flex items-center gap-1.5">
               <ArrowRight className="w-3.5 h-3.5" />
               Plan de Accion
             </h4>
@@ -447,7 +447,7 @@ export function BrandAuditPanel({ brandProfileId, instagramHandle: defaultIgHand
                 return (
                   <div
                     key={i}
-                    className="flex items-start gap-3 p-3 rounded-lg border border-stone-100 hover:border-stone-200 transition-colors"
+                    className="flex items-start gap-3 p-3 rounded-lg border border-[var(--border)] hover:border-[var(--border)] transition-colors"
                   >
                     <div className="flex items-center gap-2 shrink-0 mt-0.5">
                       <div className={cn("w-2 h-2 rounded-full", config.color)} />
@@ -456,10 +456,10 @@ export function BrandAuditPanel({ brandProfileId, instagramHandle: defaultIgHand
                       </span>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-stone-800">{action.title}</p>
-                      <p className="text-xs text-stone-500 mt-0.5">{action.description}</p>
+                      <p className="text-sm font-medium text-[var(--text-primary)]">{action.title}</p>
+                      <p className="text-xs text-[var(--text-tertiary)] mt-0.5">{action.description}</p>
                     </div>
-                    <div className="flex items-center gap-1 text-xs text-stone-400 shrink-0">
+                    <div className="flex items-center gap-1 text-xs text-[var(--text-tertiary)] shrink-0">
                       <Clock className="w-3 h-3" />
                       {action.timeframe}
                     </div>
@@ -474,16 +474,16 @@ export function BrandAuditPanel({ brandProfileId, instagramHandle: defaultIgHand
       {/* Empty state (no audit yet, idle) */}
       {!hasAudit && status === "idle" && latestAudit === null && (
         <div className="p-8 text-center">
-          <Search className="w-8 h-8 mx-auto mb-3 text-stone-400" />
-          <p className="text-sm text-stone-500">
+          <Search className="w-8 h-8 mx-auto mb-3 text-[var(--text-tertiary)]" />
+          <p className="text-sm text-[var(--text-tertiary)]">
             Analiza tu presencia digital con IA
           </p>
-          <p className="text-xs text-stone-400 mt-1">
+          <p className="text-xs text-[var(--text-tertiary)] mt-1">
             Scrapeamos tu Instagram y web, y analizamos LinkedIn y Twitter para un audit multi-plataforma
           </p>
           <button
             onClick={() => setShowInputs(true)}
-            className="mt-3 text-xs font-medium text-orange-600 hover:text-orange-700 underline"
+            className="mt-3 text-xs font-medium text-[var(--accent)] hover:text-orange-700 underline"
           >
             Configurar plataformas
           </button>
@@ -505,13 +505,13 @@ function MetricCard({
   isNote?: boolean;
 }) {
   return (
-    <div className="p-3 rounded-lg bg-stone-50 border border-stone-100">
+    <div className="p-3 rounded-lg bg-[var(--surface-0)] border border-[var(--border)]">
       <div className="flex items-center gap-1.5 mb-1">
         {icon}
-        <span className="text-xs text-stone-400">{label}</span>
+        <span className="text-xs text-[var(--text-tertiary)]">{label}</span>
       </div>
       <p className={cn(
-        "font-semibold text-stone-900",
+        "font-semibold text-[var(--text-primary)]",
         isNote ? "text-xs leading-relaxed font-medium" : "text-lg"
       )}>
         {value}
@@ -537,21 +537,21 @@ function PlatformMetricCard({
     highlights?: string[];
   };
 }) {
-  const icon = platformIcons[platform] || <Globe className="w-4 h-4 text-stone-400" />;
+  const icon = platformIcons[platform] || <Globe className="w-4 h-4 text-[var(--text-tertiary)]" />;
   const label = platformLabels[platform] || platform;
   const score = data.score ?? 0;
 
   const scoreColor =
-    score >= 70 ? "text-green-600 bg-green-50" :
-    score >= 40 ? "text-amber-600 bg-amber-50" :
-    "text-red-600 bg-red-50";
+    score >= 70 ? "text-[var(--badge-green-text)] bg-[var(--badge-green-bg)]" :
+    score >= 40 ? "text-[var(--badge-amber-text)] bg-[var(--badge-amber-bg)]" :
+    "text-[var(--badge-red-text)] bg-[var(--badge-red-bg)]";
 
   return (
-    <div className="p-3 rounded-lg border border-stone-100 bg-white">
+    <div className="p-3 rounded-lg border border-[var(--border)] bg-[var(--card-bg)]">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           {icon}
-          <span className="text-sm font-medium text-stone-800">{label}</span>
+          <span className="text-sm font-medium text-[var(--text-primary)]">{label}</span>
         </div>
         {score > 0 && (
           <span className={cn("text-xs font-bold px-2 py-0.5 rounded-full", scoreColor)}>
@@ -564,47 +564,47 @@ function PlatformMetricCard({
       <div className="grid grid-cols-3 gap-2 mb-2">
         {data.followers && data.followers !== "N/A" && (
           <div>
-            <p className="text-[10px] text-stone-400">Seguidores</p>
-            <p className="text-xs font-semibold text-stone-700">{data.followers}</p>
+            <p className="text-[10px] text-[var(--text-tertiary)]">Seguidores</p>
+            <p className="text-xs font-semibold text-[var(--text-secondary)]">{data.followers}</p>
           </div>
         )}
         {data.following && data.following !== "N/A" && (
           <div>
-            <p className="text-[10px] text-stone-400">Siguiendo</p>
-            <p className="text-xs font-semibold text-stone-700">{data.following}</p>
+            <p className="text-[10px] text-[var(--text-tertiary)]">Siguiendo</p>
+            <p className="text-xs font-semibold text-[var(--text-secondary)]">{data.following}</p>
           </div>
         )}
         {data.connections && data.connections !== "N/A" && (
           <div>
-            <p className="text-[10px] text-stone-400">Conexiones</p>
-            <p className="text-xs font-semibold text-stone-700">{data.connections}</p>
+            <p className="text-[10px] text-[var(--text-tertiary)]">Conexiones</p>
+            <p className="text-xs font-semibold text-[var(--text-secondary)]">{data.connections}</p>
           </div>
         )}
         {data.posts && data.posts !== "N/A" && (
           <div>
-            <p className="text-[10px] text-stone-400">Posts</p>
-            <p className="text-xs font-semibold text-stone-700">{data.posts}</p>
+            <p className="text-[10px] text-[var(--text-tertiary)]">Posts</p>
+            <p className="text-xs font-semibold text-[var(--text-secondary)]">{data.posts}</p>
           </div>
         )}
         {data.tweets && data.tweets !== "N/A" && (
           <div>
-            <p className="text-[10px] text-stone-400">Tweets</p>
-            <p className="text-xs font-semibold text-stone-700">{data.tweets}</p>
+            <p className="text-[10px] text-[var(--text-tertiary)]">Tweets</p>
+            <p className="text-xs font-semibold text-[var(--text-secondary)]">{data.tweets}</p>
           </div>
         )}
       </div>
 
       {/* Engagement note */}
       {data.engagementNote && (
-        <p className="text-[11px] text-stone-500 mb-2">{data.engagementNote}</p>
+        <p className="text-[11px] text-[var(--text-tertiary)] mb-2">{data.engagementNote}</p>
       )}
 
       {/* Highlights */}
       {data.highlights && data.highlights.length > 0 && (
         <div className="space-y-1">
           {data.highlights.map((h, i) => (
-            <p key={i} className="text-[11px] text-stone-500 flex items-start gap-1">
-              <span className="text-stone-300 mt-px shrink-0">-</span>
+            <p key={i} className="text-[11px] text-[var(--text-tertiary)] flex items-start gap-1">
+              <span className="text-[var(--text-tertiary)] mt-px shrink-0">-</span>
               {h}
             </p>
           ))}

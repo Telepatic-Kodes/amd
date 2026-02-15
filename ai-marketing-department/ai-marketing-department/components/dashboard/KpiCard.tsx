@@ -78,8 +78,8 @@ export function KpiCard({
 export function KpiCardSkeleton() {
   return (
     <div className="rounded-lg border border-[var(--border)] bg-[var(--surface-raised)] p-5">
-      <div className="h-3 w-16 rounded bg-stone-100 animate-pulse mb-3" />
-      <div className="h-7 w-20 rounded bg-stone-100 animate-pulse" />
+      <div className="h-3 w-16 rounded bg-[var(--surface-2)] animate-pulse mb-3" />
+      <div className="h-7 w-20 rounded bg-[var(--surface-2)] animate-pulse" />
     </div>
   );
 }

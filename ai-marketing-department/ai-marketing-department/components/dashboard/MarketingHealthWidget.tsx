@@ -13,16 +13,16 @@ import {
 } from "lucide-react";
 
 const TIER_DOT: Record<string, string> = {
-  hero: "bg-orange-500",
-  hub: "bg-blue-500",
-  hygiene: "bg-green-500",
+  hero: "bg-[var(--accent)]",
+  hub: "bg-[var(--badge-blue-text)]",
+  hygiene: "bg-[var(--success)]",
 };
 
 const FUNNEL_DOT: Record<string, string> = {
-  reach: "bg-sky-500",
-  act: "bg-orange-500",
-  convert: "bg-green-500",
-  engage: "bg-purple-500",
+  reach: "bg-[var(--badge-blue-text)]",
+  act: "bg-[var(--accent)]",
+  convert: "bg-[var(--success)]",
+  engage: "bg-[var(--badge-purple-text)]",
 };
 
 export function MarketingHealthWidget() {
@@ -31,8 +31,8 @@ export function MarketingHealthWidget() {
 
   if (content === undefined || phaseProgress === undefined) {
     return (
-      <div className="rounded-xl border border-stone-200 bg-white p-5">
-        <div className="flex items-center gap-2 text-sm text-stone-400">
+      <div className="rounded-xl border border-[var(--border)] bg-[var(--card-bg)] p-5">
+        <div className="flex items-center gap-2 text-sm text-[var(--text-tertiary)]">
           <Loader2 className="w-4 h-4 animate-spin" />
           Cargando métricas de marketing...
         </div>
@@ -75,12 +75,12 @@ export function MarketingHealthWidget() {
   const phasesTotal = phaseProgress?.totalPhases ?? 5;
 
   return (
-    <div className="rounded-xl border border-stone-200 bg-white p-5">
+    <div className="rounded-xl border border-[var(--border)] bg-[var(--card-bg)] p-5">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-stone-700">Salud del Marketing</h3>
+        <h3 className="text-sm font-semibold text-[var(--text-primary)]">Salud del Marketing</h3>
         <Link
           href="/strategy"
-          className="text-xs text-orange-600 hover:text-orange-800 font-medium flex items-center gap-1 transition-colors"
+          className="text-xs text-[var(--accent)] hover:text-[var(--accent-hover)] font-medium flex items-center gap-1 transition-colors"
         >
           Estrategia
           <ArrowRight className="h-3 w-3" />
@@ -91,12 +91,12 @@ export function MarketingHealthWidget() {
         {/* Phase Progress mini bar */}
         <div>
           <div className="flex items-center justify-between mb-1.5">
-            <span className="text-xs text-stone-500">Fase de Marketing</span>
-            <span className="text-xs font-medium text-stone-700">{phasesCompleted}/{phasesTotal}</span>
+            <span className="text-xs text-[var(--text-secondary)]">Fase de Marketing</span>
+            <span className="text-xs font-medium text-[var(--text-primary)]">{phasesCompleted}/{phasesTotal}</span>
           </div>
-          <div className="w-full h-2 bg-stone-100 rounded-full">
+          <div className="w-full h-2 bg-[var(--surface-1)] rounded-full">
             <div
-              className="h-2 bg-gradient-to-r from-orange-500 to-green-500 rounded-full transition-all duration-500"
+              className="h-2 bg-gradient-to-r from-[var(--accent)] to-[var(--success)] rounded-full transition-all duration-500"
               style={{ width: `${phasePercent}%` }}
             />
           </div>
@@ -105,8 +105,8 @@ export function MarketingHealthWidget() {
         {/* Tier Balance */}
         <div>
           <div className="flex items-center gap-2 mb-1.5">
-            <Columns3 className="w-3.5 h-3.5 text-stone-400" />
-            <span className="text-xs text-stone-500">Balance de Tiers</span>
+            <Columns3 className="w-3.5 h-3.5 text-[var(--text-tertiary)]" />
+            <span className="text-xs text-[var(--text-secondary)]">Balance de Tiers</span>
           </div>
           {tierTotal > 0 ? (
             <div className="flex items-center gap-1 h-3 rounded-full overflow-hidden">
@@ -124,11 +124,11 @@ export function MarketingHealthWidget() {
               })}
             </div>
           ) : (
-            <div className="h-3 bg-stone-100 rounded-full" />
+            <div className="h-3 bg-[var(--surface-1)] rounded-full" />
           )}
           <div className="flex items-center gap-3 mt-1">
             {(["hero", "hub", "hygiene"] as const).map((tier) => (
-              <span key={tier} className="flex items-center gap-1 text-[9px] text-stone-500">
+              <span key={tier} className="flex items-center gap-1 text-[9px] text-[var(--text-secondary)]">
                 <span className={cn("w-1.5 h-1.5 rounded-full", TIER_DOT[tier])} />
                 {tierCounts[tier]}
               </span>
@@ -139,13 +139,13 @@ export function MarketingHealthWidget() {
         {/* Funnel Health */}
         <div>
           <div className="flex items-center gap-2 mb-1.5">
-            <Target className="w-3.5 h-3.5 text-stone-400" />
-            <span className="text-xs text-stone-500">Funnel RACE</span>
+            <Target className="w-3.5 h-3.5 text-[var(--text-tertiary)]" />
+            <span className="text-xs text-[var(--text-secondary)]">Funnel RACE</span>
           </div>
           <div className="flex items-center gap-1">
             {(["reach", "act", "convert", "engage"] as const).map((stage) => (
               <div key={stage} className="flex-1">
-                <div className="w-full h-6 bg-stone-100 rounded relative overflow-hidden">
+                <div className="w-full h-6 bg-[var(--surface-1)] rounded relative overflow-hidden">
                   <div
                     className={cn("absolute bottom-0 left-0 right-0 transition-all", FUNNEL_DOT[stage])}
                     style={{
@@ -155,7 +155,7 @@ export function MarketingHealthWidget() {
                     }}
                   />
                 </div>
-                <span className="text-[8px] text-stone-400 text-center block mt-0.5 capitalize">{stage[0].toUpperCase()}</span>
+                <span className="text-[8px] text-[var(--text-tertiary)] text-center block mt-0.5 capitalize">{stage[0].toUpperCase()}</span>
               </div>
             ))}
           </div>
@@ -165,14 +165,14 @@ export function MarketingHealthWidget() {
         <div>
           <div className="flex items-center justify-between mb-1.5">
             <div className="flex items-center gap-2">
-              <BookOpen className="w-3.5 h-3.5 text-stone-400" />
-              <span className="text-xs text-stone-500">TAYA</span>
+              <BookOpen className="w-3.5 h-3.5 text-[var(--text-tertiary)]" />
+              <span className="text-xs text-[var(--text-secondary)]">TAYA</span>
             </div>
             <span className={cn(
               "text-[10px] font-bold px-1.5 py-0.5 rounded-full",
-              tayaCovered === 5 ? "bg-green-100 text-green-700"
-                : tayaCovered >= 3 ? "bg-amber-100 text-amber-700"
-                  : "bg-red-100 text-red-700"
+              tayaCovered === 5 ? "bg-[var(--badge-green-bg)] text-[var(--badge-green-text)]"
+                : tayaCovered >= 3 ? "bg-[var(--badge-amber-bg)] text-[var(--badge-amber-text)]"
+                  : "bg-[var(--badge-red-bg)] text-[var(--badge-red-text)]"
             )}>
               {tayaCovered}/5
             </span>
@@ -183,7 +183,7 @@ export function MarketingHealthWidget() {
                 key={cat}
                 className={cn(
                   "flex-1 h-2 rounded-full transition-colors",
-                  tayaCounts[cat] > 0 ? "bg-violet-400" : "bg-stone-100"
+                  tayaCounts[cat] > 0 ? "bg-[var(--badge-purple-text)]" : "bg-[var(--surface-1)]"
                 )}
                 title={`${cat}: ${tayaCounts[cat]}`}
               />

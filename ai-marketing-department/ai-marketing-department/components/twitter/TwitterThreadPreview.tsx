@@ -33,17 +33,17 @@ export function TwitterThreadPreview({
   return (
     <div className={cn("space-y-4", className)}>
       {/* Thread header */}
-      <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-orange-500/10 border border-orange-500/30">
-        <Twitter className="h-4 w-4 text-orange-400" />
-        <span className="text-sm font-medium text-orange-400">
+      <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--accent)]/10 border border-[var(--accent)]/30">
+        <Twitter className="h-4 w-4 text-[var(--accent)]" />
+        <span className="text-sm font-medium text-[var(--accent)]">
           Hilo de {tweets.length} tweets
         </span>
-        <span className="text-xs text-stone-500">·</span>
-        <span className="text-xs text-stone-400">
+        <span className="text-xs text-[var(--text-tertiary)]">·</span>
+        <span className="text-xs text-[var(--text-tertiary)]">
           {totalChars.toLocaleString()} caracteres
         </span>
-        <span className="text-xs text-stone-500">·</span>
-        <span className="text-xs text-stone-400">
+        <span className="text-xs text-[var(--text-tertiary)]">·</span>
+        <span className="text-xs text-[var(--text-tertiary)]">
           ~{readingTimeMinutes} min de lectura
         </span>
       </div>
@@ -54,7 +54,7 @@ export function TwitterThreadPreview({
           <div key={index} className="relative">
             {/* Connecting line */}
             {index < tweets.length - 1 && (
-              <div className="absolute left-[46px] top-[72px] bottom-[-16px] w-0.5 bg-stone-700 z-0" />
+              <div className="absolute left-[46px] top-[72px] bottom-[-16px] w-0.5 bg-[var(--surface-2)] z-0" />
             )}
 
             {/* Tweet card */}

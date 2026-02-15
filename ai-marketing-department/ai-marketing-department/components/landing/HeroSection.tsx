@@ -46,7 +46,7 @@ export function HeroSection() {
         <div className="max-w-5xl mx-auto text-center">
           {/* Badge */}
           <motion.div
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-400 text-sm font-medium mb-8"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--accent)]/10 border border-[var(--accent)]/20 text-[var(--accent)] text-sm font-medium mb-8"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
@@ -70,13 +70,13 @@ export function HeroSection() {
 
           {/* Subheadline */}
           <motion.p
-            className="text-xl md:text-2xl text-stone-400 mb-12 max-w-3xl mx-auto leading-relaxed"
+            className="text-xl md:text-2xl text-[var(--text-tertiary)] mb-12 max-w-3xl mx-auto leading-relaxed"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.6 }}
           >
             Automatiza contenido, SEO, social media y ads. Ahorra hasta{" "}
-            <span className="text-green-400 font-semibold">
+            <span className="text-[var(--success)] font-semibold">
               <SimpleCounter value={450} duration={2000} />k/año
             </span>
             .
@@ -114,17 +114,17 @@ export function HeroSection() {
               {Array.from({ length: 37 }).map((_, i) => (
                 <motion.div
                   key={i}
-                  className="aspect-square rounded-lg bg-stone-100/50 border border-stone-200 flex items-center justify-center hover:border-orange-500/50 transition-all duration-300"
+                  className="aspect-square rounded-lg bg-[var(--surface-1)]/50 border border-[var(--border)] flex items-center justify-center hover:border-[var(--accent)]/50 transition-all duration-300"
                   variants={agentItemVariants}
                   whileHover={{ scale: 1.1, borderColor: "rgba(99, 102, 241, 0.5)" }}
                   transition={{ duration: 0.2 }}
                 >
-                  <Bot className="h-6 w-6 text-stone-600 hover:text-orange-500" />
+                  <Bot className="h-6 w-6 text-[var(--text-secondary)] hover:text-orange-500" />
                 </motion.div>
               ))}
             </motion.div>
             <motion.p
-              className="text-stone-500 text-sm mt-6"
+              className="text-[var(--text-tertiary)] text-sm mt-6"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 1.4 }}

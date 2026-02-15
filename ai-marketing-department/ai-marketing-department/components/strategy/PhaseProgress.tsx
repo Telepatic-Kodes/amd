@@ -14,10 +14,10 @@ const PHASES = [
 ] as const;
 
 const STATUS_STYLES = {
-  completed: { ring: "ring-green-500 bg-green-50", icon: "text-green-600", label: "text-green-700" },
-  in_progress: { ring: "ring-orange-500 bg-orange-50", icon: "text-orange-600", label: "text-orange-700" },
-  pending: { ring: "ring-stone-200 bg-stone-50", icon: "text-stone-400", label: "text-stone-500" },
-  skipped: { ring: "ring-stone-200 bg-stone-100", icon: "text-stone-300", label: "text-stone-400" },
+  completed: { ring: "ring-green-500 bg-[var(--badge-green-bg)]", icon: "text-[var(--success)]", label: "text-green-700" },
+  in_progress: { ring: "ring-[var(--accent)] bg-[var(--accent-subtle)]", icon: "text-[var(--accent)]", label: "text-orange-700" },
+  pending: { ring: "ring-stone-200 bg-[var(--surface-0)]", icon: "text-[var(--text-tertiary)]", label: "text-[var(--text-tertiary)]" },
+  skipped: { ring: "ring-stone-200 bg-[var(--surface-1)]", icon: "text-[var(--text-tertiary)]", label: "text-[var(--text-tertiary)]" },
 };
 
 interface PhaseProgressProps {
@@ -28,13 +28,19 @@ interface PhaseProgressProps {
 export function PhaseProgress({ onPhaseClick, compact }: PhaseProgressProps) {
   const phaseProgress = useQuery(api.marketingPhases.getPhaseProgress);
 
-  if (!phaseProgress) {
+  // undefined = still loading from Convex
+  if (phaseProgress === undefined) {
     return (
-      <div className="flex items-center gap-2 text-sm text-stone-400">
+      <div className="flex items-center gap-2 text-sm text-[var(--text-tertiary)]">
         <Loader2 className="w-4 h-4 animate-spin" />
         Cargando fases...
       </div>
     );
+  }
+
+  // null = no brand profile or no phases initialized yet — show nothing
+  if (phaseProgress === null) {
+    return null;
   }
 
   const phaseMap = new Map(phaseProgress.phases.map((p) => [p.phase, p]));
@@ -51,10 +57,10 @@ export function PhaseProgress({ onPhaseClick, compact }: PhaseProgressProps) {
                 onClick={() => onPhaseClick?.(phase.key)}
                 className={cn(
                   "flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all",
-                  status === "completed" && "bg-green-50 text-green-700 border border-green-200",
-                  status === "in_progress" && "bg-orange-50 text-orange-700 border border-orange-200",
-                  status === "pending" && "bg-stone-50 text-stone-500 border border-stone-200",
-                  status === "skipped" && "bg-stone-50 text-stone-400 border border-stone-100",
+                  status === "completed" && "bg-[var(--badge-green-bg)] text-green-700 border border-green-200",
+                  status === "in_progress" && "bg-[var(--accent-subtle)] text-orange-700 border border-orange-200",
+                  status === "pending" && "bg-[var(--surface-0)] text-[var(--text-tertiary)] border border-[var(--border)]",
+                  status === "skipped" && "bg-[var(--surface-0)] text-[var(--text-tertiary)] border border-[var(--border)]",
                 )}
                 title={`${phase.label}: ${phase.description}`}
               >
@@ -66,7 +72,7 @@ export function PhaseProgress({ onPhaseClick, compact }: PhaseProgressProps) {
               {idx < PHASES.length - 1 && (
                 <div className={cn(
                   "w-4 h-0.5 mx-0.5",
-                  status === "completed" ? "bg-green-300" : "bg-stone-200"
+                  status === "completed" ? "bg-green-300" : "bg-[var(--surface-2)]"
                 )} />
               )}
             </div>
@@ -77,16 +83,16 @@ export function PhaseProgress({ onPhaseClick, compact }: PhaseProgressProps) {
   }
 
   return (
-    <div className="rounded-xl border border-stone-200 bg-white p-5">
+    <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-0)] p-5">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-stone-700">Fase de Marketing</h3>
-        <span className="text-xs text-stone-500">
+        <h3 className="text-sm font-semibold text-[var(--text-primary)]">Fase de Marketing</h3>
+        <span className="text-xs text-[var(--text-tertiary)]">
           {phaseProgress.completedCount}/{phaseProgress.totalPhases} completadas
         </span>
       </div>
 
       {/* Progress bar */}
-      <div className="w-full h-2 bg-stone-100 rounded-full mb-5">
+      <div className="w-full h-2 bg-[var(--surface-1)] rounded-full mb-5">
         <div
           className="h-2 bg-gradient-to-r from-orange-500 to-green-500 rounded-full transition-all duration-500"
           style={{ width: `${phaseProgress.progressPercent}%` }}
@@ -109,7 +115,7 @@ export function PhaseProgress({ onPhaseClick, compact }: PhaseProgressProps) {
                   "absolute top-5 -left-1/2 w-full h-0.5",
                   status === "completed" || (phaseMap.get(PHASES[idx - 1].key)?.status === "completed")
                     ? "bg-green-300"
-                    : "bg-stone-200"
+                    : "bg-[var(--surface-2)]"
                 )} style={{ zIndex: 0 }} />
               )}
 
@@ -134,7 +140,7 @@ export function PhaseProgress({ onPhaseClick, compact }: PhaseProgressProps) {
               <span className={cn("text-[11px] font-medium mt-2 text-center", styles.label)}>
                 {phase.label}
               </span>
-              <span className="text-[9px] text-stone-400 text-center mt-0.5 line-clamp-2 max-w-[80px]">
+              <span className="text-[9px] text-[var(--text-tertiary)] text-center mt-0.5 line-clamp-2 max-w-[80px]">
                 {phase.description}
               </span>
             </div>

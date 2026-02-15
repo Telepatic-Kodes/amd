@@ -90,28 +90,28 @@ export function SessionTimeout() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="relative w-full max-w-sm mx-4 bg-white rounded-2xl shadow-2xl p-6 text-center space-y-4"
+            className="relative w-full max-w-sm mx-4 bg-[var(--card-bg)] rounded-2xl shadow-2xl p-6 text-center space-y-4"
           >
-            <Clock className="mx-auto h-10 w-10 text-amber-500" />
-            <h2 className="text-lg font-semibold text-stone-900">
+            <Clock className="mx-auto h-10 w-10 text-[var(--warning)]" />
+            <h2 className="text-lg font-semibold text-[var(--text-primary)]">
               Sesión por expirar
             </h2>
-            <p className="text-sm text-stone-500">
+            <p className="text-sm text-[var(--text-secondary)]">
               Tu sesión se cerrará por inactividad en{" "}
-              <span className="font-mono font-bold text-amber-600">
+              <span className="font-mono font-bold text-[var(--warning)]">
                 {formatTime(secondsLeft)}
               </span>
             </p>
             <div className="flex flex-col gap-2 pt-2">
               <button
                 onClick={handleContinue}
-                className="w-full py-2.5 rounded-lg bg-orange-600 hover:bg-orange-700 text-white font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
+                className="w-full py-2.5 rounded-lg bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-[var(--text-on-accent)] font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:ring-offset-2"
               >
                 Seguir trabajando
               </button>
               <button
                 onClick={() => router.push("/sign-in")}
-                className="inline-flex items-center justify-center gap-1.5 text-sm text-stone-500 hover:text-stone-700 transition-colors"
+                className="inline-flex items-center justify-center gap-1.5 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
               >
                 <LogOut className="h-3.5 w-3.5" />
                 Cerrar sesión

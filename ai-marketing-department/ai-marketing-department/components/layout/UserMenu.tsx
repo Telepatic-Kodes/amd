@@ -11,8 +11,8 @@ export function UserMenu() {
   if (DEV_AUTH_BYPASS) {
     return (
       <div className="flex items-center gap-3">
-        <div className="w-8 h-8 rounded-full bg-stone-200 flex items-center justify-center">
-          <User className="w-4 h-4 text-stone-500" />
+        <div className="w-8 h-8 rounded-full bg-[var(--surface-2)] flex items-center justify-center">
+          <User className="w-4 h-4 text-[var(--text-secondary)]" />
         </div>
       </div>
     );
@@ -25,9 +25,9 @@ export function UserMenu() {
         appearance={{
           elements: {
             avatarBox: "w-8 h-8",
-            userButtonPopoverCard: "bg-white border border-stone-200",
-            userButtonPopoverActionButton: "text-stone-600 hover:text-stone-900",
-            userButtonPopoverActionButtonText: "text-stone-600",
+            userButtonPopoverCard: "bg-[var(--card-bg)] border border-[var(--border)]",
+            userButtonPopoverActionButton: "text-[var(--text-secondary)] hover:text-[var(--text-primary)]",
+            userButtonPopoverActionButtonText: "text-[var(--text-secondary)]",
             userButtonPopoverFooter: "hidden",
           },
         }}

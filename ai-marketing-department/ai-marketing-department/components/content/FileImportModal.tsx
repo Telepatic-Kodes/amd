@@ -149,20 +149,20 @@ export function FileImportModal({
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
-            className="bg-stone-100 rounded-lg w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col"
+            className="bg-[var(--surface-1)] rounded-lg w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-stone-200">
-              <h2 className="text-xl font-semibold text-stone-900">
+            <div className="flex items-center justify-between p-6 border-b border-[var(--border)]">
+              <h2 className="text-xl font-semibold text-[var(--text-primary)]">
                 Importar desde archivo
               </h2>
               <button
                 onClick={handleClose}
-                className="p-2 hover:bg-stone-200 rounded-lg transition-colors"
+                className="p-2 hover:bg-[var(--surface-2)] rounded-lg transition-colors"
                 aria-label="Cerrar"
               >
-                <X className="w-5 h-5 text-stone-400" />
+                <X className="w-5 h-5 text-[var(--text-tertiary)]" />
               </button>
             </div>
 
@@ -171,7 +171,7 @@ export function FileImportModal({
               {/* Step 1: Upload */}
               {step === "upload" && (
                 <div className="space-y-4">
-                  <p className="text-stone-600 text-sm">
+                  <p className="text-[var(--text-secondary)] text-sm">
                     Arrastra un archivo PDF, DOCX o TXT para importar contenido.
                     El contenido extraído se mostrará para que puedas editarlo antes de importar.
                   </p>
@@ -184,8 +184,8 @@ export function FileImportModal({
 
                   {error && (
                     <div className="flex items-start gap-2 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
-                      <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-                      <p className="text-sm text-red-400">{error}</p>
+                      <AlertCircle className="w-5 h-5 text-[var(--error)] flex-shrink-0 mt-0.5" />
+                      <p className="text-sm text-[var(--error)]">{error}</p>
                     </div>
                   )}
                 </div>
@@ -195,13 +195,13 @@ export function FileImportModal({
               {step === "preview" && parsedContent && (
                 <div className="space-y-6">
                   {/* File info */}
-                  <div className="flex items-start gap-3 p-4 bg-stone-200/50 border border-stone-300 rounded-lg">
-                    <FileText className="w-6 h-6 text-orange-400 flex-shrink-0" />
+                  <div className="flex items-start gap-3 p-4 bg-[var(--surface-2)]/50 border border-[var(--border-hover)] rounded-lg">
+                    <FileText className="w-6 h-6 text-[var(--accent)] flex-shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-stone-900 truncate">
+                      <p className="text-sm font-medium text-[var(--text-primary)] truncate">
                         {parsedContent.metadata.fileName}
                       </p>
-                      <p className="text-xs text-stone-400 mt-1">
+                      <p className="text-xs text-[var(--text-tertiary)] mt-1">
                         {parsedContent.metadata.fileType} • {parsedContent.metadata.wordCount} palabras • {parsedContent.metadata.readingTime} min lectura • {formatFileSize(parsedContent.metadata.fileSize)}
                       </p>
                     </div>
@@ -209,33 +209,33 @@ export function FileImportModal({
 
                   {/* Title field */}
                   <div>
-                    <label className="block text-sm font-medium text-stone-600 mb-2">
+                    <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
                       Título
-                      <span className="text-red-400 ml-1">*</span>
+                      <span className="text-[var(--error)] ml-1">*</span>
                     </label>
                     <input
                       type="text"
                       value={editedTitle}
                       onChange={(e) => setEditedTitle(e.target.value)}
                       placeholder="Título del contenido..."
-                      className="w-full px-4 py-2 bg-white border border-stone-300 rounded-lg text-stone-900 placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                      className="w-full px-4 py-2 bg-[var(--card-bg)] border border-[var(--border-hover)] rounded-lg text-[var(--text-primary)] placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent"
                     />
                   </div>
 
                   {/* Content preview/edit */}
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <label className="block text-sm font-medium text-stone-600">
+                      <label className="block text-sm font-medium text-[var(--text-secondary)]">
                         Contenido
-                        <span className="text-red-400 ml-1">*</span>
+                        <span className="text-[var(--error)] ml-1">*</span>
                       </label>
                       <button
                         onClick={() => setIsEditing(!isEditing)}
                         className={cn(
                           "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors",
                           isEditing
-                            ? "bg-orange-600 text-white"
-                            : "bg-stone-200 text-stone-600 hover:bg-stone-100"
+                            ? "bg-[var(--accent)] text-white"
+                            : "bg-[var(--surface-2)] text-[var(--text-secondary)] hover:bg-[var(--surface-1)]"
                         )}
                       >
                         <Edit3 className="w-3.5 h-3.5" />
@@ -243,7 +243,7 @@ export function FileImportModal({
                       </button>
                     </div>
 
-                    <div className="border border-stone-300 rounded-lg overflow-hidden">
+                    <div className="border border-[var(--border-hover)] rounded-lg overflow-hidden">
                       {isEditing ? (
                         <RichTextEditor
                           content={editedBody}
@@ -256,7 +256,7 @@ export function FileImportModal({
                       )}
                     </div>
 
-                    <p className="text-xs text-stone-500 mt-2">
+                    <p className="text-xs text-[var(--text-tertiary)] mt-2">
                       {isEditing
                         ? "Edita el contenido según sea necesario antes de importar"
                         : "Haz clic en 'Editar' para modificar el contenido"
@@ -267,8 +267,8 @@ export function FileImportModal({
                   {/* Error display */}
                   {error && (
                     <div className="flex items-start gap-2 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
-                      <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-                      <p className="text-sm text-red-400">{error}</p>
+                      <AlertCircle className="w-5 h-5 text-[var(--error)] flex-shrink-0 mt-0.5" />
+                      <p className="text-sm text-[var(--error)]">{error}</p>
                     </div>
                   )}
                 </div>
@@ -276,11 +276,11 @@ export function FileImportModal({
             </div>
 
             {/* Footer */}
-            <div className="flex items-center justify-end gap-3 p-6 border-t border-stone-200">
+            <div className="flex items-center justify-end gap-3 p-6 border-t border-[var(--border)]">
               {step === "upload" ? (
                 <button
                   onClick={handleClose}
-                  className="px-4 py-2 bg-stone-200 hover:bg-stone-100 text-stone-600 rounded-lg transition-colors font-medium min-h-[44px]"
+                  className="px-4 py-2 bg-[var(--surface-2)] hover:bg-[var(--surface-1)] text-[var(--text-secondary)] rounded-lg transition-colors font-medium min-h-[44px]"
                 >
                   Cancelar
                 </button>
@@ -288,13 +288,13 @@ export function FileImportModal({
                 <>
                   <button
                     onClick={handleCancel}
-                    className="px-4 py-2 bg-stone-200 hover:bg-stone-100 text-stone-600 rounded-lg transition-colors font-medium min-h-[44px]"
+                    className="px-4 py-2 bg-[var(--surface-2)] hover:bg-[var(--surface-1)] text-[var(--text-secondary)] rounded-lg transition-colors font-medium min-h-[44px]"
                   >
                     Volver
                   </button>
                   <button
                     onClick={handleImport}
-                    className="px-6 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-colors font-medium flex items-center gap-2 min-h-[44px]"
+                    className="px-6 py-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white rounded-lg transition-colors font-medium flex items-center gap-2 min-h-[44px]"
                   >
                     <Check className="w-5 h-5" />
                     Importar

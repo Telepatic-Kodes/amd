@@ -32,7 +32,7 @@ export function LinkedInPostPreview({
   const isOverLimit = charCount > 3000;
 
   return (
-    <div className={cn("rounded-xl border border-stone-300/50 bg-stone-100/80 overflow-hidden", className)}>
+    <div className={cn("rounded-xl border border-[var(--border)]/50 bg-[var(--surface-1)]/80 overflow-hidden", className)}>
       {/* Header */}
       <div className="px-4 py-3 flex items-center gap-3">
         {authorAvatar ? (
@@ -49,20 +49,20 @@ export function LinkedInPostPreview({
           </div>
         )}
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-stone-900 truncate">{authorName}</p>
-          <p className="text-xs text-stone-400 truncate">{authorTitle}</p>
-          <p className="text-xs text-stone-500">Ahora · 🌐</p>
+          <p className="text-sm font-semibold text-[var(--text-primary)] truncate">{authorName}</p>
+          <p className="text-xs text-[var(--text-tertiary)] truncate">{authorTitle}</p>
+          <p className="text-xs text-[var(--text-tertiary)]">Ahora · 🌐</p>
         </div>
       </div>
 
       {/* Body */}
       <div className="px-4 pb-3">
-        <div className="text-sm text-stone-700 whitespace-pre-wrap break-words leading-relaxed">
+        <div className="text-sm text-[var(--text-secondary)] whitespace-pre-wrap break-words leading-relaxed">
           {displayText}
           {shouldTruncate && !expanded && (
             <button
               onClick={() => setExpanded(true)}
-              className="text-stone-400 hover:text-orange-400 transition-colors ml-1"
+              className="text-[var(--text-tertiary)] hover:text-[var(--accent)] transition-colors ml-1"
             >
               {translate("linkedinSeeMore")}
             </button>
@@ -71,9 +71,9 @@ export function LinkedInPostPreview({
       </div>
 
       {/* Engagement bar */}
-      <div className="px-4 py-1 flex items-center gap-1 text-xs text-stone-500 border-b border-stone-200">
+      <div className="px-4 py-1 flex items-center gap-1 text-xs text-[var(--text-tertiary)] border-b border-[var(--border)]">
         <span className="flex items-center gap-1">
-          <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-orange-500 text-[10px]">👍</span>
+          <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-[var(--accent)] text-[10px]">👍</span>
           <span>0</span>
         </span>
       </div>
@@ -88,7 +88,7 @@ export function LinkedInPostPreview({
         ].map(({ icon: Icon, label }) => (
           <button
             key={label}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs text-stone-400 hover:bg-stone-200 transition-colors cursor-default"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs text-[var(--text-tertiary)] hover:bg-[var(--surface-2)] transition-colors cursor-default"
             disabled
           >
             <Icon className="h-4 w-4" />
@@ -98,15 +98,15 @@ export function LinkedInPostPreview({
       </div>
 
       {/* Character count */}
-      <div className="px-4 py-2 border-t border-stone-200 flex items-center justify-between">
+      <div className="px-4 py-2 border-t border-[var(--border)] flex items-center justify-between">
         <span className={cn(
           "text-xs font-mono",
-          isOverLimit ? "text-red-400" : charCount > 2800 ? "text-yellow-400" : "text-stone-500"
+          isOverLimit ? "text-[var(--error)]" : charCount > 2800 ? "text-yellow-400" : "text-[var(--text-tertiary)]"
         )}>
           {charCount.toLocaleString()}/3.000 {translate("linkedinCharCount")}
         </span>
         {isOverLimit && (
-          <span className="text-xs text-red-400">{translate("linkedinCharLimit")}</span>
+          <span className="text-xs text-[var(--error)]">{translate("linkedinCharLimit")}</span>
         )}
       </div>
     </div>

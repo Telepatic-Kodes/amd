@@ -35,29 +35,29 @@ export function Accordion({ items, allowMultiple = false }: AccordionProps) {
         return (
           <div
             key={item.id}
-            className="border border-stone-200 rounded-lg bg-white overflow-hidden transition-all duration-200 hover:border-stone-300"
+            className="border border-[var(--border)] rounded-lg bg-[var(--card-bg)] overflow-hidden transition-all duration-[var(--transition-fast)] hover:border-[var(--border-hover)]"
           >
             <button
               onClick={() => toggleItem(item.id)}
               className="w-full flex items-center justify-between p-6 text-left"
             >
-              <h3 className="text-lg font-semibold text-stone-900 pr-4">
+              <h3 className="text-lg font-semibold text-[var(--text-primary)] pr-4">
                 {item.question}
               </h3>
               <ChevronDown
                 className={cn(
-                  "h-5 w-5 text-stone-400 transition-transform duration-200 flex-shrink-0",
+                  "h-5 w-5 text-[var(--text-tertiary)] transition-transform duration-[var(--transition-fast)] flex-shrink-0",
                   isOpen && "transform rotate-180"
                 )}
               />
             </button>
             <div
               className={cn(
-                "overflow-hidden transition-all duration-300",
+                "overflow-hidden transition-all duration-[var(--transition-base)]",
                 isOpen ? "max-h-96" : "max-h-0"
               )}
             >
-              <div className="p-6 pt-0 text-stone-400 leading-relaxed">
+              <div className="p-6 pt-0 text-[var(--text-secondary)] leading-relaxed">
                 {item.answer}
               </div>
             </div>

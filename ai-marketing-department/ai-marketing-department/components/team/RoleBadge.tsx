@@ -8,7 +8,7 @@ interface RoleBadgeProps {
 
 export function RoleBadge({ role, size = "md" }: RoleBadgeProps) {
   const label = ROLE_LABELS[role] || role;
-  const colorClass = ROLE_COLORS[role] || "bg-stone-500/10 text-stone-400 border-stone-500/20";
+  const colorClass = ROLE_COLORS[role] || "bg-[var(--surface-2)]/10 text-[var(--text-tertiary)] border-[var(--border)]/20";
 
   return (
     <span

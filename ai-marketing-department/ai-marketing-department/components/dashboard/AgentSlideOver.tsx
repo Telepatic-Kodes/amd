@@ -38,8 +38,8 @@ interface AgentSlideOverProps {
 const statusConfig: Record<string, { color: string; label: string; bg: string }> = {
   active: { color: "text-emerald-400", label: "Activo", bg: "bg-emerald-500/10" },
   paused: { color: "text-amber-400", label: "Pausado", bg: "bg-amber-500/10" },
-  error: { color: "text-red-400", label: "Error", bg: "bg-red-500/10" },
-  maintenance: { color: "text-orange-400", label: "Mantenimiento", bg: "bg-orange-500/10" },
+  error: { color: "text-[var(--error)]", label: "Error", bg: "bg-red-500/10" },
+  maintenance: { color: "text-[var(--accent)]", label: "Mantenimiento", bg: "bg-[var(--accent)]/10" },
 };
 
 const departmentLabels: Record<string, string> = {
@@ -64,7 +64,7 @@ const execStatusIcons: Record<string, { color: string; label: string }> = {
   failure: { color: "bg-red-500", label: "Fallida" },
   failed: { color: "bg-red-500", label: "Fallida" },
   running: { color: "bg-amber-500", label: "En curso" },
-  pending: { color: "bg-stone-400", label: "Pendiente" },
+  pending: { color: "bg-[var(--surface-2)]", label: "Pendiente" },
 };
 
 export function AgentSlideOver({ agent, recentActivity, recentExecutions, onClose }: AgentSlideOverProps) {
@@ -90,7 +90,7 @@ export function AgentSlideOver({ agent, recentActivity, recentExecutions, onClos
               </p>
             </div>
           </div>
-          <button onClick={onClose} className="text-stone-400 hover:text-stone-900 transition-colors shrink-0">
+          <button onClick={onClose} className="text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors shrink-0">
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -109,7 +109,7 @@ export function AgentSlideOver({ agent, recentActivity, recentExecutions, onClos
                 "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors",
                 agent.status === "active"
                   ? "bg-emerald-600 hover:bg-emerald-500 text-white"
-                  : "bg-stone-100 text-stone-400 cursor-not-allowed"
+                  : "bg-[var(--surface-1)] text-[var(--text-tertiary)] cursor-not-allowed"
               )}
             >
               <Zap className="h-3 w-3" />
@@ -208,7 +208,7 @@ export function AgentSlideOver({ agent, recentActivity, recentExecutions, onClos
           {/* Empty state */}
           {(!recentActivity || recentActivity.length === 0) && (!recentExecutions || recentExecutions.length === 0) && (
             <div className="flex flex-col items-center justify-center py-8 text-center">
-              <Clock className="h-6 w-6 text-stone-400 mb-2" />
+              <Clock className="h-6 w-6 text-[var(--text-tertiary)] mb-2" />
               <p className="text-sm text-[var(--text-tertiary)]">Sin actividad reciente</p>
             </div>
           )}
@@ -216,7 +216,7 @@ export function AgentSlideOver({ agent, recentActivity, recentExecutions, onClos
           {/* Warning for error agents */}
           {agent.status === "error" && (
             <div className="flex items-start gap-2 rounded-md bg-red-500/10 border border-red-500/20 p-3">
-              <AlertTriangle className="h-4 w-4 text-red-400 shrink-0 mt-0.5" />
+              <AlertTriangle className="h-4 w-4 text-[var(--error)] shrink-0 mt-0.5" />
               <p className="text-xs text-red-300">
                 Este agente está en estado de error. Revisa la configuración o reinícialo desde el Centro de Control.
               </p>

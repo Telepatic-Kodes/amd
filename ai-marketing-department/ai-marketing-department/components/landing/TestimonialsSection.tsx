@@ -40,7 +40,7 @@ export function TestimonialsSection() {
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
               Lo Que Dicen Nuestros Clientes
             </h2>
-            <p className="text-xl text-stone-400 max-w-3xl mx-auto">
+            <p className="text-xl text-[var(--text-tertiary)] max-w-3xl mx-auto">
               Líderes de marketing que están transformando sus departamentos con
               AMD.
             </p>
@@ -81,16 +81,16 @@ export function TestimonialsSection() {
 
                     {/* Quote */}
                     <Quote className="h-8 w-8 text-orange-500 mb-4" />
-                    <p className="text-stone-300 leading-relaxed mb-6">
+                    <p className="text-[var(--text-tertiary)] leading-relaxed mb-6">
                       &ldquo;{testimonial.quote}&rdquo;
                     </p>
 
                     {/* Author */}
-                    <div className="border-t border-stone-200 pt-4">
+                    <div className="border-t border-[var(--border)] pt-4">
                       <p className="text-white font-semibold">
                         {testimonial.author}
                       </p>
-                      <p className="text-stone-500 text-sm">
+                      <p className="text-[var(--text-tertiary)] text-sm">
                         {testimonial.role} at {testimonial.company}
                       </p>
                     </div>

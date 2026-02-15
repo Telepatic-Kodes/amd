@@ -15,17 +15,17 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           // Base styles
           "inline-flex items-center justify-center rounded-lg font-medium transition-all duration-200",
           "disabled:opacity-50 disabled:pointer-events-none",
-          "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white",
+          "focus:outline-none focus:ring-2 focus:ring-offset-2",
 
           // Variants
           {
-            "bg-gradient-to-br from-orange-600 to-orange-700 text-white hover:from-orange-700 hover:to-orange-800 focus:ring-orange-500 shadow-sm":
+            "bg-[var(--button-primary-bg)] hover:bg-[var(--button-primary-hover)] text-[var(--button-primary-text)] focus:ring-[var(--accent)] shadow-sm":
               variant === "primary",
-            "bg-stone-100 text-stone-700 hover:bg-stone-200 focus:ring-stone-400":
+            "bg-[var(--button-secondary-bg)] text-[var(--text-primary)] hover:bg-[var(--button-secondary-hover)] focus:ring-[var(--accent)]":
               variant === "secondary",
-            "border border-stone-300 text-stone-700 hover:bg-stone-50 focus:ring-stone-400":
+            "border border-[var(--border)] text-[var(--text-primary)] hover:bg-[var(--surface-1)] focus:ring-[var(--accent)]":
               variant === "outline",
-            "text-stone-500 hover:text-stone-700 hover:bg-stone-100 focus:ring-stone-400":
+            "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-1)] focus:ring-[var(--accent)]":
               variant === "ghost",
           },
 

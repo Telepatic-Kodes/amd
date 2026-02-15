@@ -22,21 +22,21 @@ import {
 const DEPT_COLORS: Record<string, { bg: string; text: string; border: string }> = {
   content: { bg: "bg-blue-50", text: "text-blue-700", border: "border-blue-200" },
   social: { bg: "bg-purple-50", text: "text-purple-700", border: "border-purple-200" },
-  demandgen: { bg: "bg-orange-50", text: "text-orange-700", border: "border-orange-200" },
-  seo: { bg: "bg-green-50", text: "text-green-700", border: "border-green-200" },
+  demandgen: { bg: "bg-[var(--accent-subtle)]", text: "text-orange-700", border: "border-orange-200" },
+  seo: { bg: "bg-[var(--badge-green-bg)]", text: "text-green-700", border: "border-green-200" },
   ops: { bg: "bg-amber-50", text: "text-amber-700", border: "border-amber-200" },
   brand: { bg: "bg-pink-50", text: "text-pink-700", border: "border-pink-200" },
-  leadership: { bg: "bg-stone-50", text: "text-stone-700", border: "border-stone-200" },
+  leadership: { bg: "bg-[var(--surface-0)]", text: "text-[var(--text-secondary)]", border: "border-[var(--border)]" },
 };
 
 const TASK_STATUS_CONFIG: Record<string, { icon: typeof CheckCircle2; color: string; label: string }> = {
   running: { icon: Loader2, color: "text-orange-500", label: "Ejecutando" },
-  pending: { icon: Clock, color: "text-stone-400", label: "Pendiente" },
+  pending: { icon: Clock, color: "text-[var(--text-tertiary)]", label: "Pendiente" },
   queued: { icon: Clock, color: "text-blue-400", label: "En cola" },
   completed: { icon: CheckCircle2, color: "text-green-500", label: "Completada" },
-  failed: { icon: XCircle, color: "text-red-500", label: "Fallida" },
+  failed: { icon: XCircle, color: "text-[var(--error)]", label: "Fallida" },
   waiting_review: { icon: Clock, color: "text-amber-500", label: "En revisión" },
-  cancelled: { icon: XCircle, color: "text-stone-400", label: "Cancelada" },
+  cancelled: { icon: XCircle, color: "text-[var(--text-tertiary)]", label: "Cancelada" },
 };
 
 function TaskStatusIcon({ status }: { status: string }) {
@@ -96,12 +96,12 @@ export function StrategyExecutionMonitor({ strategyId }: StrategyExecutionMonito
 
   if (!tasks) {
     return (
-      <div className="rounded-xl border border-stone-200 bg-white p-5 animate-pulse">
-        <div className="h-4 bg-stone-100 rounded w-1/4 mb-4" />
+      <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-0)] p-5 animate-pulse">
+        <div className="h-4 bg-[var(--surface-1)] rounded w-1/4 mb-4" />
         <div className="space-y-2">
-          <div className="h-12 bg-stone-50 rounded" />
-          <div className="h-12 bg-stone-50 rounded" />
-          <div className="h-12 bg-stone-50 rounded" />
+          <div className="h-12 bg-[var(--surface-1)]/50 rounded" />
+          <div className="h-12 bg-[var(--surface-1)]/50 rounded" />
+          <div className="h-12 bg-[var(--surface-1)]/50 rounded" />
         </div>
       </div>
     );
@@ -110,46 +110,46 @@ export function StrategyExecutionMonitor({ strategyId }: StrategyExecutionMonito
   if (tasks.length === 0) return null;
 
   return (
-    <div className="rounded-xl border border-stone-200 bg-white">
+    <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-0)]">
       {/* Header */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-between p-4 hover:bg-stone-50/50 transition-colors"
+        className="w-full flex items-center justify-between p-4 hover:bg-[var(--surface-1)]/50 transition-colors"
       >
         <div className="flex items-center gap-3">
           <Activity className="h-4 w-4 text-orange-500" />
-          <h3 className="text-sm font-medium text-stone-900">Monitor de Ejecución</h3>
+          <h3 className="text-sm font-medium text-[var(--text-primary)]">Monitor de Ejecución</h3>
           {stats && (
             <div className="flex items-center gap-2">
               {stats.running > 0 && (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-orange-50 text-orange-600">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-[var(--accent-subtle)] text-[var(--accent)]">
                   <Loader2 className="h-2.5 w-2.5 animate-spin" />
                   {stats.running} ejecutando
                 </span>
               )}
-              <span className="text-[10px] text-stone-400">
+              <span className="text-[10px] text-[var(--text-tertiary)]">
                 {stats.completed}/{stats.total} completadas
               </span>
             </div>
           )}
         </div>
         {expanded ? (
-          <ChevronUp className="h-4 w-4 text-stone-400" />
+          <ChevronUp className="h-4 w-4 text-[var(--text-tertiary)]" />
         ) : (
-          <ChevronDown className="h-4 w-4 text-stone-400" />
+          <ChevronDown className="h-4 w-4 text-[var(--text-tertiary)]" />
         )}
       </button>
 
       {expanded && (
-        <div className="border-t border-stone-100 p-4 pt-3">
+        <div className="border-t border-[var(--border)] p-4 pt-3">
           {/* Filters */}
           {stats && stats.departments.length > 1 && (
             <div className="flex items-center gap-2 mb-3 flex-wrap">
-              <Filter className="h-3 w-3 text-stone-400" />
+              <Filter className="h-3 w-3 text-[var(--text-tertiary)]" />
               <button
                 onClick={() => { setFilterDept(null); setFilterStatus(null); }}
                 className={`px-2 py-0.5 rounded text-[10px] font-medium transition-colors ${
-                  !filterDept && !filterStatus ? "bg-orange-100 text-orange-700" : "bg-stone-100 text-stone-500 hover:bg-stone-200"
+                  !filterDept && !filterStatus ? "bg-orange-100 text-orange-700" : "bg-[var(--surface-1)] text-[var(--text-tertiary)] hover:bg-[var(--surface-1)]"
                 }`}
               >
                 Todas ({stats.total})
@@ -162,19 +162,19 @@ export function StrategyExecutionMonitor({ strategyId }: StrategyExecutionMonito
                     key={dept}
                     onClick={() => setFilterDept(filterDept === dept ? null : (dept as string))}
                     className={`px-2 py-0.5 rounded text-[10px] font-medium capitalize transition-colors ${
-                      filterDept === dept ? `${colors.bg} ${colors.text}` : "bg-stone-100 text-stone-500 hover:bg-stone-200"
+                      filterDept === dept ? `${colors.bg} ${colors.text}` : "bg-[var(--surface-1)] text-[var(--text-tertiary)] hover:bg-[var(--surface-1)]"
                     }`}
                   >
                     {dept} ({count})
                   </button>
                 );
               })}
-              <span className="text-stone-400 mx-1">|</span>
+              <span className="text-[var(--text-tertiary)] mx-1">|</span>
               {stats.running > 0 && (
                 <button
                   onClick={() => setFilterStatus(filterStatus === "running" ? null : "running")}
                   className={`px-2 py-0.5 rounded text-[10px] font-medium transition-colors ${
-                    filterStatus === "running" ? "bg-orange-100 text-orange-700" : "bg-stone-100 text-stone-500 hover:bg-stone-200"
+                    filterStatus === "running" ? "bg-orange-100 text-orange-700" : "bg-[var(--surface-1)] text-[var(--text-tertiary)] hover:bg-[var(--surface-1)]"
                   }`}
                 >
                   Ejecutando ({stats.running})
@@ -184,7 +184,7 @@ export function StrategyExecutionMonitor({ strategyId }: StrategyExecutionMonito
                 <button
                   onClick={() => setFilterStatus(filterStatus === "failed" ? null : "failed")}
                   className={`px-2 py-0.5 rounded text-[10px] font-medium transition-colors ${
-                    filterStatus === "failed" ? "bg-red-100 text-red-700" : "bg-stone-100 text-stone-500 hover:bg-stone-200"
+                    filterStatus === "failed" ? "bg-[var(--badge-red-bg)] text-[var(--badge-red-text)]" : "bg-[var(--surface-1)] text-[var(--text-tertiary)] hover:bg-[var(--surface-1)]"
                   }`}
                 >
                   Fallidas ({stats.failed})
@@ -203,10 +203,10 @@ export function StrategyExecutionMonitor({ strategyId }: StrategyExecutionMonito
                   key={task._id}
                   className={`flex items-center gap-3 p-2.5 rounded-lg border transition-all ${
                     task.status === "running"
-                      ? "border-orange-200 bg-orange-50/30"
+                      ? "border-orange-200 bg-[var(--accent-subtle)]/30"
                       : task.status === "failed"
-                      ? "border-red-100 bg-red-50/20"
-                      : "border-stone-100 bg-white hover:bg-stone-50/50"
+                      ? "border-red-100 bg-[var(--badge-red-bg)]/20"
+                      : "border-[var(--border)] bg-[var(--surface-0)] hover:bg-[var(--surface-1)]/30"
                   }`}
                 >
                   {/* Status Icon */}
@@ -214,14 +214,14 @@ export function StrategyExecutionMonitor({ strategyId }: StrategyExecutionMonito
 
                   {/* Task Info */}
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium text-stone-900 truncate">{task.title}</p>
+                    <p className="text-xs font-medium text-[var(--text-primary)] truncate">{task.title}</p>
                     <div className="flex items-center gap-2 mt-0.5">
                       {task.agent && (
                         <>
                           <span className={`px-1.5 py-0.5 rounded text-[9px] font-medium capitalize ${deptColors.bg} ${deptColors.text}`}>
                             {task.agent.department}
                           </span>
-                          <span className="text-[10px] text-stone-400 flex items-center gap-0.5">
+                          <span className="text-[10px] text-[var(--text-tertiary)] flex items-center gap-0.5">
                             <Bot className="h-2.5 w-2.5" />
                             {task.agent.name}
                           </span>
@@ -234,11 +234,11 @@ export function StrategyExecutionMonitor({ strategyId }: StrategyExecutionMonito
                   <div className="flex items-center gap-3 shrink-0">
                     {task.execution && (
                       <>
-                        <span className="text-[10px] text-stone-400 flex items-center gap-0.5" title="Duración">
+                        <span className="text-[10px] text-[var(--text-tertiary)] flex items-center gap-0.5" title="Duración">
                           <Timer className="h-2.5 w-2.5" />
                           {formatDuration(task.execution.duration)}
                         </span>
-                        <span className="text-[10px] text-stone-400 flex items-center gap-0.5" title="Costo">
+                        <span className="text-[10px] text-[var(--text-tertiary)] flex items-center gap-0.5" title="Costo">
                           <Coins className="h-2.5 w-2.5" />
                           {formatCost(task.execution.cost)}
                         </span>

@@ -216,26 +216,26 @@ export function EditContentModal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-4xl bg-stone-100 border border-stone-200 rounded-lg my-8"
+            className="w-full max-w-4xl bg-[var(--surface-1)] border border-[var(--border)] rounded-lg my-8"
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-stone-200">
+            <div className="flex items-center justify-between p-6 border-b border-[var(--border)]">
               <div>
-                <h2 className="text-xl font-bold text-stone-900">Editar Contenido</h2>
-                <p className="text-sm text-stone-400 mt-1">{content?.title}</p>
+                <h2 className="text-xl font-bold text-[var(--text-primary)]">Editar Contenido</h2>
+                <p className="text-sm text-[var(--text-tertiary)] mt-1">{content?.title}</p>
               </div>
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => setIsImportModalOpen(true)}
-                  className="flex items-center gap-2 px-3 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg transition-colors text-sm font-medium text-white min-h-[44px]"
+                  className="flex items-center gap-2 px-3 py-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] rounded-lg transition-colors text-sm font-medium text-white min-h-[44px]"
                 >
                   <Upload className="w-4 h-4" />
                   <span className="hidden sm:inline">Importar archivo</span>
                 </button>
                 <button
                   onClick={onClose}
-                  className="p-2 rounded hover:bg-stone-200 text-stone-400 min-h-[44px] min-w-[44px] flex items-center justify-center"
+                  className="p-2 rounded hover:bg-[var(--surface-2)] text-[var(--text-tertiary)] min-h-[44px] min-w-[44px] flex items-center justify-center"
                 >
                   <X className="h-5 w-5" />
                 </button>
@@ -245,7 +245,7 @@ export function EditContentModal({
             {/* Form */}
             <form onSubmit={handleSubmit} className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
               {error && (
-                <div className="text-sm text-red-400 bg-red-500/10 rounded p-3">
+                <div className="text-sm text-[var(--error)] bg-red-500/10 rounded p-3">
                   {error}
                 </div>
               )}
@@ -253,10 +253,10 @@ export function EditContentModal({
               {/* Basic Section */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-semibold text-stone-900">Contenido</h3>
+                  <h3 className="text-sm font-semibold text-[var(--text-primary)]">Contenido</h3>
 
                   {/* Write/Preview Tabs */}
-                  <div role="tablist" aria-label="Modo de editor" className="flex gap-2 bg-white rounded-lg p-1 border border-stone-200">
+                  <div role="tablist" aria-label="Modo de editor" className="flex gap-2 bg-[var(--card-bg)] rounded-lg p-1 border border-[var(--border)]">
                     <button
                       type="button"
                       role="tab"
@@ -266,8 +266,8 @@ export function EditContentModal({
                       className={cn(
                         "flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-colors",
                         activeTab === "write"
-                          ? "bg-orange-500 text-white"
-                          : "text-stone-400 hover:text-stone-900"
+                          ? "bg-[var(--accent)] text-white"
+                          : "text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
                       )}
                     >
                       <Edit3 className="h-3 w-3" />
@@ -282,8 +282,8 @@ export function EditContentModal({
                       className={cn(
                         "flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-colors",
                         activeTab === "preview"
-                          ? "bg-orange-500 text-white"
-                          : "text-stone-400 hover:text-stone-900"
+                          ? "bg-[var(--accent)] text-white"
+                          : "text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
                       )}
                     >
                       <Eye className="h-3 w-3" />
@@ -294,21 +294,21 @@ export function EditContentModal({
 
                 {/* Title */}
                 <div>
-                  <label className="block text-xs text-stone-500 mb-2">Título</label>
+                  <label className="block text-xs text-[var(--text-tertiary)] mb-2">Título</label>
                   <input
                     type="text"
                     value={formData.title}
                     onChange={(e) => handleInputChange("title", e.target.value)}
-                    className="w-full rounded-lg border border-stone-200 bg-white py-2 px-3 text-sm text-stone-900 placeholder-stone-400 focus:border-orange-500 focus:outline-none"
+                    className="w-full rounded-lg border border-[var(--border)] bg-[var(--card-bg)] py-2 px-3 text-sm text-[var(--text-primary)] placeholder-[var(--text-tertiary)] focus:border-[var(--accent)] focus:outline-none"
                   />
-                  <p className="text-xs text-stone-500 mt-1">
+                  <p className="text-xs text-[var(--text-tertiary)] mt-1">
                     {formData.title.length} caracteres
                   </p>
                 </div>
 
                 {/* Body - Tab Content */}
                 <div>
-                  <label className="block text-xs text-stone-500 mb-2">Contenido</label>
+                  <label className="block text-xs text-[var(--text-tertiary)] mb-2">Contenido</label>
 
                   <AnimatePresence mode="wait">
                     {activeTab === "write" ? (
@@ -342,12 +342,12 @@ export function EditContentModal({
                   </AnimatePresence>
 
                   <div className="flex items-center justify-between mt-2">
-                    <p className="text-xs text-stone-500">
+                    <p className="text-xs text-[var(--text-tertiary)]">
                       {stripHtmlTags(formData.body).length} caracteres • {wordCount} palabras •{" "}
                       {readingTime} min lectura
                     </p>
                     {!validation.isValid && (
-                      <p className="text-xs text-red-400">
+                      <p className="text-xs text-[var(--error)]">
                         {validation.error}
                       </p>
                     )}
@@ -356,23 +356,23 @@ export function EditContentModal({
 
                 {/* Summary */}
                 <div>
-                  <label className="block text-xs text-stone-500 mb-2">Resumen</label>
+                  <label className="block text-xs text-[var(--text-tertiary)] mb-2">Resumen</label>
                   <textarea
                     value={formData.summary}
                     onChange={(e) => handleInputChange("summary", e.target.value)}
                     rows={3}
                     placeholder="Breve resumen del contenido..."
-                    className="w-full rounded-lg border border-stone-200 bg-white py-2 px-3 text-sm text-stone-900 placeholder-stone-400 focus:border-orange-500 focus:outline-none"
+                    className="w-full rounded-lg border border-[var(--border)] bg-[var(--card-bg)] py-2 px-3 text-sm text-[var(--text-primary)] placeholder-[var(--text-tertiary)] focus:border-[var(--accent)] focus:outline-none"
                   />
                 </div>
               </div>
 
               {/* SEO Section - Accordion */}
-              <div className="border-t border-stone-200 pt-4">
+              <div className="border-t border-[var(--border)] pt-4">
                 <button
                   type="button"
                   onClick={() => toggleSection("seo")}
-                  className="flex items-center gap-3 w-full text-sm font-semibold text-stone-700 hover:text-orange-600 transition-colors"
+                  className="flex items-center gap-3 w-full text-sm font-semibold text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors"
                 >
                   <ChevronDown
                     className={cn(
@@ -392,15 +392,15 @@ export function EditContentModal({
                   >
                     {/* Meta Title */}
                     <div>
-                      <label className="block text-xs text-stone-500 mb-2">Meta Title</label>
+                      <label className="block text-xs text-[var(--text-tertiary)] mb-2">Meta Title</label>
                       <input
                         type="text"
                         value={formData.seoTitle}
                         onChange={(e) => handleInputChange("seoTitle", e.target.value)}
                         placeholder="Título de página para motores de búsqueda (55-60 caracteres)"
-                        className="w-full rounded-lg border border-stone-200 bg-white py-2 px-3 text-sm text-stone-900 placeholder-stone-400 focus:border-orange-500 focus:outline-none"
+                        className="w-full rounded-lg border border-[var(--border)] bg-[var(--card-bg)] py-2 px-3 text-sm text-[var(--text-primary)] placeholder-[var(--text-tertiary)] focus:border-[var(--accent)] focus:outline-none"
                       />
-                      <p className="text-xs text-stone-500 mt-1">
+                      <p className="text-xs text-[var(--text-tertiary)] mt-1">
                         {formData.seoTitle.length} / 60 caracteres
                         {formData.seoTitle.length >= 55 &&
                           formData.seoTitle.length <= 60 &&
@@ -410,7 +410,7 @@ export function EditContentModal({
 
                     {/* Meta Description */}
                     <div>
-                      <label className="block text-xs text-stone-500 mb-2">
+                      <label className="block text-xs text-[var(--text-tertiary)] mb-2">
                         Meta Description
                       </label>
                       <textarea
@@ -420,9 +420,9 @@ export function EditContentModal({
                         }
                         placeholder="Meta descripción para resultados de búsqueda (150-160 caracteres)"
                         rows={3}
-                        className="w-full rounded-lg border border-stone-200 bg-white py-2 px-3 text-sm text-stone-900 placeholder-stone-400 focus:border-orange-500 focus:outline-none"
+                        className="w-full rounded-lg border border-[var(--border)] bg-[var(--card-bg)] py-2 px-3 text-sm text-[var(--text-primary)] placeholder-[var(--text-tertiary)] focus:border-[var(--accent)] focus:outline-none"
                       />
-                      <p className="text-xs text-stone-500 mt-1">
+                      <p className="text-xs text-[var(--text-tertiary)] mt-1">
                         {formData.seoDescription.length} / 160 caracteres
                         {formData.seoDescription.length >= 150 &&
                           formData.seoDescription.length <= 160 &&
@@ -432,13 +432,13 @@ export function EditContentModal({
 
                     {/* Slug */}
                     <div>
-                      <label className="block text-xs text-stone-500 mb-2">Slug</label>
+                      <label className="block text-xs text-[var(--text-tertiary)] mb-2">Slug</label>
                       <input
                         type="text"
                         value={formData.slug}
                         onChange={(e) => handleInputChange("slug", e.target.value)}
                         placeholder="url-friendly-slug"
-                        className="w-full rounded-lg border border-stone-200 bg-white py-2 px-3 text-sm text-stone-900 placeholder-stone-400 focus:border-orange-500 focus:outline-none font-mono"
+                        className="w-full rounded-lg border border-[var(--border)] bg-[var(--card-bg)] py-2 px-3 text-sm text-[var(--text-primary)] placeholder-[var(--text-tertiary)] focus:border-[var(--accent)] focus:outline-none font-mono"
                       />
                     </div>
                   </motion.div>
@@ -446,11 +446,11 @@ export function EditContentModal({
               </div>
 
               {/* Metadata Section - Accordion */}
-              <div className="border-t border-stone-200 pt-4">
+              <div className="border-t border-[var(--border)] pt-4">
                 <button
                   type="button"
                   onClick={() => toggleSection("metadata")}
-                  className="flex items-center gap-3 w-full text-sm font-semibold text-stone-700 hover:text-orange-600 transition-colors"
+                  className="flex items-center gap-3 w-full text-sm font-semibold text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors"
                 >
                   <ChevronDown
                     className={cn(
@@ -470,7 +470,7 @@ export function EditContentModal({
                   >
                     {/* Keywords */}
                     <div>
-                      <label className="block text-xs text-stone-500 mb-2">
+                      <label className="block text-xs text-[var(--text-tertiary)] mb-2">
                         Palabras Clave Objetivo (separadas por comas)
                       </label>
                       <textarea
@@ -478,17 +478,17 @@ export function EditContentModal({
                         onChange={(e) => handleInputChange("keywords", e.target.value)}
                         placeholder="palabra1, palabra2, palabra3"
                         rows={2}
-                        className="w-full rounded-lg border border-stone-200 bg-white py-2 px-3 text-sm text-stone-900 placeholder-stone-400 focus:border-orange-500 focus:outline-none"
+                        className="w-full rounded-lg border border-[var(--border)] bg-[var(--card-bg)] py-2 px-3 text-sm text-[var(--text-primary)] placeholder-[var(--text-tertiary)] focus:border-[var(--accent)] focus:outline-none"
                       />
                     </div>
 
                     {/* Tone */}
                     <div>
-                      <label className="block text-xs text-stone-500 mb-2">Tono</label>
+                      <label className="block text-xs text-[var(--text-tertiary)] mb-2">Tono</label>
                       <select
                         value={formData.tone}
                         onChange={(e) => handleInputChange("tone", e.target.value)}
-                        className="w-full rounded-lg border border-stone-200 bg-white py-2 px-3 text-sm text-stone-900 focus:border-orange-500 focus:outline-none"
+                        className="w-full rounded-lg border border-[var(--border)] bg-[var(--card-bg)] py-2 px-3 text-sm text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none"
                       >
                         <option value="">Selecciona un tono...</option>
                         {TONES.map((tone) => (
@@ -501,7 +501,7 @@ export function EditContentModal({
 
                     {/* Target Audience */}
                     <div>
-                      <label className="block text-xs text-stone-500 mb-2">
+                      <label className="block text-xs text-[var(--text-tertiary)] mb-2">
                         Audiencia Objetivo
                       </label>
                       <input
@@ -511,7 +511,7 @@ export function EditContentModal({
                           handleInputChange("targetAudience", e.target.value)
                         }
                         placeholder="ej., ejecutivos C-level, desarrolladores"
-                        className="w-full rounded-lg border border-stone-200 bg-white py-2 px-3 text-sm text-stone-900 placeholder-stone-400 focus:border-orange-500 focus:outline-none"
+                        className="w-full rounded-lg border border-[var(--border)] bg-[var(--card-bg)] py-2 px-3 text-sm text-[var(--text-primary)] placeholder-[var(--text-tertiary)] focus:border-[var(--accent)] focus:outline-none"
                       />
                     </div>
                   </motion.div>
@@ -520,11 +520,11 @@ export function EditContentModal({
             </form>
 
             {/* Footer */}
-            <div className="flex gap-3 p-6 border-t border-stone-200 bg-white">
+            <div className="flex gap-3 p-6 border-t border-[var(--border)] bg-[var(--card-bg)]">
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 py-2 rounded-lg border border-stone-200 text-stone-400 hover:bg-stone-200 transition-colors"
+                className="flex-1 py-2 rounded-lg border border-[var(--border)] text-[var(--text-tertiary)] hover:bg-[var(--surface-2)] transition-colors"
               >
                 Cancelar
               </button>
@@ -532,7 +532,7 @@ export function EditContentModal({
                 type="submit"
                 disabled={isLoading}
                 onClick={handleSubmit}
-                className="flex-1 py-2 rounded-lg bg-orange-500 hover:bg-orange-600 text-white font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                className="flex-1 py-2 rounded-lg bg-[var(--accent)] hover:bg-[var(--accent)] text-white font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {isLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />

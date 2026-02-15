@@ -68,14 +68,14 @@ export function FilterTabs({
                 s.padding,
                 s.gap,
                 isActive
-                  ? "text-white"
-                  : "text-stone-500 hover:text-stone-700 hover:bg-stone-100"
+                  ? "text-[var(--text-on-accent)]"
+                  : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-1)]"
               )}
             >
               {isActive && (
                 <motion.div
                   layoutId="activePill"
-                  className="absolute inset-0 rounded-full bg-orange-600"
+                  className="absolute inset-0 rounded-full bg-[var(--accent)]"
                   transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
                 />
               )}
@@ -87,8 +87,8 @@ export function FilterTabs({
                     className={cn(
                       "rounded-full px-1.5 py-0.5 text-xs font-medium",
                       isActive
-                        ? "bg-white/20 text-white"
-                        : "bg-stone-200 text-stone-500"
+                        ? "bg-[var(--text-on-accent)]/20 text-[var(--text-on-accent)]"
+                        : "bg-[var(--surface-2)] text-[var(--text-secondary)]"
                     )}
                   >
                     {tab.count}
@@ -104,7 +104,7 @@ export function FilterTabs({
 
   if (variant === 'underline') {
     return (
-      <div className={cn("relative border-b border-stone-200", className)}>
+      <div className={cn("relative border-b border-[var(--border)]", className)}>
         <div className="flex items-center gap-4">
           {tabs.map((tab) => {
             const isActive = tab.id === activeTab;
@@ -117,20 +117,20 @@ export function FilterTabs({
                 className={cn(
                   "relative pb-3 font-medium transition-colors",
                   s.text,
-                  isActive ? "text-stone-900" : "text-stone-400 hover:text-stone-600"
+                  isActive ? "text-[var(--text-primary)]" : "text-[var(--text-tertiary)] hover:text-[var(--text-secondary)]"
                 )}
               >
                 <span className={cn("flex items-center", s.gap)}>
                   {Icon && <Icon className={s.iconSize} />}
                   {tab.label}
                   {tab.count !== undefined && (
-                    <span className="text-stone-400">({tab.count})</span>
+                    <span className="text-[var(--text-tertiary)]">({tab.count})</span>
                   )}
                 </span>
                 {isActive && (
                   <motion.div
                     layoutId="activeUnderline"
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-500"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-[var(--accent)]"
                     transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
                   />
                 )}
@@ -146,7 +146,7 @@ export function FilterTabs({
   return (
     <div
       className={cn(
-        "inline-flex items-center rounded-lg bg-stone-100 p-1",
+        "inline-flex items-center rounded-lg bg-[var(--surface-1)] p-1",
         className
       )}
     >
@@ -163,14 +163,14 @@ export function FilterTabs({
               s.text,
               s.padding,
               isActive
-                ? "text-stone-900"
-                : "text-stone-500 hover:text-stone-700"
+                ? "text-[var(--text-primary)]"
+                : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
             )}
           >
             {isActive && (
               <motion.div
                 layoutId="activeButton"
-                className="absolute inset-0 rounded-md bg-white shadow-sm"
+                className="absolute inset-0 rounded-md bg-[var(--card-bg)] shadow-sm"
                 transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
               />
             )}
@@ -202,7 +202,7 @@ export function ToggleTabs({ options, value, onChange, className }: ToggleTabsPr
   return (
     <div
       className={cn(
-        "inline-flex items-center rounded-lg bg-stone-100 p-1",
+        "inline-flex items-center rounded-lg bg-[var(--surface-1)] p-1",
         className
       )}
     >
@@ -213,14 +213,14 @@ export function ToggleTabs({ options, value, onChange, className }: ToggleTabsPr
           className={cn(
             "relative px-4 py-1.5 rounded-md text-sm font-medium transition-colors",
             value === option
-              ? "text-stone-900"
-              : "text-stone-500 hover:text-stone-700"
+              ? "text-[var(--text-primary)]"
+              : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
           )}
         >
           {value === option && (
             <motion.div
               layoutId="toggleActive"
-              className="absolute inset-0 rounded-md bg-white shadow-sm"
+              className="absolute inset-0 rounded-md bg-[var(--card-bg)] shadow-sm"
               transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
             />
           )}

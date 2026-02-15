@@ -10,7 +10,7 @@ export function Skeleton({ className }: SkeletonProps) {
   return (
     <div
       className={cn(
-        "animate-pulse rounded-md bg-stone-200/50",
+        "animate-pulse rounded-md bg-[var(--surface-2)]",
         className
       )}
     />
@@ -22,7 +22,7 @@ export function SkeletonCard({ className }: SkeletonProps) {
   return (
     <div
       className={cn(
-        "rounded-xl border border-stone-200 bg-white p-6",
+        "rounded-xl border border-[var(--border)] bg-[var(--card-bg)] p-6",
         className
       )}
     >
@@ -41,7 +41,7 @@ export function SkeletonStat({ className }: SkeletonProps) {
   return (
     <div
       className={cn(
-        "rounded-xl border border-stone-200 bg-white p-6",
+        "rounded-xl border border-[var(--border)] bg-[var(--card-bg)] p-6",
         className
       )}
     >
@@ -59,7 +59,7 @@ export function SkeletonChart({ className, height = 200 }: SkeletonProps & { hei
   return (
     <div
       className={cn(
-        "rounded-xl border border-stone-200 bg-white p-6",
+        "rounded-xl border border-[var(--border)] bg-[var(--card-bg)] p-6",
         className
       )}
     >
@@ -73,7 +73,7 @@ export function SkeletonChart({ className, height = 200 }: SkeletonProps & { hei
           {[40, 65, 45, 80, 55, 70, 50].map((h, i) => (
             <div
               key={i}
-              className="flex-1 rounded-t animate-pulse bg-stone-200/50"
+              className="flex-1 rounded-t animate-pulse bg-[var(--surface-2)]"
               style={{ height: `${h}%` }}
             />
           ))}
@@ -87,15 +87,15 @@ export function SkeletonDonut({ className, size = 200 }: SkeletonProps & { size?
   return (
     <div
       className={cn(
-        "rounded-xl border border-stone-200 bg-white p-6 flex items-center justify-center",
+        "rounded-xl border border-[var(--border)] bg-[var(--card-bg)] p-6 flex items-center justify-center",
         className
       )}
     >
       <div
-        className="rounded-full border-8 border-stone-200 animate-pulse"
+        className="rounded-full border-8 border-[var(--border)] animate-pulse"
         style={{ width: size, height: size }}
       >
-        <div className="w-full h-full rounded-full bg-stone-100/50" />
+        <div className="w-full h-full rounded-full bg-[var(--surface-1)]/50" />
       </div>
     </div>
   );
@@ -105,12 +105,12 @@ export function SkeletonTable({ rows = 5, className }: SkeletonProps & { rows?: 
   return (
     <div
       className={cn(
-        "rounded-xl border border-stone-200 bg-white p-6",
+        "rounded-xl border border-[var(--border)] bg-[var(--card-bg)] p-6",
         className
       )}
     >
       {/* Header */}
-      <div className="flex gap-4 mb-4 pb-3 border-b border-stone-200">
+      <div className="flex gap-4 mb-4 pb-3 border-b border-[var(--border)]">
         <Skeleton className="h-4 w-20" />
         <Skeleton className="h-4 w-16" />
         <Skeleton className="h-4 w-24" />
@@ -139,7 +139,7 @@ export function SkeletonList({ items = 5, className }: SkeletonProps & { items?:
       {Array.from({ length: items }).map((_, i) => (
         <div
           key={i}
-          className="flex items-center gap-3 p-3 rounded-lg bg-stone-100/50"
+          className="flex items-center gap-3 p-3 rounded-lg bg-[var(--surface-1)]/50"
         >
           <Skeleton className="h-10 w-10 rounded-full" />
           <div className="flex-1 space-y-2">

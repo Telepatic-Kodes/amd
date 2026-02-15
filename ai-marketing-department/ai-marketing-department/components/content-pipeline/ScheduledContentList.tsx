@@ -79,14 +79,14 @@ export function ScheduledContentList({ scheduledContent, onPublishNow, onUnsched
   // Loading skeleton
   if (scheduledContent === undefined) {
     return (
-      <div className="bg-stone-50/30 border border-stone-200/50 rounded-xl p-6">
+      <div className="bg-[var(--surface-0)]/30 border border-[var(--border)]/50 rounded-xl p-6">
         <div className="flex items-center gap-2 mb-4">
-          <Calendar className="h-5 w-5 text-orange-400" />
-          <h3 className="text-lg font-semibold text-stone-900">{translate("scheduledContentTitle")}</h3>
+          <Calendar className="h-5 w-5 text-[var(--accent)]" />
+          <h3 className="text-lg font-semibold text-[var(--text-primary)]">{translate("scheduledContentTitle")}</h3>
         </div>
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-16 bg-stone-200/50 rounded-lg animate-pulse" />
+            <div key={i} className="h-16 bg-[var(--surface-2)]/50 rounded-lg animate-pulse" />
           ))}
         </div>
       </div>
@@ -104,21 +104,21 @@ export function ScheduledContentList({ scheduledContent, onPublishNow, onUnsched
   ).length;
 
   return (
-    <div className="bg-stone-50/30 border border-stone-200/50 rounded-xl p-6">
+    <div className="bg-[var(--surface-0)]/30 border border-[var(--border)]/50 rounded-xl p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Calendar className="h-5 w-5 text-orange-400" />
-          <h3 className="text-lg font-semibold text-stone-900">{translate("scheduledContentTitle")}</h3>
+          <Calendar className="h-5 w-5 text-[var(--accent)]" />
+          <h3 className="text-lg font-semibold text-[var(--text-primary)]">{translate("scheduledContentTitle")}</h3>
           {scheduledContent.length > 0 && (
-            <span className="text-xs text-stone-500 bg-stone-200 px-2 py-0.5 rounded-full">{scheduledContent.length}</span>
+            <span className="text-xs text-[var(--text-tertiary)] bg-[var(--surface-2)] px-2 py-0.5 rounded-full">{scheduledContent.length}</span>
           )}
         </div>
 
         {/* Auto-publish indicator */}
         {scheduledContent.length > 0 && (
           <div className="flex items-center gap-1.5" title={translate("autoPublishInfo")}>
-            <div className="flex items-center gap-1 text-xs text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full border border-emerald-200/50">
+            <div className="flex items-center gap-1 text-xs text-[var(--success)] bg-[var(--badge-green-bg)] px-2 py-1 rounded-full border border-[var(--badge-green-bg)]/50">
               <Zap className="h-3 w-3" />
               <span className="font-medium">{translate("autoPublishEnabled")}</span>
             </div>
@@ -130,13 +130,13 @@ export function ScheduledContentList({ scheduledContent, onPublishNow, onUnsched
       {(imminentCount > 0 || overdueCount > 0) && (
         <div className="flex gap-2 mb-3">
           {overdueCount > 0 && (
-            <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full bg-red-50 text-red-600 border border-red-200/50">
+            <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full bg-[var(--badge-red-bg)] text-[var(--badge-red-text)] border border-[var(--badge-red-bg)]/50">
               <Clock className="h-3 w-3" />
               {overdueCount} {translate("overdue").toLowerCase()}
             </span>
           )}
           {imminentCount > 0 && (
-            <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full bg-amber-50 text-amber-600 border border-amber-200/50">
+            <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full bg-[var(--badge-amber-bg)] text-[var(--badge-amber-text)] border border-amber-200/50">
               <Clock className="h-3 w-3" />
               {imminentCount} {translate("publishesSoon").toLowerCase()}
             </span>
@@ -145,7 +145,7 @@ export function ScheduledContentList({ scheduledContent, onPublishNow, onUnsched
       )}
 
       {scheduledContent.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-8 text-stone-600">
+        <div className="flex flex-col items-center justify-center py-8 text-[var(--text-secondary)]">
           <Calendar className="h-8 w-8 mb-2" />
           <p className="text-sm">{translate("noScheduledContent")}</p>
         </div>
@@ -158,16 +158,16 @@ export function ScheduledContentList({ scheduledContent, onPublishNow, onUnsched
               : null;
 
             return (
-              <div key={item._id} className="flex items-center gap-3 py-3 border-b border-stone-200/50 last:border-0">
+              <div key={item._id} className="flex items-center gap-3 py-3 border-b border-[var(--border)]/50 last:border-0">
                 {/* Content type icon */}
-                <div className={cn("flex h-8 w-8 items-center justify-center rounded shrink-0", typeColors[item.type] || "bg-stone-500/10 text-stone-400")}>
+                <div className={cn("flex h-8 w-8 items-center justify-center rounded shrink-0", typeColors[item.type] || "bg-[var(--surface-2)] text-[var(--text-tertiary)]")}>
                   <TypeIcon className="h-4 w-4" />
                 </div>
 
                 {/* Title and date */}
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-stone-900 truncate">{item.title}</p>
-                  <p className="text-xs text-stone-400">
+                  <p className="text-sm font-medium text-[var(--text-primary)] truncate">{item.title}</p>
+                  <p className="text-xs text-[var(--text-tertiary)]">
                     {item.scheduledFor
                       ? new Date(item.scheduledFor).toLocaleDateString("es-CL", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })
                       : "Sin fecha"}
@@ -179,10 +179,10 @@ export function ScheduledContentList({ scheduledContent, onPublishNow, onUnsched
                   <div
                     className={cn(
                       "flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full shrink-0 min-w-[70px] justify-center",
-                      countdown.urgency === "overdue" && "bg-red-100 text-red-700 animate-pulse",
-                      countdown.urgency === "imminent" && "bg-emerald-100 text-emerald-700",
-                      countdown.urgency === "soon" && "bg-amber-100 text-amber-700",
-                      countdown.urgency === "normal" && "bg-stone-100 text-stone-600"
+                      countdown.urgency === "overdue" && "bg-[var(--badge-red-bg)] text-[var(--badge-red-text)] animate-pulse",
+                      countdown.urgency === "imminent" && "bg-[var(--badge-green-bg)] text-[var(--badge-green-text)]",
+                      countdown.urgency === "soon" && "bg-amber-100 text-[var(--badge-amber-text)]",
+                      countdown.urgency === "normal" && "bg-[var(--surface-1)] text-[var(--text-secondary)]"
                     )}
                   >
                     <Clock className="h-3 w-3" />
@@ -194,13 +194,13 @@ export function ScheduledContentList({ scheduledContent, onPublishNow, onUnsched
                 <div className="flex gap-1.5 shrink-0">
                   <button
                     onClick={() => onPublishNow(item._id)}
-                    className="text-xs px-2.5 py-1.5 rounded font-medium bg-orange-500/10 text-orange-400 hover:bg-orange-500/20 transition-colors min-h-[32px]"
+                    className="text-xs px-2.5 py-1.5 rounded font-medium bg-[var(--accent)]/10 text-[var(--accent)] hover:bg-[var(--accent)]/20 transition-colors min-h-[32px]"
                   >
                     Publicar
                   </button>
                   <button
                     onClick={() => onUnschedule(item._id)}
-                    className="text-xs px-2.5 py-1.5 rounded font-medium border border-stone-300 text-stone-400 hover:bg-stone-200 transition-colors min-h-[32px]"
+                    className="text-xs px-2.5 py-1.5 rounded font-medium border border-[var(--border-hover)] text-[var(--text-tertiary)] hover:bg-[var(--surface-2)] transition-colors min-h-[32px]"
                   >
                     {translate("unschedule")}
                   </button>
@@ -213,8 +213,8 @@ export function ScheduledContentList({ scheduledContent, onPublishNow, onUnsched
 
       {/* Footer info about auto-publish cycle */}
       {scheduledContent.length > 0 && (
-        <div className="mt-4 pt-3 border-t border-stone-200/30">
-          <p className="text-[10px] text-stone-400 flex items-center gap-1">
+        <div className="mt-4 pt-3 border-t border-[var(--border)]/30">
+          <p className="text-[10px] text-[var(--text-tertiary)] flex items-center gap-1">
             <Zap className="h-2.5 w-2.5" />
             {translate("autoPublishInfo")}
           </p>

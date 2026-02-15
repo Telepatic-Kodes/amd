@@ -44,8 +44,8 @@ export function OnboardingSourceChoice({
       >
         {/* Title */}
         <div className="space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-orange-500/10 border border-orange-500/20">
-            <Sparkles className="w-3.5 h-3.5 text-orange-400" />
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--accent)]/10 border border-[var(--accent)]/20">
+            <Sparkles className="w-3.5 h-3.5 text-[var(--accent)]" />
             <span className="text-xs font-medium text-orange-300">
               Onboarding
             </span>
@@ -53,7 +53,7 @@ export function OnboardingSourceChoice({
           <h1 className="text-4xl font-bold text-white">
             Activa tu Departamento de Marketing
           </h1>
-          <p className="text-stone-400 text-lg max-w-lg mx-auto">
+          <p className="text-[var(--text-tertiary)] text-lg max-w-lg mx-auto">
             37 agentes de IA listos para trabajar. Solo necesitamos conocer tu
             marca.
           </p>
@@ -75,12 +75,12 @@ export function OnboardingSourceChoice({
                 className={cn(
                   "group relative flex flex-col items-start gap-4 p-6 rounded-2xl border text-left transition-all duration-200",
                   isImport
-                    ? "border-orange-500/30 bg-orange-500/5 hover:bg-orange-500/10 hover:border-orange-500/50"
-                    : "border-stone-700 bg-stone-800/50 hover:bg-stone-800 hover:border-stone-600"
+                    ? "border-[var(--accent)]/30 bg-[var(--accent)]/5 hover:bg-[var(--accent)]/10 hover:border-[var(--accent)]/50"
+                    : "border-[var(--border)] bg-[var(--surface-2)]/50 hover:bg-[var(--surface-2)] hover:border-[var(--border-hover)]"
                 )}
               >
                 {choice.tag && (
-                  <span className="absolute top-3 right-3 px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-300 text-[10px] font-semibold uppercase tracking-wider">
+                  <span className="absolute top-3 right-3 px-2 py-0.5 rounded-full bg-[var(--accent)]/20 text-orange-300 text-[10px] font-semibold uppercase tracking-wider">
                     {choice.tag}
                   </span>
                 )}
@@ -88,13 +88,13 @@ export function OnboardingSourceChoice({
                 <div
                   className={cn(
                     "p-3 rounded-xl",
-                    isImport ? "bg-orange-500/20" : "bg-stone-700"
+                    isImport ? "bg-[var(--accent)]/20" : "bg-[var(--surface-2)]"
                   )}
                 >
                   <Icon
                     className={cn(
                       "w-6 h-6",
-                      isImport ? "text-orange-400" : "text-stone-300"
+                      isImport ? "text-[var(--accent)]" : "text-[var(--text-tertiary)]"
                     )}
                   />
                 </div>
@@ -103,7 +103,7 @@ export function OnboardingSourceChoice({
                   <h3 className="text-lg font-semibold text-white">
                     {choice.title}
                   </h3>
-                  <p className="text-sm text-stone-400 leading-relaxed">
+                  <p className="text-sm text-[var(--text-tertiary)] leading-relaxed">
                     {choice.description}
                   </p>
                 </div>
@@ -111,7 +111,7 @@ export function OnboardingSourceChoice({
                 <div
                   className={cn(
                     "flex items-center gap-1.5 text-sm font-medium mt-auto",
-                    isImport ? "text-orange-400" : "text-stone-400"
+                    isImport ? "text-[var(--accent)]" : "text-[var(--text-tertiary)]"
                   )}
                 >
                   Comenzar{" "}

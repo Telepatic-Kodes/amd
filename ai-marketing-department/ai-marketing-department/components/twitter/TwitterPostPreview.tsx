@@ -29,7 +29,7 @@ export function TwitterPostPreview({
   const isNearLimit = charCount > 260 && charCount <= 280;
 
   return (
-    <div className={cn("rounded-xl border border-stone-300/50 bg-stone-100/80 overflow-hidden", className)}>
+    <div className={cn("rounded-xl border border-[var(--border)]/50 bg-[var(--surface-1)]/80 overflow-hidden", className)}>
       {/* Header */}
       <div className="px-4 py-3 flex items-start gap-3">
         {authorAvatar ? (
@@ -47,30 +47,30 @@ export function TwitterPostPreview({
         )}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1">
-            <p className="text-sm font-bold text-stone-900 truncate">{authorName}</p>
+            <p className="text-sm font-bold text-[var(--text-primary)] truncate">{authorName}</p>
             {isThread && (
-              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-orange-500/10 text-orange-400 border border-orange-500/30 shrink-0">
+              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/30 shrink-0">
                 {tweetNumber}/{totalTweets}
               </span>
             )}
           </div>
-          <p className="text-sm text-stone-400">@{authorHandle}</p>
+          <p className="text-sm text-[var(--text-tertiary)]">@{authorHandle}</p>
         </div>
-        <div className="text-stone-500 text-sm shrink-0">
+        <div className="text-[var(--text-tertiary)] text-sm shrink-0">
           Ahora
         </div>
       </div>
 
       {/* Body */}
       <div className="px-4 pb-3">
-        <div className="text-[15px] text-stone-700 whitespace-pre-wrap break-words leading-relaxed">
+        <div className="text-[15px] text-[var(--text-secondary)] whitespace-pre-wrap break-words leading-relaxed">
           {text}
         </div>
       </div>
 
       {/* Timestamp */}
       <div className="px-4 pb-2">
-        <p className="text-sm text-stone-500">
+        <p className="text-sm text-[var(--text-tertiary)]">
           {new Date().toLocaleTimeString("es-CL", {
             hour: "2-digit",
             minute: "2-digit",
@@ -84,7 +84,7 @@ export function TwitterPostPreview({
       </div>
 
       {/* Engagement bar */}
-      <div className="px-4 py-3 flex items-center gap-4 text-sm text-stone-500 border-t border-stone-200">
+      <div className="px-4 py-3 flex items-center gap-4 text-sm text-[var(--text-tertiary)] border-t border-[var(--border)]">
         <span className="flex items-center gap-1">
           <Heart className="h-5 w-5" />
           <span>0</span>
@@ -107,15 +107,15 @@ export function TwitterPostPreview({
       </div>
 
       {/* Character count */}
-      <div className="px-4 py-2 border-t border-stone-200 flex items-center justify-between">
+      <div className="px-4 py-2 border-t border-[var(--border)] flex items-center justify-between">
         <span className={cn(
           "text-xs font-mono",
-          isOverLimit ? "text-red-400" : isNearLimit ? "text-yellow-400" : "text-stone-500"
+          isOverLimit ? "text-[var(--error)]" : isNearLimit ? "text-yellow-400" : "text-[var(--text-tertiary)]"
         )}>
           {charCount}/280 caracteres
         </span>
         {isOverLimit && (
-          <span className="text-xs text-red-400">Excede el límite de Twitter</span>
+          <span className="text-xs text-[var(--error)]">Excede el límite de Twitter</span>
         )}
       </div>
     </div>

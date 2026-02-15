@@ -38,7 +38,7 @@ export function AnalyzeButton({ contentId, onAnalysisComplete, variant = "icon" 
       <button
         onClick={handleAnalyze}
         disabled={isAnalyzing}
-        className="p-1.5 rounded-lg bg-stone-100/90 backdrop-blur-sm hover:bg-stone-200 text-stone-400 hover:text-purple-400 transition-colors disabled:opacity-50"
+        className="p-1.5 rounded-lg bg-[var(--surface-1)]/90 backdrop-blur-sm hover:bg-[var(--surface-2)] text-[var(--text-tertiary)] hover:text-purple-400 transition-colors disabled:opacity-50"
         title="Analizar contenido"
       >
         {isAnalyzing ? (

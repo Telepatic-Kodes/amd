@@ -29,9 +29,9 @@ const departmentColors: Record<string, { bg: string; border: string; text: strin
     glow: "shadow-purple-500/20",
   },
   content: {
-    bg: "bg-orange-500/10",
-    border: "border-orange-500/30",
-    text: "text-orange-400",
+    bg: "bg-[var(--accent)]/10",
+    border: "border-[var(--accent)]/30",
+    text: "text-[var(--accent)]",
     glow: "shadow-orange-500/20",
   },
   social: {
@@ -41,15 +41,15 @@ const departmentColors: Record<string, { bg: string; border: string; text: strin
     glow: "shadow-pink-500/20",
   },
   demandgen: {
-    bg: "bg-orange-500/10",
-    border: "border-orange-500/30",
-    text: "text-orange-400",
+    bg: "bg-[var(--accent)]/10",
+    border: "border-[var(--accent)]/30",
+    text: "text-[var(--accent)]",
     glow: "shadow-orange-500/20",
   },
   seo: {
     bg: "bg-green-500/10",
     border: "border-green-500/30",
-    text: "text-green-400",
+    text: "text-[var(--success)]",
     glow: "shadow-green-500/20",
   },
   brand: {
@@ -70,7 +70,7 @@ const statusColors: Record<string, string> = {
   active: "bg-green-500",
   paused: "bg-yellow-500",
   error: "bg-red-500",
-  maintenance: "bg-orange-500",
+  maintenance: "bg-[var(--accent)]",
 };
 
 const RoleIcon = ({ role, className }: { role: string; className?: string }) => {
@@ -133,10 +133,10 @@ export function AgentNode({ agent, isSelected, onClick, size = "md" }: AgentNode
           <RoleIcon role={agent.role} className={iconSizes[size]} />
         </div>
         <div className="flex-1 min-w-0">
-          <p className={cn("font-semibold text-stone-900 truncate", textSizes[size])}>
+          <p className={cn("font-semibold text-[var(--text-primary)] truncate", textSizes[size])}>
             {agent.name}
           </p>
-          <p className={cn("text-stone-500 truncate", size === "sm" ? "text-[10px]" : "text-xs")}>
+          <p className={cn("text-[var(--text-tertiary)] truncate", size === "sm" ? "text-[10px]" : "text-xs")}>
             {agent.agentId}
           </p>
         </div>
@@ -164,7 +164,7 @@ export function AgentNodeSkeleton({ size = "md" }: { size?: "sm" | "md" | "lg" }
   return (
     <div
       className={cn(
-        "rounded-xl border border-stone-200 bg-stone-100/50 animate-pulse",
+        "rounded-xl border border-[var(--border)] bg-[var(--surface-1)]/50 animate-pulse",
         sizeClasses[size]
       )}
     />

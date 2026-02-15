@@ -70,7 +70,7 @@ export function VersionHistory({ contentId, onCompare, onRollback }: VersionHist
     return (
       <div className="space-y-3">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="h-16 rounded-lg bg-stone-100/50 animate-pulse" />
+          <div key={i} className="h-16 rounded-lg bg-[var(--surface-1)]/50 animate-pulse" />
         ))}
       </div>
     );
@@ -79,7 +79,7 @@ export function VersionHistory({ contentId, onCompare, onRollback }: VersionHist
   if (versions.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-sm text-stone-500">Sin historial de versiones</p>
+        <p className="text-sm text-[var(--text-tertiary)]">Sin historial de versiones</p>
       </div>
     );
   }
@@ -113,7 +113,7 @@ export function VersionHistory({ contentId, onCompare, onRollback }: VersionHist
             <div key={version._id} className="relative">
               {/* Vertical line (skip for last item) */}
               {index < versions.length - 1 && (
-                <div className="absolute left-[15px] top-8 bottom-[-16px] w-[2px] bg-stone-200" />
+                <div className="absolute left-[15px] top-8 bottom-[-16px] w-[2px] bg-[var(--surface-2)]" />
               )}
 
               {/* Version Entry */}
@@ -122,8 +122,8 @@ export function VersionHistory({ contentId, onCompare, onRollback }: VersionHist
                 className={cn(
                   "flex gap-4 p-3 rounded-lg cursor-pointer transition-all",
                   isSelected
-                    ? "bg-orange-500/10 border border-orange-500/30"
-                    : "bg-stone-100/30 border border-stone-200 hover:bg-stone-100/50"
+                    ? "bg-[var(--accent)]/10 border border-[var(--accent)]/30"
+                    : "bg-[var(--surface-1)]/30 border border-[var(--border)] hover:bg-[var(--surface-1)]/50"
                 )}
               >
                 {/* Icon */}
@@ -131,9 +131,9 @@ export function VersionHistory({ contentId, onCompare, onRollback }: VersionHist
                   className={cn(
                     "flex h-8 w-8 shrink-0 items-center justify-center rounded-full z-10",
                     version.changeType === "created"
-                      ? "bg-green-500/10 text-green-400"
+                      ? "bg-green-500/10 text-[var(--success)]"
                       : version.changeType === "edited"
-                      ? "bg-orange-500/10 text-orange-400"
+                      ? "bg-[var(--accent)]/10 text-[var(--accent)]"
                       : version.changeType === "status_change"
                       ? "bg-purple-500/10 text-purple-400"
                       : "bg-amber-500/10 text-amber-400"
@@ -145,23 +145,23 @@ export function VersionHistory({ contentId, onCompare, onRollback }: VersionHist
                 {/* Details */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2 mb-1">
-                    <p className="text-sm font-medium text-stone-900">
+                    <p className="text-sm font-medium text-[var(--text-primary)]">
                       {translate("version")} {version.version}
                       {isLatest && (
                         <span className="ml-2 text-xs text-emerald-400">(Actual)</span>
                       )}
                     </p>
-                    <span className="text-xs text-stone-500 shrink-0">
+                    <span className="text-xs text-[var(--text-tertiary)] shrink-0">
                       {formatRelativeTime(version.createdAt)}
                     </span>
                   </div>
-                  <p className="text-xs text-stone-400 mb-1">
+                  <p className="text-xs text-[var(--text-tertiary)] mb-1">
                     {getChangeLabel(version.changeType)}
                   </p>
                   {version.changeSummary && (
-                    <p className="text-xs text-stone-500">{version.changeSummary}</p>
+                    <p className="text-xs text-[var(--text-tertiary)]">{version.changeSummary}</p>
                   )}
-                  <p className="text-xs text-stone-600 mt-1">
+                  <p className="text-xs text-[var(--text-secondary)] mt-1">
                     {translate("editedBy")}: {version.editedByName}
                   </p>
                 </div>
@@ -196,8 +196,8 @@ export function VersionHistory({ contentId, onCompare, onRollback }: VersionHist
           className={cn(
             "w-full px-4 py-2 rounded-lg text-sm font-medium transition-colors",
             canCompare
-              ? "bg-orange-500 text-white hover:bg-orange-600"
-              : "bg-stone-200 text-stone-500 cursor-not-allowed"
+              ? "bg-[var(--accent)] text-white hover:bg-[var(--accent)]"
+              : "bg-[var(--surface-2)] text-[var(--text-tertiary)] cursor-not-allowed"
           )}
         >
           {canCompare

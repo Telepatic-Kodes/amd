@@ -35,33 +35,33 @@ export function BrandStepBasics({ data, onChange }: Props) {
         <h2 className="text-3xl font-bold bg-gradient-to-r from-orange-400 to-purple-400 bg-clip-text text-transparent">
           Tu Marca
         </h2>
-        <p className="text-stone-500">
+        <p className="text-[var(--text-tertiary)]">
           Información básica que define tu empresa.
         </p>
       </div>
 
       <div className="space-y-5">
         <div className="space-y-2">
-          <label className="text-sm font-medium text-stone-700 flex items-center gap-2">
-            <Building2 className="w-4 h-4 text-orange-400" /> Nombre de la empresa
+          <label className="text-sm font-medium text-[var(--text-secondary)] flex items-center gap-2">
+            <Building2 className="w-4 h-4 text-[var(--accent)]" /> Nombre de la empresa
           </label>
           <input
             type="text"
             value={data.companyName}
             onChange={(e) => onChange({ companyName: e.target.value })}
             placeholder="Mi Empresa S.A."
-            className="w-full px-4 py-3 rounded-lg bg-stone-50 border border-stone-200 text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 transition"
+            className="w-full px-4 py-3 rounded-lg bg-[var(--surface-0)] border border-[var(--border)] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/50 focus:border-[var(--accent)] transition"
           />
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-stone-700 flex items-center gap-2">
-            <Briefcase className="w-4 h-4 text-orange-400" /> Industria
+          <label className="text-sm font-medium text-[var(--text-secondary)] flex items-center gap-2">
+            <Briefcase className="w-4 h-4 text-[var(--accent)]" /> Industria
           </label>
           <select
             value={data.industry}
             onChange={(e) => onChange({ industry: e.target.value })}
-            className="w-full px-4 py-3 rounded-lg bg-stone-50 border border-stone-200 text-stone-900 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 transition appearance-none"
+            className="w-full px-4 py-3 rounded-lg bg-[var(--surface-0)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/50 focus:border-[var(--accent)] transition appearance-none"
           >
             <option value="">Selecciona una industria...</option>
             {INDUSTRIES.map((ind) => (
@@ -73,8 +73,8 @@ export function BrandStepBasics({ data, onChange }: Props) {
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-stone-700 flex items-center gap-2">
-            <Globe className="w-4 h-4 text-orange-400" /> Sitio web
+          <label className="text-sm font-medium text-[var(--text-secondary)] flex items-center gap-2">
+            <Globe className="w-4 h-4 text-[var(--accent)]" /> Sitio web
           </label>
           <input
             type="url"
@@ -82,20 +82,20 @@ export function BrandStepBasics({ data, onChange }: Props) {
             value={data.website}
             onChange={(e) => onChange({ website: e.target.value })}
             placeholder="https://miempresa.com"
-            className="w-full px-4 py-3 rounded-lg bg-stone-50 border border-stone-200 text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 transition"
+            className="w-full px-4 py-3 rounded-lg bg-[var(--surface-0)] border border-[var(--border)] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/50 focus:border-[var(--accent)] transition"
           />
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-stone-700 flex items-center gap-2">
-            <FileText className="w-4 h-4 text-orange-400" /> Descripción
+          <label className="text-sm font-medium text-[var(--text-secondary)] flex items-center gap-2">
+            <FileText className="w-4 h-4 text-[var(--accent)]" /> Descripción
           </label>
           <textarea
             value={data.description}
             onChange={(e) => onChange({ description: e.target.value })}
             placeholder="¿Qué hace tu empresa? ¿Cuál es tu propuesta de valor?"
             rows={4}
-            className="w-full px-4 py-3 rounded-lg bg-stone-50 border border-stone-200 text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 transition resize-none"
+            className="w-full px-4 py-3 rounded-lg bg-[var(--surface-0)] border border-[var(--border)] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/50 focus:border-[var(--accent)] transition resize-none"
           />
         </div>
       </div>

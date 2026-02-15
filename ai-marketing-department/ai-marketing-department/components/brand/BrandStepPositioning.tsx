@@ -71,8 +71,8 @@ export function BrandStepPositioning({ data, onChange, brandProfileId }: BrandSt
     <div className="space-y-6">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
-          <Target className="w-5 h-5 text-orange-600" />
-          <p className="text-sm text-stone-500">
+          <Target className="w-5 h-5 text-[var(--accent)]" />
+          <p className="text-sm text-[var(--text-tertiary)]">
             Define como te posicionas en el mercado frente a tu competencia. Esto guiara todo el contenido comparativo y diferencial.
           </p>
         </div>
@@ -80,7 +80,7 @@ export function BrandStepPositioning({ data, onChange, brandProfileId }: BrandSt
           <button
             onClick={handleGenerate}
             disabled={generating}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-50 text-orange-700 hover:bg-orange-100 text-xs font-medium transition disabled:opacity-50 shrink-0 ml-3"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--accent-muted)] text-orange-700 hover:bg-[var(--accent-muted)] text-xs font-medium transition disabled:opacity-50 shrink-0 ml-3"
           >
             {generating ? (
               <>
@@ -98,14 +98,14 @@ export function BrandStepPositioning({ data, onChange, brandProfileId }: BrandSt
       </div>
 
       {error && (
-        <div className="px-3 py-2 rounded-lg bg-red-50 border border-red-200 text-sm text-red-700">
+        <div className="px-3 py-2 rounded-lg bg-[var(--badge-red-bg)] border border-[var(--badge-red-bg)] text-sm text-[var(--badge-red-text)]">
           {error}
         </div>
       )}
 
       {/* Unique Value Proposition */}
       <div>
-        <label className="block text-sm font-medium text-stone-700 mb-1.5">
+        <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1.5">
           Propuesta de valor unica
         </label>
         <textarea
@@ -113,9 +113,9 @@ export function BrandStepPositioning({ data, onChange, brandProfileId }: BrandSt
           onChange={(e) => onChange({ uniqueValue: e.target.value })}
           placeholder="Ej: El unico sistema de marketing con IA que integra 37 agentes especializados en un flujo de trabajo automatizado..."
           rows={3}
-          className="w-full rounded-lg border border-stone-200 bg-white px-3 py-2.5 text-sm text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-400 transition resize-none"
+          className="w-full rounded-lg border border-[var(--border)] bg-[var(--card-bg)] px-3 py-2.5 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/20 focus:border-orange-400 transition resize-none"
         />
-        <p className="mt-1 flex items-center gap-1 text-xs text-stone-400">
+        <p className="mt-1 flex items-center gap-1 text-xs text-[var(--text-tertiary)]">
           <HelpCircle className="w-3 h-3" />
           Que te hace unico? Por que elegirte a ti y no a la competencia?
         </p>
@@ -123,7 +123,7 @@ export function BrandStepPositioning({ data, onChange, brandProfileId }: BrandSt
 
       {/* Market Category */}
       <div>
-        <label className="block text-sm font-medium text-stone-700 mb-1.5">
+        <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1.5">
           Categoria de mercado
         </label>
         <input
@@ -131,20 +131,20 @@ export function BrandStepPositioning({ data, onChange, brandProfileId }: BrandSt
           value={data.category}
           onChange={(e) => onChange({ category: e.target.value })}
           placeholder="Ej: Marketing Automation con IA, SaaS de contenido, Agencia digital..."
-          className="w-full rounded-lg border border-stone-200 bg-white px-3 py-2.5 text-sm text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-400 transition"
+          className="w-full rounded-lg border border-[var(--border)] bg-[var(--card-bg)] px-3 py-2.5 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/20 focus:border-orange-400 transition"
         />
       </div>
 
       {/* Differentiators */}
       <div>
-        <label className="block text-sm font-medium text-stone-700 mb-1.5">
+        <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1.5">
           Diferenciadores clave
         </label>
         <div className="space-y-2">
           {data.differentiators.map((d, idx) => (
-            <div key={idx} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-stone-50 border border-stone-200">
-              <span className="text-sm text-stone-700 flex-1">{d}</span>
-              <button onClick={() => removeDifferentiator(idx)} className="text-stone-400 hover:text-red-500 transition">
+            <div key={idx} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--surface-0)] border border-[var(--border)]">
+              <span className="text-sm text-[var(--text-secondary)] flex-1">{d}</span>
+              <button onClick={() => removeDifferentiator(idx)} className="text-[var(--text-tertiary)] hover:text-[var(--error)] transition">
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -156,12 +156,12 @@ export function BrandStepPositioning({ data, onChange, brandProfileId }: BrandSt
               onChange={(e) => setNewDiff(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addDifferentiator())}
               placeholder="Ej: 37 agentes especializados vs. 1 herramienta generica"
-              className="flex-1 rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-400 transition"
+              className="flex-1 rounded-lg border border-[var(--border)] bg-[var(--card-bg)] px-3 py-2 text-sm placeholder:text-[var(--text-tertiary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/20 focus:border-orange-400 transition"
             />
             <button
               onClick={addDifferentiator}
               disabled={!newDiff.trim()}
-              className="px-3 py-2 rounded-lg bg-orange-50 text-orange-600 hover:bg-orange-100 transition disabled:opacity-40"
+              className="px-3 py-2 rounded-lg bg-[var(--accent-muted)] text-[var(--accent)] hover:bg-[var(--accent-muted)] transition disabled:opacity-40"
             >
               <Plus className="w-4 h-4" />
             </button>
@@ -171,17 +171,17 @@ export function BrandStepPositioning({ data, onChange, brandProfileId }: BrandSt
 
       {/* Proof Points */}
       <div>
-        <label className="block text-sm font-medium text-stone-700 mb-1.5">
+        <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1.5">
           Puntos de prueba
         </label>
-        <p className="text-xs text-stone-400 mb-2">
+        <p className="text-xs text-[var(--text-tertiary)] mb-2">
           Evidencia concreta: metricas, testimonios, certificaciones, casos de exito.
         </p>
         <div className="space-y-2">
           {data.proofPoints.map((p, idx) => (
-            <div key={idx} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-stone-50 border border-stone-200">
-              <span className="text-sm text-stone-700 flex-1">{p}</span>
-              <button onClick={() => removeProofPoint(idx)} className="text-stone-400 hover:text-red-500 transition">
+            <div key={idx} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--surface-0)] border border-[var(--border)]">
+              <span className="text-sm text-[var(--text-secondary)] flex-1">{p}</span>
+              <button onClick={() => removeProofPoint(idx)} className="text-[var(--text-tertiary)] hover:text-[var(--error)] transition">
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -193,12 +193,12 @@ export function BrandStepPositioning({ data, onChange, brandProfileId }: BrandSt
               onChange={(e) => setNewProof(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addProofPoint())}
               placeholder="Ej: +200% engagement en 3 meses para cliente X"
-              className="flex-1 rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-400 transition"
+              className="flex-1 rounded-lg border border-[var(--border)] bg-[var(--card-bg)] px-3 py-2 text-sm placeholder:text-[var(--text-tertiary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/20 focus:border-orange-400 transition"
             />
             <button
               onClick={addProofPoint}
               disabled={!newProof.trim()}
-              className="px-3 py-2 rounded-lg bg-orange-50 text-orange-600 hover:bg-orange-100 transition disabled:opacity-40"
+              className="px-3 py-2 rounded-lg bg-[var(--accent-muted)] text-[var(--accent)] hover:bg-[var(--accent-muted)] transition disabled:opacity-40"
             >
               <Plus className="w-4 h-4" />
             </button>

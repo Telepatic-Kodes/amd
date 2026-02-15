@@ -10,11 +10,10 @@ import { useRouter } from "next/navigation";
  * Shortcuts:
  *   ? → toggle keyboard shortcuts help
  *   N → go to /content (create new content)
- *   G then H → go home
- *   G then C → go to control center
- *   G then R → go to results
- *   G then S → go to settings
- *   G then B → go to brand
+ *   G then H → go home (/)
+ *   G then C → go to content (/content)
+ *   G then S → go to settings (/settings)
+ *   G then T → go to strategy (/strategy)
  */
 export function useKeyboardShortcuts(onToggleHelp: () => void) {
   const router = useRouter();
@@ -84,23 +83,11 @@ export function useKeyboardShortcuts(onToggleHelp: () => void) {
             break;
           case "c":
             e.preventDefault();
-            navigate("/control-center");
-            break;
-          case "r":
-            e.preventDefault();
-            navigate("/results");
+            navigate("/content");
             break;
           case "s":
             e.preventDefault();
             navigate("/settings");
-            break;
-          case "b":
-            e.preventDefault();
-            navigate("/brand");
-            break;
-          case "a":
-            e.preventDefault();
-            navigate("/agents");
             break;
           case "t":
             e.preventDefault();

@@ -38,7 +38,7 @@ export function CaseStudiesSection() {
             transition={{ duration: 0.6 }}
           >
             <motion.div
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/20 text-green-400 text-sm font-medium mb-6"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/20 text-[var(--success)] text-sm font-medium mb-6"
               initial={{ opacity: 0, scale: 0.8 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
@@ -49,9 +49,9 @@ export function CaseStudiesSection() {
             </motion.div>
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
               Resultados Reales de{" "}
-              <span className="text-green-400">Clientes Reales</span>
+              <span className="text-[var(--success)]">Clientes Reales</span>
             </h2>
-            <p className="text-xl text-stone-400 max-w-3xl mx-auto">
+            <p className="text-xl text-[var(--text-tertiary)] max-w-3xl mx-auto">
               Empresas de diferentes industrias están escalando su marketing con
               AMD sin contratar equipos adicionales.
             </p>

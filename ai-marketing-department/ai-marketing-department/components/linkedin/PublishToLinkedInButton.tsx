@@ -68,10 +68,10 @@ export function PublishToLinkedInButton({
     const lastPublish = publishHistory?.find((log) => log.status === "published");
     return (
       <div className={cn("flex items-center gap-2 text-sm", className)}>
-        <CheckCircle2 className="h-4 w-4 text-green-400" />
-        <span className="text-green-400">{translate("linkedinPublished")}</span>
+        <CheckCircle2 className="h-4 w-4 text-[var(--success)]" />
+        <span className="text-[var(--success)]">{translate("linkedinPublished")}</span>
         {lastPublish?.publishedAt && (
-          <span className="text-xs text-stone-500">
+          <span className="text-xs text-[var(--text-tertiary)]">
             {new Date(lastPublish.publishedAt).toLocaleDateString("es-CL", {
               day: "numeric",
               month: "short",
@@ -122,7 +122,7 @@ export function PublishToLinkedInButton({
           <div className="flex justify-end gap-2">
             <button
               onClick={() => setShowPreview(false)}
-              className="px-3 py-1.5 rounded-lg text-sm text-stone-400 hover:bg-stone-200 transition-colors"
+              className="px-3 py-1.5 rounded-lg text-sm text-[var(--text-tertiary)] hover:bg-[var(--surface-2)] transition-colors"
             >
               Cancelar
             </button>

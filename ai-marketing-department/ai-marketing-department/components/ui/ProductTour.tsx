@@ -128,20 +128,20 @@ export function ProductTour({ onComplete, onSkip }: ProductTourProps) {
           }}
         >
           {/* Tooltip card */}
-          <div className="bg-stone-100 border border-stone-300 rounded-xl shadow-2xl overflow-hidden">
+          <div className="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl shadow-2xl overflow-hidden">
             {/* Header with close button */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-stone-200">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border)]">
               <div className="flex items-center gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-500/20 text-orange-400 text-sm font-semibold">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--accent-muted)] text-[var(--accent)] text-sm font-semibold">
                   {currentStep + 1}
                 </div>
-                <span className="text-xs text-stone-400 font-medium">
+                <span className="text-xs text-[var(--text-tertiary)] font-medium">
                   Paso {currentStep + 1} de {TOUR_STEPS.length}
                 </span>
               </div>
               <button
                 onClick={handleSkip}
-                className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-stone-400 hover:text-stone-900 hover:bg-stone-100 transition-colors"
+                className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-1)] transition-colors"
                 aria-label="Saltar tour"
               >
                 <X className="h-5 w-5" />
@@ -150,20 +150,20 @@ export function ProductTour({ onComplete, onSkip }: ProductTourProps) {
 
             {/* Content */}
             <div className="px-6 py-6">
-              <h3 className="text-lg font-semibold text-stone-900 mb-3">
+              <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-3">
                 {step.title}
               </h3>
-              <p className="text-sm text-stone-500 leading-relaxed">
+              <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
                 {step.content}
               </p>
             </div>
 
             {/* Footer with navigation */}
-            <div className="flex items-center justify-between px-6 py-4 border-t border-stone-200 bg-stone-50">
+            <div className="flex items-center justify-between px-6 py-4 border-t border-[var(--border)] bg-[var(--surface-1)]">
               {/* Skip button (always visible) */}
               <button
                 onClick={handleSkip}
-                className="min-h-[44px] px-4 text-sm font-medium text-stone-400 hover:text-stone-900 transition-colors"
+                className="min-h-[44px] px-4 text-sm font-medium text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors"
               >
                 Saltar tour
               </button>
@@ -174,7 +174,7 @@ export function ProductTour({ onComplete, onSkip }: ProductTourProps) {
                 <button
                   onClick={handlePrevious}
                   disabled={isFirstStep}
-                  className="min-h-[44px] min-w-[44px] flex items-center justify-center gap-2 px-4 rounded-lg border border-stone-300 bg-stone-200 text-stone-700 text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-stone-100 transition-colors"
+                  className="min-h-[44px] min-w-[44px] flex items-center justify-center gap-2 px-4 rounded-lg border border-[var(--border)] bg-[var(--button-secondary-bg)] text-[var(--text-primary)] text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[var(--button-secondary-hover)] transition-colors"
                   aria-label="Paso anterior"
                 >
                   <ChevronLeft className="h-4 w-4" />
@@ -184,7 +184,7 @@ export function ProductTour({ onComplete, onSkip }: ProductTourProps) {
                 {/* Next/Finish button */}
                 <button
                   onClick={handleNext}
-                  className="min-h-[44px] min-w-[44px] flex items-center justify-center gap-2 px-6 rounded-lg bg-orange-500 text-white text-sm font-medium hover:bg-orange-600 transition-colors shadow-lg shadow-orange-500/20"
+                  className="min-h-[44px] min-w-[44px] flex items-center justify-center gap-2 px-6 rounded-lg bg-[var(--accent)] text-[var(--text-on-accent)] text-sm font-medium hover:bg-[var(--accent-hover)] transition-colors shadow-lg"
                 >
                   <span>{isLastStep ? "Finalizar" : "Siguiente"}</span>
                   {!isLastStep && <ChevronRight className="h-4 w-4" />}

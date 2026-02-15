@@ -136,8 +136,8 @@ export function WebhookManager() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-stone-900">Webhooks</h3>
-          <p className="text-sm text-stone-500">
+          <h3 className="text-lg font-semibold text-[var(--text-primary)]">Webhooks</h3>
+          <p className="text-sm text-[var(--text-tertiary)]">
             Recibe notificaciones en tiempo real cuando ocurren eventos en AMD
           </p>
         </div>
@@ -146,7 +146,7 @@ export function WebhookManager() {
             setIsCreating(!isCreating);
             setNewSecret(null);
           }}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-orange-600 text-white text-sm font-medium hover:bg-orange-700 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--accent)] text-white text-sm font-medium hover:bg-[var(--accent-hover)] transition-colors"
         >
           <Plus className="h-4 w-4" />
           Crear Webhook
@@ -155,22 +155,22 @@ export function WebhookManager() {
 
       {/* New Secret Alert */}
       {newSecret && (
-        <div className="p-4 rounded-lg border border-amber-500/50 bg-amber-50">
+        <div className="p-4 rounded-lg border border-amber-500/50 bg-[var(--badge-amber-bg)]">
           <div className="flex items-start gap-3">
-            <AlertTriangle className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
+            <AlertTriangle className="h-5 w-5 text-[var(--badge-amber-text)] mt-0.5 flex-shrink-0" />
             <div className="flex-1 space-y-2">
               <p className="text-sm font-medium text-amber-800">
                 Signing Secret — cópialo ahora, no se mostrará de nuevo
               </p>
               <div className="flex items-center gap-2">
-                <code className="flex-1 px-3 py-2 bg-white rounded border border-amber-200 text-xs font-mono text-stone-900 break-all">
+                <code className="flex-1 px-3 py-2 bg-[var(--card-bg)] rounded border border-amber-200 text-xs font-mono text-[var(--text-primary)] break-all">
                   {newSecret}
                 </code>
                 <button
                   onClick={() => copyToClipboard(newSecret)}
                   className="p-2 rounded-lg border border-amber-200 hover:bg-amber-100 transition-colors"
                 >
-                  <Copy className="h-4 w-4 text-amber-600" />
+                  <Copy className="h-4 w-4 text-[var(--badge-amber-text)]" />
                 </button>
               </div>
               <p className="text-xs text-amber-700">
@@ -183,32 +183,32 @@ export function WebhookManager() {
 
       {/* Create Form */}
       {isCreating && !newSecret && (
-        <div className="p-4 rounded-lg border border-stone-200 bg-white space-y-4">
+        <div className="p-4 rounded-lg border border-[var(--border)] bg-[var(--card-bg)] space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-stone-700 mb-1">Nombre</label>
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Nombre</label>
               <input
                 type="text"
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
                 placeholder="Ej: Slack Notificaciones"
-                className="w-full rounded-lg border border-stone-300 py-2 px-3 text-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                className="w-full rounded-lg border border-[var(--border-hover)] py-2 px-3 text-sm focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-stone-700 mb-1">URL (HTTPS)</label>
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">URL (HTTPS)</label>
               <input
                 type="url"
                 value={newUrl}
                 onChange={(e) => setNewUrl(e.target.value)}
                 placeholder="https://hooks.slack.com/..."
-                className="w-full rounded-lg border border-stone-300 py-2 px-3 text-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                className="w-full rounded-lg border border-[var(--border-hover)] py-2 px-3 text-sm focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-2">Eventos</label>
+            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">Eventos</label>
             <div className="grid grid-cols-2 gap-2">
               {WEBHOOK_EVENTS.map((event) => (
                 <button
@@ -217,8 +217,8 @@ export function WebhookManager() {
                   className={cn(
                     "flex items-center gap-2 p-2 rounded-lg border text-left text-xs transition-all",
                     newEvents.includes(event.value)
-                      ? "border-orange-500 bg-orange-50 text-orange-700"
-                      : "border-stone-200 text-stone-600 hover:border-stone-300"
+                      ? "border-[var(--accent)] bg-[var(--accent-muted)] text-orange-700"
+                      : "border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--border-hover)]"
                   )}
                 >
                   <Webhook className="h-3 w-3 flex-shrink-0" />
@@ -231,13 +231,13 @@ export function WebhookManager() {
           <div className="flex gap-3 pt-2">
             <button
               onClick={() => setIsCreating(false)}
-              className="flex-1 py-2 rounded-lg border border-stone-200 text-sm text-stone-600 hover:bg-stone-50 transition-colors"
+              className="flex-1 py-2 rounded-lg border border-[var(--border)] text-sm text-[var(--text-secondary)] hover:bg-[var(--surface-0)] transition-colors"
             >
               Cancelar
             </button>
             <button
               onClick={handleCreate}
-              className="flex-1 py-2 rounded-lg bg-orange-600 text-white text-sm font-medium hover:bg-orange-700 transition-colors"
+              className="flex-1 py-2 rounded-lg bg-[var(--accent)] text-white text-sm font-medium hover:bg-[var(--accent-hover)] transition-colors"
             >
               Crear Webhook
             </button>
@@ -253,10 +253,10 @@ export function WebhookManager() {
             className={cn(
               "rounded-lg border overflow-hidden",
               webhook.status === "active"
-                ? "border-stone-200 bg-white"
+                ? "border-[var(--border)] bg-[var(--card-bg)]"
                 : webhook.status === "failed"
-                  ? "border-red-200 bg-red-50/50"
-                  : "border-stone-100 bg-stone-50"
+                  ? "border-[var(--badge-red-bg)] bg-[var(--badge-red-bg)]/50"
+                  : "border-[var(--border)] bg-[var(--surface-0)]"
             )}
           >
             {/* Webhook header */}
@@ -267,16 +267,16 @@ export function WebhookManager() {
               >
                 <Webhook className={cn(
                   "h-4 w-4 flex-shrink-0",
-                  webhook.status === "active" ? "text-green-500" : "text-stone-400"
+                  webhook.status === "active" ? "text-green-500" : "text-[var(--text-tertiary)]"
                 )} />
                 <div className="min-w-0">
-                  <p className="text-sm font-medium text-stone-900 truncate">{webhook.name}</p>
-                  <p className="text-xs text-stone-400 truncate">{webhook.url}</p>
+                  <p className="text-sm font-medium text-[var(--text-primary)] truncate">{webhook.name}</p>
+                  <p className="text-xs text-[var(--text-tertiary)] truncate">{webhook.url}</p>
                 </div>
                 {expandedId === webhook._id ? (
-                  <ChevronUp className="h-4 w-4 text-stone-400" />
+                  <ChevronUp className="h-4 w-4 text-[var(--text-tertiary)]" />
                 ) : (
-                  <ChevronDown className="h-4 w-4 text-stone-400" />
+                  <ChevronDown className="h-4 w-4 text-[var(--text-tertiary)]" />
                 )}
               </div>
 
@@ -285,10 +285,10 @@ export function WebhookManager() {
                 <span className={cn(
                   "px-2 py-0.5 rounded-full text-[10px] font-medium",
                   webhook.status === "active"
-                    ? "bg-green-50 text-green-700 border border-green-200"
+                    ? "bg-[var(--badge-green-bg)] text-green-700 border border-green-200"
                     : webhook.status === "paused"
-                      ? "bg-yellow-50 text-yellow-700 border border-yellow-200"
-                      : "bg-red-50 text-red-700 border border-red-200"
+                      ? "bg-yellow-50 text-[var(--badge-amber-text)] border border-yellow-200"
+                      : "bg-[var(--badge-red-bg)] text-[var(--badge-red-text)] border border-[var(--badge-red-bg)]"
                 )}>
                   {webhook.status === "active" ? "Activo" : webhook.status === "paused" ? "Pausado" : "Fallido"}
                 </span>
@@ -297,7 +297,7 @@ export function WebhookManager() {
                 <button
                   onClick={() => handleTestPing(webhook._id)}
                   disabled={testingId === webhook._id}
-                  className="p-1.5 rounded-lg text-stone-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                  className="p-1.5 rounded-lg text-[var(--text-tertiary)] hover:text-[var(--badge-blue-text)] hover:bg-[var(--badge-blue-bg)] transition-colors"
                   title="Enviar ping de prueba"
                 >
                   {testingId === webhook._id ? (
@@ -310,7 +310,7 @@ export function WebhookManager() {
                 {/* Toggle */}
                 <button
                   onClick={() => handleToggle(webhook._id, webhook.status)}
-                  className="p-1.5 rounded-lg text-stone-400 hover:text-stone-600 hover:bg-stone-100 transition-colors"
+                  className="p-1.5 rounded-lg text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] hover:bg-[var(--surface-1)] transition-colors"
                   title={webhook.status === "active" ? "Pausar" : "Activar"}
                 >
                   {webhook.status === "active" ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
@@ -319,7 +319,7 @@ export function WebhookManager() {
                 {/* Delete */}
                 <button
                   onClick={() => handleDelete(webhook._id, webhook.name)}
-                  className="p-1.5 rounded-lg text-stone-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                  className="p-1.5 rounded-lg text-[var(--text-tertiary)] hover:text-[var(--badge-red-text)] hover:bg-[var(--badge-red-bg)] transition-colors"
                   title="Eliminar"
                 >
                   <Trash2 className="h-4 w-4" />
@@ -329,15 +329,15 @@ export function WebhookManager() {
 
             {/* Expanded details */}
             {expandedId === webhook._id && (
-              <div className="border-t border-stone-200 p-3 space-y-3">
+              <div className="border-t border-[var(--border)] p-3 space-y-3">
                 {/* Events */}
                 <div>
-                  <p className="text-xs font-medium text-stone-500 mb-1">Eventos suscritos</p>
+                  <p className="text-xs font-medium text-[var(--text-tertiary)] mb-1">Eventos suscritos</p>
                   <div className="flex flex-wrap gap-1">
                     {webhook.events.map((event) => (
                       <span
                         key={event}
-                        className="px-2 py-0.5 rounded-full text-[10px] bg-stone-100 text-stone-600"
+                        className="px-2 py-0.5 rounded-full text-[10px] bg-[var(--surface-1)] text-[var(--text-secondary)]"
                       >
                         {event}
                       </span>
@@ -347,30 +347,30 @@ export function WebhookManager() {
 
                 {/* Stats */}
                 <div className="grid grid-cols-3 gap-3 text-center">
-                  <div className="p-2 rounded-lg bg-stone-50">
-                    <p className="text-xs text-stone-400">Último envío</p>
-                    <p className="text-sm font-medium text-stone-700">
+                  <div className="p-2 rounded-lg bg-[var(--surface-0)]">
+                    <p className="text-xs text-[var(--text-tertiary)]">Último envío</p>
+                    <p className="text-sm font-medium text-[var(--text-secondary)]">
                       {webhook.lastDeliveryAt
                         ? new Date(webhook.lastDeliveryAt).toLocaleString("es-CL")
                         : "Nunca"}
                     </p>
                   </div>
-                  <div className="p-2 rounded-lg bg-stone-50">
-                    <p className="text-xs text-stone-400">Último status</p>
+                  <div className="p-2 rounded-lg bg-[var(--surface-0)]">
+                    <p className="text-xs text-[var(--text-tertiary)]">Último status</p>
                     <p className={cn(
                       "text-sm font-medium",
                       webhook.lastDeliveryStatus && webhook.lastDeliveryStatus < 400
-                        ? "text-green-600"
-                        : "text-stone-400"
+                        ? "text-[var(--badge-green-text)]"
+                        : "text-[var(--text-tertiary)]"
                     )}>
                       {webhook.lastDeliveryStatus || "—"}
                     </p>
                   </div>
-                  <div className="p-2 rounded-lg bg-stone-50">
-                    <p className="text-xs text-stone-400">Fallos consecutivos</p>
+                  <div className="p-2 rounded-lg bg-[var(--surface-0)]">
+                    <p className="text-xs text-[var(--text-tertiary)]">Fallos consecutivos</p>
                     <p className={cn(
                       "text-sm font-medium",
-                      (webhook.failureCount || 0) > 0 ? "text-red-600" : "text-stone-400"
+                      (webhook.failureCount || 0) > 0 ? "text-[var(--badge-red-text)]" : "text-[var(--text-tertiary)]"
                     )}>
                       {webhook.failureCount || 0}
                     </p>
@@ -385,7 +385,7 @@ export function WebhookManager() {
         ))}
 
         {(!webhooks || webhooks.length === 0) && (
-          <div className="text-center py-8 text-stone-400 text-sm">
+          <div className="text-center py-8 text-[var(--text-tertiary)] text-sm">
             No hay webhooks configurados. Crea uno para recibir notificaciones.
           </div>
         )}
@@ -399,7 +399,7 @@ function WebhookDeliveryHistory({ webhookId }: { webhookId: Id<"webhooks"> }) {
 
   if (!deliveries || deliveries.length === 0) {
     return (
-      <p className="text-xs text-stone-400 text-center py-2">
+      <p className="text-xs text-[var(--text-tertiary)] text-center py-2">
         Sin entregas recientes
       </p>
     );
@@ -407,7 +407,7 @@ function WebhookDeliveryHistory({ webhookId }: { webhookId: Id<"webhooks"> }) {
 
   return (
     <div>
-      <p className="text-xs font-medium text-stone-500 mb-1">Últimas entregas</p>
+      <p className="text-xs font-medium text-[var(--text-tertiary)] mb-1">Últimas entregas</p>
       <div className="space-y-1 max-h-32 overflow-y-auto">
         {deliveries.slice(0, 5).map((d) => (
           <div key={d._id} className="flex items-center justify-between px-2 py-1 rounded text-xs">
@@ -417,11 +417,11 @@ function WebhookDeliveryHistory({ webhookId }: { webhookId: Id<"webhooks"> }) {
               ) : d.status === "pending" ? (
                 <Clock className="h-3 w-3 text-yellow-500" />
               ) : (
-                <X className="h-3 w-3 text-red-500" />
+                <X className="h-3 w-3 text-[var(--error)]" />
               )}
-              <span className="text-stone-600">{d.event}</span>
+              <span className="text-[var(--text-secondary)]">{d.event}</span>
             </div>
-            <div className="flex items-center gap-2 text-stone-400">
+            <div className="flex items-center gap-2 text-[var(--text-tertiary)]">
               {d.statusCode ? <span>{d.statusCode}</span> : null}
               <span>intento {d.attempt}</span>
               {d.sentAt && <span>{new Date(d.sentAt).toLocaleTimeString("es-CL")}</span>}

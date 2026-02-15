@@ -43,8 +43,8 @@ export function StepFeeds({ feeds, industry, onChange }: Props) {
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
       <div className="text-center space-y-2">
-        <h2 className="text-2xl font-bold text-stone-900">Selecciona tus fuentes</h2>
-        <p className="text-stone-500 text-sm">Elige paquetes pre-configurados para tu industria.</p>
+        <h2 className="text-2xl font-bold text-[var(--text-primary)]">Selecciona tus fuentes</h2>
+        <p className="text-[var(--text-tertiary)] text-sm">Elige paquetes pre-configurados para tu industria.</p>
       </div>
 
       {/* Template Selection Cards */}
@@ -59,15 +59,15 @@ export function StepFeeds({ feeds, industry, onChange }: Props) {
                 className={cn(
                   "flex items-start gap-3 p-4 rounded-xl border text-left transition-all duration-200",
                   isSelected
-                    ? "border-orange-500 bg-orange-500/10 ring-1 ring-orange-500/30"
-                    : "border-stone-200 bg-white hover:border-stone-300"
+                    ? "border-[var(--accent)] bg-[var(--accent)]/10 ring-1 ring-[var(--accent)]/30"
+                    : "border-[var(--border)] bg-[var(--card-bg)] hover:border-[var(--border)]"
                 )}
               >
                 {/* Checkbox */}
                 <div
                   className={cn(
                     "w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 mt-0.5",
-                    isSelected ? "bg-orange-600 border-orange-600" : "border-stone-300"
+                    isSelected ? "bg-[var(--accent)] border-orange-600" : "border-[var(--border)]"
                   )}
                 >
                   {isSelected && <span className="text-white text-xs">✓</span>}
@@ -77,11 +77,11 @@ export function StepFeeds({ feeds, industry, onChange }: Props) {
                   <div className="flex items-center gap-2">
                     <span className="text-2xl">{template.icon}</span>
                     <div>
-                      <p className="font-semibold text-sm text-stone-900">{template.name}</p>
-                      <p className="text-xs text-stone-500">{template.feeds.length} fuentes</p>
+                      <p className="font-semibold text-sm text-[var(--text-primary)]">{template.name}</p>
+                      <p className="text-xs text-[var(--text-tertiary)]">{template.feeds.length} fuentes</p>
                     </div>
                   </div>
-                  <p className="text-xs text-stone-400 mt-2">{template.description}</p>
+                  <p className="text-xs text-[var(--text-tertiary)] mt-2">{template.description}</p>
                 </div>
               </button>
             );
@@ -90,7 +90,7 @@ export function StepFeeds({ feeds, industry, onChange }: Props) {
 
         {/* Summary */}
         {totalFeeds > 0 && (
-          <div className="p-3 rounded-lg bg-orange-500/10 border border-orange-500/20">
+          <div className="p-3 rounded-lg bg-[var(--accent)]/10 border border-[var(--accent)]/20">
             <p className="text-sm text-orange-700">
               Se agregarán <strong>{totalFeeds} fuentes</strong> a tu departamento
             </p>
@@ -101,19 +101,19 @@ export function StepFeeds({ feeds, industry, onChange }: Props) {
       {/* Added Feeds List */}
       {feeds.length > 0 && (
         <div className="space-y-2">
-          <p className="text-xs font-medium text-stone-500">Fuentes manuales agregadas ({feeds.length})</p>
+          <p className="text-xs font-medium text-[var(--text-tertiary)]">Fuentes manuales agregadas ({feeds.length})</p>
           {feeds.map((url) => (
             <div
               key={url}
-              className="flex items-center justify-between p-3 rounded-lg bg-stone-100 border border-stone-200"
+              className="flex items-center justify-between p-3 rounded-lg bg-[var(--surface-1)] border border-[var(--border)]"
             >
               <div className="flex items-center gap-2 min-w-0">
-                <Rss className="w-4 h-4 text-orange-400 shrink-0" />
-                <span className="text-sm text-stone-700 truncate">{url}</span>
+                <Rss className="w-4 h-4 text-[var(--accent)] shrink-0" />
+                <span className="text-sm text-[var(--text-secondary)] truncate">{url}</span>
               </div>
               <button
                 onClick={() => removeFeed(url)}
-                className="text-stone-500 hover:text-red-400 transition ml-2"
+                className="text-[var(--text-tertiary)] hover:text-[var(--error)] transition ml-2"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -126,24 +126,24 @@ export function StepFeeds({ feeds, industry, onChange }: Props) {
       <div className="space-y-3">
         <button
           onClick={() => setShowManual(!showManual)}
-          className="flex items-center gap-2 text-sm text-stone-500 hover:text-stone-900 transition"
+          className="flex items-center gap-2 text-sm text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition"
         >
           <ChevronDown className={cn("w-4 h-4 transition", showManual && "rotate-180")} />
           Agregar manualmente
         </button>
 
         {showManual && (
-          <div className="flex gap-2 p-3 rounded-lg bg-stone-100/50 border border-stone-200">
+          <div className="flex gap-2 p-3 rounded-lg bg-[var(--surface-1)]/50 border border-[var(--border)]">
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && addFeed(input.trim())}
               placeholder="https://ejemplo.com/feed.xml"
-              className="flex-1 px-3 py-2 rounded-lg bg-stone-50 border border-stone-200 text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 transition text-sm"
+              className="flex-1 px-3 py-2 rounded-lg bg-[var(--surface-0)] border border-[var(--border)] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/50 focus:border-[var(--accent)] transition text-sm"
             />
             <button
               onClick={() => addFeed(input.trim())}
-              className="px-3 py-2 rounded-lg bg-orange-600 hover:bg-orange-500 transition text-white"
+              className="px-3 py-2 rounded-lg bg-[var(--accent)] hover:bg-[var(--accent)] transition text-white"
             >
               <Plus className="w-5 h-5" />
             </button>
@@ -152,7 +152,7 @@ export function StepFeeds({ feeds, industry, onChange }: Props) {
       </div>
 
       {/* Help Text */}
-      <p className="text-xs text-stone-500 text-center">
+      <p className="text-xs text-[var(--text-tertiary)] text-center">
         Puedes cambiar, agregar o eliminar fuentes después del onboarding
       </p>
     </div>

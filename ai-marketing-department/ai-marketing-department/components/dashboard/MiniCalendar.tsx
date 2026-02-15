@@ -38,16 +38,16 @@ export function MiniCalendar({ contentItems }: MiniCalendarProps) {
   }, [contentItems]);
 
   return (
-    <div className="rounded-xl border border-stone-200 bg-white p-4">
+    <div className="rounded-xl border border-[var(--border)] bg-[var(--card-bg)] p-4">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <CalendarDays className="h-4 w-4 text-orange-500" />
-          <h3 className="text-sm font-medium text-stone-700">{translate("miniCalendarTitle")}</h3>
+          <h3 className="text-sm font-medium text-[var(--text-secondary)]">{translate("miniCalendarTitle")}</h3>
         </div>
         <Link
-          href="/content/pipeline"
-          className="text-xs text-orange-600 hover:text-orange-800 font-medium flex items-center gap-1 transition-colors"
+          href="/content"
+          className="text-xs text-[var(--accent)] hover:text-orange-800 font-medium flex items-center gap-1 transition-colors"
         >
           Ver todo
           <ArrowRight className="h-3 w-3" />
@@ -64,23 +64,23 @@ export function MiniCalendar({ contentItems }: MiniCalendarProps) {
           return (
             <Link
               key={dateKey}
-              href="/content/pipeline"
+              href="/content"
               className={cn(
-                "flex flex-col items-center gap-1 py-2 rounded-lg transition-colors hover:bg-stone-50",
-                isTodayDate && "bg-orange-50"
+                "flex flex-col items-center gap-1 py-2 rounded-lg transition-colors hover:bg-[var(--surface-0)]",
+                isTodayDate && "bg-[var(--accent-subtle)]"
               )}
             >
               <span className={cn(
                 "text-[10px] font-medium uppercase",
-                isTodayDate ? "text-orange-600" : "text-stone-400"
+                isTodayDate ? "text-[var(--accent)]" : "text-[var(--text-tertiary)]"
               )}>
                 {format(day, "EEE", { locale: es })}
               </span>
               <span className={cn(
                 "text-sm font-semibold w-7 h-7 flex items-center justify-center rounded-full",
                 isTodayDate
-                  ? "bg-orange-500 text-white"
-                  : "text-stone-700"
+                  ? "bg-[var(--accent)] text-white"
+                  : "text-[var(--text-secondary)]"
               )}>
                 {format(day, "d")}
               </span>
@@ -96,7 +96,7 @@ export function MiniCalendar({ contentItems }: MiniCalendarProps) {
                   />
                 ))}
                 {count > 3 && (
-                  <span className="text-[8px] text-stone-400 font-bold">+</span>
+                  <span className="text-[8px] text-[var(--text-tertiary)] font-bold">+</span>
                 )}
               </div>
             </Link>
@@ -106,8 +106,8 @@ export function MiniCalendar({ contentItems }: MiniCalendarProps) {
 
       {/* Summary */}
       {contentItems && (
-        <div className="mt-3 pt-3 border-t border-stone-100">
-          <p className="text-xs text-stone-400">
+        <div className="mt-3 pt-3 border-t border-[var(--surface-2)]">
+          <p className="text-xs text-[var(--text-tertiary)]">
             {contentItems.filter(c => c.scheduledFor).length} contenidos programados próximos 7 días
           </p>
         </div>
@@ -118,16 +118,16 @@ export function MiniCalendar({ contentItems }: MiniCalendarProps) {
 
 export function MiniCalendarSkeleton() {
   return (
-    <div className="rounded-xl border border-stone-200 bg-white p-4">
+    <div className="rounded-xl border border-[var(--border)] bg-[var(--card-bg)] p-4">
       <div className="flex items-center gap-2 mb-4">
-        <div className="h-4 w-4 rounded bg-stone-200 animate-pulse" />
-        <div className="h-4 w-24 rounded bg-stone-200 animate-pulse" />
+        <div className="h-4 w-4 rounded bg-[var(--surface-2)] animate-pulse" />
+        <div className="h-4 w-24 rounded bg-[var(--surface-2)] animate-pulse" />
       </div>
       <div className="grid grid-cols-7 gap-1.5">
         {Array.from({ length: 7 }, (_, i) => (
           <div key={i} className="flex flex-col items-center gap-1 py-2">
-            <div className="h-3 w-6 rounded bg-stone-200 animate-pulse" />
-            <div className="h-7 w-7 rounded-full bg-stone-200 animate-pulse" />
+            <div className="h-3 w-6 rounded bg-[var(--surface-2)] animate-pulse" />
+            <div className="h-7 w-7 rounded-full bg-[var(--surface-2)] animate-pulse" />
           </div>
         ))}
       </div>

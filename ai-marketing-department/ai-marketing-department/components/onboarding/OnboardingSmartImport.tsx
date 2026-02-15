@@ -221,7 +221,7 @@ export function OnboardingSmartImport({
   }, [url, urlData, igHandle, igData, docs, extractFromUrl, extractFromText, onExtracted]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-stone-950 to-stone-900">
+    <div className="min-h-screen flex flex-col bg-[var(--surface-0)] dark:bg-gradient-to-b dark:from-[var(--surface-3)] dark:to-[var(--surface-2)]">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
@@ -230,14 +230,14 @@ export function OnboardingSmartImport({
       >
         <div className="max-w-2xl mx-auto">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 rounded-xl bg-orange-500/20">
-              <Sparkles className="h-6 w-6 text-orange-400" />
+            <div className="p-2 rounded-xl bg-[var(--accent-muted)]">
+              <Sparkles className="h-6 w-6 text-[var(--accent)]" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">
+              <h1 className="text-2xl font-bold text-[var(--text-primary)]">
                 Importar información de marca
               </h1>
-              <p className="text-stone-400 text-sm">
+              <p className="text-[var(--text-secondary)] text-sm">
                 Proporciona al menos una fuente. Combinaremos toda la información.
               </p>
             </div>
@@ -254,9 +254,9 @@ export function OnboardingSmartImport({
           transition={{ delay: 0.1 }}
         >
           <div className="flex items-center gap-2 mb-3">
-            <Globe className="w-5 h-5 text-stone-400" />
-            <h2 className="text-sm font-semibold text-stone-300">Sitio web</h2>
-            <span className="text-xs text-stone-600 ml-auto">Opcional</span>
+            <Globe className="w-5 h-5 text-[var(--text-secondary)]" />
+            <h2 className="text-sm font-semibold text-[var(--text-primary)]">Sitio web</h2>
+            <span className="text-xs text-[var(--text-tertiary)] ml-auto">Opcional</span>
           </div>
           <div className="flex gap-2">
             <input
@@ -277,9 +277,9 @@ export function OnboardingSmartImport({
               disabled={extracting}
               className={cn(
                 "flex-1 px-4 py-2.5 rounded-lg border text-sm transition",
-                "bg-stone-800/50 text-white placeholder:text-stone-500",
-                "focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500",
-                urlStatus === "error" ? "border-red-500/50" : "border-stone-700",
+                "bg-[var(--input-bg)] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]",
+                "focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-[var(--accent)]",
+                urlStatus === "error" ? "border-[var(--error)]/50" : "border-[var(--input-border)]",
                 extracting && "opacity-50"
               )}
             />
@@ -289,14 +289,14 @@ export function OnboardingSmartImport({
               className={cn(
                 "flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition",
                 url.trim() && urlStatus !== "analyzing"
-                  ? "bg-white text-stone-900 hover:bg-stone-100"
-                  : "bg-stone-700 text-stone-500 cursor-not-allowed"
+                  ? "bg-[var(--button-primary-bg)] text-[var(--button-primary-text)] hover:bg-[var(--button-primary-hover)]"
+                  : "bg-[var(--surface-2)] text-[var(--text-tertiary)] cursor-not-allowed"
               )}
             >
               {urlStatus === "analyzing" ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : urlStatus === "done" ? (
-                <CheckCircle2 className="w-4 h-4 text-green-500" />
+                <CheckCircle2 className="w-4 h-4 text-[var(--success)]" />
               ) : (
                 <Search className="w-4 h-4" />
               )}
@@ -304,7 +304,7 @@ export function OnboardingSmartImport({
             </button>
           </div>
           {urlStatus === "error" && urlError && (
-            <p className="text-xs text-red-400 mt-2 flex items-center gap-1.5">
+            <p className="text-xs text-[var(--error)] mt-2 flex items-center gap-1.5">
               <AlertCircle className="w-3 h-3" />
               {urlError}
             </p>
@@ -318,9 +318,9 @@ export function OnboardingSmartImport({
           transition={{ delay: 0.15 }}
         >
           <div className="flex items-center gap-2 mb-3">
-            <Instagram className="w-5 h-5 text-stone-400" />
-            <h2 className="text-sm font-semibold text-stone-300">Instagram</h2>
-            <span className="text-xs text-stone-600 ml-auto">Opcional</span>
+            <Instagram className="w-5 h-5 text-[var(--text-secondary)]" />
+            <h2 className="text-sm font-semibold text-[var(--text-secondary)]">Instagram</h2>
+            <span className="text-xs text-[var(--text-tertiary)] ml-auto">Opcional</span>
           </div>
           <div className="flex gap-2">
             <input
@@ -340,9 +340,9 @@ export function OnboardingSmartImport({
               disabled={extracting}
               className={cn(
                 "flex-1 px-4 py-2.5 rounded-lg border text-sm transition",
-                "bg-stone-800/50 text-white placeholder:text-stone-500",
-                "focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500",
-                igStatus === "error" ? "border-red-500/50" : "border-stone-700",
+                "bg-[var(--surface-1)] text-white placeholder:text-[var(--text-tertiary)]",
+                "focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-[var(--accent)]",
+                igStatus === "error" ? "border-red-500/50" : "border-[var(--border)]",
                 extracting && "opacity-50"
               )}
             />
@@ -352,14 +352,14 @@ export function OnboardingSmartImport({
               className={cn(
                 "flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition",
                 igHandle.trim() && igStatus !== "analyzing"
-                  ? "bg-white text-stone-900 hover:bg-stone-100"
-                  : "bg-stone-700 text-stone-500 cursor-not-allowed"
+                  ? "bg-[var(--button-primary-bg)] text-[var(--text-primary)] hover:bg-[var(--surface-1)]"
+                  : "bg-[var(--surface-2)] text-[var(--text-tertiary)] cursor-not-allowed"
               )}
             >
               {igStatus === "analyzing" ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : igStatus === "done" ? (
-                <CheckCircle2 className="w-4 h-4 text-green-500" />
+                <CheckCircle2 className="w-4 h-4 text-[var(--success)]" />
               ) : (
                 <Search className="w-4 h-4" />
               )}
@@ -367,7 +367,7 @@ export function OnboardingSmartImport({
             </button>
           </div>
           {igStatus === "error" && igError && (
-            <p className="text-xs text-red-400 mt-2 flex items-center gap-1.5">
+            <p className="text-xs text-[var(--error)] mt-2 flex items-center gap-1.5">
               <AlertCircle className="w-3 h-3" />
               {igError}
             </p>
@@ -381,11 +381,11 @@ export function OnboardingSmartImport({
           transition={{ delay: 0.2 }}
         >
           <div className="flex items-center gap-2 mb-3">
-            <FileText className="w-5 h-5 text-stone-400" />
-            <h2 className="text-sm font-semibold text-stone-300">
+            <FileText className="w-5 h-5 text-[var(--text-secondary)]" />
+            <h2 className="text-sm font-semibold text-[var(--text-secondary)]">
               Documentos de marca
             </h2>
-            <span className="text-xs text-stone-600 ml-auto">Opcional</span>
+            <span className="text-xs text-[var(--text-tertiary)] ml-auto">Opcional</span>
           </div>
 
           {docs.length > 0 && (
@@ -393,24 +393,24 @@ export function OnboardingSmartImport({
               {docs.map((doc, i) => (
                 <div
                   key={i}
-                  className="flex items-center gap-3 px-3 py-2 rounded-lg bg-stone-800/50 border border-stone-700"
+                  className="flex items-center gap-3 px-3 py-2 rounded-lg bg-[var(--surface-1)] border border-[var(--border)]"
                 >
-                  <FileText className="w-4 h-4 text-stone-500 shrink-0" />
+                  <FileText className="w-4 h-4 text-[var(--text-tertiary)] shrink-0" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-stone-200 truncate">
+                    <p className="text-sm font-medium text-[var(--text-primary)] truncate">
                       {doc.fileName}
                     </p>
-                    <p className="text-xs text-stone-500">
+                    <p className="text-xs text-[var(--text-tertiary)]">
                       {doc.wordCount.toLocaleString()} palabras
                     </p>
                   </div>
-                  <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-[var(--success)] shrink-0" />
                   <button
                     onClick={() => handleRemoveDoc(i)}
                     disabled={extracting}
-                    className="p-1 rounded hover:bg-stone-700 transition shrink-0"
+                    className="p-1 rounded hover:bg-[var(--surface-2)] transition shrink-0"
                   >
-                    <X className="w-3.5 h-3.5 text-stone-400" />
+                    <X className="w-3.5 h-3.5 text-[var(--text-secondary)]" />
                   </button>
                 </div>
               ))}
@@ -420,7 +420,7 @@ export function OnboardingSmartImport({
           <FileDropZone
             onFileProcessed={handleFileProcessed}
             maxSizeMB={10}
-            className="!min-h-[120px] !border-stone-700 !bg-stone-800/30 [&_p]:!text-stone-400 [&_span]:!text-stone-500 [&_svg]:!text-stone-500"
+            className="!min-h-[120px] !border-[var(--border)] !bg-[var(--surface-1)]/50 [&_p]:!text-[var(--text-secondary)] [&_span]:!text-[var(--text-tertiary)] [&_svg]:!text-[var(--text-tertiary)]"
           />
         </motion.section>
 
@@ -431,11 +431,11 @@ export function OnboardingSmartImport({
           transition={{ delay: 0.3 }}
         >
           {extractError && (
-            <div className="flex items-start gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20 mb-4">
-              <AlertCircle className="w-4 h-4 text-red-400 mt-0.5 shrink-0" />
+            <div className="flex items-start gap-2 p-3 rounded-lg bg-[var(--error)]/10 border border-[var(--error)]/20 mb-4">
+              <AlertCircle className="w-4 h-4 text-[var(--error)] mt-0.5 shrink-0" />
               <div>
-                <p className="text-sm font-medium text-red-300">Error en la extraccion</p>
-                <p className="text-xs text-red-400 mt-0.5">{extractError}</p>
+                <p className="text-sm font-medium text-[var(--error)]">Error en la extraccion</p>
+                <p className="text-xs text-[var(--error)] mt-0.5">{extractError}</p>
               </div>
             </div>
           )}
@@ -446,8 +446,8 @@ export function OnboardingSmartImport({
             className={cn(
               "w-full flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-sm font-semibold transition",
               hasAnySources && !extracting
-                ? "bg-orange-600 hover:bg-orange-700 text-white"
-                : "bg-stone-700 text-stone-500 cursor-not-allowed"
+                ? "bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white"
+                : "bg-[var(--surface-2)] text-[var(--text-tertiary)] cursor-not-allowed"
             )}
           >
             {extracting ? (
@@ -464,7 +464,7 @@ export function OnboardingSmartImport({
           </button>
 
           {!hasAnySources && (
-            <p className="text-xs text-stone-500 text-center mt-2">
+            <p className="text-xs text-[var(--text-tertiary)] text-center mt-2">
               Agrega al menos una URL, Instagram o documento para continuar
             </p>
           )}
@@ -472,19 +472,19 @@ export function OnboardingSmartImport({
       </div>
 
       {/* Footer */}
-      <div className="border-t border-stone-800 p-4 mt-auto">
+      <div className="border-t border-[var(--border)] p-4 mt-auto">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <button
             onClick={onBack}
             disabled={extracting}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium text-stone-400 hover:text-white hover:bg-stone-800 transition"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium text-[var(--text-secondary)] hover:text-white hover:bg-[var(--surface-1)] transition"
           >
             <ArrowLeft className="w-4 h-4" /> Volver
           </button>
           <button
             onClick={onSkip}
             disabled={extracting}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium text-stone-500 hover:text-stone-300 hover:bg-stone-800 transition"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] hover:bg-[var(--surface-1)] transition"
           >
             Saltar y llenar manualmente <SkipForward className="w-4 h-4" />
           </button>

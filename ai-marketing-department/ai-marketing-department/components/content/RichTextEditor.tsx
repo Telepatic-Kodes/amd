@@ -105,7 +105,7 @@ export function RichTextEditor({
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: "text-orange-400 hover:text-orange-300 underline cursor-pointer",
+          class: "text-[var(--accent)] hover:text-orange-300 underline cursor-pointer",
         },
       }),
       CharacterCount,
@@ -115,7 +115,7 @@ export function RichTextEditor({
       attributes: {
         class: cn(
           "prose max-w-none focus:outline-none",
-          "text-stone-900 text-sm leading-relaxed",
+          "text-[var(--text-primary)] text-sm leading-relaxed",
           // Handle long words overflow with CSS
           "break-words"
         ),
@@ -171,7 +171,7 @@ export function RichTextEditor({
 
   return (
     <div
-      className={cn("border border-stone-200 rounded-lg overflow-hidden", className)}
+      className={cn("border border-[var(--border)] rounded-lg overflow-hidden", className)}
       // Prevent virtual keyboard from pushing editor off screen on mobile
       style={{ position: 'relative' }}
     >
@@ -188,7 +188,7 @@ export function RichTextEditor({
           placement: "top",
         }}
         updateDelay={100}
-        className="flex gap-1 p-1 bg-stone-200 border border-stone-300 rounded-lg shadow-lg z-50"
+        className="flex gap-1 p-1 bg-[var(--surface-2)] border border-[var(--border-hover)] rounded-lg shadow-lg z-50"
       >
         <BubbleMenuButton
           onClick={() => editor.chain().focus().toggleBold().run()}
@@ -218,7 +218,7 @@ export function RichTextEditor({
         >
           <Code className="h-4 w-4" />
         </BubbleMenuButton>
-        <div className="w-px h-6 bg-stone-700 my-auto mx-1" />
+        <div className="w-px h-6 bg-[var(--surface-2)] my-auto mx-1" />
         <BubbleMenuButton
           onClick={() => setIsLinkDialogOpen(true)}
           isActive={editor.isActive("link")}
@@ -230,7 +230,7 @@ export function RichTextEditor({
 
       {/* Editor Content */}
       <div
-        className="p-4 bg-white"
+        className="p-4 bg-[var(--card-bg)]"
         style={{ minHeight }}
         data-placeholder={placeholder}
       >
@@ -238,16 +238,16 @@ export function RichTextEditor({
       </div>
 
       {/* Footer - EditorStatusBar with optional export buttons */}
-      <div className="flex items-center justify-between border-t border-stone-200 bg-white">
+      <div className="flex items-center justify-between border-t border-[var(--border)] bg-[var(--card-bg)]">
         <EditorStatusBar content={content} className="flex-1 border-0" />
 
         {showExport && (
-          <div className="flex gap-2 px-4 border-l border-stone-200">
+          <div className="flex gap-2 px-4 border-l border-[var(--border)]">
             <button
               type="button"
               onClick={handleCopyHtml}
               aria-label="Copiar HTML al portapapeles"
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-stone-400 hover:text-stone-900 hover:bg-stone-200 rounded transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-2)] rounded transition-colors"
               title="Copiar HTML al portapapeles"
             >
               <Copy className="h-3.5 w-3.5" />
@@ -257,7 +257,7 @@ export function RichTextEditor({
               type="button"
               onClick={handleDownload}
               aria-label="Descargar como archivo HTML"
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-stone-400 hover:text-stone-900 hover:bg-stone-200 rounded transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-2)] rounded transition-colors"
               title="Descargar"
             >
               <Download className="h-3.5 w-3.5" />
@@ -297,8 +297,8 @@ function BubbleMenuButton({
       aria-pressed={isActive}
       className={cn(
         "p-2 rounded transition-colors touch-target min-w-[44px] min-h-[44px] flex items-center justify-center",
-        "hover:bg-stone-100",
-        isActive ? "bg-stone-700 text-orange-400" : "text-stone-500"
+        "hover:bg-[var(--surface-1)]",
+        isActive ? "bg-[var(--surface-2)] text-[var(--accent)]" : "text-[var(--text-tertiary)]"
       )}
     >
       {children}

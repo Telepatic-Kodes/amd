@@ -58,27 +58,27 @@ const toastConfig: Record<ToastType, {
 }> = {
   success: {
     icon: CheckCircle2,
-    iconColor: "text-green-400",
-    bgColor: "bg-green-500/10",
-    borderColor: "border-green-500/30",
+    iconColor: "text-[var(--success)]",
+    bgColor: "bg-[var(--badge-green-bg)]",
+    borderColor: "border-[var(--success)]/30",
   },
   error: {
     icon: AlertCircle,
-    iconColor: "text-red-400",
-    bgColor: "bg-red-500/10",
-    borderColor: "border-red-500/30",
+    iconColor: "text-[var(--error)]",
+    bgColor: "bg-[var(--badge-red-bg)]",
+    borderColor: "border-[var(--error)]/30",
   },
   info: {
     icon: Info,
-    iconColor: "text-orange-400",
-    bgColor: "bg-orange-500/10",
-    borderColor: "border-orange-500/30",
+    iconColor: "text-[var(--accent)]",
+    bgColor: "bg-[var(--accent-muted)]",
+    borderColor: "border-[var(--accent)]/30",
   },
   warning: {
     icon: AlertTriangle,
-    iconColor: "text-yellow-400",
-    bgColor: "bg-yellow-500/10",
-    borderColor: "border-yellow-500/30",
+    iconColor: "text-[var(--warning)]",
+    bgColor: "bg-[var(--badge-amber-bg)]",
+    borderColor: "border-[var(--warning)]/30",
   },
 };
 
@@ -188,7 +188,7 @@ function ToastItem({
       role="alert"
       className={cn(
         "pointer-events-auto flex items-start gap-3 p-4 rounded-xl border backdrop-blur-sm shadow-lg max-w-sm",
-        "bg-stone-100/95",
+        "bg-[var(--surface-1)]/95",
         config.borderColor
       )}
     >
@@ -197,9 +197,9 @@ function ToastItem({
       </div>
 
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-stone-900">{toast.title}</p>
+        <p className="text-sm font-medium text-[var(--text-primary)]">{toast.title}</p>
         {toast.description && (
-          <p className="text-xs text-stone-500 mt-0.5">{toast.description}</p>
+          <p className="text-xs text-[var(--text-secondary)] mt-0.5">{toast.description}</p>
         )}
         {toast.action && (
           <button
@@ -207,7 +207,7 @@ function ToastItem({
               toast.action!.onClick();
               onRemove(toast.id);
             }}
-            className="mt-2 text-xs font-semibold text-orange-600 hover:text-orange-700 transition-colors"
+            className="mt-2 text-xs font-semibold text-[var(--accent)] hover:text-[var(--accent-hover)] transition-colors"
           >
             {toast.action.label}
           </button>
@@ -216,7 +216,7 @@ function ToastItem({
 
       <button
         onClick={() => onRemove(toast.id)}
-        className="shrink-0 p-1 rounded-lg hover:bg-stone-200 text-stone-500 hover:text-stone-900 transition-colors"
+        className="shrink-0 p-1 rounded-lg hover:bg-[var(--surface-2)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors"
         aria-label="Cerrar notificación"
       >
         <X className="h-4 w-4" />

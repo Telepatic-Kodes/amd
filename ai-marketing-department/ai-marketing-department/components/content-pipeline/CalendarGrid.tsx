@@ -16,11 +16,12 @@ import {
   endOfWeek,
 } from "date-fns";
 import { es } from "date-fns/locale";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, CalendarDays } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { typeColors, typeIcons } from "@/lib/contentTypes";
 import { FileText } from "lucide-react";
 import { translate } from "@/lib/language";
+import { ContentChip } from "@/components/content/ContentChip";
 
 interface CalendarItem {
   _id: Id<"content">;
@@ -39,9 +40,9 @@ interface CalendarItem {
 }
 
 const TIER_COLORS: Record<string, string> = {
-  hero: "bg-orange-100 text-orange-700 border-l-2 border-l-orange-500",
-  hub: "bg-blue-100 text-blue-700 border-l-2 border-l-blue-500",
-  hygiene: "bg-green-100 text-green-700 border-l-2 border-l-green-500",
+  hero: "bg-orange-100 text-[var(--accent)] border-l-2 border-l-orange-500",
+  hub: "bg-blue-100 text-[var(--badge-blue-text)] border-l-2 border-l-blue-500",
+  hygiene: "bg-[var(--badge-green-bg)] text-[var(--badge-green-text)] border-l-2 border-l-green-500",
 };
 
 interface CalendarGridProps {
@@ -101,22 +102,32 @@ export function CalendarGrid({ items, onDayClick, onReschedule }: CalendarGridPr
   };
 
   return (
-    <div className="rounded-xl border border-stone-200 bg-white overflow-hidden">
+    <div className="rounded-xl border border-[var(--border)] bg-[var(--card-bg)] overflow-hidden">
       {/* Header: Month navigation */}
-      <div className="flex items-center justify-between px-5 py-4 border-b border-stone-200">
+      <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--border)]">
         <button
           onClick={handlePrevMonth}
-          className="p-1.5 rounded-lg hover:bg-stone-100 text-stone-500 transition-colors"
+          className="p-1.5 rounded-lg hover:bg-[var(--surface-1)] text-[var(--text-tertiary)] transition-colors"
           title={translate("prevMonth")}
         >
           <ChevronLeft className="h-5 w-5" />
         </button>
-        <h3 className="text-base font-semibold text-stone-900 capitalize">
-          {format(currentMonth, "MMMM yyyy", { locale: es })}
-        </h3>
+        <div className="flex items-center gap-2">
+          <h3 className="text-base font-semibold text-[var(--text-primary)] capitalize">
+            {format(currentMonth, "MMMM yyyy", { locale: es })}
+          </h3>
+          <button
+            onClick={() => setCurrentMonth(new Date())}
+            className="px-2 py-0.5 rounded-md text-[10px] font-medium text-[var(--text-tertiary)] hover:bg-[var(--surface-1)] border border-[var(--border)] transition-colors flex items-center gap-1"
+            title="Ir a hoy"
+          >
+            <CalendarDays className="h-3 w-3" />
+            Hoy
+          </button>
+        </div>
         <button
           onClick={handleNextMonth}
-          className="p-1.5 rounded-lg hover:bg-stone-100 text-stone-500 transition-colors"
+          className="p-1.5 rounded-lg hover:bg-[var(--surface-1)] text-[var(--text-tertiary)] transition-colors"
           title={translate("nextMonth")}
         >
           <ChevronRight className="h-5 w-5" />
@@ -124,13 +135,13 @@ export function CalendarGrid({ items, onDayClick, onReschedule }: CalendarGridPr
       </div>
 
       {/* Weekday headers */}
-      <div className="grid grid-cols-7 border-b border-stone-200">
+      <div className="grid grid-cols-7 border-b border-[var(--border)]">
         {WEEKDAY_LABELS.map((day, i) => (
           <div
             key={day}
             className={cn(
               "text-center text-xs font-medium py-2",
-              i >= 5 ? "text-stone-400 bg-stone-50/50" : "text-stone-500"
+              i >= 5 ? "text-[var(--text-tertiary)] bg-[var(--surface-0)]/50" : "text-[var(--text-tertiary)]"
             )}
           >
             {day}
@@ -153,10 +164,10 @@ export function CalendarGrid({ items, onDayClick, onReschedule }: CalendarGridPr
             <div
               key={dateKey}
               className={cn(
-                "min-h-[100px] border-b border-r border-stone-100 p-1.5 transition-colors cursor-pointer",
-                !isCurrentMonth && "bg-stone-50/40",
-                isWeekendDay && isCurrentMonth && "bg-stone-50/30",
-                isDragTarget && "bg-orange-50 ring-2 ring-inset ring-orange-300",
+                "min-h-[100px] border-b border-r border-[var(--border)] p-1.5 transition-colors cursor-pointer",
+                !isCurrentMonth && "bg-[var(--surface-0)]/40",
+                isWeekendDay && isCurrentMonth && "bg-[var(--surface-0)]/30",
+                isDragTarget && "bg-[var(--accent-subtle)] ring-2 ring-inset ring-orange-300",
               )}
               onClick={() => onDayClick(day)}
               onDragOver={(e) => handleDragOver(e, dateKey)}
@@ -168,9 +179,9 @@ export function CalendarGrid({ items, onDayClick, onReschedule }: CalendarGridPr
                 <span
                   className={cn(
                     "text-xs font-medium w-6 h-6 flex items-center justify-center rounded-full",
-                    !isCurrentMonth && "text-stone-300",
-                    isCurrentMonth && !isTodayDate && "text-stone-600",
-                    isTodayDate && "bg-orange-500 text-white font-bold"
+                    !isCurrentMonth && "text-[var(--text-tertiary)]",
+                    isCurrentMonth && !isTodayDate && "text-[var(--text-secondary)]",
+                    isTodayDate && "bg-[var(--accent)] text-white font-bold"
                   )}
                 >
                   {format(day, "d")}
@@ -179,33 +190,23 @@ export function CalendarGrid({ items, onDayClick, onReschedule }: CalendarGridPr
 
               {/* Content items */}
               <div className="space-y-0.5">
-                {dayItems.slice(0, MAX_ITEMS_PER_CELL).map((item) => {
-                  const TypeIcon = typeIcons[item.type] || FileText;
-                  // Use tier color if available, fallback to type color
-                  const tierStyle = item.contentTier ? TIER_COLORS[item.contentTier] : undefined;
-                  return (
-                    <div
-                      key={item._id}
-                      draggable
-                      onDragStart={(e) => {
-                        e.stopPropagation();
-                        e.dataTransfer.setData("text/plain", item._id);
-                        e.dataTransfer.effectAllowed = "move";
-                      }}
-                      onClick={(e) => e.stopPropagation()}
-                      className={cn(
-                        "flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium truncate cursor-grab active:cursor-grabbing hover:opacity-80 transition-opacity",
-                        tierStyle || typeColors[item.type] || "bg-stone-100 text-stone-600"
-                      )}
-                      title={`${item.title}${item.contentTier ? ` [${item.contentTier.toUpperCase()}]` : ""}${item.pillarName ? ` — ${item.pillarName}` : ""}`}
-                    >
-                      <TypeIcon className="h-2.5 w-2.5 shrink-0" />
-                      <span className="truncate">{item.title}</span>
-                    </div>
-                  );
-                })}
+                {dayItems.slice(0, MAX_ITEMS_PER_CELL).map((item) => (
+                  <ContentChip
+                    key={item._id}
+                    title={item.title}
+                    type={item.type}
+                    status={item.status}
+                    draggable
+                    onDragStart={(e) => {
+                      e.stopPropagation();
+                      e.dataTransfer.setData("text/plain", item._id);
+                      e.dataTransfer.effectAllowed = "move";
+                    }}
+                    onClick={(e?: React.MouseEvent) => e?.stopPropagation()}
+                  />
+                ))}
                 {overflow > 0 && (
-                  <div className="text-[10px] text-stone-400 font-medium pl-1.5">
+                  <div className="text-[10px] text-[var(--text-tertiary)] font-medium pl-1.5">
                     +{overflow} más
                   </div>
                 )}

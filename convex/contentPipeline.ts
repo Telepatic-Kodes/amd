@@ -79,6 +79,34 @@ export const getContentByStatus = query({
 });
 
 /**
+ * listContentByDateRange - Fetch content within a date range for calendar rendering.
+ */
+export const listContentByDateRange = query({
+  args: {
+    brandProfileId: v.optional(v.id("brandProfiles")),
+    startDate: v.number(),
+    endDate: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getUserId(ctx);
+    let allContent;
+    if (args.brandProfileId) {
+      allContent = await ctx.db.query("content")
+        .withIndex("by_brandProfileId", (q) => q.eq("brandProfileId", args.brandProfileId!))
+        .collect();
+    } else {
+      allContent = await ctx.db.query("content").collect();
+    }
+
+    return allContent.filter((item) => {
+      if (item.userId !== userId && item.userId !== undefined) return false;
+      const itemDate = item.scheduledFor || item.createdAt;
+      return itemDate >= args.startDate && itemDate <= args.endDate;
+    });
+  },
+});
+
+/**
  * getContentStatusCounts - Count items per status + total.
  * Used for column headers and pipeline summary stats.
  */

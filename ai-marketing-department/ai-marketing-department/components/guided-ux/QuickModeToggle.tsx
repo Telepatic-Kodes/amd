@@ -23,16 +23,16 @@ export function QuickModeToggle() {
   };
 
   return (
-    <div className="flex items-center justify-between p-3 rounded-lg bg-stone-100/50 border border-stone-200">
+    <div className="flex items-center justify-between p-3 rounded-lg bg-[var(--surface-1)]/50 border border-[var(--border)]">
       <div className="flex items-center gap-3">
         {quickModeEnabled ? (
           <Zap className="w-4 h-4 text-amber-400" />
         ) : (
-          <ZapOff className="w-4 h-4 text-stone-500" />
+          <ZapOff className="w-4 h-4 text-[var(--text-tertiary)]" />
         )}
         <div>
-          <p className="text-sm font-medium text-stone-900">Modo Express</p>
-          <p className="text-xs text-stone-500">
+          <p className="text-sm font-medium text-[var(--text-primary)]">Modo Express</p>
+          <p className="text-xs text-[var(--text-tertiary)]">
             {quickModeEnabled
               ? "Configuración rápida activada"
               : "Activa para omitir explicaciones"}
@@ -46,7 +46,7 @@ export function QuickModeToggle() {
           onChange={handleToggle}
           className="sr-only peer"
         />
-        <div className="w-11 h-6 bg-stone-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500" />
+        <div className="w-11 h-6 bg-[var(--surface-2)] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[var(--card-bg)] after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500" />
       </label>
     </div>
   );

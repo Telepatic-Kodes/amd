@@ -157,32 +157,32 @@ export function AgentConfigModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
 
-      <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto mx-4 rounded-xl border border-[var(--border)] bg-white shadow-2xl">
+      <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto mx-4 rounded-xl border border-[var(--border)] bg-[var(--card-bg)] shadow-2xl">
         {/* Header */}
-        <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 border-b border-[var(--border)] bg-white rounded-t-xl">
+        <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 border-b border-[var(--border)] bg-[var(--card-bg)] rounded-t-xl">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-orange-50">
-              <Bot className="h-5 w-5 text-orange-600" />
+            <div className="p-2 rounded-lg bg-[var(--accent-subtle)]">
+              <Bot className="h-5 w-5 text-[var(--accent)]" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-stone-900">
+              <h2 className="text-lg font-semibold text-[var(--text-primary)]">
                 Configurar {agent.name}
               </h2>
-              <p className="text-xs text-stone-500">
+              <p className="text-xs text-[var(--text-secondary)]">
                 {agent.agentId} &middot; {agent.department} &middot; {agent.role}
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-stone-100 text-stone-400 hover:text-stone-600 transition-colors"
+            className="p-2 rounded-lg hover:bg-[var(--surface-1)] text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] transition-colors"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-stone-200 px-6">
+        <div className="flex border-b border-[var(--border)] px-6">
           {[
             { id: "config" as const, label: "Modelo & Prompt", icon: Cpu },
             { id: "triggers" as const, label: "Triggers", icon: Zap },
@@ -194,8 +194,8 @@ export function AgentConfigModal({
               className={cn(
                 "flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors",
                 activeTab === tab.id
-                  ? "border-orange-500 text-orange-600"
-                  : "border-transparent text-stone-500 hover:text-stone-700"
+                  ? "border-[var(--accent)] text-[var(--accent)]"
+                  : "border-transparent text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
               )}
             >
               <tab.icon className="h-4 w-4" />
@@ -210,8 +210,8 @@ export function AgentConfigModal({
             <>
               {/* Model Selection */}
               <div>
-                <label className="flex items-center gap-2 text-sm font-medium text-stone-700 mb-2">
-                  <Cpu className="h-4 w-4 text-stone-400" />
+                <label className="flex items-center gap-2 text-sm font-medium text-[var(--text-secondary)] mb-2">
+                  <Cpu className="h-4 w-4 text-[var(--text-tertiary)]" />
                   Modelo
                 </label>
                 <div className="grid grid-cols-2 gap-2">
@@ -222,8 +222,8 @@ export function AgentConfigModal({
                       className={cn(
                         "flex items-center justify-between p-3 rounded-lg border text-left text-sm transition-all",
                         model === m.value
-                          ? "border-orange-500 bg-orange-50 text-stone-900"
-                          : "border-stone-200 bg-white text-stone-600 hover:border-stone-300"
+                          ? "border-[var(--accent)] bg-[var(--accent-subtle)] text-[var(--text-primary)]"
+                          : "border-[var(--border)] bg-[var(--card-bg)] text-[var(--text-secondary)] hover:border-[var(--border-hover)]"
                       )}
                     >
                       <span className="font-medium">{m.label}</span>
@@ -231,7 +231,7 @@ export function AgentConfigModal({
                         "text-xs px-2 py-0.5 rounded-full",
                         model === m.value
                           ? "bg-orange-100 text-orange-700"
-                          : "bg-stone-100 text-stone-500"
+                          : "bg-[var(--surface-1)] text-[var(--text-secondary)]"
                       )}>
                         {m.tier}
                       </span>
@@ -243,8 +243,8 @@ export function AgentConfigModal({
               {/* Temperature + Max Tokens */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="flex items-center gap-2 text-sm font-medium text-stone-700 mb-2">
-                    <Thermometer className="h-4 w-4 text-stone-400" />
+                  <label className="flex items-center gap-2 text-sm font-medium text-[var(--text-secondary)] mb-2">
+                    <Thermometer className="h-4 w-4 text-[var(--text-tertiary)]" />
                     Temperatura: {temperature.toFixed(1)}
                   </label>
                   <input
@@ -254,16 +254,16 @@ export function AgentConfigModal({
                     step="0.1"
                     value={temperature}
                     onChange={(e) => setTemperature(parseFloat(e.target.value))}
-                    className="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-orange-600"
+                    className="w-full h-2 bg-[var(--surface-2)] rounded-lg appearance-none cursor-pointer accent-orange-600"
                   />
-                  <div className="flex justify-between text-xs text-stone-400 mt-1">
+                  <div className="flex justify-between text-xs text-[var(--text-tertiary)] mt-1">
                     <span>Preciso</span>
                     <span>Creativo</span>
                   </div>
                 </div>
                 <div>
-                  <label className="flex items-center gap-2 text-sm font-medium text-stone-700 mb-2">
-                    <Hash className="h-4 w-4 text-stone-400" />
+                  <label className="flex items-center gap-2 text-sm font-medium text-[var(--text-secondary)] mb-2">
+                    <Hash className="h-4 w-4 text-[var(--text-tertiary)]" />
                     Max Tokens
                   </label>
                   <input
@@ -273,33 +273,33 @@ export function AgentConfigModal({
                     max="100000"
                     value={maxTokens}
                     onChange={(e) => setMaxTokens(parseInt(e.target.value) || 4096)}
-                    className="w-full rounded-lg border border-stone-300 bg-white py-2 px-3 text-sm text-stone-900 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                    className="w-full rounded-lg border border-[var(--border)] bg-[var(--card-bg)] py-2 px-3 text-sm text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
                   />
-                  <p className="text-xs text-stone-400 mt-1">256 — 100,000</p>
+                  <p className="text-xs text-[var(--text-tertiary)] mt-1">256 — 100,000</p>
                 </div>
               </div>
 
               {/* System Prompt */}
               <div>
-                <label className="flex items-center gap-2 text-sm font-medium text-stone-700 mb-2">
-                  <FileText className="h-4 w-4 text-stone-400" />
+                <label className="flex items-center gap-2 text-sm font-medium text-[var(--text-secondary)] mb-2">
+                  <FileText className="h-4 w-4 text-[var(--text-tertiary)]" />
                   System Prompt
                 </label>
                 <textarea
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
                   rows={10}
-                  className="w-full rounded-lg border border-stone-300 bg-white py-3 px-4 text-sm text-stone-900 font-mono leading-relaxed focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 resize-y"
+                  className="w-full rounded-lg border border-[var(--border)] bg-[var(--card-bg)] py-3 px-4 text-sm text-[var(--text-primary)] font-mono leading-relaxed focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] resize-y"
                   placeholder="Define el comportamiento y personalidad de este agente..."
                 />
-                <p className="text-xs text-stone-400 mt-1">{prompt.length} caracteres</p>
+                <p className="text-xs text-[var(--text-tertiary)] mt-1">{prompt.length} caracteres</p>
               </div>
             </>
           )}
 
           {activeTab === "triggers" && (
             <div className="space-y-3">
-              <p className="text-sm text-stone-500">
+              <p className="text-sm text-[var(--text-secondary)]">
                 Selecciona cuándo se activa este agente. Puedes combinar varios triggers.
               </p>
               {TRIGGER_OPTIONS.map((trigger) => (
@@ -309,30 +309,30 @@ export function AgentConfigModal({
                   className={cn(
                     "w-full flex items-center justify-between p-3 rounded-lg border text-left transition-all",
                     triggers.includes(trigger.value)
-                      ? "border-orange-500 bg-orange-50"
-                      : "border-stone-200 bg-white hover:border-stone-300"
+                      ? "border-[var(--accent)] bg-[var(--accent-subtle)]"
+                      : "border-[var(--border)] bg-[var(--card-bg)] hover:border-[var(--border-hover)]"
                   )}
                 >
                   <div className="flex items-center gap-3">
                     <Zap className={cn(
                       "h-4 w-4",
-                      triggers.includes(trigger.value) ? "text-orange-600" : "text-stone-400"
+                      triggers.includes(trigger.value) ? "text-[var(--accent)]" : "text-[var(--text-tertiary)]"
                     )} />
                     <div>
                       <p className={cn(
                         "text-sm font-medium",
-                        triggers.includes(trigger.value) ? "text-stone-900" : "text-stone-600"
+                        triggers.includes(trigger.value) ? "text-[var(--text-primary)]" : "text-[var(--text-secondary)]"
                       )}>
                         {trigger.label}
                       </p>
-                      <p className="text-xs text-stone-400">{trigger.description}</p>
+                      <p className="text-xs text-[var(--text-tertiary)]">{trigger.description}</p>
                     </div>
                   </div>
                   <div className={cn(
                     "w-4 h-4 rounded border-2 flex items-center justify-center",
                     triggers.includes(trigger.value)
-                      ? "border-orange-500 bg-orange-500"
-                      : "border-stone-300"
+                      ? "border-[var(--accent)] bg-[var(--accent)]"
+                      : "border-[var(--border-hover)]"
                   )}>
                     {triggers.includes(trigger.value) && (
                       <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={4}>
@@ -347,24 +347,24 @@ export function AgentConfigModal({
 
           {activeTab === "history" && (
             <div className="space-y-3">
-              <p className="text-sm text-stone-500">
+              <p className="text-sm text-[var(--text-secondary)]">
                 Cada cambio crea una versión. Puedes restaurar cualquier configuración anterior.
               </p>
               {configHistory && configHistory.length > 0 ? (
                 configHistory.map((version) => (
                   <div
                     key={version._id}
-                    className="flex items-center justify-between p-3 rounded-lg border border-stone-200 bg-white"
+                    className="flex items-center justify-between p-3 rounded-lg border border-[var(--border)] bg-[var(--card-bg)]"
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-stone-100 text-stone-600 text-xs font-bold flex-shrink-0">
+                      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[var(--surface-1)] text-[var(--text-secondary)] text-xs font-bold flex-shrink-0">
                         v{version.version}
                       </div>
                       <div className="min-w-0">
-                        <p className="text-sm text-stone-700 truncate">
+                        <p className="text-sm text-[var(--text-secondary)] truncate">
                           {version.changeDescription || "Configuración actualizada"}
                         </p>
-                        <p className="text-xs text-stone-400 flex items-center gap-1">
+                        <p className="text-xs text-[var(--text-tertiary)] flex items-center gap-1">
                           <Clock className="h-3 w-3" />
                           {new Date(version.createdAt).toLocaleString("es-CL")}
                         </p>
@@ -373,14 +373,14 @@ export function AgentConfigModal({
                     <button
                       onClick={() => handleRestoreVersion(version.version)}
                       disabled={saving}
-                      className="px-3 py-1.5 rounded-lg text-xs font-medium text-orange-600 hover:bg-orange-50 border border-orange-200 transition-colors"
+                      className="px-3 py-1.5 rounded-lg text-xs font-medium text-[var(--accent)] hover:bg-[var(--accent-subtle)] border border-orange-200 transition-colors"
                     >
                       Restaurar
                     </button>
                   </div>
                 ))
               ) : (
-                <div className="text-center py-8 text-stone-400 text-sm">
+                <div className="text-center py-8 text-[var(--text-tertiary)] text-sm">
                   No hay versiones anteriores. Los cambios se registrarán automáticamente.
                 </div>
               )}
@@ -392,20 +392,20 @@ export function AgentConfigModal({
             <div>
               <button
                 onClick={() => setShowAdvanced(!showAdvanced)}
-                className="flex items-center gap-2 text-xs text-stone-400 hover:text-stone-600"
+                className="flex items-center gap-2 text-xs text-[var(--text-tertiary)] hover:text-[var(--text-secondary)]"
               >
                 {showAdvanced ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
                 Opciones avanzadas
               </button>
               {showAdvanced && (
-                <div className="mt-3 p-3 rounded-lg border border-red-200 bg-red-50">
+                <div className="mt-3 p-3 rounded-lg border border-[var(--badge-red-bg)] bg-[var(--badge-red-bg)]">
                   <p className="text-xs text-red-600 mb-2">
                     Restaurar la configuración original del agente (seed). Se perderán todos los cambios.
                   </p>
                   <button
                     onClick={handleResetDefaults}
                     disabled={saving}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-medium text-red-600 border border-red-300 hover:bg-red-100 transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-medium text-red-600 border border-red-300 hover:bg-[var(--badge-red-bg)] transition-colors"
                   >
                     <RotateCcw className="h-3 w-3" />
                     Restaurar Defaults
@@ -417,11 +417,11 @@ export function AgentConfigModal({
         </div>
 
         {/* Footer */}
-        <div className="sticky bottom-0 flex items-center justify-between px-6 py-4 border-t border-[var(--border)] bg-white rounded-b-xl">
+        <div className="sticky bottom-0 flex items-center justify-between px-6 py-4 border-t border-[var(--border)] bg-[var(--card-bg)] rounded-b-xl">
           <button
             onClick={handleUndoChanges}
             disabled={!hasChanges}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-stone-500 hover:text-stone-700 hover:bg-stone-50 transition-colors disabled:opacity-40"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] hover:bg-[var(--surface-0)] transition-colors disabled:opacity-40"
           >
             <RotateCcw className="h-4 w-4" />
             Deshacer cambios
@@ -429,7 +429,7 @@ export function AgentConfigModal({
           <div className="flex items-center gap-3">
             <button
               onClick={onClose}
-              className="px-4 py-2 rounded-lg text-sm font-medium text-stone-600 hover:bg-stone-50 transition-colors"
+              className="px-4 py-2 rounded-lg text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--surface-0)] transition-colors"
             >
               Cancelar
             </button>
@@ -439,8 +439,8 @@ export function AgentConfigModal({
               className={cn(
                 "flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-semibold transition-all",
                 hasChanges && !saving
-                  ? "bg-orange-600 hover:bg-orange-700 text-white"
-                  : "bg-stone-200 text-stone-400 cursor-not-allowed"
+                  ? "bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white"
+                  : "bg-[var(--surface-2)] text-[var(--text-tertiary)] cursor-not-allowed"
               )}
             >
               {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}

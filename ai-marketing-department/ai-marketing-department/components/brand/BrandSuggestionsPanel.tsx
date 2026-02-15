@@ -71,11 +71,11 @@ export function BrandSuggestionsPanel({ brandProfileId }: Props) {
     <div className="space-y-4">
       {/* Header + Generate button */}
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-stone-700 flex items-center gap-2">
+        <h3 className="text-sm font-semibold text-[var(--text-secondary)] flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-purple-500" />
           Sugerencias IA
           {suggestions && suggestions.length > 0 && (
-            <span className="px-1.5 py-0.5 rounded-full bg-purple-50 text-purple-600 text-xs">
+            <span className="px-1.5 py-0.5 rounded-full bg-[var(--badge-purple-bg)] text-[var(--badge-purple-text)] text-xs">
               {suggestions.length}
             </span>
           )}
@@ -86,8 +86,8 @@ export function BrandSuggestionsPanel({ brandProfileId }: Props) {
           className={cn(
             "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition",
             generating
-              ? "bg-stone-100 text-stone-400 cursor-not-allowed"
-              : "bg-purple-50 text-purple-600 hover:bg-purple-100"
+              ? "bg-[var(--surface-1)] text-[var(--text-tertiary)] cursor-not-allowed"
+              : "bg-[var(--badge-purple-bg)] text-[var(--badge-purple-text)] hover:bg-purple-100"
           )}
         >
           {generating ? (
@@ -104,7 +104,7 @@ export function BrandSuggestionsPanel({ brandProfileId }: Props) {
 
       {/* Error state */}
       {error && (
-        <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-600 text-xs">
+        <div className="p-3 rounded-lg bg-[var(--badge-red-bg)] border border-[var(--badge-red-bg)] text-[var(--badge-red-text)] text-xs">
           {error}
         </div>
       )}
@@ -113,11 +113,11 @@ export function BrandSuggestionsPanel({ brandProfileId }: Props) {
       {suggestions === undefined ? (
         <div className="space-y-2">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-20 rounded-lg bg-stone-100 animate-pulse" />
+            <div key={i} className="h-20 rounded-lg bg-[var(--surface-1)] animate-pulse" />
           ))}
         </div>
       ) : suggestions.length === 0 ? (
-        <div className="text-center py-8 text-stone-400">
+        <div className="text-center py-8 text-[var(--text-tertiary)]">
           <Lightbulb className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p className="text-sm">Sin sugerencias pendientes</p>
           <p className="text-xs mt-1">Genera sugerencias para mejorar tu perfil de marca</p>
@@ -129,20 +129,20 @@ export function BrandSuggestionsPanel({ brandProfileId }: Props) {
             return (
               <div
                 key={suggestion._id}
-                className="p-3 rounded-lg border border-stone-200 bg-white hover:border-stone-300 transition-colors shadow-sm"
+                className="p-3 rounded-lg border border-[var(--border)] bg-[var(--card-bg)] hover:border-[var(--border-hover)] transition-colors shadow-sm"
               >
                 <div className="flex items-start gap-2">
-                  <span className="text-stone-400 mt-0.5">
+                  <span className="text-[var(--text-tertiary)] mt-0.5">
                     {categoryIcons[suggestion.category] || categoryIcons.general}
                   </span>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-sm font-medium text-stone-900 truncate">
+                      <span className="text-sm font-medium text-[var(--text-primary)] truncate">
                         {suggestion.title}
                       </span>
                       <Badge variant={priority.variant}>{priority.label}</Badge>
                     </div>
-                    <p className="text-xs text-stone-500 leading-relaxed">
+                    <p className="text-xs text-[var(--text-tertiary)] leading-relaxed">
                       {suggestion.description}
                     </p>
                   </div>
@@ -150,13 +150,13 @@ export function BrandSuggestionsPanel({ brandProfileId }: Props) {
                 <div className="flex items-center gap-2 mt-2 ml-6">
                   <button
                     onClick={() => handleApply(suggestion._id)}
-                    className="flex items-center gap-1 px-2 py-1 rounded text-xs text-green-600 hover:bg-green-50 transition-colors"
+                    className="flex items-center gap-1 px-2 py-1 rounded text-xs text-[var(--badge-green-text)] hover:bg-[var(--badge-green-bg)] transition-colors"
                   >
                     <Check className="w-3 h-3" /> Aplicar
                   </button>
                   <button
                     onClick={() => handleDismiss(suggestion._id)}
-                    className="flex items-center gap-1 px-2 py-1 rounded text-xs text-stone-500 hover:bg-stone-100 transition-colors"
+                    className="flex items-center gap-1 px-2 py-1 rounded text-xs text-[var(--text-tertiary)] hover:bg-[var(--surface-1)] transition-colors"
                   >
                     <X className="w-3 h-3" /> Descartar
                   </button>

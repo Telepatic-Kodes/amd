@@ -23,8 +23,8 @@ export function PlatformPreviewGrid({
 }: PlatformPreviewGridProps) {
   if (selectedPlatforms.length === 0) {
     return (
-      <div className="p-6 text-center border border-stone-200 rounded-lg bg-stone-100/30">
-        <p className="text-sm text-stone-500">
+      <div className="p-6 text-center border border-[var(--border)] rounded-lg bg-[var(--surface-1)]/30">
+        <p className="text-sm text-[var(--text-tertiary)]">
           {translate("selectPlatformsPreview")}
         </p>
       </div>
@@ -113,9 +113,9 @@ export function PlatformPreviewGrid({
 
         // Calculate color based on character limit
         const percentage = (adaptedContent.charCount / platform.maxLength) * 100;
-        let charCountColor = "text-green-400";
+        let charCountColor = "text-[var(--success)]";
         if (percentage > 100) {
-          charCountColor = "text-red-400";
+          charCountColor = "text-[var(--error)]";
         } else if (percentage > 90) {
           charCountColor = "text-yellow-400";
         }
@@ -137,7 +137,7 @@ export function PlatformPreviewGrid({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Icon className={cn("h-4 w-4", platform.color)} />
-                <span className="text-sm font-semibold text-stone-900">
+                <span className="text-sm font-semibold text-[var(--text-primary)]">
                   {platform.name}
                 </span>
               </div>
@@ -149,8 +149,8 @@ export function PlatformPreviewGrid({
             </div>
 
             {/* Preview Text */}
-            <div className="rounded-lg bg-white p-3 border border-stone-200/50 max-h-40 overflow-y-auto">
-              <p className="text-sm text-stone-600 whitespace-pre-wrap">
+            <div className="rounded-lg bg-[var(--card-bg)] p-3 border border-[var(--border)]/50 max-h-40 overflow-y-auto">
+              <p className="text-sm text-[var(--text-secondary)] whitespace-pre-wrap">
                 {adaptedContent.text.slice(0, 300)}
                 {adaptedContent.text.length > 300 && "..."}
               </p>
@@ -161,24 +161,24 @@ export function PlatformPreviewGrid({
               {platform.id === "twitter" && (
                 <>
                   {adaptedContent.isThread ? (
-                    <span className="text-stone-400">
+                    <span className="text-[var(--text-tertiary)]">
                       {translate("twitterThread").replace(
                         "{N}",
                         (adaptedContent.tweetCount || 1).toString()
                       )}
                     </span>
                   ) : (
-                    <span className="text-stone-400">Tweet único</span>
+                    <span className="text-[var(--text-tertiary)]">Tweet único</span>
                   )}
                 </>
               )}
               {platform.id === "linkedin" && (
-                <span className="text-stone-400">
+                <span className="text-[var(--text-tertiary)]">
                   {translate("linkedinPost")}
                 </span>
               )}
               {platform.id === "instagram" && (
-                <span className="text-stone-400">
+                <span className="text-[var(--text-tertiary)]">
                   {translate("instagramCaption")}
                 </span>
               )}
@@ -188,10 +188,10 @@ export function PlatformPreviewGrid({
             {platform.id === "instagram" &&
               adaptedContent.hashtagsList &&
               adaptedContent.hashtagsList.length > 0 && (
-                <div className="pt-2 border-t border-stone-200/50">
+                <div className="pt-2 border-t border-[var(--border)]/50">
                   <div className="flex items-center gap-1.5 mb-2">
-                    <Hash className="h-3 w-3 text-stone-500" />
-                    <p className="text-xs text-stone-500 uppercase tracking-wider">
+                    <Hash className="h-3 w-3 text-[var(--text-tertiary)]" />
+                    <p className="text-xs text-[var(--text-tertiary)] uppercase tracking-wider">
                       {translate("suggestedHashtags")}
                     </p>
                   </div>
@@ -199,18 +199,18 @@ export function PlatformPreviewGrid({
                     {adaptedContent.hashtagsList.slice(0, 10).map((tag, idx) => (
                       <span
                         key={idx}
-                        className="px-2 py-0.5 rounded text-xs bg-stone-200/50 text-stone-400 border border-stone-300/50"
+                        className="px-2 py-0.5 rounded text-xs bg-[var(--surface-2)]/50 text-[var(--text-tertiary)] border border-[var(--border-hover)]/50"
                       >
                         {tag}
                       </span>
                     ))}
                     {adaptedContent.hashtagsList.length > 10 && (
-                      <span className="text-xs text-stone-500">
+                      <span className="text-xs text-[var(--text-tertiary)]">
                         +{adaptedContent.hashtagsList.length - 10} más
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-stone-600 mt-1.5">
+                  <p className="text-xs text-[var(--text-secondary)] mt-1.5">
                     {translate("hashtagsFromKeywords")}
                   </p>
                 </div>

@@ -901,6 +901,116 @@ export default defineSchema({
     .index("by_status", ["status"]),
 
   // ===========================================
+  // EMAIL_PROVIDER_CONNECTIONS - API key-based email provider
+  // ===========================================
+  emailProviderConnections: defineTable({
+    userId: v.optional(v.string()),
+    provider: v.union(
+      v.literal("sendgrid"),
+      v.literal("resend"),
+      v.literal("mailgun"),
+      v.literal("mock")
+    ),
+    apiKey: v.string(),
+    senderEmail: v.string(),
+    senderName: v.string(),
+    status: v.union(
+      v.literal("connected"),
+      v.literal("error"),
+      v.literal("disconnected")
+    ),
+    dailySendCount: v.number(),
+    dailySendLimit: v.number(),
+    lastSendAt: v.optional(v.number()),
+    lastSendCountResetAt: v.number(),
+    connectedAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_status", ["status"])
+    .index("by_provider", ["provider"])
+    .index("by_userId", ["userId"]),
+
+  // ===========================================
+  // EMAIL_SUBSCRIBERS - Subscriber list
+  // ===========================================
+  emailSubscribers: defineTable({
+    userId: v.optional(v.string()),
+    email: v.string(),
+    firstName: v.optional(v.string()),
+    lastName: v.optional(v.string()),
+    status: v.union(
+      v.literal("active"),
+      v.literal("unsubscribed"),
+      v.literal("bounced"),
+      v.literal("complained")
+    ),
+    tags: v.array(v.string()),
+    segments: v.array(v.string()),
+    source: v.optional(v.string()),
+    totalSent: v.optional(v.number()),
+    totalOpened: v.optional(v.number()),
+    totalClicked: v.optional(v.number()),
+    lastSentAt: v.optional(v.number()),
+    subscribedAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_email", ["email"])
+    .index("by_status", ["status"])
+    .index("by_userId", ["userId"])
+    .searchIndex("search_email", {
+      searchField: "email",
+      filterFields: ["status"],
+    }),
+
+  // ===========================================
+  // EMAIL_SEND_LOG - Per-send tracking
+  // ===========================================
+  emailSendLog: defineTable({
+    contentId: v.id("content"),
+    connectionId: v.id("emailProviderConnections"),
+    subject: v.string(),
+    recipientCount: v.number(),
+    status: v.union(
+      v.literal("pending"),
+      v.literal("sent"),
+      v.literal("failed")
+    ),
+    errorMessage: v.optional(v.string()),
+    sentAt: v.optional(v.number()),
+    metadata: v.optional(v.object({
+      openRate: v.optional(v.number()),
+      clickRate: v.optional(v.number()),
+      bounceRate: v.optional(v.number()),
+      unsubscribeRate: v.optional(v.number()),
+    })),
+    createdAt: v.number(),
+  })
+    .index("by_contentId", ["contentId"])
+    .index("by_status", ["status"])
+    .index("by_connectionId", ["connectionId"]),
+
+  // ===========================================
+  // EMAIL_ENGAGEMENT - Aggregated campaign metrics
+  // ===========================================
+  emailEngagement: defineTable({
+    contentId: v.id("content"),
+    sendLogId: v.id("emailSendLog"),
+    sent: v.number(),
+    delivered: v.number(),
+    opened: v.number(),
+    clicked: v.number(),
+    bounced: v.number(),
+    unsubscribed: v.number(),
+    deliveryRate: v.optional(v.number()),
+    openRate: v.optional(v.number()),
+    clickRate: v.optional(v.number()),
+    bounceRate: v.optional(v.number()),
+    fetchedAt: v.number(),
+  })
+    .index("by_contentId", ["contentId"])
+    .index("by_sendLogId", ["sendLogId"]),
+
+  // ===========================================
   // USER_GUIDANCE - Estado de guía y onboarding
   // ===========================================
   userGuidance: defineTable({
@@ -1145,7 +1255,8 @@ export default defineSchema({
     platform: v.union(
       v.literal("linkedin"),
       v.literal("twitter"),
-      v.literal("instagram")
+      v.literal("instagram"),
+      v.literal("email")
     ),
     status: v.union(
       v.literal("pending_review"),
@@ -1711,4 +1822,44 @@ export default defineSchema({
     .index("by_status", ["status"])
     .index("by_type", ["type"])
     .index("by_generatedAt", ["generatedAt"]),
+
+  // ===========================================
+  // COPILOT — AI conversational assistant
+  // ===========================================
+  copilotConversations: defineTable({
+    userId: v.string(),
+    brandProfileId: v.optional(v.id("brandProfiles")),
+    title: v.optional(v.string()),
+    context: v.optional(v.object({
+      page: v.optional(v.string()),
+      selectedContentId: v.optional(v.string()),
+    })),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_userId_updatedAt", ["userId", "updatedAt"]),
+
+  copilotMessages: defineTable({
+    conversationId: v.id("copilotConversations"),
+    role: v.union(v.literal("user"), v.literal("assistant")),
+    content: v.string(),
+    metadata: v.optional(v.any()),
+    timestamp: v.number(),
+  })
+    .index("by_conversationId", ["conversationId"]),
+
+  // ===========================================
+  // CHANNEL GROUPS — Multi-platform publish sets
+  // ===========================================
+  channelGroups: defineTable({
+    userId: v.string(),
+    brandProfileId: v.optional(v.id("brandProfiles")),
+    name: v.string(),
+    platforms: v.array(v.string()),
+    isDefault: v.optional(v.boolean()),
+    createdAt: v.number(),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_brandProfileId", ["brandProfileId"]),
 });

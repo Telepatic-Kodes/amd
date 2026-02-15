@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import dynamic from "next/dynamic";
 import { Eye, Heart, TrendingUp, BarChart3 } from "lucide-react";
 import { SimpleCounter } from "@/components/ui/AnimatedCounter";
@@ -32,7 +33,7 @@ function formatToK(num: number): string {
   return num.toString();
 }
 
-export function ResultsSummary({
+export const ResultsSummary = memo(function ResultsSummary({
   chartData,
   topContent,
   totalImpressions,
@@ -117,7 +118,7 @@ export function ResultsSummary({
             {topContent.slice(0, 3).map((item, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-[var(--surface-2)] hover:bg-white/[0.05] transition-colors"
+                className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-[var(--surface-2)] hover:bg-[var(--card-bg)]/[0.05] transition-colors"
               >
                 {/* Left: title + type badge */}
                 <div className="flex-1 min-w-0">
@@ -143,6 +144,40 @@ export function ResultsSummary({
             <p className="text-xs text-[var(--text-tertiary)]">Sin contenido</p>
           </div>
         )}
+      </div>
+    </div>
+  );
+});
+
+export function ResultsSummarySkeleton() {
+  return (
+    <div className="rounded-xl bg-[var(--surface-1)] border border-[var(--surface-2)] p-6 space-y-5">
+      {/* Header */}
+      <div className="flex items-center gap-2">
+        <div className="h-4 w-4 rounded bg-[var(--surface-3)] animate-pulse" />
+        <div className="h-4 w-32 rounded bg-[var(--surface-3)] animate-pulse" />
+      </div>
+
+      {/* Mini KPIs */}
+      <div className="grid grid-cols-2 gap-4">
+        <div className="bg-[var(--surface-2)] rounded-lg px-4 py-3 h-16 animate-pulse" />
+        <div className="bg-[var(--surface-2)] rounded-lg px-4 py-3 h-16 animate-pulse" />
+      </div>
+
+      {/* Chart area */}
+      <div className="rounded-lg bg-[var(--surface-2)] h-32 animate-pulse" />
+
+      {/* Top content list */}
+      <div className="space-y-3">
+        <div className="h-3 w-24 rounded bg-[var(--surface-3)] animate-pulse" />
+        <div className="space-y-2">
+          {[...Array(3)].map((_, i) => (
+            <div
+              key={i}
+              className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-[var(--surface-2)] h-12 animate-pulse"
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
