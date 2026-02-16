@@ -7,6 +7,12 @@ import { mutation } from "./_generated/server";
 
 export const seedAgents = mutation({
   handler: async (ctx) => {
+    // Clear existing agents to avoid duplicates
+    const existing = await ctx.db.query("agents").collect();
+    for (const a of existing) {
+      await ctx.db.delete(a._id);
+    }
+
     const now = Date.now();
 
     // Base config para todos los agentes
