@@ -53,12 +53,17 @@ export async function callLLM(args: CallLLMArgs): Promise<CallLLMResult> {
     ? MODEL_MAP[args.model] || DEFAULT_MODEL
     : DEFAULT_MODEL;
 
+  // OpenAI requires "json" in messages when using response_format json_object
+  const systemContent = args.jsonMode && !args.system.toLowerCase().includes("json")
+    ? `${args.system}\n\nRespond with valid JSON.`
+    : args.system;
+
   const body: Record<string, unknown> = {
     model,
     max_tokens: args.maxTokens || 4096,
     temperature: args.temperature ?? 0.7,
     messages: [
-      { role: "system", content: args.system },
+      { role: "system", content: systemContent },
       { role: "user", content: args.user },
     ],
   };
