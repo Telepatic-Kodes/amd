@@ -334,7 +334,12 @@ export default function StrategyPage() {
               </div>
 
               {/* Goal Input or Brand CTA */}
-              {brandProfile ? (
+              {brandProfile === undefined ? (
+                <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-0)] p-8 animate-pulse">
+                  <div className="h-5 w-48 bg-[var(--surface-1)] rounded mb-3" />
+                  <div className="h-10 w-full bg-[var(--surface-1)] rounded-lg" />
+                </div>
+              ) : brandProfile ? (
                 <StrategyGoalInput brandProfileId={brandProfile._id} />
               ) : (
                 <BrandSetupCTA />
