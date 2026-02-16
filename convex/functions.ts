@@ -274,17 +274,27 @@ export const listTasks = query({
 });
 
 export const getPendingTasks = query({
-  args: { agentId: v.id("agents") },
+  args: { agentId: v.optional(v.id("agents")) },
   handler: async (ctx, args) => {
     const userId = await getUserId(ctx);
 
-    const results = await ctx.db
-      .query("tasks")
-      .withIndex("by_agent", (q) => q.eq("agentId", args.agentId))
-      .filter((q) =>
-        q.or(q.eq(q.field("status"), "pending"), q.eq(q.field("status"), "queued"))
-      )
-      .collect();
+    let results;
+    if (args.agentId) {
+      results = await ctx.db
+        .query("tasks")
+        .withIndex("by_agent", (q) => q.eq("agentId", args.agentId))
+        .filter((q) =>
+          q.or(q.eq(q.field("status"), "pending"), q.eq(q.field("status"), "queued"))
+        )
+        .collect();
+    } else {
+      results = await ctx.db
+        .query("tasks")
+        .filter((q) =>
+          q.or(q.eq(q.field("status"), "pending"), q.eq(q.field("status"), "queued"))
+        )
+        .collect();
+    }
 
     // Filter by userId - show user's tasks + legacy unassigned tasks
     return results.filter(item => item.userId === userId || item.userId === undefined);
