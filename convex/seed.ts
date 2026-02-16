@@ -1632,6 +1632,20 @@ export const seedCampaigns = mutation({
 
 export const seedDemoData = mutation({
   handler: async (ctx) => {
+    // Clear existing demo data to avoid duplicates
+    const existingContent = await ctx.db.query("content").collect();
+    for (const c of existingContent) {
+      await ctx.db.delete(c._id);
+    }
+    const existingExec = await ctx.db.query("executions").collect();
+    for (const e of existingExec) {
+      await ctx.db.delete(e._id);
+    }
+    const existingTasks = await ctx.db.query("tasks").collect();
+    for (const t of existingTasks) {
+      await ctx.db.delete(t._id);
+    }
+
     const now = Date.now();
     const hour = 60 * 60 * 1000;
     const day = 24 * hour;
@@ -1873,6 +1887,9 @@ export const seedDemoData = mutation({
       },
     ];
 
+    // Look up brand profile to associate content
+    const brandProfile = await ctx.db.query("brandProfiles").first();
+
     for (const c of contentDefs) {
       await ctx.db.insert("content", {
         contentId: c.contentId,
@@ -1888,6 +1905,7 @@ export const seedDemoData = mutation({
         scheduledFor: c.scheduledFor,
         createdAt: c.created,
         updatedAt: c.publishedAt || c.created,
+        ...(brandProfile ? { brandProfileId: brandProfile._id } : {}),
       });
     }
 
