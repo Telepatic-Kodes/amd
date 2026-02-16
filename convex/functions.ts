@@ -829,6 +829,22 @@ export const updateContent = mutation({
         targetAudience: v.optional(v.string()),
       })
     ),
+    assets: v.optional(
+      v.array(
+        v.object({
+          mediaId: v.optional(v.id("mediaAssets")),
+          type: v.union(
+            v.literal("image"),
+            v.literal("video"),
+            v.literal("audio"),
+            v.literal("document"),
+            v.literal("presentation")
+          ),
+          url: v.string(),
+          alt: v.optional(v.string()),
+        })
+      )
+    ),
   },
   handler: async (ctx, args) => {
     // RBAC Guard: Only editors and above can edit content
@@ -869,6 +885,10 @@ export const updateContent = mutation({
         ...finalUpdates.metadata,
         ...updates.metadata,
       };
+    }
+
+    if (updates.assets !== undefined) {
+      finalUpdates.assets = updates.assets;
     }
 
     await ctx.db.patch(id, finalUpdates);

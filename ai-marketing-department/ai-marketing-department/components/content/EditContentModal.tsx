@@ -4,13 +4,14 @@ import { useState, useEffect } from "react";
 import { useMutation } from "convex/react";
 import { api } from "@convex/_generated/api";
 import type { Doc } from "@convex/_generated/dataModel";
-import { X, Loader2, ChevronDown, Eye, Edit3, Upload } from "lucide-react";
+import { X, Loader2, ChevronDown, Eye, Edit3, Upload, ImageIcon, X as XIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "@/components/ui/Toast";
 import { cn } from "@/lib/utils";
 import { RichTextEditor } from "./RichTextEditor";
 import { EditorPreview } from "./EditorPreview";
 import { FileImportModal } from "./FileImportModal";
+import { MediaPicker } from "@/components/media/MediaPicker";
 import { stripHtmlTags, countWords, validateContent } from "@/lib/editor-utils";
 
 const TONES = [
@@ -41,6 +42,13 @@ export function EditContentModal({
     metadata: false,
   });
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [isMediaPickerOpen, setIsMediaPickerOpen] = useState(false);
+  const [attachedAssets, setAttachedAssets] = useState<Array<{
+    mediaId: string;
+    type: string;
+    url: string;
+    alt?: string;
+  }>>([]);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -71,6 +79,14 @@ export function EditContentModal({
         tone: content.metadata?.tone || "",
         targetAudience: content.metadata?.targetAudience || "",
       });
+      setAttachedAssets(
+        (content.assets || []).map((a: { mediaId?: string; type: string; url: string; alt?: string }) => ({
+          mediaId: a.mediaId || "",
+          type: a.type,
+          url: a.url,
+          alt: a.alt,
+        }))
+      );
       setError(null);
       setActiveTab("write"); // Reset to write tab when opening
     }
@@ -103,6 +119,7 @@ export function EditContentModal({
         summary?: string;
         seo?: { metaTitle: string; metaDescription: string; slug: string; canonicalUrl?: string };
         metadata?: { targetKeywords: string[]; tone: string; targetAudience: string };
+        assets?: Array<{ mediaId?: any; type: any; url: string; alt?: string }>;
       } = {
         id: content._id,
       };
@@ -143,6 +160,18 @@ export function EditContentModal({
           tone: formData.tone,
           targetAudience: formData.targetAudience,
         };
+      }
+
+      // Include attached assets if changed
+      const currentAssets = (content.assets || []).map((a: any) => `${a.mediaId || ""}:${a.type}:${a.url}`).join(",");
+      const newAssetsKey = attachedAssets.map(a => `${a.mediaId || ""}:${a.type}:${a.url}`).join(",");
+      if (currentAssets !== newAssetsKey) {
+        updates.assets = attachedAssets.map(a => ({
+          mediaId: a.mediaId || undefined,
+          type: a.type as any,
+          url: a.url,
+          alt: a.alt,
+        }));
       }
 
       if (Object.keys(updates).length === 1) {
@@ -201,6 +230,17 @@ export function EditContentModal({
     success("Contenido importado", "Edita el contenido y guarda cuando estés listo");
   };
 
+  const handleMediaSelect = (selected: Array<{ _id: any; url: string; type: string; alt?: string }>) => {
+    const newAssets = selected.map(a => ({
+      mediaId: a._id,
+      type: a.type,
+      url: a.url,
+      alt: a.alt,
+    }));
+    setAttachedAssets(prev => [...prev, ...newAssets]);
+    setIsMediaPickerOpen(false);
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -225,6 +265,14 @@ export function EditContentModal({
                 <p className="text-sm text-[var(--text-tertiary)] mt-1">{content?.title}</p>
               </div>
               <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsMediaPickerOpen(true)}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm border border-[var(--border)] hover:bg-[var(--surface-1)] transition-colors"
+                >
+                  <ImageIcon className="w-4 h-4" />
+                  Adjuntar Media
+                </button>
                 <button
                   type="button"
                   onClick={() => setIsImportModalOpen(true)}
@@ -353,6 +401,34 @@ export function EditContentModal({
                     )}
                   </div>
                 </div>
+
+                {/* Attached Assets */}
+                {attachedAssets.length > 0 && (
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-[var(--text-secondary)]">
+                      Assets adjuntos ({attachedAssets.length})
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      {attachedAssets.map((asset, i) => (
+                        <div key={i} className="flex items-center gap-2 px-2 py-1 rounded-lg bg-[var(--surface-1)] border border-[var(--border)] text-sm">
+                          {asset.type === "image" ? (
+                            <img src={asset.url} alt={asset.alt || ""} className="w-6 h-6 rounded object-cover" />
+                          ) : (
+                            <span className="text-xs">{asset.type}</span>
+                          )}
+                          <span className="max-w-[120px] truncate">{asset.alt || asset.type}</span>
+                          <button
+                            type="button"
+                            onClick={() => setAttachedAssets(prev => prev.filter((_, j) => j !== i))}
+                            className="text-[var(--text-secondary)] hover:text-red-500"
+                          >
+                            <XIcon className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {/* Summary */}
                 <div>
@@ -549,6 +625,14 @@ export function EditContentModal({
             onClose={() => setIsImportModalOpen(false)}
             onImport={handleFileImport}
             defaultTitle={formData.title}
+          />
+
+          {/* Media Picker Modal */}
+          <MediaPicker
+            isOpen={isMediaPickerOpen}
+            onClose={() => setIsMediaPickerOpen(false)}
+            onSelect={handleMediaSelect}
+            multiple={true}
           />
         </motion.div>
       )}
