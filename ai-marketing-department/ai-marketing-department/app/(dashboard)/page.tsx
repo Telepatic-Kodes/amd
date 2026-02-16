@@ -110,7 +110,7 @@ export default function DashboardPage() {
           computed.trends.executions
             ? {
                 label: "Ejecuciones",
-                value: `${computed.trends.executions > 0 ? "+" : ""}${computed.trends.executions}%`,
+                value: `${computed.trends.executions > 0 ? "+" : ""}${Math.min(computed.trends.executions, 999).toFixed(1)}%`,
                 trend: computed.trends.executions >= 0 ? "up" : "down",
               }
             : undefined

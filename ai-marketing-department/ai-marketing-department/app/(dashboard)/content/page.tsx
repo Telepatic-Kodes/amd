@@ -6,6 +6,20 @@ import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
 import { motion, AnimatePresence } from "framer-motion";
 import { isSameDay } from "date-fns";
+
+/** Strip markdown syntax for plain-text previews */
+function stripMarkdown(text: string): string {
+  return text
+    .replace(/^#{1,6}\s+/gm, "")        // headings
+    .replace(/\*\*(.*?)\*\*/g, "$1")     // bold
+    .replace(/\*(.*?)\*/g, "$1")         // italic
+    .replace(/~~(.*?)~~/g, "$1")         // strikethrough
+    .replace(/`{1,3}[^`]*`{1,3}/g, "")  // inline code / code blocks
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1") // links
+    .replace(/^[>\-*+]\s+/gm, "")       // blockquotes, list markers
+    .replace(/\n{2,}/g, " ")            // collapse multiple newlines
+    .trim();
+}
 import {
   FileText,
   Search,
@@ -787,7 +801,7 @@ export default function ContentPage() {
 
                           {/* Preview */}
                           <p className="text-xs text-[var(--text-tertiary)] line-clamp-3 mb-3">
-                            {item.summary || item.body.slice(0, 150)}
+                            {stripMarkdown(item.summary || item.body).slice(0, 150)}
                           </p>
 
                           {/* Footer */}
@@ -855,7 +869,7 @@ export default function ContentPage() {
                                 {item.sourceTaskId && <AIGeneratedBadge />}
                               </div>
                               <p className="text-xs text-[var(--text-tertiary)] truncate">
-                                {item.summary || item.body.slice(0, 100)}
+                                {stripMarkdown(item.summary || item.body).slice(0, 100)}
                               </p>
                             </div>
                             <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">

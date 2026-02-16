@@ -68,7 +68,7 @@ export function FeedDetailModal({ feedId, isOpen, onClose }: FeedDetailModalProp
                 <div>
                   <span className="text-[var(--text-secondary)]">Categoría</span>
                   <div className="mt-0.5">
-                    <Badge variant="outline">{feed.category}</Badge>
+                    <Badge variant="info">{feed.category}</Badge>
                   </div>
                 </div>
                 <div>
@@ -81,7 +81,7 @@ export function FeedDetailModal({ feedId, isOpen, onClose }: FeedDetailModalProp
                 </div>
                 <div className="col-span-2">
                   <span className="text-[var(--text-secondary)]">Último sync</span>
-                  <p className="text-[var(--text-primary)] mt-0.5">{formatTime(feed.lastSyncedAt)}</p>
+                  <p className="text-[var(--text-primary)] mt-0.5">{formatTime(feed.lastSyncAt)}</p>
                 </div>
               </div>
 
@@ -103,7 +103,7 @@ export function FeedDetailModal({ feedId, isOpen, onClose }: FeedDetailModalProp
                     {items.map((item, i) => (
                       <a
                         key={i}
-                        href={item.url}
+                        href={item.link}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-start gap-2 rounded-lg p-2 hover:bg-[var(--surface-0)] transition-colors group"

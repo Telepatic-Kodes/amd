@@ -8,7 +8,7 @@ const cspDirectives = [
   "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.clerk.com https://*.clerk.dev https://challenges.cloudflare.com https://va.vercel-scripts.com",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' https://fonts.gstatic.com",
-  "img-src 'self' data: blob: https://img.clerk.com https://images.clerk.dev https://*.unsplash.com",
+  "img-src 'self' data: blob: https://img.clerk.com https://images.clerk.dev https://*.unsplash.com https://*.convex.cloud",
   "connect-src 'self' https://*.convex.cloud wss://*.convex.cloud https://*.clerk.com https://*.clerk.dev https://api.anthropic.com https://vitals.vercel-insights.com https://va.vercel-scripts.com",
   "frame-src 'self' https://*.clerk.com https://challenges.cloudflare.com",
   "worker-src 'self' blob:",
@@ -69,6 +69,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       { protocol: "https", hostname: "img.clerk.com" },
       { protocol: "https", hostname: "images.clerk.dev" },
+      { protocol: "https", hostname: "*.convex.cloud" },
     ],
   },
   async headers() {

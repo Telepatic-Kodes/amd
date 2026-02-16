@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, Bot, Cpu, Thermometer, Hash, Zap, Play } from "lucide-react";
+import { X, Bot, Cpu, Thermometer, Hash, Zap, Play, Settings } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { cn } from "@/lib/utils";
@@ -9,6 +9,7 @@ import { translateStatus, getStatusVariant } from "@/lib/language";
 import { ExecuteAgentModal } from "@/components/agents/ExecuteAgentModal";
 import { AgentMetricsWidget } from "@/components/agents/AgentMetricsWidget";
 import { AgentConfigEditor } from "@/components/agents/AgentConfigEditor";
+import { AgentConfigModal } from "@/components/agents/AgentConfigModal";
 import type { Id } from "@convex/_generated/dataModel";
 
 const DEPARTMENT_LABELS: Record<string, string> = {
@@ -44,6 +45,7 @@ interface AgentDetailPanelProps {
 
 export function AgentDetailPanel({ agent, onClose }: AgentDetailPanelProps) {
   const [showExecuteModal, setShowExecuteModal] = useState(false);
+  const [showConfigModal, setShowConfigModal] = useState(false);
 
   return (
     <>
@@ -52,6 +54,12 @@ export function AgentDetailPanel({ agent, onClose }: AgentDetailPanelProps) {
       isOpen={showExecuteModal}
       onClose={() => setShowExecuteModal(false)}
     />
+    {showConfigModal && (
+      <AgentConfigModal
+        agent={agent as any}
+        onClose={() => setShowConfigModal(false)}
+      />
+    )}
     <Card className="sticky top-8">
       <CardContent className="p-5 space-y-5">
         {/* Header */}
@@ -61,6 +69,13 @@ export function AgentDetailPanel({ agent, onClose }: AgentDetailPanelProps) {
             <p className="text-xs font-mono text-[var(--text-secondary)]">{agent.agentId}</p>
           </div>
           <div className="flex items-center gap-1">
+            <button
+              onClick={() => setShowConfigModal(true)}
+              className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[var(--surface-1)] text-[var(--text-primary)] text-xs font-medium hover:bg-[var(--surface-2)] transition-colors"
+            >
+              <Settings className="h-3 w-3" />
+              Configurar
+            </button>
             <button
               onClick={() => setShowExecuteModal(true)}
               className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[var(--accent)] text-white text-xs font-medium hover:bg-[var(--accent-hover)] transition-colors"

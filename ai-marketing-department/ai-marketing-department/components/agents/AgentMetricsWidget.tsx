@@ -10,9 +10,9 @@ interface AgentMetricsWidgetProps {
 }
 
 export function AgentMetricsWidget({ agentId }: AgentMetricsWidgetProps) {
-  const metrics = useQuery(api.functions.getAgentMetrics, { agentId });
+  const data = useQuery(api.functions.getAgentMetrics, { agentId, period: "weekly" });
 
-  if (metrics === undefined) {
+  if (data === undefined) {
     return (
       <div className="grid grid-cols-2 gap-2">
         {[1, 2, 3, 4].map((i) => (
@@ -22,29 +22,31 @@ export function AgentMetricsWidget({ agentId }: AgentMetricsWidgetProps) {
     );
   }
 
+  const metrics = data?.metrics;
+
   const cells = [
     {
       icon: CheckCircle,
       label: "Éxito",
-      value: `${(metrics.successRate * 100).toFixed(0)}%`,
+      value: `${((metrics?.successRate ?? 0)).toFixed(0)}%`,
       color: "text-green-500",
     },
     {
       icon: Coins,
       label: "Tokens",
-      value: metrics.totalTokens.toLocaleString(),
+      value: (metrics?.totalTokens ?? 0).toLocaleString(),
       color: "text-blue-500",
     },
     {
       icon: DollarSign,
       label: "Costo",
-      value: `$${metrics.totalCost.toFixed(2)}`,
+      value: `$${(metrics?.totalCost ?? 0).toFixed(2)}`,
       color: "text-amber-500",
     },
     {
       icon: Timer,
       label: "Duración Prom.",
-      value: `${metrics.avgDuration.toFixed(1)}s`,
+      value: `${(metrics?.avgDuration ?? 0).toFixed(1)}s`,
       color: "text-purple-500",
     },
   ];

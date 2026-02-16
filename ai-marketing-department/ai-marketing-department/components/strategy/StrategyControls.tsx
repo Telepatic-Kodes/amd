@@ -35,7 +35,7 @@ export function StrategyControls({ strategyDoc }: StrategyControlsProps) {
 
   return (
     <div className="flex items-center gap-2 mt-3 pt-3 border-t border-[var(--border)]">
-      <Badge variant="outline" className="text-[10px]">
+      <Badge variant="default" className="text-[10px]">
         {STATUS_LABELS[strategyDoc.status] ?? strategyDoc.status}
       </Badge>
       {canPause && (

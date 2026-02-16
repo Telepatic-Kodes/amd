@@ -121,16 +121,16 @@ export function BrandVersionHistory({ brandProfileId }: BrandVersionHistoryProps
                   <div className="mt-2 ml-5 text-[11px] space-y-1 border-t border-[var(--border)] pt-2">
                     <p><span className="text-[var(--text-tertiary)]">Empresa:</span> <span className="text-[var(--text-secondary)]">{snapshot.companyName as string}</span></p>
                     <p><span className="text-[var(--text-tertiary)]">Industria:</span> <span className="text-[var(--text-secondary)]">{snapshot.industry as string}</span></p>
-                    {snapshot.website && (
+                    {!!snapshot.website && (
                       <p><span className="text-[var(--text-tertiary)]">Website:</span> <span className="text-[var(--text-secondary)]">{snapshot.website as string}</span></p>
                     )}
-                    {snapshot.visual && (
+                    {!!snapshot.visual && (
                       <p><span className="text-[var(--text-tertiary)]">Visual:</span> <span className="text-[var(--text-secondary)]">Configurado</span></p>
                     )}
-                    {snapshot.messaging && (
+                    {!!snapshot.messaging && (
                       <p><span className="text-[var(--text-tertiary)]">Messaging:</span> <span className="text-[var(--text-secondary)]">Configurado</span></p>
                     )}
-                    {snapshot.positioning && (
+                    {!!snapshot.positioning && (
                       <p><span className="text-[var(--text-tertiary)]">Positioning:</span> <span className="text-[var(--text-secondary)]">Configurado</span></p>
                     )}
                   </div>

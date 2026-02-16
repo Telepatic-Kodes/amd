@@ -60,7 +60,7 @@ export const processSource = action({
 
         await ctx.runMutation(internal.brandProfile._linkKBToProfile, {
           profileId: source.brandProfileId,
-          kbId,
+          kbId: kbId!,
         });
       }
 

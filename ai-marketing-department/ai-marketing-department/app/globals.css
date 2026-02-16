@@ -1,4 +1,19 @@
 @import "tailwindcss";
+@source not "../.planning";
+@source not "../.next-bak";
+
+/* ══════════════════════════════════════════════════════════════
+   AMD Design Token System
+   Architecture: Three-tier (Primitive → Semantic → Component)
+   Dark mode: Semantic token swapping (.dark class on <html>)
+   Multi-brand: Override semantic tier via [data-theme="brand-*"]
+   Motion: --transition-{instant|fast|base|slow}, --easing-{standard|decelerate|accelerate}
+
+   Token tiers:
+   - Primitive: Raw color values (--color-stone-*, --color-orange-*)
+   - Semantic: UI concepts (--surface-*, --text-*, --accent, --border, --badge-*)
+   - Component: Component-specific (--card-*, --input-*, --sidebar-*, --button-*)
+   ══════════════════════════════════════════════════════════════ */
 
 /* ═══════════════════════════════════════════════════════════
    TIER 1: PRIMITIVE TOKENS (Context-agnostic raw values)
@@ -282,101 +297,17 @@
 }
 
 /* ══════════════════════════════════════════════════
-   DARK MODE OVERRIDES (Backward Compatibility)
-   These preserve existing styling for components not yet migrated to CSS variables
-   Will be removed incrementally as components migrate
+   LEGACY DARK MODE OVERRIDES — REMOVED
+   All components now use CSS variable tokens.
+   Dark mode works via semantic token swapping above.
+   Only ProseMirror, Recharts, and brand-manual-doc
+   overrides remain (they don't use Tailwind classes).
    ══════════════════════════════════════════════════ */
 
-/* Dark mode overrides for common Tailwind patterns */
-.dark .bg-white { background-color: var(--card-bg); }
-.dark .border-stone-200 { border-color: var(--card-border); }
-.dark .border-stone-100 { border-color: var(--card-border); }
-.dark .text-stone-900 { color: var(--text-primary); }
-.dark .text-stone-800 { color: var(--text-primary); }
-.dark .text-stone-700 { color: #d6d3d1; }
-.dark .text-stone-600 { color: #a8a29e; }
-.dark .text-stone-500 { color: #78716c; }
-.dark .text-stone-400 { color: #57534e; }
-.dark .bg-stone-50 { background-color: var(--surface-1); }
-.dark .bg-stone-100 { background-color: var(--surface-2); }
-.dark .hover\:bg-stone-50:hover { background-color: var(--surface-2); }
-.dark .bg-gradient-to-br { background: var(--surface-1); }
-
-/* Dark mode for orange accent surfaces */
-.dark .bg-orange-50 { background-color: rgba(251, 146, 60, 0.1); }
-.dark .bg-orange-100 { background-color: rgba(251, 146, 60, 0.15); }
-.dark .bg-orange-600 { background-color: #ea580c; }
-.dark .hover\:bg-orange-500:hover { background-color: #f97316; }
-.dark .text-orange-600 { color: #fb923c; }
-.dark .text-orange-500 { color: #fb923c; }
-.dark .border-orange-200 { border-color: rgba(251, 146, 60, 0.2); }
-
-/* Dark mode for colored badges */
-.dark .bg-blue-50 { background-color: rgba(59, 130, 246, 0.12); }
-.dark .bg-blue-100 { background-color: rgba(59, 130, 246, 0.18); }
-.dark .bg-green-50 { background-color: rgba(34, 197, 94, 0.12); }
-.dark .bg-green-100 { background-color: rgba(34, 197, 94, 0.18); }
-.dark .bg-purple-50 { background-color: rgba(168, 85, 247, 0.12); }
-.dark .bg-purple-100 { background-color: rgba(168, 85, 247, 0.18); }
-.dark .bg-amber-50 { background-color: rgba(245, 158, 11, 0.12); }
-.dark .bg-amber-100 { background-color: rgba(245, 158, 11, 0.18); }
-.dark .bg-red-50 { background-color: rgba(239, 68, 68, 0.12); }
-.dark .bg-pink-50 { background-color: rgba(236, 72, 153, 0.12); }
-
-/* Dark mode for gradient overlays */
-.dark .from-orange-50\/80 { --tw-gradient-from: rgba(251, 146, 60, 0.08); }
-.dark .to-amber-50\/60 { --tw-gradient-to: rgba(245, 158, 11, 0.05); }
-.dark .from-orange-50\/60 { --tw-gradient-from: rgba(251, 146, 60, 0.06); }
-.dark .to-amber-50\/40 { --tw-gradient-to: rgba(245, 158, 11, 0.04); }
-
-/* Dark mode for modals and overlays */
-.dark [role="dialog"] { background-color: var(--surface-1); border-color: var(--card-border); }
-
-/* Dark mode for inputs and interactive elements */
-.dark .border-stone-300 { border-color: #44403c; }
-.dark .bg-stone-200 { background-color: #44403c; }
-.dark .bg-stone-300 { background-color: #57534e; }
-.dark .hover\:bg-stone-200:hover { background-color: #44403c; }
-.dark .hover\:bg-stone-300:hover { background-color: #57534e; }
-.dark .hover\:bg-orange-100:hover { background-color: rgba(251, 146, 60, 0.2); }
-.dark .hover\:border-stone-300:hover { border-color: #57534e; }
-.dark .hover\:border-purple-300:hover { border-color: rgba(168, 85, 247, 0.3); }
-.dark .hover\:text-stone-700:hover { color: #d6d3d1; }
-.dark .hover\:text-stone-900:hover { color: #fafaf9; }
-.dark .hover\:text-purple-700:hover { color: #c084fc; }
+/* Dark mode for native form elements */
 .dark input, .dark select, .dark textarea {
   color-scheme: dark;
 }
-.dark .placeholder-stone-400::placeholder { color: #57534e; }
-
-/* Dark mode for border-b patterns in tables */
-.dark .border-b.border-stone-100 { border-color: #292524; }
-.dark .hover\:bg-stone-50:hover { background-color: var(--surface-2); }
-
-/* Dark mode for amber/warning surfaces */
-.dark .border-amber-200 { border-color: rgba(245, 158, 11, 0.25); }
-.dark .bg-amber-600 { background-color: #d97706; }
-.dark .hover\:bg-amber-700:hover { background-color: #b45309; }
-.dark .text-amber-700 { color: #fbbf24; }
-.dark .text-amber-600 { color: #fbbf24; }
-
-/* Dark mode for red/error surfaces */
-.dark .border-red-200 { border-color: rgba(239, 68, 68, 0.25); }
-.dark .bg-red-50 { background-color: rgba(239, 68, 68, 0.12); }
-.dark .text-red-700 { color: #f87171; }
-.dark .hover\:bg-red-500\/20:hover { background-color: rgba(239, 68, 68, 0.25); }
-
-/* Dark mode for green/success surfaces */
-.dark .bg-green-600 { background-color: #16a34a; }
-.dark .hover\:bg-green-500:hover { background-color: #22c55e; }
-.dark .border-green-200 { border-color: rgba(34, 197, 94, 0.25); }
-.dark .text-green-600 { color: #4ade80; }
-.dark .text-green-700 { color: #4ade80; }
-
-/* Dark mode for purple surfaces */
-.dark .bg-purple-50 { background-color: rgba(168, 85, 247, 0.12); }
-.dark .text-purple-600 { color: #c084fc; }
-.dark .hover\:bg-purple-100:hover { background-color: rgba(168, 85, 247, 0.2); }
 
 /* Dark mode chart backgrounds */
 .dark .recharts-cartesian-grid line { stroke: #292524; }

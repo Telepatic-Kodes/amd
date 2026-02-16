@@ -24,6 +24,7 @@ import {
   MEDIA_TYPE_CONFIG,
 } from "@/lib/media-utils";
 import type { MediaType } from "@/lib/media-utils";
+import type { Id } from "@convex/_generated/dataModel";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -199,7 +200,7 @@ export function MediaUploadModal({
           .filter(Boolean);
 
         await createAsset({
-          storageId,
+          storageId: storageId as Id<"_storage">,
           name: queued.file.name,
           type: queued.mediaType,
           mimeType: queued.file.type,

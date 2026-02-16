@@ -72,7 +72,7 @@ export function TaskDetailPanel({ task, onClose }: TaskDetailPanelProps) {
   const handleRetry = async () => {
     setRetrying(true);
     try {
-      await retryTask({ taskId: task._id as Id<"tasks"> });
+      await retryTask({ id: task._id as Id<"tasks"> });
     } finally {
       setRetrying(false);
     }
@@ -150,7 +150,7 @@ export function TaskDetailPanel({ task, onClose }: TaskDetailPanelProps) {
               Ejecucion
             </h4>
             <div className="grid grid-cols-2 gap-2">
-              {executionStatus.tokens != null && (
+              {(executionStatus as any).tokensUsed != null && (
                 <div className="flex items-center gap-2 p-2 rounded-lg bg-[var(--surface-1)]">
                   <Cpu className="h-3.5 w-3.5 text-[var(--text-secondary)]" />
                   <div>
@@ -158,7 +158,7 @@ export function TaskDetailPanel({ task, onClose }: TaskDetailPanelProps) {
                       Tokens
                     </p>
                     <p className="text-xs font-medium text-[var(--text-primary)]">
-                      {executionStatus.tokens.toLocaleString()}
+                      {(executionStatus as any).tokensUsed.toLocaleString()}
                     </p>
                   </div>
                 </div>

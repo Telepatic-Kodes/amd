@@ -10,28 +10,33 @@ export function PublishingSummaryStats() {
   const summary = useQuery(api.crossPlatform.queries.getPublishingSummary);
   const isLoading = summary === undefined;
 
+  const totalPublished = summary?.total?.published ?? 0;
+  const totalFailed = summary?.total?.failed ?? 0;
+  const totalAll = totalPublished + totalFailed;
+  const successRate = totalAll > 0 ? (totalPublished / totalAll) * 100 : 0;
+
   const statCards = [
     {
       label: "Total Publicado",
-      value: summary?.totalPublished ?? 0,
+      value: totalPublished,
       icon: Send,
       color: "text-orange-500",
     },
     {
       label: "LinkedIn",
-      value: summary?.byPlatform?.linkedin ?? 0,
+      value: summary?.linkedin?.published ?? 0,
       icon: Linkedin,
       color: "text-blue-600",
     },
     {
       label: "Twitter",
-      value: summary?.byPlatform?.twitter ?? 0,
+      value: summary?.twitter?.published ?? 0,
       icon: Twitter,
       color: "text-sky-500",
     },
     {
       label: "Tasa de Exito",
-      value: summary ? `${Math.round(summary.successRate * 100)}%` : "0%",
+      value: summary ? `${Math.round(successRate)}%` : "0%",
       icon: TrendingUp,
       color: "text-green-500",
     },

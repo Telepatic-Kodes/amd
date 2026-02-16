@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
+import { api } from "@convex/_generated/api";
 import { BrandManual } from "@/components/brand/BrandManual";
 import { Loader2 } from "lucide-react";
 import { use } from "react";

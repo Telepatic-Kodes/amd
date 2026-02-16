@@ -6,6 +6,7 @@ import { useMutation } from "convex/react";
 import { api } from "@convex/_generated/api";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { MobileNav } from "@/components/layout/MobileNav";
+import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { CommandPalette } from "@/components/dashboard/CommandPalette";
 import { ProductTour } from "@/components/ui/ProductTour";
 import { shouldShowTour } from "@/lib/tour-utils";
@@ -16,6 +17,8 @@ import { useConvexAuth } from "convex/react";
 import { useAuthSync } from "@/hooks/useAuthSync";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { BrandProvider } from "@/hooks/useBrandContext";
+import { usePreference } from "@/hooks/usePreferences";
+import { Menu } from "lucide-react";
 import dynamic from "next/dynamic";
 import React from "react";
 
@@ -64,6 +67,17 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
   const auth = useSafeAuth();
   const { isLoading, isAuthenticated } = auth;
   const isOnboarding = pathname.startsWith("/onboarding");
+
+  // Sidebar collapse state (read from same localStorage key as Sidebar)
+  const [sidebarCollapsed] = usePreference("sidebar_collapsed", false);
+
+  // Mobile menu overlay state
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
 
   // Multi-tab logout sync
   useAuthSync();
@@ -115,10 +129,48 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
           Saltar al contenido
         </a>
         <OfflineBanner />
+
+        {/* Mobile header bar */}
+        <div className="md:hidden flex items-center justify-between px-4 py-3 border-b border-[var(--border)] bg-[var(--surface-0)]">
+          <button
+            onClick={() => setMobileMenuOpen(true)}
+            className="p-2 -ml-2 rounded-lg text-[var(--text-secondary)] hover:bg-[var(--surface-1)] transition-colors"
+            aria-label="Abrir menú de navegación"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+          <span className="text-sm font-semibold text-[var(--text-primary)]">AMD</span>
+          <div className="w-9" /> {/* Spacer for centering */}
+        </div>
+
+        {/* Mobile sidebar overlay */}
+        {mobileMenuOpen && (
+          <div className="md:hidden fixed inset-0 z-50 flex">
+            {/* Backdrop */}
+            <div
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+              onClick={() => setMobileMenuOpen(false)}
+              aria-hidden="true"
+            />
+            {/* Sidebar panel */}
+            <div className="relative z-50 animate-in slide-in-from-left duration-200">
+              <Sidebar overlay onClose={() => setMobileMenuOpen(false)} />
+            </div>
+          </div>
+        )}
+
         <div className="flex flex-1">
           <Sidebar />
-          <main id="main-content" className="flex-1 ml-0 md:ml-56" role="main" aria-label="Contenido principal">
-            <div className="container mx-auto p-4 md:p-8 pb-20 md:pb-8 max-w-7xl">{children}</div>
+          <main
+            id="main-content"
+            className={`flex-1 ml-0 transition-all duration-200 ${sidebarCollapsed ? "md:ml-16" : "md:ml-56"}`}
+            role="main"
+            aria-label="Contenido principal"
+          >
+            <div className="container mx-auto p-4 md:p-8 pb-20 md:pb-8 max-w-7xl">
+              <Breadcrumbs />
+              {children}
+            </div>
           </main>
         </div>
         <MobileNav />

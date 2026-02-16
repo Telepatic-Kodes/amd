@@ -21,11 +21,11 @@ export const getBrandRules = query({
       donts: string[];
       vocabulary: string[];
     } = {
-      tone: voice?.tone || "profesional",
+      tone: Array.isArray(voice?.tone) ? voice.tone[0] || "profesional" : (voice?.tone || "profesional"),
       personality: voice?.personality || [],
       dos: voice?.dos || [],
       donts: voice?.donts || [],
-      vocabulary: voice?.vocabulary || [],
+      vocabulary: (voice as Record<string, unknown>)?.vocabulary as string[] || [],
     };
 
     return {

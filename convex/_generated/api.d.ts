@@ -113,6 +113,8 @@ import type * as reports from "../reports.js";
 import type * as reportsActions from "../reportsActions.js";
 import type * as scheduledPublishing from "../scheduledPublishing.js";
 import type * as seed from "../seed.js";
+import type * as seedBrandProfile from "../seedBrandProfile.js";
+import type * as seedKnowledgeBase from "../seedKnowledgeBase.js";
 import type * as seedMonitoring from "../seedMonitoring.js";
 import type * as seedNewsletter from "../seedNewsletter.js";
 import type * as seedReports from "../seedReports.js";
@@ -241,6 +243,8 @@ declare const fullApi: ApiFromModules<{
   reportsActions: typeof reportsActions;
   scheduledPublishing: typeof scheduledPublishing;
   seed: typeof seed;
+  seedBrandProfile: typeof seedBrandProfile;
+  seedKnowledgeBase: typeof seedKnowledgeBase;
   seedMonitoring: typeof seedMonitoring;
   seedNewsletter: typeof seedNewsletter;
   seedReports: typeof seedReports;

@@ -43,7 +43,7 @@ export function AgentConfigEditor({ agent }: AgentConfigEditorProps) {
     setIsSaving(true);
     try {
       await updateConfig({
-        agentId: agent._id as Id<"agents">,
+        id: agent._id as Id<"agents">,
         config: { model, temperature, maxTokens },
       });
       success("Configuración guardada");

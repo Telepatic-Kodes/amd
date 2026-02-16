@@ -27,6 +27,7 @@ import {
     X,
     ImageIcon,
     GitBranch,
+    Target,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -65,6 +66,7 @@ const navGroups = [
         items: [
             { name: "Agentes", href: "/agents", icon: Users },
             { name: "Organigrama", href: "/org", icon: GitBranch },
+            { name: "Campañas", href: "/campaigns", icon: Target },
             { name: "Tareas", href: "/tasks", icon: ListTodo },
             { name: "Monitoreo", href: "/monitoring", icon: Shield },
             { name: "Reportes", href: "/reports", icon: BarChart3 },

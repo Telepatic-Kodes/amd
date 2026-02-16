@@ -1,6 +1,6 @@
 "use client";
 
-import { Doc } from "@/convex/_generated/dataModel";
+import { Doc } from "@convex/_generated/dataModel";
 import { Palette, MessageSquare, Target, Users, Swords, Lightbulb, Calendar, Globe } from "lucide-react";
 
 interface BrandManualProps {
@@ -74,7 +74,8 @@ function InfoCard({ title, children }: { title: string; children: React.ReactNod
 
 export function BrandManual({ brandProfile: bp, strategy: strategyDoc }: BrandManualProps) {
   // Strategy data is nested inside the document's `strategy` field
-  const strategy = (strategyDoc as Record<string, unknown>)?.strategy ?? null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const strategy = (strategyDoc as any)?.strategy as any ?? null;
   return (
     <div className="brand-manual-doc bg-[var(--card-bg)] text-[var(--text-primary)] max-w-3xl mx-auto px-12 py-16 print:px-0 print:py-8 print:max-w-none">
 
@@ -312,9 +313,9 @@ export function BrandManual({ brandProfile: bp, strategy: strategyDoc }: BrandMa
         <ManualSection number="08" title="Estrategia de Marketing" icon={Calendar}>
           <div className="space-y-8">
             {/* Summary / Goal */}
-            {(strategy.summary || (strategyDoc as Record<string, unknown>)?.goal) && (
+            {(strategy.summary || (strategyDoc as any)?.goal) && (
               <p className="text-[15px] leading-relaxed text-[var(--text-secondary)] italic border-l-4 border-orange-300 pl-4">
-                {strategy.summary || (strategyDoc as Record<string, unknown>)?.goal}
+                {strategy.summary || (strategyDoc as any)?.goal}
               </p>
             )}
 
@@ -323,7 +324,7 @@ export function BrandManual({ brandProfile: bp, strategy: strategyDoc }: BrandMa
               <div>
                 <h3 className="text-sm font-semibold text-[var(--text-tertiary)] uppercase tracking-wider mb-4">Pilares de Contenido</h3>
                 <div className="space-y-4">
-                  {strategy.contentPillars.map((pillar: Record<string, unknown>) => (
+                  {strategy.contentPillars.map((pillar: any) => (
                     <div key={pillar.name} className="rounded-lg border border-[var(--border)] p-5 space-y-3">
                       <h4 className="text-lg font-semibold text-[var(--text-primary)]">{pillar.name}</h4>
                       <p className="text-sm text-[var(--text-secondary)]">{pillar.description}</p>
@@ -352,7 +353,7 @@ export function BrandManual({ brandProfile: bp, strategy: strategyDoc }: BrandMa
                       </tr>
                     </thead>
                     <tbody>
-                      {strategy.weeklyCalendar.map((item: Record<string, unknown>, i: number) => (
+                      {strategy.weeklyCalendar.map((item: any, i: number) => (
                         <tr key={i} className="border-b border-[var(--border)]">
                           <td className="py-3 pr-4 text-sm font-medium text-[var(--text-primary)] capitalize">{item.dayOfWeek}</td>
                           <td className="py-3 pr-4 text-sm text-[var(--text-secondary)]">{item.description}</td>
@@ -407,7 +408,7 @@ export function BrandManual({ brandProfile: bp, strategy: strategyDoc }: BrandMa
                 <h4 className="text-sm font-semibold text-[var(--text-primary)] uppercase tracking-wider">Ads</h4>
                 {strategy.adStrategy.budgetSplit && (
                   <div className="space-y-2">
-                    {strategy.adStrategy.budgetSplit.map((p: Record<string, unknown>) => (
+                    {strategy.adStrategy.budgetSplit.map((p: any) => (
                       <div key={p.platform} className="flex items-center justify-between text-sm">
                         <span className="text-[var(--text-secondary)]">{p.platform}</span>
                         <span className="text-[var(--text-tertiary)] font-medium">{p.percentage}%</span>

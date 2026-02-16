@@ -52,7 +52,7 @@ export function ExecuteAgentModal({ agent, isOpen, onClose }: ExecuteAgentModalP
         taskType,
         input: parsedInput,
       });
-      setTaskId(result as Id<"tasks">);
+      setTaskId(result as unknown as Id<"tasks">);
       success("Ejecución iniciada");
     } catch (err) {
       showError("Error al ejecutar agente");

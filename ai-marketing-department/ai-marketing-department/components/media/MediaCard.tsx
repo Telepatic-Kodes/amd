@@ -94,7 +94,7 @@ export function MediaCard({ asset, isSelected, onSelect, onClick }: MediaCardPro
         </h4>
         <div className="flex items-center justify-between gap-2">
           <span className="text-xs text-[var(--text-secondary)]">
-            {formatFileSize(asset.size)}
+            {formatFileSize(asset.fileSize)}
           </span>
           <span
             className={cn(

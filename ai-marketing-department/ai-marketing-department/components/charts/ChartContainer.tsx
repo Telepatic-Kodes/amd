@@ -49,7 +49,7 @@ export function ChartContainer({
   return (
     <div ref={containerRef} className={className} style={{ height, width }}>
       {size && (
-        <children.type {...children.props} width={size.w} height={size.h} />
+        <children.type {...(children.props as Record<string, unknown>)} width={size.w} height={size.h} />
       )}
     </div>
   );

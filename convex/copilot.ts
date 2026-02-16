@@ -131,7 +131,8 @@ export const sendMessage = action({
       })
     ),
   },
-  handler: async (ctx, args) => {
+  returns: v.string(),
+  handler: async (ctx, args): Promise<string> => {
     // Store user message
     await ctx.runMutation(api.copilot.addMessage, {
       conversationId: args.conversationId,
@@ -140,7 +141,7 @@ export const sendMessage = action({
     });
 
     // Get conversation history
-    const messages = await ctx.runQuery(api.copilot.getConversationMessages, {
+    const messages: Array<{ role: string; content: string }> = await ctx.runQuery(api.copilot.getConversationMessages, {
       conversationId: args.conversationId,
     });
 
@@ -157,7 +158,7 @@ ${contextParts.length > 0 ? `\nContexto actual:\n${contextParts.join("\n")}` : "
 Si el usuario pide una acción específica (crear contenido, ejecutar agente, etc.), sugiere los pasos concretos.`;
 
     // Build Claude messages from history
-    const claudeMessages = messages.map((m) => ({
+    const claudeMessages: Array<{ role: "user" | "assistant"; content: string }> = messages.map((m: { role: string; content: string }) => ({
       role: m.role as "user" | "assistant",
       content: m.content,
     }));
@@ -175,7 +176,7 @@ Si el usuario pide una acción específica (crear contenido, ejecutar agente, et
     }
 
     try {
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
+      const response: Response = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -194,9 +195,10 @@ Si el usuario pide una acción específica (crear contenido, ejecutar agente, et
         throw new Error(`API error: ${response.status}`);
       }
 
-      const data = await response.json();
-      const assistantMessage =
-        data.content?.[0]?.text ?? "No pude generar una respuesta. Intenta de nuevo.";
+      const data: Record<string, unknown> = await response.json();
+      const content = data.content as Array<{ text?: string }> | undefined;
+      const assistantMessage: string =
+        content?.[0]?.text ?? "No pude generar una respuesta. Intenta de nuevo.";
 
       // Store assistant message
       await ctx.runMutation(api.copilot.addMessage, {

@@ -83,7 +83,7 @@ export default function KnowledgeBasePage() {
       {/* Main Content */}
       {isSearching ? (
         <KBSearchResults
-          results={(searchResults as { _id: string; title: string; content: string; kbId: string }[]) ?? []}
+          results={(searchResults as unknown as { _id: string; title: string; content: string; kbId: string }[]) ?? []}
           isLoading={searchIsLoading}
         />
       ) : (
@@ -106,7 +106,7 @@ export default function KnowledgeBasePage() {
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {knowledgeBases.map((kb: { _id: string; name: string; category: string; status: string; description?: string; visibility: string; documentCount?: number }) => (
+                {(knowledgeBases as unknown as { _id: string; name: string; category: string; status: string; description?: string; visibility: string; documentCount?: number }[]).map((kb) => (
                   <KBCard
                     key={kb._id}
                     kb={kb}

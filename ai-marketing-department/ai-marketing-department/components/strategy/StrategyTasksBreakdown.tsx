@@ -24,7 +24,7 @@ const STATUS_CONFIG: Record<TaskStatus, { icon: typeof Clock; color: string; bgC
 const GROUP_ORDER: TaskStatus[] = ["running", "pending", "completed", "failed"];
 
 export function StrategyTasksBreakdown({ strategyDocId }: StrategyTasksBreakdownProps) {
-  const tasks = useQuery(api.cmoEngine.getStrategyTasksDetailed, { strategyDocId });
+  const tasks = useQuery(api.cmoEngine.getStrategyTasksDetailed, { strategyId: strategyDocId as unknown as string });
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
 
   const isLoading = tasks === undefined;
@@ -94,7 +94,7 @@ export function StrategyTasksBreakdown({ strategyDocId }: StrategyTasksBreakdown
                 )}
                 <Icon className={cn("h-3.5 w-3.5", config.color, status === "running" && "animate-spin")} />
                 <span className={cn("text-xs font-medium", config.color)}>{config.label}</span>
-                <Badge variant="outline" className="text-[9px] ml-auto">
+                <Badge variant="default" className="text-[9px] ml-auto">
                   {group.length}
                 </Badge>
               </button>
@@ -107,8 +107,8 @@ export function StrategyTasksBreakdown({ strategyDocId }: StrategyTasksBreakdown
                       className="flex items-center gap-2 px-2 py-1.5 rounded-md text-[10px] bg-[var(--surface-1)]/30"
                     >
                       <span className="text-[var(--text-primary)] font-medium truncate flex-1">{task.type}</span>
-                      {task.agentName && (
-                        <span className="text-[var(--text-tertiary)] truncate max-w-[100px]">{task.agentName}</span>
+                      {(task as any).agent?.name && (
+                        <span className="text-[var(--text-tertiary)] truncate max-w-[100px]">{(task as any).agent.name}</span>
                       )}
                       <span className="text-[var(--text-tertiary)] shrink-0">
                         {task.completedAt ? formatTime(task.completedAt) : formatTime(task.createdAt)}

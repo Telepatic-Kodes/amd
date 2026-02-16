@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery, useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
+import { api } from "@convex/_generated/api";
 import { BrandManual } from "@/components/brand/BrandManual";
 import { ArrowLeft, Download, Link2, Loader2 } from "lucide-react";
 import Link from "next/link";
@@ -12,7 +12,7 @@ export default function BrandManualPage() {
   const brandProfile = useQuery(api.brandProfile.getBrandProfile);
   const activeStrategy = useQuery(api.cmoEngine.getActiveStrategy);
   const createShare = useMutation(api.brandManualShares.createShare);
-  const { toast } = useToast();
+  const { success, error: showError } = useToast();
   const [sharing, setSharing] = useState(false);
 
   if (brandProfile === undefined) {
@@ -42,9 +42,9 @@ export default function BrandManualPage() {
       const { token } = await createShare({ brandProfileId: brandProfile._id });
       const url = `${window.location.origin}/manual/${token}`;
       await navigator.clipboard.writeText(url);
-      toast({ title: "Link copiado", description: "El link público fue copiado al portapapeles." });
+      success("Link copiado", "El link público fue copiado al portapapeles.");
     } catch {
-      toast({ title: "Error", description: "No se pudo crear el link.", variant: "destructive" });
+      showError("Error", "No se pudo crear el link.");
     } finally {
       setSharing(false);
     }

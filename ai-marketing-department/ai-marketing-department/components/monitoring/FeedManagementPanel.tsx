@@ -80,13 +80,13 @@ export function FeedManagementPanel({ onSelectFeed }: FeedManagementPanelProps) 
                 <span className="text-sm font-medium text-[var(--text-primary)] truncate">
                   {feed.name}
                 </span>
-                <Badge variant="outline" className="text-[10px]">
+                <Badge variant="info" className="text-[10px]">
                   {feed.category}
                 </Badge>
               </div>
               <div className="flex items-center gap-3 mt-0.5 text-[10px] text-[var(--text-secondary)]">
                 <span>{feed.itemCount} items</span>
-                <span>Sync: {formatTime(feed.lastSyncedAt)}</span>
+                <span>Sync: {formatTime(feed.lastSyncAt)}</span>
               </div>
             </div>
 

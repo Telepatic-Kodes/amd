@@ -25,7 +25,7 @@ export default function TasksPage() {
     activeTab === "all" ? {} : { status: activeTab }
   );
 
-  const pendingTasks = useQuery(api.functions.getPendingTasks);
+  const pendingTasks = useQuery(api.functions.getPendingTasks, {});
 
   const selectedTask = useMemo(() => {
     if (!selectedTaskId || !tasks) return null;
@@ -84,7 +84,7 @@ export default function TasksPage() {
         {/* Task List */}
         <div className={cn("flex-1 min-w-0", selectedTask && "lg:max-w-[60%]")}>
           <TaskList
-            tasks={(tasks as Record<string, unknown>[] | undefined) ?? []}
+            tasks={(tasks as unknown as { _id: string; title?: string; agentId?: string; type: string; status: string; createdAt: number }[]) ?? []}
             selectedTaskId={selectedTaskId}
             onSelectTask={setSelectedTaskId}
             isLoading={isLoading}
