@@ -52,12 +52,17 @@ export const getOrCreateUser = mutation({
 export const getCurrentUser = query({
   args: {},
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return null;
+    let subject: string;
+    try {
+      const identity = await requireAuth(ctx);
+      subject = identity.subject;
+    } catch {
+      return null;
+    }
 
     return await ctx.db
       .query("users")
-      .withIndex("by_clerkId", (q) => q.eq("clerkId", identity.subject))
+      .withIndex("by_clerkId", (q) => q.eq("clerkId", subject))
       .first();
   },
 });
