@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronDown, ChevronRight } from "lucide-react";
@@ -28,11 +28,15 @@ export function NavGroup({
   badge,
 }: NavGroupProps) {
   const pathname = usePathname();
-  const [isExpanded, setIsExpanded] = useState(() => {
-    if (typeof window === "undefined") return defaultExpanded;
+  const [isExpanded, setIsExpanded] = useState(defaultExpanded);
+
+  // Restore saved state from localStorage after mount to avoid hydration mismatch
+  useEffect(() => {
     const saved = localStorage.getItem(`nav-group-${title}`);
-    return saved !== null ? saved === "true" : defaultExpanded;
-  });
+    if (saved !== null) {
+      setIsExpanded(saved === "true");
+    }
+  }, [title]);
 
   // Save state to localStorage when toggling
   const handleToggle = () => {
