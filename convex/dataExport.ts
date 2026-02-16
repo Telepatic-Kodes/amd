@@ -185,11 +185,27 @@ export const getAgentAnalytics = query({
       stats.totalCost += exec.cost ?? 0;
     }
 
-    return Object.values(agentStats).map((s) => ({
-      ...s,
-      successRate: s.total > 0 ? Math.round((s.successful / s.total) * 100) : 0,
-      avgDuration: s.total > 0 ? Math.round(s.totalDuration / s.total) : 0,
-      avgTokens: s.total > 0 ? Math.round(s.totalTokens / s.total) : 0,
-    }));
+    // Resolve agent names from IDs
+    const results = await Promise.all(
+      Object.values(agentStats).map(async (s) => {
+        let agentName = s.agentId;
+        try {
+          const agent = await ctx.db.get(s.agentId as any);
+          if (agent && typeof agent === "object" && "name" in agent) {
+            agentName = (agent as { name: string }).name;
+          }
+        } catch {
+          // Keep raw ID if lookup fails
+        }
+        return {
+          ...s,
+          agentId: agentName,
+          successRate: s.total > 0 ? Math.round((s.successful / s.total) * 100) : 0,
+          avgDuration: s.total > 0 ? Math.round(s.totalDuration / s.total) : 0,
+          avgTokens: s.total > 0 ? Math.round(s.totalTokens / s.total) : 0,
+        };
+      })
+    );
+    return results;
   },
 });
