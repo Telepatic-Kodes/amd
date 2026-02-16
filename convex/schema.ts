@@ -210,7 +210,14 @@ export default defineSchema({
     assets: v.optional(
       v.array(
         v.object({
-          type: v.union(v.literal("image"), v.literal("video"), v.literal("document")),
+          mediaId: v.optional(v.id("mediaAssets")),
+          type: v.union(
+            v.literal("image"),
+            v.literal("video"),
+            v.literal("audio"),
+            v.literal("document"),
+            v.literal("presentation")
+          ),
           url: v.string(),
           alt: v.optional(v.string()),
         })
@@ -1862,4 +1869,37 @@ export default defineSchema({
   })
     .index("by_userId", ["userId"])
     .index("by_brandProfileId", ["brandProfileId"]),
+
+  // ===========================================
+  // MEDIA ASSETS — File storage & media library
+  // ===========================================
+  mediaAssets: defineTable({
+    name: v.string(),
+    storageId: v.id("_storage"),
+    url: v.string(),
+    type: v.union(
+      v.literal("image"),
+      v.literal("video"),
+      v.literal("audio"),
+      v.literal("document"),
+      v.literal("presentation")
+    ),
+    mimeType: v.string(),
+    fileSize: v.number(),
+    tags: v.optional(v.array(v.string())),
+    folder: v.optional(v.string()),
+    alt: v.optional(v.string()),
+    description: v.optional(v.string()),
+    usedIn: v.optional(v.array(v.id("content"))),
+    uploadedBy: v.string(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_type", ["type"])
+    .index("by_folder", ["folder"])
+    .index("by_createdAt", ["createdAt"])
+    .searchIndex("search_name", {
+      searchField: "name",
+      filterFields: ["type", "folder"],
+    }),
 });
