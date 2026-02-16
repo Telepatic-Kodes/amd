@@ -288,7 +288,24 @@ export const seed = mutation({
       });
     }
 
-    // ── 4. Update some content as "published" ──────────────────
+    // ── 4. Link all content to brand profile ─────────────────
+    const brandProfile = await ctx.db
+      .query("brandProfiles")
+      .withIndex("by_userId", (q: any) => q.eq("userId", "dev-user-001"))
+      .first();
+
+    const allContent = await ctx.db.query("content").collect();
+    let linkedCount = 0;
+    if (brandProfile) {
+      for (const c of allContent) {
+        if (!c.brandProfileId) {
+          await ctx.db.patch(c._id, { brandProfileId: brandProfile._id });
+          linkedCount++;
+        }
+      }
+    }
+
+    // ── 5. Update some content as "published" ──────────────────
     let publishedCount = 0;
     for (let i = 0; i < Math.min(6, content.length); i++) {
       const c = content[i];
@@ -303,7 +320,7 @@ export const seed = mutation({
     }
 
     return {
-      message: `Publishing seeded: 4 connections (LinkedIn, Twitter, Instagram, Email), ${logCount} publish logs, ${subscribers.length} subscribers, ${publishedCount} content items updated to published`,
+      message: `Publishing seeded: 4 connections, ${logCount} logs, ${subscribers.length} subscribers, ${publishedCount} published, ${linkedCount} content linked to brand`,
     };
   },
 });
