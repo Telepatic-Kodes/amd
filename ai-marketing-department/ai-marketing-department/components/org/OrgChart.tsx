@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, ChevronRight, Users } from "lucide-react";
 import { AgentNode, AgentNodeSkeleton } from "./AgentNode";
@@ -19,6 +19,9 @@ interface OrgChartProps {
   agents: Agent[] | undefined;
   onAgentSelect?: (agent: Agent) => void;
   selectedAgentId?: string;
+  hoveredAgentId: string | null;
+  onAgentHover?: (agentId: string | null) => void;
+  onPositionsChange?: (positions: Map<string, DOMRect>) => void;
 }
 
 const _departmentLabels: Record<string, string> = {
@@ -33,8 +36,19 @@ const _departmentLabels: Record<string, string> = {
 
 const departmentOrder = ["content", "social", "demandgen", "seo", "brand", "ops"];
 
-export function OrgChart({ agents, onAgentSelect, selectedAgentId }: OrgChartProps) {
+export function OrgChart({ agents, onAgentSelect, selectedAgentId, hoveredAgentId, onAgentHover, onPositionsChange }: OrgChartProps) {
   const [expandedDepts, setExpandedDepts] = useState<Set<string>>(new Set(departmentOrder));
+  const [positions, setPositions] = useState<Map<string, DOMRect>>(new Map());
+
+  const handlePositionReport = useCallback((agentId: string, rect: DOMRect) => {
+    setPositions((prev) => {
+      const next = new Map(prev);
+      next.set(agentId, rect);
+      // Defer the parent callback to avoid state updates during render
+      setTimeout(() => onPositionsChange?.(next), 0);
+      return next;
+    });
+  }, [onPositionsChange]);
 
   const { cmo, directors, specialists } = useMemo(() => {
     if (!agents) return { cmo: null, directors: [] as Agent[], specialists: {} as Record<string, Agent[]> };
@@ -67,6 +81,15 @@ export function OrgChart({ agents, onAgentSelect, selectedAgentId }: OrgChartPro
     });
   };
 
+  // Determine isDimmed/isHighlighted for a given agent
+  const getHighlightProps = (agent: Agent) => {
+    if (!hoveredAgentId) return { isDimmed: false, isHighlighted: false };
+    return {
+      isHighlighted: agent.agentId === hoveredAgentId,
+      isDimmed: agent.agentId !== hoveredAgentId,
+    };
+  };
+
   if (!agents) {
     return (
       <div className="flex flex-col items-center gap-8 py-8">
@@ -95,6 +118,10 @@ export function OrgChart({ agents, onAgentSelect, selectedAgentId }: OrgChartPro
             size="lg"
             isSelected={selectedAgentId === cmo._id}
             onClick={() => onAgentSelect?.(cmo)}
+            onMouseEnter={() => onAgentHover?.(cmo.agentId)}
+            onMouseLeave={() => onAgentHover?.(null)}
+            onPositionReport={handlePositionReport}
+            {...getHighlightProps(cmo)}
           />
         </motion.div>
       )}
@@ -152,6 +179,10 @@ export function OrgChart({ agents, onAgentSelect, selectedAgentId }: OrgChartPro
                   size="md"
                   isSelected={selectedAgentId === director._id}
                   onClick={() => onAgentSelect?.(director)}
+                  onMouseEnter={() => onAgentHover?.(director.agentId)}
+                  onMouseLeave={() => onAgentHover?.(null)}
+                  onPositionReport={handlePositionReport}
+                  {...getHighlightProps(director)}
                 />
               )}
 
@@ -195,6 +226,10 @@ export function OrgChart({ agents, onAgentSelect, selectedAgentId }: OrgChartPro
                             size="sm"
                             isSelected={selectedAgentId === specialist._id}
                             onClick={() => onAgentSelect?.(specialist)}
+                            onMouseEnter={() => onAgentHover?.(specialist.agentId)}
+                            onMouseLeave={() => onAgentHover?.(null)}
+                            onPositionReport={handlePositionReport}
+                            {...getHighlightProps(specialist)}
                           />
                         </motion.div>
                       ))}

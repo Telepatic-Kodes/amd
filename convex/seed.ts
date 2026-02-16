@@ -1917,3 +1917,160 @@ export const seedDemoData = mutation({
     };
   },
 });
+
+// ===========================================
+// DEMO HANDOFFS — Populates the org chart arrows
+// ===========================================
+
+export const seedHandoffs = mutation({
+  handler: async (ctx) => {
+    const now = Date.now();
+    const hour = 60 * 60 * 1000;
+    const day = 24 * hour;
+
+    // Lookup agent _id by agentId string
+    const agentLookup = async (agentId: string) => {
+      const agent = await ctx.db
+        .query("agents")
+        .withIndex("by_agentId", (q) => q.eq("agentId", agentId))
+        .first();
+      if (!agent) throw new Error(`Agent ${agentId} not found — run seedAgents first`);
+      return agent._id;
+    };
+
+    // Resolve agents we need
+    const cmo = await agentLookup("cmo-001");
+    const contentDir = await agentLookup("content-director");
+    const contentMgr = await agentLookup("content-001");
+    const blogWriter = await agentLookup("content-002");
+    const wpAuthor = await agentLookup("content-003");
+    const caseWriter = await agentLookup("content-004");
+    const publisher = await agentLookup("content-005");
+    const socialMgr = await agentLookup("social-manager");
+    const linkedinCreator = await agentLookup("social-001");
+    const twitterCreator = await agentLookup("social-002");
+    const scheduler = await agentLookup("social-007");
+    const seoMgr = await agentLookup("seo-manager");
+    const seoStrategist = await agentLookup("seo-001");
+    const seoTech = await agentLookup("seo-003");
+    const brandDir = await agentLookup("brand-director");
+    const adCreative = await agentLookup("brand-001");
+    const landingBuilder = await agentLookup("brand-002");
+    const demandDir = await agentLookup("demandgen-director");
+    const paidMedia = await agentLookup("demandgen-001");
+    const metaAds = await agentLookup("demandgen-002");
+    const googleAds = await agentLookup("demandgen-003");
+    const opsDir = await agentLookup("ops-director");
+    const emailOps = await agentLookup("ops-001");
+    const newsletterWriter = await agentLookup("ops-002");
+
+    // Get any existing task to reference (handoffs need a taskId)
+    const anyTask = await ctx.db.query("tasks").first();
+    if (!anyTask) throw new Error("No tasks found — run seedDemoData first");
+    const taskId = anyTask._id;
+
+    // Define realistic handoff patterns across departments
+    const handoffDefs = [
+      // CMO → Directors (strategic delegation)
+      { from: cmo, to: contentDir, reason: "Estrategia de contenido Q1 aprobada", daysAgo: 14 },
+      { from: cmo, to: contentDir, reason: "Priorizar caso de estudio RetailTech", daysAgo: 7 },
+      { from: cmo, to: contentDir, reason: "Brief para whitepaper de agentes IA", daysAgo: 3 },
+      { from: cmo, to: socialMgr, reason: "Lanzar campaña de thought leadership", daysAgo: 12 },
+      { from: cmo, to: socialMgr, reason: "Amplificar contenido de blog en redes", daysAgo: 5 },
+      { from: cmo, to: demandDir, reason: "Aumentar presupuesto de paid media Q1", daysAgo: 10 },
+      { from: cmo, to: demandDir, reason: "Optimizar ROAS en campañas activas", daysAgo: 4 },
+      { from: cmo, to: seoMgr, reason: "Priorizar keywords de alto intent", daysAgo: 11 },
+      { from: cmo, to: brandDir, reason: "Actualizar guidelines de marca para ads", daysAgo: 9 },
+      { from: cmo, to: opsDir, reason: "Revisar deliverability de email", daysAgo: 8 },
+
+      // SEO → Content pipeline (keyword → brief → article)
+      { from: seoStrategist, to: contentMgr, reason: "Brief SEO: 'IA marketing 2026'", daysAgo: 13 },
+      { from: seoStrategist, to: contentMgr, reason: "Brief SEO: 'automatizar marketing'", daysAgo: 8 },
+      { from: seoStrategist, to: contentMgr, reason: "Brief SEO: 'agentes IA marketing'", daysAgo: 5 },
+      { from: seoStrategist, to: contentMgr, reason: "Brief SEO: 'content marketing AI'", daysAgo: 2 },
+      { from: seoMgr, to: seoStrategist, reason: "Investigar cluster de keywords Q2", daysAgo: 6 },
+      { from: seoMgr, to: seoTech, reason: "Auditoría Core Web Vitals urgente", daysAgo: 7 },
+
+      // Content Director → specialists
+      { from: contentDir, to: contentMgr, reason: "Coordinar producción editorial semanal", daysAgo: 6 },
+      { from: contentDir, to: blogWriter, reason: "Escribir artículo tendencias IA 2026", daysAgo: 6 },
+      { from: contentDir, to: blogWriter, reason: "Redactar caso de estudio RetailTech", daysAgo: 2 },
+      { from: contentDir, to: wpAuthor, reason: "Iniciar whitepaper AI Agents", daysAgo: 1 },
+      { from: contentDir, to: caseWriter, reason: "Estructurar caso de éxito TechStartup", daysAgo: 9 },
+      { from: contentMgr, to: blogWriter, reason: "Brief listo — keyword 'IA marketing'", daysAgo: 6 },
+      { from: contentMgr, to: blogWriter, reason: "Brief listo — keyword 'automatizar marketing'", daysAgo: 4 },
+
+      // Content → Publisher (articles ready)
+      { from: blogWriter, to: publisher, reason: "Artículo IA 2026 listo para publicar", daysAgo: 5 },
+      { from: blogWriter, to: publisher, reason: "Blog post automatización listo", daysAgo: 3 },
+      { from: caseWriter, to: publisher, reason: "Caso TechStartup aprobado", daysAgo: 6 },
+
+      // Content → Social (repurposing)
+      { from: publisher, to: socialMgr, reason: "Artículo publicado — repurposear en social", daysAgo: 5 },
+      { from: publisher, to: socialMgr, reason: "Blog post listo — crear posts de social", daysAgo: 3 },
+      { from: socialMgr, to: linkedinCreator, reason: "Crear post LinkedIn del artículo IA 2026", daysAgo: 4 },
+      { from: socialMgr, to: linkedinCreator, reason: "Post LinkedIn de métricas AI Marketing", daysAgo: 1 },
+      { from: socialMgr, to: twitterCreator, reason: "Thread Twitter: caso de éxito", daysAgo: 2 },
+      { from: socialMgr, to: twitterCreator, reason: "Thread Twitter: tráfico orgánico x2", daysAgo: 1 },
+      { from: linkedinCreator, to: scheduler, reason: "Post LinkedIn listo — programar", daysAgo: 3 },
+      { from: linkedinCreator, to: scheduler, reason: "Post métricas listo — programar", daysAgo: 1 },
+      { from: twitterCreator, to: scheduler, reason: "Thread caso éxito listo — programar", daysAgo: 1 },
+
+      // Demand Gen flow
+      { from: demandDir, to: paidMedia, reason: "Optimizar budget allocation Q1", daysAgo: 10 },
+      { from: demandDir, to: paidMedia, reason: "Analizar rendimiento campañas activas", daysAgo: 4 },
+      { from: paidMedia, to: metaAds, reason: "Escalar campaña Meta Ads — ROAS > 3x", daysAgo: 8 },
+      { from: paidMedia, to: googleAds, reason: "Ajustar bidding en Google Search", daysAgo: 6 },
+      { from: demandDir, to: brandDir, reason: "Necesitamos creativos para campaña Q1", daysAgo: 9 },
+
+      // Brand → Creative assets
+      { from: brandDir, to: adCreative, reason: "Diseñar creativos para Google Ads Q1", daysAgo: 8 },
+      { from: brandDir, to: adCreative, reason: "Variaciones de creativos para A/B test", daysAgo: 5 },
+      { from: brandDir, to: landingBuilder, reason: "Landing page para campaña lead gen", daysAgo: 7 },
+      { from: adCreative, to: metaAds, reason: "Creativos listos — activar en Meta", daysAgo: 7 },
+      { from: adCreative, to: googleAds, reason: "Creativos listos — activar en Google", daysAgo: 6 },
+
+      // Ops flow
+      { from: opsDir, to: emailOps, reason: "Revisar deliverability score", daysAgo: 8 },
+      { from: opsDir, to: newsletterWriter, reason: "Newsletter semanal #12", daysAgo: 3 },
+      { from: emailOps, to: newsletterWriter, reason: "Listas limpias — enviar newsletter", daysAgo: 2 },
+
+      // Cross-department handoffs (the interesting ones for the org chart)
+      { from: seoTech, to: landingBuilder, reason: "Core Web Vitals — optimizar landing pages", daysAgo: 6 },
+      { from: newsletterWriter, to: contentDir, reason: "Newsletter enviado — métricas disponibles", daysAgo: 2 },
+      { from: contentDir, to: cmo, reason: "Reporte semanal de contenido", daysAgo: 1 },
+      { from: demandDir, to: cmo, reason: "Reporte de paid media performance", daysAgo: 1 },
+      { from: seoMgr, to: cmo, reason: "Reporte SEO: rankings mejoraron", daysAgo: 1 },
+    ];
+
+    let count = 0;
+    for (const h of handoffDefs) {
+      await ctx.db.insert("handoffs", {
+        fromAgent: h.from,
+        toAgent: h.to,
+        taskId: taskId,
+        reason: h.reason,
+        payload: {},
+        status: "completed",
+        completedAt: now - h.daysAgo * day + 2 * hour,
+        timestamp: now - h.daysAgo * day,
+      });
+      count++;
+    }
+
+    return {
+      success: true,
+      message: `${count} demo handoffs seeded successfully`,
+      counts: {
+        total: count,
+        crossDepartment: 5,
+        contentPipeline: 15,
+        socialRepurposing: 10,
+        demandGen: 7,
+        brandCreative: 5,
+        operations: 3,
+        cmoLevel: 10,
+      },
+    };
+  },
+});

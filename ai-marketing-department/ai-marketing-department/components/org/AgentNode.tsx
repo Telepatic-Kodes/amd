@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Crown, Briefcase, User } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -17,7 +18,12 @@ interface Agent {
 interface AgentNodeProps {
   agent: Agent;
   isSelected?: boolean;
+  isHighlighted?: boolean;
+  isDimmed?: boolean;
   onClick?: () => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
+  onPositionReport?: (agentId: string, rect: DOMRect) => void;
   size?: "sm" | "md" | "lg";
 }
 
@@ -84,9 +90,44 @@ const RoleIcon = ({ role, className }: { role: string; className?: string }) => 
   }
 };
 
-export function AgentNode({ agent, isSelected, onClick, size = "md" }: AgentNodeProps) {
+export function AgentNode({
+  agent,
+  isSelected,
+  isHighlighted,
+  isDimmed,
+  onClick,
+  onMouseEnter,
+  onMouseLeave,
+  onPositionReport,
+  size = "md",
+}: AgentNodeProps) {
+  const ref = useRef<HTMLDivElement>(null);
   const colors = departmentColors[agent.department] || departmentColors.content;
   const statusColor = statusColors[agent.status] || statusColors.active;
+
+  useEffect(() => {
+    if (!ref.current || !onPositionReport) return;
+
+    const report = () => {
+      if (ref.current) {
+        onPositionReport(agent.agentId, ref.current.getBoundingClientRect());
+      }
+    };
+
+    report();
+
+    const observer = new ResizeObserver(report);
+    observer.observe(ref.current);
+
+    window.addEventListener("scroll", report, true);
+    window.addEventListener("resize", report);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("scroll", report, true);
+      window.removeEventListener("resize", report);
+    };
+  }, [agent.agentId, onPositionReport]);
 
   const sizeClasses = {
     sm: "px-3 py-2 min-w-[120px]",
@@ -108,18 +149,23 @@ export function AgentNode({ agent, isSelected, onClick, size = "md" }: AgentNode
 
   return (
     <motion.div
+      ref={ref}
       layout
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       className={cn(
         "relative cursor-pointer rounded-xl border backdrop-blur-xl transition-all",
         sizeClasses[size],
         colors.bg,
         colors.border,
         isSelected && `ring-2 ring-offset-2 ring-offset-[var(--surface-0)] ${colors.border.replace("border-", "ring-")} shadow-lg ${colors.glow}`,
+        isHighlighted && "ring-2 ring-[var(--accent)] shadow-lg",
+        isDimmed && "opacity-20 transition-opacity",
         "hover:shadow-lg",
         `hover:${colors.glow}`
       )}
