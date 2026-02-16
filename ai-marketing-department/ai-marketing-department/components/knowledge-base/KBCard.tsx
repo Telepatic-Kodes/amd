@@ -13,6 +13,7 @@ interface KBItem {
   description?: string;
   visibility: string;
   documentCount?: number;
+  metadata?: { documentCount?: number; totalSizeBytes?: number };
 }
 
 interface KBCardProps {
@@ -55,7 +56,7 @@ export function KBCard({ kb, isSelected, onSelect }: KBCardProps) {
         <div className="flex items-center gap-2">
           <Badge>{kb.category}</Badge>
           <span className="text-xs text-[var(--text-tertiary)]">
-            {kb.documentCount ?? 0} secciones
+            {kb.metadata?.documentCount ?? kb.documentCount ?? 0} documentos
           </span>
         </div>
       </CardContent>

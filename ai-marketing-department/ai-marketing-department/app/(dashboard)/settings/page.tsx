@@ -72,6 +72,9 @@ export default function SettingsPage() {
   const seedCampaigns = useMutation(api.seed.seedCampaigns);
   const seedDemoData = useMutation(api.seed.seedDemoData);
   const seedTemplates = useMutation(api.seedTemplates.seed);
+  const seedReports = useMutation(api.seedReports.seedReportData);
+  const seedMonitoring = useMutation(api.seedMonitoring.seedMonitoringData);
+  const seedKB = useMutation(api.seedKnowledgeBase.seed);
   const [seeding, setSeeding] = useState(false);
 
   const completeStep = useMutation(api.guidance.completeSetupStep);
@@ -1003,9 +1006,12 @@ export default function SettingsPage() {
                           await seedCampaigns();
                           await seedDemoData();
                           await seedTemplates();
+                          await seedReports();
+                          await seedMonitoring();
+                          await seedKB();
                           toast.success(
                             "Demo cargada",
-                            "37 agentes, 15 tareas, 8 contenidos, 7 campañas, 20 ejecuciones y templates creados."
+                            "37 agentes, campañas, tareas, contenido, templates, reportes, monitoreo y base de conocimiento creados."
                           );
                         } catch (_err: unknown) {
                           toast.error(
