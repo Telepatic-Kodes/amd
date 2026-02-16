@@ -28,6 +28,7 @@ export const seed = mutation({
 
     // Insert a realistic brand profile for a SaaS marketing agency
     const profileId = await ctx.db.insert("brandProfiles", {
+      userId: "dev-user-001",
       companyName: "NovaTech Solutions",
       industry: "SaaS / Marketing Technology",
       website: "https://novatech.io",
