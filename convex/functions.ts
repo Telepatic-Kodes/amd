@@ -282,7 +282,7 @@ export const getPendingTasks = query({
     if (args.agentId) {
       results = await ctx.db
         .query("tasks")
-        .withIndex("by_agent", (q) => q.eq("agentId", args.agentId))
+        .withIndex("by_agent", (q) => q.eq("agentId", args.agentId!))
         .filter((q) =>
           q.or(q.eq(q.field("status"), "pending"), q.eq(q.field("status"), "queued"))
         )
