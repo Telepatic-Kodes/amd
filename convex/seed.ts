@@ -1402,6 +1402,12 @@ La implementación de agentes de IA permitió a TechStartup escalar su marketing
  */
 export const seedCampaigns = mutation({
   handler: async (ctx) => {
+    // Clear existing campaigns to avoid duplicates
+    const existing = await ctx.db.query("campaigns").collect();
+    for (const c of existing) {
+      await ctx.db.delete(c._id);
+    }
+
     const now = Date.now();
     const day = 24 * 60 * 60 * 1000;
 
