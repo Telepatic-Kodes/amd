@@ -294,37 +294,88 @@ Tone: {{tone}}`,
   {
     templateId: "tpl_ads_meta",
     name: "Meta Ads (Facebook/Instagram)",
-    description: "Set de anuncios para Facebook e Instagram con variantes de copy",
+    description: "Campaña completa multi-formato para Meta: Reels, Carousel y Stories con hooks probados, UGC guidelines y variantes A/B",
     category: "ads" as const,
-    industry: ["ecommerce", "saas", "general"],
+    industry: ["ecommerce", "saas", "beauty", "wellness", "general"],
     contentType: "ad_copy",
     channels: ["facebook", "instagram"],
-    promptTemplate: `Create Meta (Facebook/Instagram) ad copy variants for "{{topic}}".
-
-Generate 3 ad variants:
-
-For each variant:
-1. Primary Text (125 chars for mobile, full version for desktop)
-2. Headline (max 40 chars)
-3. Description (max 30 chars)
-4. CTA button suggestion (Shop Now, Learn More, Sign Up, etc.)
-
-Variant types:
-- Variant A: Benefit-led (focus on outcome)
-- Variant B: Problem-led (agitate pain point)
-- Variant C: Social proof-led (numbers, testimonials)
+    promptTemplate: `Create a complete Meta Ads campaign for "{{topic}}".
 
 Target audience: {{audience}}
 Tone: {{tone}}
-{{cta}}`,
+Main CTA: {{cta}}
+Ad format focus: {{format}}
+
+---
+
+## FORMAT 1: REEL AD (15-30 seconds)
+
+Write a Reel ad script with this structure:
+1. **HOOK (first 2-3 seconds)** — Must stop the scroll. Use one of these proven patterns:
+   - Direct problem: "Si tu [pain point]..."
+   - Curiosity gap: "Lo que nadie te dice sobre [topic]..."
+   - Transformation teaser: "Mira lo que [time] puede hacer"
+   - Bold question: "¿Cuándo fue la última vez que [desirable action]?"
+2. **BODY (10-20 seconds)** — Show the process/product/transformation. Describe the visual flow step by step.
+3. **RESULT + CTA (last 3-5 seconds)** — Realistic outcome statement + clear CTA with text overlay.
+4. **Burned-in subtitle text** for each section (Reels with subtitles get +44% CTR).
+5. **UGC direction** — Describe how a real customer or creator would film this (UGC video delivers +38% ROAS vs produced content).
+
+## FORMAT 2: CAROUSEL AD (4-5 cards)
+
+Design a carousel following this high-converting structure:
+- **Card 1**: Eye-catching hook — pain point or bold statement that makes people swipe
+- **Card 2**: Your solution — what you offer and why it works
+- **Card 3**: Process/ingredients/details — build trust with specifics
+- **Card 4**: Social proof — before/after, testimonial, or results data
+- **Card 5**: Offer + CTA — limited-time incentive with clear next step
+
+For each card provide:
+- Visual description (what the image/graphic shows)
+- Text overlay (short, benefit-first, max 15 words)
+- Card-specific CTA or swipe prompt
+
+Note: Carousels outperform single-image ads by 27% and deliver 30-50% lower CPA.
+
+## FORMAT 3: STORY AD (interactive)
+
+Create a Story ad concept:
+1. **Visual hook** (full-screen, vertical 9:16)
+2. **Interactive element**: Poll ("¿[Option A] o [Option B]?"), Quiz, or Slider
+3. **Auto-DM follow-up**: Message to send after interaction with personalized offer
+4. **Swipe-up/link CTA**
+
+## AD COPY VARIANTS (for all formats)
+
+Generate 3 copy variants for the Primary Text field:
+
+- **Variant A (Benefit-led)**: Focus on the transformation/outcome. Open with the result.
+- **Variant B (Problem-agitation)**: Start with the pain point in first 2 seconds, then present the solution.
+- **Variant C (Social proof)**: Lead with numbers, testimonials, or crowd validation.
+
+For each variant:
+- Primary Text: Short version (125 chars for mobile) + Full version (up to 250 chars)
+- Headline (max 40 chars)
+- Description (max 30 chars)
+- CTA button: Shop Now / Learn More / Book Now / Sign Up / Get Offer
+
+## CAMPAIGN RECOMMENDATIONS
+
+Provide:
+- Suggested daily budget split across formats
+- A/B testing priority (which variant to test first and why)
+- Retargeting strategy: what to show people who engaged but didn't convert
+- Best posting times for the target audience
+- Comment response template (25% of purchases happen after brand replies to comments)`,
     variables: [
-      { name: "topic", description: "Product/service to advertise", required: true },
-      { name: "audience", description: "Target audience", required: false, default: "decisores de marketing 25-45" },
-      { name: "tone", description: "Ad tone", required: false, default: "conversacional y persuasivo" },
-      { name: "cta", description: "Call to action", required: false, default: "Probar gratis" },
+      { name: "topic", description: "Product or service to advertise", required: true },
+      { name: "audience", description: "Target audience demographics and psychographics", required: false, default: "mujeres 25-45, interesadas en bienestar y autocuidado" },
+      { name: "tone", description: "Ad tone and voice", required: false, default: "cercano, aspiracional y persuasivo" },
+      { name: "cta", description: "Primary call to action", required: false, default: "Reserva tu cita" },
+      { name: "format", description: "Focus format: all, reel, carousel, or story", required: false, default: "all" },
     ],
-    exampleOutput: `VARIANT A (Benefit-led):\nPrimary: ¿10 horas creando contenido? Con nuestros templates, lo haces en 1. Probado por +500 marketers.\nHeadline: Contenido Pro en Minutos\nDescription: Prueba gratis 14 días\nCTA: Sign Up\n\nVARIANT B (Problem-led):\nPrimary: Tu equipo pasa más tiempo creando que vendiendo. Eso tiene solución.\n...`,
-    tags: ["social-ads", "conversion", "retargeting"],
+    exampleOutput: `## REEL AD (15 seg)\n\nHOOK [0-3s]: "¿Cuándo fue la última vez que te dedicaste 45 minutos solo a ti?"\nSubtítulo: "Tu piel lo necesita"\n\nBODY [3-12s]:\n- Toma 1: Clienta entrando al spa (POV cámara)\n- Toma 2: Close-up del tratamiento facial\n- Toma 3: Texturas y productos (ASMR visual)\nSubtítulo: "Tratamiento facial premium · 45 min"\n\nRESULTO [12-15s]: Clienta sonriendo, piel luminosa\nSubtítulo: "Agenda tu primera sesión → Link en bio"\nText overlay: "Primera vez: -25% off"\n\nUGC DIRECTION: Pedir a clienta real que filme su experiencia con iPhone. Tono casual, sin guión rígido.\n\n---\n\n## CAROUSEL AD (5 cards)\n\nCard 1: "Tu piel pide a gritos un descanso" — imagen de estrés/cansancio facial\nCard 2: "Nuestro facial premium en 3 pasos" — proceso del tratamiento\nCard 3: "Activos naturales: ácido hialurónico + vitamina C" — close-up productos\nCard 4: "Antes y después: 1 sesión" — resultado real de clienta\nCard 5: "Primera sesión con 25% off · Solo esta semana" → CTA: Book Now\n\n---\n\n## STORY AD (interactiva)\n\nVisual: Video vertical de tratamiento en curso\nPoll: "¿Qué necesitas más: ✨ Luminosidad o 💆 Relajación?"\nAuto-DM: "¡Gracias por participar! Tenemos el tratamiento perfecto para ti. Usa el código GLOW25 para un 25% en tu primera visita → [link]"\n\n---\n\n## VARIANTES DE COPY\n\nVariant A (Benefit-led):\nPrimary (short): Piel luminosa en 45 minutos. Sin filtros, sin retoques. Reserva hoy.\nPrimary (full): Piel luminosa en 45 minutos. Nuestro facial premium combina activos naturales con técnicas profesionales. +200 clientas ya lo comprueban. Reserva tu primera sesión con 25% off.\nHeadline: Tu Mejor Piel en 45 Min\nDescription: Primera sesión -25%\nCTA: Book Now\n\nVariant B (Problem-agitation):\nPrimary (short): Tu rutina de skincare no alcanza. Tu piel necesita un reset profesional.\nPrimary (full): Cremas, sérums, mascarillas... y tu piel sigue apagada. A veces no es el producto, es que necesitas manos expertas. Un facial profesional hace lo que 6 meses de rutina no logran.\nHeadline: Tu Piel Necesita Más\nDescription: Facial profesional hoy\nCTA: Book Now\n\nVariant C (Social proof):\nPrimary (short): +200 clientas eligen nuestro facial premium cada mes. ¿Ya lo probaste?\nPrimary (full): Valoración 4.9/5 · +200 faciales al mes · "Salí sintiéndome otra persona" — María G. Descubre por qué somos el spa favorito de Santiago.\nHeadline: El Facial Más Pedido\nDescription: 4.9★ · +200 clientas/mes\nCTA: Book Now\n\n---\n\n## RECOMENDACIONES\n\nBudget: $35/día — 50% Reel, 30% Carousel, 20% Story\nTest primero: Variant B vs C en Reels (problema vs social proof)\nRetargeting: Mostrar Carousel de before/after a quienes vieron >50% del Reel\nHorarios: Lu-Vi 12-14h y 20-22h · Sáb 10-13h\nRespuesta a comentarios: "¡Gracias [nombre]! 😊 Te escribimos por DM con toda la info para agendar."`,
+    tags: ["social-ads", "conversion", "retargeting", "ugc", "carousel", "reels"],
   },
 
   // ── MISC (2) ────────────────────────────────
