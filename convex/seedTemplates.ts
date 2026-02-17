@@ -259,37 +259,114 @@ Tone: {{tone}}
   {
     templateId: "tpl_ads_google",
     name: "Google Ads Copy",
-    description: "Set de anuncios responsive para Google Search con múltiples headlines y descriptions",
+    description: "Campaña completa de Google Ads: RSA optimizado con 15 headlines + 4 descriptions, Performance Max assets, extensiones y estrategia de keywords con benchmarks por industria",
     category: "ads" as const,
-    industry: ["saas", "ecommerce", "consulting", "general"],
+    industry: ["saas", "ecommerce", "consulting", "beauty", "wellness", "general"],
     contentType: "ad_copy",
     channels: ["google_ads"],
-    promptTemplate: `Create Google Responsive Search Ad copy for "{{topic}}".
-
-Generate:
-1. 10 Headlines (max 30 chars each):
-   - 3 with primary keyword
-   - 2 with benefits
-   - 2 with numbers/stats
-   - 2 with CTA
-   - 1 with brand name placeholder
-2. 4 Descriptions (max 90 chars each):
-   - 1 benefit-focused
-   - 1 feature-focused
-   - 1 social proof
-   - 1 urgency/CTA
-3. Suggested sitelink extensions (4)
-4. Suggested callout extensions (6)
+    promptTemplate: `Create a complete Google Ads campaign for "{{topic}}".
 
 Target audience: {{audience}}
-Tone: {{tone}}`,
+Tone: {{tone}}
+Monthly budget: {{budget}}
+Campaign type focus: {{campaign_type}}
+
+---
+
+## 1. RESPONSIVE SEARCH ADS (RSA)
+
+Generate a fully optimized RSA following Google's 2025-2026 best practices.
+
+### 15 Headlines (max 30 chars each)
+
+Organize headlines into these categories — each must communicate something DIFFERENT:
+
+- **3 Keyword headlines**: Include the primary search keyword naturally. These will be pinned to Position 1.
+- **3 Benefit headlines**: Focus on the transformation/outcome the customer gets.
+- **2 Numbers/Stats headlines**: Use specific data points (%, quantities, time saved, ratings).
+- **2 Social proof headlines**: Reviews, client count, awards, ratings.
+- **2 CTA headlines**: Direct action verbs (Reserva, Agenda, Prueba, Descubre).
+- **2 Urgency/Offer headlines**: Limited time, seasonal, first-visit discount.
+- **1 Brand headline**: Include brand name + positioning.
+
+IMPORTANT: Don't keyword-stuff. Each headline should feel authentic and click-worthy on its own. Google reports that RSAs with 15 diverse headlines get up to 10% more conversions at similar CPA.
+
+### 4 Descriptions (max 90 chars each)
+
+- **Description 1 (Benefit + CTA)**: Lead with the main benefit, end with clear action.
+- **Description 2 (Features + Differentiator)**: What makes this unique vs competitors.
+- **Description 3 (Social proof + Trust)**: Numbers, reviews, certifications, awards.
+- **Description 4 (Urgency + Offer)**: Time-limited promotion or first-visit incentive.
+
+### Pinning Recommendations
+
+Suggest which headlines to pin to Position 1, 2, and 3 for maximum relevance. Pin sparingly — over-pinning hurts performance. Only pin when legally required or for brand consistency.
+
+## 2. AD EXTENSIONS / ASSETS
+
+### Sitelink Extensions (4-6)
+
+For each sitelink provide:
+- Link text (max 25 chars)
+- Description line 1 (max 35 chars)
+- Description line 2 (max 35 chars)
+- Suggested landing page path
+
+### Callout Extensions (6-8)
+Short benefit phrases (max 25 chars each). Mix: trust signals, differentiators, offers.
+
+### Structured Snippets
+- Header type (Services, Types, Brands, etc.)
+- 4-6 values
+
+### Call Extension
+- Suggested business hours for call scheduling
+
+### Price Extension (if applicable)
+- 3-5 service/product cards with price ranges
+
+## 3. KEYWORD STRATEGY
+
+### Keyword Groups (4 tiers)
+
+For each group provide 5-8 keywords with match type recommendation:
+
+- **Tier 1 — Brand terms**: Brand name + variations (Exact match)
+- **Tier 2 — Service-specific**: Core services with modifiers (Phrase match)
+- **Tier 3 — Geo-targeted**: "[service] en [city]", "[service] cerca de mí" (Phrase match)
+- **Tier 4 — Long-tail / Intent**: Problem-aware searches, questions, comparisons (Broad match with smart bidding)
+
+### Negative Keywords (10-15)
+Common irrelevant searches to exclude from day one.
+
+## 4. PERFORMANCE MAX ASSETS (if campaign_type includes pmax)
+
+Generate creative assets for Performance Max:
+- **5 Short headlines** (max 30 chars) — benefit-focused, action-oriented
+- **5 Long headlines** (max 90 chars) — storytelling, emotional appeal
+- **5 Descriptions** (max 90 chars) — mix of benefits, features, social proof
+- **Business name + logo placement guidance**
+- **Image direction**: Describe 5 image concepts (lifestyle, product, before/after, team, testimonial)
+- **Video direction**: 15-second script concept for YouTube/Display
+
+## 5. CAMPAIGN RECOMMENDATIONS
+
+Provide:
+- **Bidding strategy**: Which smart bidding to use (Target CPA vs Target ROAS vs Maximize Conversions) and why
+- **Budget allocation**: How to split budget across Search vs Performance Max
+- **A/B testing plan**: What to test first (headlines, landing pages, audiences)
+- **Quality Score tips**: 3 specific recommendations to improve ad relevance and landing page experience
+- **Competitor strategy**: How to bid on competitor terms effectively
+- **Benchmarks to expect**: Estimated CTR, CPC, and conversion rate for this industry`,
     variables: [
-      { name: "topic", description: "Product/service to advertise", required: true },
-      { name: "audience", description: "Target searcher intent", required: false, default: "personas buscando soluciones" },
-      { name: "tone", description: "Ad tone", required: false, default: "directo y orientado a acción" },
+      { name: "topic", description: "Product or service to advertise", required: true },
+      { name: "audience", description: "Target searcher intent and demographics", required: false, default: "mujeres 25-45 buscando servicios de bienestar y belleza" },
+      { name: "tone", description: "Ad tone and voice", required: false, default: "directo, profesional y orientado a acción" },
+      { name: "budget", description: "Monthly ad budget", required: false, default: "$1,500 USD/mes" },
+      { name: "campaign_type", description: "Campaign type: search, pmax, or both", required: false, default: "both" },
     ],
-    exampleOutput: `HEADLINES:\n1. Templates de Marketing con IA\n2. Crea Contenido en 3 Minutos\n3. Ahorra 10 Horas Semanales\n4. +500 Marketers Ya lo Usan\n5. Prueba Gratis Hoy\n...\n\nDESCRIPTIONS:\n1. Genera contenido publish-ready con templates inteligentes. Ahorra 80% del tiempo.\n2. 12 templates para blog, redes sociales, email y ads. Usa tu tono de marca.\n...`,
-    tags: ["ppc", "conversion", "search"],
+    exampleOutput: `## 1. RESPONSIVE SEARCH ADS\n\n### Headlines (15)\n\n**Keyword:**\n1. Facial Premium en Santiago\n2. Tratamiento Facial Profesional\n3. Spa Facial Berke Santiago\n\n**Benefit:**\n4. Piel Luminosa en 45 Min\n5. Rejuvenece Sin Cirugía\n6. Adiós Estrés, Hola Glow\n\n**Numbers/Stats:**\n7. +200 Clientas al Mes\n8. 4.9★ en Google Reviews\n\n**Social proof:**\n9. El Spa Mejor Valorado\n10. Recomendado por Dermatólogas\n\n**CTA:**\n11. Reserva Tu Cita Hoy\n12. Agenda Online Fácil\n\n**Urgency/Offer:**\n13. -25% Primera Sesión\n14. Oferta Solo Esta Semana\n\n**Brand:**\n15. Berke Spa · Experts en Piel\n\n### Pinning\n- Posición 1: Headlines 1-3 (keyword, rotación)\n- Posición 2: Headlines 4-6 (benefit, rotación)\n- Posición 3: No pinear — dejar que Google optimice\n\n### Descriptions (4)\n1. Tratamiento facial profesional con activos naturales. Piel luminosa desde la primera sesión. Reserva hoy.\n2. Ácido hialurónico + vitamina C + técnicas exclusivas. Lo que tu rutina de skincare no puede lograr.\n3. Valoración 4.9/5 · +200 faciales al mes · 8 años de experiencia en Santiago.\n4. Primera sesión con 25% off — Solo esta semana. Cupos limitados. Agenda ahora.\n\n---\n\n## 2. EXTENSIONES\n\n### Sitelinks\n1. "Facial Premium" → /servicios/facial-premium — Nuestro tratamiento estrella · Resultados desde sesión 1\n2. "Ver Precios" → /precios — Planes desde $45.000 · Sin compromiso\n3. "Testimonios" → /testimonios — Lee lo que dicen nuestras clientas\n4. "Ubicación" → /contacto — Providencia, Santiago · Estacionamiento\n\n### Callouts\n1. Productos Naturales\n2. Horario Flexible\n3. Resultados Garantizados\n4. 8 Años de Experiencia\n5. Estacionamiento Gratis\n6. Agenda Online 24/7\n\n### Structured Snippets\nHeader: Servicios\nValores: Facial Premium, Masaje Relajante, Limpieza Profunda, Anti-Aging, Peeling\n\n### Price Extension\n- Facial Premium: desde $55.000\n- Masaje Relajante: desde $40.000\n- Limpieza Profunda: desde $35.000\n\n---\n\n## 3. KEYWORDS\n\n**Tier 1 — Brand:**\n[berke spa] · [berke spa santiago] · [spa berke providencia]\n\n**Tier 2 — Service:**\n"tratamiento facial santiago" · "facial profesional" · "limpieza facial profunda" · "spa facial premium"\n\n**Tier 3 — Geo:**\n"spa en providencia" · "spa cerca de mí" · "mejor spa santiago" · "facial santiago centro"\n\n**Tier 4 — Long-tail:**\nfacial para piel seca santiago · tratamiento anti-aging sin cirugía · spa recomendado para primera vez\n\n**Negativas:**\ncursos, empleo, trabajo, gratis, casero, tutorial, DIY, recetas, como hacer, escuela\n\n---\n\n## 4. PERFORMANCE MAX\n\n**Short Headlines:**\n1. Piel Perfecta en 45 Min\n2. Reserva Tu Facial Hoy\n3. Spa Premium Santiago\n4. -25% Primera Visita\n5. Glow Natural Garantizado\n\n**Long Headlines:**\n1. Descubre por qué +200 mujeres eligen nuestro facial premium cada mes\n2. Tu piel merece más que cremas — prueba un tratamiento profesional\n3. 4.9 estrellas en Google · El facial más pedido de Providencia\n\n**Image Direction:**\n1. Lifestyle: clienta relajada durante tratamiento (luz cálida)\n2. Before/After: resultado real de facial (split screen)\n3. Product: close-up de sérums y activos naturales\n4. Space: interior del spa, ambiente premium\n5. Team: esteticista profesional con clienta sonriendo\n\n---\n\n## 5. RECOMENDACIONES\n\n**Bidding:** Target CPA ($3.500 CLP/lead). Comenzar con Maximize Conversions las primeras 2 semanas para recopilar datos.\n**Budget split:** 60% Search · 40% Performance Max\n**A/B Test:** Probar Headlines urgencia vs social proof en posición 2\n**Quality Score:** (1) Landing page con contenido que coincida con keywords, (2) Agregar FAQ schema, (3) Velocidad de carga <3s\n**Benchmarks esperados:** CTR 4-6% · CPC $1.500-$3.000 CLP · Conversión 3-5% · ROAS 3:1+`,
+    tags: ["ppc", "conversion", "search", "performance-max", "keywords", "extensions"],
   },
   {
     templateId: "tpl_ads_meta",
