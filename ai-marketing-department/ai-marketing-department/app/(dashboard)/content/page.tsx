@@ -50,6 +50,7 @@ import {
   History,
   LayoutTemplate,
   ArrowLeft,
+  RefreshCw,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/Card";
@@ -72,7 +73,12 @@ import { ContentAnalysisPanel } from "@/components/content/ContentAnalysisPanel"
 import { AIGeneratedBadge } from "@/components/content/AIGeneratedBadge";
 import { RepurposePanel } from "@/components/content/RepurposePanel";
 import { ContentAutopilotPanel } from "@/components/content/ContentAutopilotPanel";
+import { DerivedVersionsList } from "@/components/content/DerivedVersionsList";
 
+const RepurposeContentModal = dynamic(
+  () => import("@/components/content/RepurposeContentModal").then((m) => m.RepurposeContentModal),
+  { ssr: false }
+);
 const EditContentModal = dynamic(
   () => import("@/components/content/EditContentModal").then((m) => m.EditContentModal),
   { ssr: false }
@@ -311,6 +317,7 @@ export default function ContentPage() {
   const [rollbackTarget, setRollbackTarget] = useState<{ versionId: Id<"contentVersions">; versionNumber: number } | null>(null);
   const [activeTab, setActiveTab] = useState<ContentTab>("list");
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
+  const [repurposeContent, setRepurposeContent] = useState<Doc<"content"> | null>(null);
 
   const brandProfile = useQuery(api.brandProfile.getBrandProfile);
 
@@ -989,6 +996,15 @@ export default function ContentPage() {
                   <Sparkles className="h-4 w-4" />
                   Analizar
                 </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setRepurposeContent(selectedContentData)}
+                  className="px-4 py-2 rounded-lg bg-[var(--badge-blue-bg)] hover:bg-blue-100 text-[var(--badge-blue-text)] font-medium transition-colors flex items-center gap-2 border border-blue-200"
+                >
+                  <RefreshCw className="h-4 w-4" />
+                  Repurposar
+                </motion.button>
               </div>
             </div>
 
@@ -1032,6 +1048,12 @@ export default function ContentPage() {
                     />
                   </CardContent>
                 </Card>
+
+                {/* Derived Versions */}
+                <DerivedVersionsList
+                  contentId={selectedContentData._id}
+                  onSelectContent={(id) => setSelectedContent(id)}
+                />
 
                 {/* Multi-Platform Publish */}
                 <CrossPlatformPublishPanel
@@ -1181,6 +1203,15 @@ export default function ContentPage() {
             setTemplateModalPreselect(undefined);
           }}
           preselectedTemplateId={templateModalPreselect}
+        />
+      )}
+
+      {/* Repurpose Content Modal */}
+      {repurposeContent && (
+        <RepurposeContentModal
+          isOpen={!!repurposeContent}
+          onClose={() => setRepurposeContent(null)}
+          content={repurposeContent}
         />
       )}
 

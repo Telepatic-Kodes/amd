@@ -31,6 +31,7 @@ import type * as contentAutopilot from "../contentAutopilot.js";
 import type * as contentPillars from "../contentPillars.js";
 import type * as contentPipeline from "../contentPipeline.js";
 import type * as contentRecycling from "../contentRecycling.js";
+import type * as contentRepurpose from "../contentRepurpose.js";
 import type * as contentTemplates from "../contentTemplates.js";
 import type * as contentVersions from "../contentVersions.js";
 import type * as controlCenter from "../controlCenter.js";
@@ -163,6 +164,7 @@ declare const fullApi: ApiFromModules<{
   contentPillars: typeof contentPillars;
   contentPipeline: typeof contentPipeline;
   contentRecycling: typeof contentRecycling;
+  contentRepurpose: typeof contentRepurpose;
   contentTemplates: typeof contentTemplates;
   contentVersions: typeof contentVersions;
   controlCenter: typeof controlCenter;
