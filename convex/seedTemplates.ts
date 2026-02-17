@@ -310,32 +310,123 @@ Structure:
   {
     templateId: "tpl_blog_seo",
     name: "Artículo SEO Optimizado",
-    description: "Artículo de blog de 1200-1500 palabras optimizado para posicionar en Google",
+    description: "Artículo E-E-A-T compliant de 1500-2000 palabras: title tag + meta optimizados, estructura para featured snippets, schema markup sugerido, keyword clustering, internal linking strategy y CTA de conversión",
     category: "blog" as const,
-    industry: ["saas", "consulting", "ecommerce", "general"],
+    industry: ["saas", "consulting", "ecommerce", "beauty", "wellness", "general"],
     contentType: "blog",
     channels: ["blog"],
     promptTemplate: `Write an SEO-optimized blog article about "{{topic}}".
 
-Structure:
-1. Title (H1): Include primary keyword, max 60 chars
-2. Meta description: 150-160 chars, include keyword and CTA
-3. Introduction (150 words): Hook, problem statement, what reader will learn
-4. 3-5 H2 sections (200-300 words each): Main content with examples
-5. Conclusion: Summary + CTA
-6. Suggested internal links section
-
-Target length: 1200-1500 words
-Primary keyword: derived from the topic
+Article intent: {{intent}}
+Target length: {{length}}
 Target audience: {{audience}}
-Tone: {{tone}}`,
+Tone: {{tone}}
+
+─── SECTION 1: SEO METADATA ───
+
+1. Title Tag (H1):
+   - Include primary keyword within first 3 words
+   - Max 60 characters (Google truncates at 60)
+   - Use power words: "Guía", "Cómo", "[Año]", "[Número]"
+   - Pattern: "[Primary keyword]: [Benefit/Promise] ([Year])"
+
+2. Meta Description:
+   - 150-160 characters exactly
+   - Include primary keyword + secondary keyword
+   - Include a micro-CTA ("Descubre", "Aprende", "Lee la guía")
+   - Must answer: "Why should I click THIS result?"
+
+3. URL Slug:
+   - 3-5 words, hyphenated, primary keyword only
+   - Example: /tratamientos-faciales-guia-completa
+
+4. Featured Snippet Target:
+   - Identify the snippet type for this topic (paragraph, list, table)
+   - Write a 40-60 word answer block right after the first H2
+   - This block should directly answer the primary search query
+
+─── SECTION 2: ARTICLE STRUCTURE ───
+
+Introduction (150-200 words):
+- Hook: Start with a surprising stat, question, or pain point
+- Context: Why this topic matters NOW (current year relevance)
+- Promise: What the reader will learn/achieve by the end
+- E-E-A-T signal: Brief mention of author expertise or experience
+- Include primary keyword within first 100 words
+
+Body (4-6 H2 sections, 250-350 words each):
+- Each H2 should target a secondary keyword or related question
+- Format H2s as questions when possible (maps to "People Also Ask")
+- Each section structure:
+  a) Direct answer (2-3 sentences — snippet-optimized)
+  b) Detailed explanation with examples
+  c) Data, stat, or expert quote to support claims
+  d) Actionable takeaway or pro tip
+- Use H3 subsections for detailed breakdowns
+- Include 1 bulleted or numbered list per 2 sections (list snippet targets)
+- Add image/visual suggestions with alt text descriptions
+
+Conclusion (100-150 words):
+- Summarize 3 key takeaways in bullet format
+- Restate the primary value proposition
+- Strong CTA (next action the reader should take)
+- Include primary keyword naturally
+
+─── SECTION 3: E-E-A-T OPTIMIZATION ───
+
+Experience signals:
+- Include at least 1 first-hand example or case study
+- Reference specific numbers, dates, or results from real experience
+- Use phrases like "In our experience...", "After working with X clients..."
+
+Expertise signals:
+- Cite 2-3 authoritative sources (studies, industry reports)
+- Reference industry-specific terminology correctly
+- Include a "Key Takeaway" or "Expert Tip" callout box per section
+
+Authority signals:
+- Suggest author bio format (name, credentials, years of experience)
+- Suggest 1-2 external links to high-authority sources (.edu, .gov, industry leaders)
+
+Trust signals:
+- Include publication date and "Last updated" date
+- Suggest transparent disclaimers if applicable
+- Use specific data over vague claims
+
+─── SECTION 4: TECHNICAL SEO ───
+
+Keyword Strategy:
+- Primary keyword: derived from topic (use in title, H1, first 100 words, conclusion)
+- Secondary keywords: 3-5 related terms (distribute across H2s)
+- LSI keywords: 5-8 semantically related terms (sprinkle naturally)
+- Provide the full keyword cluster
+
+Internal Linking:
+- Suggest 3-5 internal link anchors with target page topics
+- Place at least 1 internal link in the introduction
+- Place 1-2 in the body sections
+- Place 1 in the conclusion (CTA-linked)
+
+Schema Markup Suggestion:
+- Article schema: headline, author, datePublished, dateModified
+- FAQ schema: if article has Q&A sections
+- HowTo schema: if article has step-by-step content
+- Provide the JSON-LD structure suggestion
+
+Readability:
+- Paragraphs max 3-4 sentences
+- Average sentence length: 15-20 words
+- Use transition words between sections
+- Flesch reading score target: 60-70 (professional but accessible)`,
     variables: [
       { name: "topic", description: "Article topic / primary keyword", required: true },
-      { name: "audience", description: "Target reader", required: false, default: "profesionales buscando soluciones" },
-      { name: "tone", description: "Writing tone", required: false, default: "experto pero accesible" },
+      { name: "audience", description: "Target reader persona", required: false, default: "profesionales buscando soluciones prácticas" },
+      { name: "tone", description: "Writing tone", required: false, default: "experto pero accesible, con datos y ejemplos reales" },
+      { name: "intent", description: "Search intent: informational, commercial, or transactional", required: false, default: "informational" },
+      { name: "length", description: "Target word count", required: false, default: "1500-2000 palabras" },
     ],
-    exampleOutput: `# Cómo Crear Templates de Contenido que Ahorran 10 Horas Semanales\n\n**Meta:** Descubre cómo crear templates de contenido efectivos que reducen tu tiempo de producción un 80% sin sacrificar calidad.\n\n## Introducción\n\nSi estás leyendo esto, probablemente pasas demasiado tiempo creando contenido desde cero...`,
-    tags: ["seo", "organic", "long-form"],
+    exampleOutput: `─── SEO METADATA ───\n\nTitle Tag: Tratamientos Faciales: Guía Completa de Tipos, Beneficios y Precios (2026)\nMeta Description: Descubre los 8 tipos de tratamientos faciales, sus beneficios según tipo de piel y rangos de precios. Guía de expertos con +2.000 faciales realizados.\nSlug: /tratamientos-faciales-guia-completa\nFeatured Snippet Target: Paragraph — "¿Qué son los tratamientos faciales?"\n\n─── ARTÍCULO ───\n\n# Tratamientos Faciales: Guía Completa de Tipos, Beneficios y Precios (2026)\n\n## Introducción\n\nEl 67% de las mujeres entre 25-45 años busca tratamientos faciales al menos una vez al año, pero solo el 23% sabe cuál es el indicado para su tipo de piel.\n\nDespués de realizar más de 2.000 tratamientos faciales en Berke Spa, hemos visto de primera mano cómo elegir el tratamiento correcto marca la diferencia entre resultados visibles y dinero desperdiciado.\n\nEn esta guía te explicamos los 8 tipos principales de tratamientos faciales, para quién es cada uno, qué resultados esperar y cuánto cuestan en Chile en 2026.\n\n## ¿Qué son los tratamientos faciales y por qué los necesitas?\n\nLos tratamientos faciales son procedimientos profesionales de cuidado de la piel que combinan limpieza profunda, exfoliación, hidratación y técnicas especializadas para mejorar la salud y apariencia del rostro. A diferencia de las rutinas caseras, un facial profesional trabaja a nivel más profundo de la dermis.\n\n**Key Takeaway:** Un facial profesional cada 4-6 semanas mantiene la piel en óptimas condiciones y previene problemas como acné, manchas y envejecimiento prematuro.\n\n### Beneficios comprobados\n- Limpieza profunda de poros (reduce brotes en un 60%)\n- Estimulación de colágeno (piel más firme desde la 2ª sesión)\n- Mejora de textura y luminosidad\n- Detección temprana de problemas cutáneos\n\n## ¿Cuáles son los tipos de tratamientos faciales más efectivos?\n\n### 1. Limpieza Facial Profunda\n**Ideal para:** Pieles mixtas a grasas con puntos negros\n**Duración:** 60-90 minutos\n**Precio en Chile:** $35.000 - $55.000 CLP\n**Frecuencia recomendada:** Cada 4 semanas\n\n### 2. HydraFacial\n**Ideal para:** Todos los tipos de piel, especialmente deshidratada\n**Duración:** 45-60 minutos\n**Precio en Chile:** $65.000 - $95.000 CLP\n**Frecuencia recomendada:** Cada 2-4 semanas\n\n[... continúa con 6 tipos más ...]\n\n## ¿Cómo elegir el tratamiento facial correcto para tu piel?\n\nLa elección depende de 3 factores: tu tipo de piel, tu principal preocupación y tu presupuesto.\n\n| Tipo de Piel | Tratamiento Recomendado | Precio Promedio |\n|---|---|---|\n| Grasa/Mixta | Limpieza profunda + peeling | $45.000 CLP |\n| Seca/Sensible | HydraFacial + mascarilla | $75.000 CLP |\n| Madura | Radiofrecuencia + vitamina C | $90.000 CLP |\n| Con acné | LED therapy + limpieza | $60.000 CLP |\n\n**Tip de experta:** "Siempre recomiendo empezar con un diagnóstico de piel antes de elegir tratamiento. Lo que funciona para tu amiga puede no ser lo mejor para ti." — Directora de Berke Spa\n\n## Conclusión\n\nElegir el tratamiento facial correcto no tiene por qué ser complicado:\n\n- ✅ Identifica tu tipo de piel y preocupación principal\n- ✅ Consulta con un profesional antes de invertir\n- ✅ Mantén una frecuencia regular (cada 4-6 semanas)\n\n¿Quieres saber qué tratamiento es ideal para tu piel? En Berke Spa ofrecemos diagnóstico personalizado gratuito con tu primera sesión.\n\n[Reserva tu diagnóstico gratuito →]\n\n─── KEYWORD CLUSTER ───\n\nPrimary: "tratamientos faciales"\nSecondary: "tipos de tratamientos faciales", "facial profesional precio", "mejor tratamiento para mi piel", "hydrafacial beneficios"\nLSI: "cuidado de la piel", "limpieza facial", "rejuvenecimiento", "dermocosmética", "antiaging", "skincare profesional", "spa facial", "piel luminosa"\n\n─── INTERNAL LINKS SUGERIDOS ───\n\n1. [rutina de skincare] → /blog/rutina-skincare-paso-a-paso\n2. [tipos de piel] → /blog/como-identificar-tu-tipo-de-piel\n3. [Berke Spa] → /servicios/tratamientos-faciales\n4. [diagnóstico gratuito] → /reservar\n\n─── SCHEMA MARKUP (JSON-LD) ───\n\n{\n  "@context": "https://schema.org",\n  "@type": "Article",\n  "headline": "Tratamientos Faciales: Guía Completa de Tipos, Beneficios y Precios (2026)",\n  "author": { "@type": "Organization", "name": "Berke Spa" },\n  "datePublished": "2026-02-17",\n  "dateModified": "2026-02-17"\n}\n\nFAQ Schema sugerido para las preguntas H2.`,
+    tags: ["seo", "organic", "long-form", "e-e-a-t", "featured-snippets", "schema"],
   },
   {
     templateId: "tpl_blog_howto",
