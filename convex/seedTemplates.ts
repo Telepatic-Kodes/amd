@@ -496,37 +496,98 @@ Tone: {{tone}}`,
   {
     templateId: "tpl_newsletter",
     name: "Newsletter Semanal",
-    description: "Newsletter curada con insights, noticias del sector y contenido propio",
+    description: "Newsletter profesional con subject lines A/B, contenido educativo + promocional, social proof y CTA segmentado para máximo engagement y conversión",
     category: "misc" as const,
-    industry: ["saas", "consulting", "ecommerce", "general"],
+    industry: ["saas", "consulting", "ecommerce", "beauty", "wellness", "general"],
     contentType: "newsletter",
     channels: ["email"],
     promptTemplate: `Write a weekly newsletter issue about "{{topic}}".
 
-Structure:
-1. Subject line (curiosity or number-driven, max 50 chars)
-2. Preview text (max 90 chars)
-3. Greeting + 1-line intro
-4. Main Story (200-300 words):
-   - Key insight or trend
-   - Why it matters for the reader
-   - Actionable takeaway
-5. Quick Hits (3 bullet items):
-   - Industry news, tools, or tips (2-3 sentences each)
-6. Resource of the Week:
-   - One link/tool recommendation with brief review
-7. CTA / engagement question
-8. Sign-off with personality
-
 Target audience: {{audience}}
-Tone: {{tone}}`,
+Tone: {{tone}}
+Newsletter style: {{style}}
+Primary goal this week: {{goal}}
+
+---
+
+## 1. SUBJECT LINES (A/B Test)
+
+Write 3 subject line variants for A/B testing (max 40 chars each, including spaces):
+
+- **Variant A (Curiosity gap)**: Create intrigue — make the reader need to know more. Use patterns like "Lo que nadie te dice sobre...", "Por qué [common belief] está mal", or "[Number] [things] que cambian todo".
+- **Variant B (Benefit-first)**: Lead with what the reader gains. Use patterns like "[Number] tips para [desired outcome]", "Cómo [achieve result] en [timeframe]".
+- **Variant C (Urgency/Exclusivity)**: Create FOMO or VIP feeling. Use patterns like "Solo para suscriptores:", "Esta semana descubrimos...", "No compartas esto con nadie".
+
+For each variant include:
+- Subject line text (max 40 chars)
+- Preview text / preheader (max 90 chars) — must complement, NOT repeat the subject
+- Estimated open rate category (high/medium based on pattern)
+
+IMPORTANT: Personalized subject lines get +27% more opens. Emojis in subjects increase open rates by up to 45%. A/B testing subjects can improve ROI by 83%.
+
+## 2. NEWSLETTER BODY
+
+### Opening Hook (2-3 lines)
+Start with a personal, conversational greeting. Then immediately deliver ONE surprising stat, counterintuitive insight, or relatable observation that hooks the reader into the main story. No generic intros — start with value.
+
+### Main Story (250-400 words)
+The centerpiece of the newsletter. Structure it as:
+
+1. **The Insight**: What's happening right now in the industry that matters
+2. **Why It Matters**: Connect it directly to the reader's daily life/business
+3. **The Data**: Include 1-2 specific stats or examples that prove the point
+4. **Actionable Takeaway**: ONE specific thing the reader can do THIS WEEK
+5. **Bridge to CTA**: Natural transition to your product/service as the solution (soft sell, not pushy)
+
+### Quick Hits / Curated Section (3-4 items)
+Short, scannable items (2-3 sentences each). Mix of:
+- Industry news or trend worth knowing
+- Practical tip or hack the reader can use immediately
+- Tool or resource recommendation with a one-line review
+- Interesting stat or study finding
+
+Format each with an emoji bullet and bold title for easy scanning.
+
+### Social Proof Block
+Include ONE of these each week (rotate):
+- **Client Spotlight**: Brief success story or testimonial (name + result + quote)
+- **By the Numbers**: 2-3 metrics showing your impact
+- **User-Generated Content**: Highlight something a customer shared
+
+### Featured Offer / CTA
+One clear, compelling call-to-action:
+- What's the offer (specific, time-bound if possible)
+- Why now (urgency driver)
+- How to act (single button/link with action-oriented text)
+- Fallback CTA for those not ready to buy (e.g., "Responde este email con tu pregunta")
+
+### Closing / P.S.
+- Warm, personality-driven sign-off (not corporate)
+- **P.S. line**: The most-read part of any email. Use it for a secondary CTA, a teaser for next week, or a personal note that builds connection.
+
+## 3. ENGAGEMENT BOOSTERS
+
+Include at least ONE interactive element:
+- **Poll/Question**: "Qué prefieres: [A] o [B]? Responde este email"
+- **Quick Survey**: "En una palabra, qué tema quieres la próxima semana?"
+- **Challenge**: "Esta semana intenta [specific action] y cuéntame cómo te fue"
+
+## 4. TECHNICAL OPTIMIZATION
+
+Provide:
+- **Recommended send time**: Best day/time for this audience
+- **Mobile preview check**: Confirm subject + preview text work in 40-char mobile preview
+- **Resend strategy**: Subject line variant for non-openers (resend after 48-72h adds +30% opens)
+- **Segment suggestion**: Which subscriber segment should receive this first`,
     variables: [
       { name: "topic", description: "Newsletter theme this week", required: true },
-      { name: "audience", description: "Subscriber profile", required: false, default: "profesionales de marketing" },
-      { name: "tone", description: "Newsletter tone", required: false, default: "cercano, como hablar con un colega" },
+      { name: "audience", description: "Subscriber profile and segment", required: false, default: "clientas y suscriptoras interesadas en bienestar, skincare y autocuidado" },
+      { name: "tone", description: "Newsletter voice and personality", required: false, default: "cercano y cálido, como una amiga experta que comparte tips" },
+      { name: "style", description: "Newsletter style: educational, promotional, hybrid, or storytelling", required: false, default: "hybrid" },
+      { name: "goal", description: "Primary goal: engagement, bookings, awareness, or retention", required: false, default: "engagement" },
     ],
-    exampleOutput: `Subject: 3 tendencias de contenido que deberías conocer esta semana\nPreview: Plus: una herramienta gratuita que te va a encantar\n\nHola 👋\n\nEsta semana vi algo interesante: las marcas que usan templates de contenido publican 3x más que las que no.\n\n## 📰 La Historia Principal\nEl content marketing está cambiando...\n\n## ⚡ Quick Hits\n• Google actualizó su algoritmo...\n• Nueva herramienta de IA para...\n• Estudio: el 67% de los marketers...\n\n## 🔧 Recurso de la Semana\n...`,
-    tags: ["nurture", "engagement", "recurring"],
+    exampleOutput: `## 1. SUBJECT LINES (A/B Test)\n\nVariant A (Curiosity): Lo que tu esteticista nunca te dice\nPreview: 3 errores de skincare que cometes sin saber\nEstimación: HIGH — curiosity gap\n\nVariant B (Benefit): 3 tips para piel luminosa esta semana\nPreview: El #2 es el que más ignoran (y el más efectivo)\nEstimación: HIGH — number + benefit\n\nVariant C (Exclusivity): Solo para ti: rutina secreta anti-aging\nPreview: La misma que usan nuestras esteticistas en casa\nEstimación: MEDIUM-HIGH — exclusivity + insider knowledge\n\n---\n\n## 2. NEWSLETTER BODY\n\n### Opening Hook\n\nHola {{nombre}},\n\nSabías que el 73% de las mujeres usa productos de skincare en el orden incorrecto? (Sí, el sérum va ANTES de la crema. Siempre.)\n\nEsta semana quiero compartirte algo que cambia todo...\n\n### Main Story: Los 3 Errores de Skincare Más Comunes\n\nDespués de 8 años atendiendo pieles de todo tipo en Berke Spa, hay un patrón que vemos una y otra vez.\n\n**Error #1: Exfoliar todos los días**\nParece lógico — más exfoliación, más limpieza. Pero la realidad es que la sobre-exfoliación destruye la barrera cutánea. Resultado: piel más sensible, más grasa y más propensa a brotes.\n\n**Error #2: Saltarse el protector solar en invierno**\nEl 80% de los rayos UV atraviesan las nubes. Un estudio demostró que la exposición UV en Santiago en julio es suficiente para causar daño acumulativo.\n\n**Error #3: Usar el mismo sérum mañana y noche**\nTu piel tiene necesidades diferentes: de día necesita protección (vitamina C + SPF), de noche necesita reparación (retinol + ácido hialurónico).\n\nTu acción de esta semana: Revisa tu rutina y ajusta el orden: limpieza → tónico → sérum → crema → SPF (solo AM).\n\nQuieres que revisemos tu rutina en persona? Tenemos algo especial para ti más abajo.\n\n### Quick Hits\n\n✨ **Tendencia: Skin cycling** — La técnica de alternar activos (exfoliante → retinol → recovery → recovery) sigue ganando terreno. Ideal para pieles sensibles.\n\n🧴 **Producto del mes: Sérum vitamina C** — Si solo pudieras usar un producto anti-aging, este sería. Busca concentración 15-20% con vitamina E.\n\n📊 **Dato curioso:** Las mujeres que se hacen un facial cada 4 semanas tienen 40% menos signos visibles de envejecimiento después de un año.\n\n💡 **Tip express:** Ojeras? Pon tu contorno de ojos en el refrigerador. El frío reduce la inflamación al instante.\n\n### Social Proof\n\n\"Llegué con la piel súper apagada después del verano y después de 2 sesiones se nota una diferencia increíble. Las chicas son un amor.\" — Carolina M. ★★★★★\n\n+200 faciales realizados este mes · 4.9/5 en Google Reviews\n\n### Featured Offer\n\nESTA SEMANA: Diagnóstico de piel GRATIS\n\nReserva cualquier tratamiento facial y te incluimos un diagnóstico personalizado con recomendaciones de rutina para la casa.\n\nSolo 10 cupos esta semana.\n\n[RESERVAR MI DIAGNÓSTICO →]\n\nNo estás segura de qué tratamiento necesitas? Responde este email con \"AYUDA\" y te orientamos personalmente.\n\n### Closing\n\nQue tengas una semana hermosa,\nEl equipo de Berke Spa\n\nP.S. La próxima semana te cuento sobre un ingrediente que está revolucionando los tratamientos anti-aging (pista: NO es retinol). Stay tuned.\n\n---\n\n## 3. ENGAGEMENT BOOSTER\n\nPoll: \"Cuál es tu mayor preocupación de piel ahora?\"\nA) Manchas / hiperpigmentación\nB) Líneas finas / arrugas\nC) Piel grasa / brotes\nD) Deshidratación / piel apagada\n→ Responde con la letra y te mandamos tips personalizados\n\n---\n\n## 4. OPTIMIZACIÓN\n\nSend time: Martes 10:00 AM o Jueves 8:00 PM (peak engagement mujeres 25-45)\nMobile check: ✓ Subject A = 38 chars · Preview = 45 chars → OK\nResend (48h): Subject: \"Te lo perdiste: el error #1 de skincare\" → Preview: \"(spoiler: lo cometes cada mañana)\"\nSegment: Enviar primero a \"engaged last 30 days\" → resend a \"inactive 30-90 days\"`,
+    tags: ["nurture", "engagement", "recurring", "email-marketing", "segmentation"],
   },
 ];
 
