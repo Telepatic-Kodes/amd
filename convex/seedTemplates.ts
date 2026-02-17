@@ -88,34 +88,111 @@ End the post with ONE of these engagement patterns:
   {
     templateId: "tpl_twitter_thread",
     name: "Twitter/X Thread Educativo",
-    description: "Hilo de 5-7 tweets que explica un concepto y genera retweets",
+    description: "Hilo viral de 7-10 tweets optimizado para el algoritmo de X: hook irresistible, visual breaks, engagement loops y CTA estratégico con estructura probada para máximas impresiones",
     category: "social" as const,
-    industry: ["saas", "consulting", "ecommerce", "general"],
+    industry: ["saas", "consulting", "ecommerce", "beauty", "wellness", "general"],
     contentType: "social_twitter",
     channels: ["twitter"],
-    promptTemplate: `Write a Twitter/X thread (5-7 tweets) about "{{topic}}".
+    promptTemplate: `Write a Twitter/X educational thread about "{{topic}}".
 
-Structure:
-- Tweet 1: Hook that promises value (use numbers or bold claim)
-- Tweets 2-5: One key insight per tweet, each with a concrete example
-- Tweet 6: Summary or framework
-- Tweet 7: CTA + "Follow for more" or engagement ask
+Thread format: {{format}}
+Goal: {{goal}}
+Target audience: {{audience}}
+Tone: {{tone}}
+
+─── TWEET 1: HOOK (most critical tweet) ───
+
+The first tweet gets standard distribution. All subsequent tweets only reach users who engaged with tweet 1. Make it count.
+
+Choose the best hook pattern:
+- Listicle promise: "[Number] [things] that will [result]. A thread 🧵"
+- Story hook: "[Time] ago, I [struggled with X]. Today, [amazing result]. Here's what changed:"
+- Mistake hook: "Most [audience] get [topic] completely wrong. Here are [N] mistakes (and fixes):"
+- Question hook: "Why do some [people] [achieve X] while most [fail]? After [research/experience], here's what I found:"
+- Contrarian hook: "Unpopular opinion: [common belief] is wrong. Here's proof 🧵"
+
+Rules for tweet 1:
+- Must be self-contained (valuable even without the thread)
+- Include 🧵 emoji to signal thread
+- Max 200 characters (shorter = more retweets)
+- Create a curiosity gap that demands clicking "Show this thread"
+
+─── TWEETS 2-6: CORE CONTENT ───
+
+Each tweet = ONE idea. No exceptions.
+
+Structure per tweet:
+- Bold claim or insight (line 1)
+- Supporting evidence, example, or data (lines 2-3)
+- Transition to next tweet (optional connector)
+
+IF format = "framework":
+  - Tweet 2: Context/problem definition
+  - Tweet 3-5: Steps/pillars of the framework (one per tweet)
+  - Tweet 6: Summary visual (text-based diagram or checklist)
+
+IF format = "mistakes":
+  - Tweet 2-6: One mistake per tweet with format:
+    "Mistake #N: [what people do wrong]
+
+    Why it fails: [reason]
+
+    Instead: [correct approach]"
+
+IF format = "story":
+  - Tweet 2: The struggle/starting point
+  - Tweet 3: The turning point
+  - Tweet 4-5: The method/system discovered
+  - Tweet 6: The results with specific numbers
 
 Rules:
 - Each tweet max 280 characters
-- Use line breaks for readability
-- Include 1-2 emojis per tweet (strategic, not excessive)
-- Number each tweet as 1/, 2/, etc.
+- 1 emoji per tweet (strategic, not decorative)
+- Use line breaks aggressively (1 idea per line)
+- Number tweets: 1/, 2/, etc.
+- Add a visual break every 3-4 tweets (screenshot, chart, or diagram suggestion)
 
-Target audience: {{audience}}
-Tone: {{tone}}`,
+─── TWEET 7: ENGAGEMENT AMPLIFIER ───
+
+Mid-thread engagement tweet to boost algorithmic distribution:
+
+Options:
+- Poll: "Quick question: [A] or [B]? Reply below"
+- Bookmark trigger: "🔖 Bookmark this thread — you'll need it"
+- Reply bait: "Which of these resonated most? Reply with the number"
+- Quote retweet bait: "QRT this with your own [experience/tip]"
+
+─── TWEETS 8-9: VALUE CLOSE ───
+
+- Tweet 8: Summary/recap of key takeaways (use ✅ bullet format)
+- Tweet 9: "The bottom line" — one powerful sentence that encapsulates the entire thread
+
+─── TWEET 10: CTA + GROWTH ───
+
+Final tweet structure:
+"If you found this valuable:
+
+1. Follow @[handle] for daily [topic] insights
+2. Retweet tweet 1/ to help others find this
+3. [Specific CTA: DM for resource, link, etc.]
+
+[2-3 hashtags only in this final tweet]"
+
+─── OPTIMIZATION NOTES ───
+
+- Suggest optimal posting time for the audience
+- Suggest a reply to tweet 1 to post immediately (self-reply boost)
+- Suggest 1-2 accounts to tag or reference for amplification
+- Thread completion rate target: >60%`,
     variables: [
-      { name: "topic", description: "Thread topic", required: true },
-      { name: "audience", description: "Target audience", required: false, default: "emprendedores y marketers" },
-      { name: "tone", description: "Voice tone", required: false, default: "directo y educativo" },
+      { name: "topic", description: "Thread topic or thesis", required: true },
+      { name: "audience", description: "Target audience", required: false, default: "emprendedores, marketers y founders" },
+      { name: "tone", description: "Voice tone", required: false, default: "directo, educativo y con autoridad" },
+      { name: "format", description: "Thread format: framework, mistakes, or story", required: false, default: "framework" },
+      { name: "goal", description: "Thread goal: authority, growth, engagement, or leads", required: false, default: "authority" },
     ],
-    exampleOutput: `1/ El 90% de las empresas hacen marketing de contenido.\n\nPero solo el 10% tiene un sistema que funciona.\n\nAquí van 5 errores que matan tu estrategia de contenido 🧵\n\n2/ Error #1: Publicar sin calendario\n\nSin un plan, publicas cuando "te acuerdas".\n\nSolución: Define 3 pilares de contenido y asigna días fijos a cada uno.\n\n3/ Error #2: Copiar lo que hace tu competencia\n\nSi dices lo mismo que todos, nadie te recuerda.\n\nEncuentra tu ángulo único y repítelo hasta que sea tu marca.`,
-    tags: ["engagement", "education", "viral"],
+    exampleOutput: `1/ El 85% de los spas gasta en ads pero ignora el contenido orgánico.\n\nResultado: pagan por cada cliente, una y otra vez.\n\nEn Berke Spa cambiamos eso con un sistema de 5 pilares.\n\nAquí está el framework completo 🧵\n\n2/ Pilar 1: Contenido educativo (no promocional)\n\nEl error más común: "¡50% OFF en faciales!"\n\nLo que funciona: "3 señales de que tu piel necesita exfoliación profesional"\n\nRegla 80/20 → 80% valor, 20% venta.\n\n3/ Pilar 2: Storytelling de resultados\n\nNo digas "somos los mejores".\n\nMuestra:\n→ Antes/después (con permiso)\n→ El proceso completo\n→ Cuántas sesiones tomó\n→ Qué dice la clienta\n\nResultados reales > promesas vacías.\n\n4/ Pilar 3: Autoridad técnica\n\n¿Por qué elegir TU spa?\n\nPublica sobre:\n• Ingredientes activos y cómo funcionan\n• Papers científicos simplificados\n• Tendencias de dermocosmética\n\nLa directora de Berke comparte ciencia → las clientas confían.\n\n📊 [Sugerencia visual: infografía de ingredientes activos top 5]\n\n5/ Pilar 4: Comunidad y social proof\n\nReseñas de clientas reales en formato storytelling:\n\n"Llegué con acné severo después de 2 años sin tratamiento.\n3 meses después, mi piel cambió por completo."\n— Carolina M. ★★★★★\n\nEso convierte más que cualquier ad.\n\n6/ Pilar 5: Contenido detrás de escenas\n\nMuestra:\n→ El equipo preparando tratamientos\n→ Nuevos productos llegando\n→ Capacitaciones del equipo\n→ El espacio (ambientación, música)\n\nHumaniza tu marca. La gente compra a personas.\n\n7/ 🔖 Bookmark este hilo.\n\nVas a querer volver cuando planifiques tu próximo mes de contenido.\n\n¿Cuál de los 5 pilares te falta implementar? Responde con el número 👇\n\n8/ Resumen del framework:\n\n✅ 80% contenido educativo, 20% venta\n✅ Storytelling de antes/después\n✅ Autoridad con ciencia real\n✅ Social proof en formato historia\n✅ Behind-the-scenes para humanizar\n\n= Clientes que llegan solos, sin pagar ads.\n\n9/ El bottom line:\n\nEl mejor marketing para un spa no parece marketing.\n\nParece educación + confianza + comunidad.\n\n10/ Si te sirvió este hilo:\n\n1. Sígueme para más estrategias de marketing wellness\n2. RT el tweet 1/ para que más spas lo vean\n3. DM "FRAMEWORK" y te mando el template del calendario editorial\n\n#SpaMarketing #ContentStrategy #WellnessMarketing\n\n⏰ Mejor hora: Martes-Jueves, 9:00-11:00 AM hora local\n💬 Auto-reply sugerido en tweet 1: "Hilo completo con el framework de contenido que usamos en @BerkeSpa. Si tienes un spa o negocio wellness, esto te va a servir 👆"`,
+    tags: ["engagement", "education", "viral", "threads", "algorithm", "growth"],
   },
   {
     templateId: "tpl_instagram_carousel",
