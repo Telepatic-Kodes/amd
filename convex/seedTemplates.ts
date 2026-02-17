@@ -197,29 +197,113 @@ Final tweet structure:
   {
     templateId: "tpl_instagram_carousel",
     name: "Instagram Carousel Caption",
-    description: "Caption para carrusel educativo que genera saves y shares",
+    description: "Carrusel de 8-10 slides optimizado para saves y shares (3x peso algorítmico): caption con hook + storytelling, slide titles con open loops, CTAs duales y hashtag strategy para máximo alcance orgánico",
     category: "social" as const,
-    industry: ["ecommerce", "consulting", "general"],
+    industry: ["ecommerce", "consulting", "beauty", "wellness", "general"],
     contentType: "social_instagram",
     channels: ["instagram"],
-    promptTemplate: `Write an Instagram carousel caption for a post about "{{topic}}".
+    promptTemplate: `Write an Instagram carousel caption and slide structure for a post about "{{topic}}".
 
-The carousel has 7-10 slides. Write:
-1. Caption (max 2200 chars): Hook in first line, story or insight, CTA
-2. Suggested slide titles (one per line, 7-10 titles)
-3. 15-20 relevant hashtags (mix of high and low volume)
-
+Carousel type: {{format}}
+Goal: {{goal}}
 Target audience: {{audience}}
 Tone: {{tone}}
-{{cta}}`,
+
+─── SECTION 1: SLIDE STRUCTURE (8-10 slides) ───
+
+Slide 1 (COVER — carries 80% of the weight):
+- Bold headline: max 8-10 words that answer "Is this for me?" and "What do I get?"
+- Subheadline: 1-line value promise
+- Include "Desliza →" or swipe prompt (only 5% of carousels do this = competitive advantage)
+- Design note: brand colors, clean typography, no clutter
+
+Slide 2 (CONTEXT):
+- Set the problem or "why this matters now"
+- Use a surprising stat or relatable pain point
+- Create an open loop: "Here's what most people get wrong..."
+
+Slides 3-7 (CORE CONTENT — adapted to format):
+
+IF format = "educational":
+  - One key lesson per slide
+  - Format: Bold title (max 6 words) + 2-3 supporting lines
+  - Include a mini visual suggestion per slide (icon, chart, before/after)
+  - Use "open loops" between slides: tease what's coming next
+
+IF format = "tips/listicle":
+  - One tip per slide with number
+  - Format: "Tip #N: [actionable title]" + 1-2 lines explanation
+  - Alternate between text-heavy and visual slides
+
+IF format = "before/after":
+  - Slide 3: "Before" state (the problem)
+  - Slide 4: The turning point
+  - Slides 5-6: "After" state with specific results
+  - Slide 7: The method/system
+
+IF format = "myth-busting":
+  - One myth per slide: "MITO: [common belief]" → "REALIDAD: [truth]"
+  - Use red/green visual contrast suggestion
+
+Slide 8 (SUMMARY):
+- Recap the key takeaways in bullet or checklist format
+- Use ✅ or → for visual structure
+
+Slide 9 (SOCIAL PROOF — optional):
+- Testimonial, stat, or result that validates the content
+- "Carolina M.: 'Esto cambió mi rutina completamente'"
+
+Slide 10 (CTA SLIDE):
+- Primary CTA: save, share, or DM trigger
+- Secondary CTA: follow for more / link in bio
+- Include a question to drive comments
+
+─── SECTION 2: CAPTION (max 2,200 chars) ───
+
+Structure:
+1. HOOK (first line — visible before "...más"):
+   - Pattern interrupt: bold statement, question, or contrarian take
+   - Must compel tapping "...más" to read the full caption
+   - Max 125 characters (Instagram truncates here)
+
+2. BODY (2-3 short paragraphs):
+   - Expand the hook with personal story or data
+   - Connect emotionally with the audience
+   - Reference specific slides: "En la slide 4 te cuento..."
+   - Use line breaks liberally (1 idea per line)
+
+3. DUAL CTA:
+   - Mid-caption soft CTA: "📌 Guarda este post para tu próxima [situación]"
+   - End caption strong CTA: Choose one:
+     • DM trigger: "Comenta 'GUÍA' y te mando el recurso completo por DM"
+     • Share trigger: "Envíale esto a tu [amiga/colega] que necesita verlo"
+     • Save trigger: "Guárdalo, lo vas a necesitar"
+     • Engagement trigger: "¿Cuál de estos te sorprendió más? Dímelo en comentarios 👇"
+
+4. HASHTAG STRATEGY (in first comment, NOT in caption):
+   - 5 high-volume hashtags (100K-1M posts)
+   - 5 medium-volume hashtags (10K-100K posts)
+   - 5 niche hashtags (<10K posts, highly targeted)
+   - 3-5 branded or location hashtags
+   - Total: 18-20 hashtags
+
+─── SECTION 3: OPTIMIZATION NOTES ───
+
+- Suggest adding audio/music track (pushes carousel into Reels feed for 2x reach)
+- Suggest optimal posting time for target audience
+- Suggest alt text for accessibility (also helps SEO)
+- Suggest a pin comment to post immediately after publishing
+- Recommend cross-posting to Stories with "New post" sticker`,
     variables: [
-      { name: "topic", description: "Carousel topic", required: true },
-      { name: "audience", description: "Target audience", required: false, default: "emprendedores digitales" },
-      { name: "tone", description: "Voice tone", required: false, default: "inspirador y educativo" },
-      { name: "cta", description: "Call to action", required: false, default: "Guarda este post para cuando lo necesites" },
+      { name: "topic", description: "Carousel topic or educational theme", required: true },
+      { name: "audience", description: "Target audience", required: false, default: "mujeres 25-45 interesadas en bienestar y autocuidado" },
+      { name: "tone", description: "Voice tone", required: false, default: "cercano, educativo y empoderador" },
+      { name: "format", description: "Carousel format: educational, tips, before/after, or myth-busting", required: false, default: "educational" },
+      { name: "goal", description: "Post goal: saves, shares, followers, or traffic", required: false, default: "saves" },
+      { name: "cta", description: "Specific call to action (optional)", required: false },
     ],
-    exampleOutput: `PARA de crear contenido sin estrategia. 🛑\n\nHace 6 meses publicaba 5 veces por semana sin ver resultados.\n\nHoy publico 3 veces y genero 4x más leads.\n\n¿La diferencia? Un sistema de templates que me ahorra 10 horas semanales.\n\nDesliza para ver los 7 templates que cambiaron todo ➡️\n\nGuarda este post para cuando lo necesites 📌\n\n.\n.\n.\n#MarketingDigital #ContentMarketing #Templates`,
-    tags: ["saves", "education", "carousel"],
+    exampleOutput: `─── SLIDE TITLES ───\n\nSlide 1: "5 Errores de Skincare que Envejecen tu Piel" + Desliza para verlos →\nSlide 2: El 73% de las mujeres usa productos en el orden incorrecto. ¿Eres una de ellas?\nSlide 3: Error #1 — Exfoliar todos los días (destruye tu barrera cutánea)\nSlide 4: Error #2 — Saltarse el SPF en invierno (80% de rayos UV atraviesan nubes)\nSlide 5: Error #3 — Mismo sérum mañana y noche (tu piel necesita cosas distintas)\nSlide 6: Error #4 — No hidratar piel grasa (produce MÁS grasa por compensación)\nSlide 7: Error #5 — Exprimir granitos (cicatrices + más inflamación)\nSlide 8: ✅ Rutina correcta: Limpieza → Tónico → Sérum → Crema → SPF (solo AM)\nSlide 9: "Después de 2 sesiones mi piel cambió completamente" — Carolina M. ★★★★★\nSlide 10: ¿Quieres un diagnóstico personalizado? → Comenta "PIEL" y te lo mando por DM\n\n─── CAPTION ───\n\nPARÁ de envejecer tu piel sin saberlo. 🛑\n\nDespués de 8 años atendiendo pieles en Berke Spa, estos son los 5 errores que vemos TODOS los días.\n\nY el peor parte? La mayoría piensa que está haciendo lo correcto.\n\nEn la slide 3 está el error más común (y el más fácil de corregir).\n\nDesliza para ver los 5 → y al final te dejo la rutina correcta paso a paso.\n\n📌 Guarda este post para cuando vayas a comprar productos.\n\nDato que nadie te dice: el orden de aplicación importa MÁS que los productos que usas. Un sérum de $50.000 CLP no sirve si lo aplicas después de la crema.\n\nEn Berke Spa vemos la diferencia: las clientas que corrigieron solo el ORDEN de su rutina notaron cambios en 2 semanas.\n\n¿Cuál de estos errores cometías sin saber? Dímelo en los comentarios 👇\n\n💌 Comenta "PIEL" y te mando gratis un diagnóstico personalizado para tu tipo de piel.\n\n─── HASHTAGS (primer comentario) ───\n\nAlto volumen: #Skincare #CuidadoDeLaPiel #RutinaFacial #TipsDeBelleza #AntiAging\nMedio volumen: #ErroresSkincare #PielSaludable #CuidadoPersonal #DermatologíaEstética #SPFDiario\nNicho: #SkincareSantiago #EsteticaChile #TratamientoFacial #PielGrasa #BarreraCutánea\nBranded: #BerkeSpa #BerkeGlow #BienestarBerke\n\n─── OPTIMIZACIÓN ───\n\n🎵 Audio sugerido: trending calm/wellness track (empuja al feed de Reels)\n⏰ Mejor hora: Martes o Jueves, 12:00-14:00 o 19:00-21:00 hora local\n📝 Alt text: "Infografía con 5 errores comunes de skincare y rutina correcta paso a paso"\n📌 Pin comment: "¿Quieres saber qué productos específicos usar para TU tipo de piel? Comenta tu tipo (grasa, seca, mixta, sensible) y te respondo 💬"\n📱 Cross-post: Compartir en Stories con sticker "Nuevo post" + encuesta "¿Cuántos errores cometías?"`,
+    tags: ["saves", "education", "carousel", "algorithm", "shares", "reels-feed"],
   },
 
   // ── BLOG (3) ────────────────────────────────
