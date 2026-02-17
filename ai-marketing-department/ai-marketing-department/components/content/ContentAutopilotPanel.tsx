@@ -153,9 +153,12 @@ export function ContentAutopilotPanel() {
     <>
       <div className="rounded-xl border border-[var(--border)] bg-[var(--card-bg)] overflow-hidden">
         {/* Header */}
-        <button
+        <div
+          role="button"
+          tabIndex={0}
           onClick={() => setIsExpanded(!isExpanded)}
-          className="w-full flex items-center justify-between px-5 py-3 hover:bg-[var(--surface-0)] transition-colors"
+          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setIsExpanded(!isExpanded); } }}
+          className="w-full flex items-center justify-between px-5 py-3 hover:bg-[var(--surface-0)] transition-colors cursor-pointer"
         >
           <div className="flex items-center gap-3">
             <div className="p-1.5 rounded-lg bg-[var(--accent-subtle)]">
@@ -205,7 +208,7 @@ export function ContentAutopilotPanel() {
               isExpanded && "rotate-180"
             )} />
           </div>
-        </button>
+        </div>
 
         {/* Body */}
         <AnimatePresence>
