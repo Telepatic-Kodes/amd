@@ -5,31 +5,85 @@ const TEMPLATES = [
   {
     templateId: "tpl_linkedin_authority",
     name: "LinkedIn Thought Leadership",
-    description: "Post profesional que posiciona tu expertise y genera conversación",
+    description: "Post de alto impacto optimizado para el algoritmo 2025: hook psicológico, storytelling, framework accionable y engagement triggers con formato adaptado (texto, carrusel o documento)",
     category: "social" as const,
-    industry: ["saas", "consulting", "general"],
+    industry: ["saas", "consulting", "ecommerce", "beauty", "wellness", "general"],
     contentType: "social_linkedin",
     channels: ["linkedin"],
     promptTemplate: `Write a LinkedIn thought leadership post about "{{topic}}".
 
-Structure:
-1. Hook (1 line, bold statement or question that stops the scroll)
-2. Personal insight or contrarian take (2-3 short paragraphs)
-3. 3 actionable takeaways (numbered list)
-4. Engagement question to spark discussion
-5. 3-5 relevant hashtags
-
+Post format: {{format}}
+Goal: {{goal}}
 Target audience: {{audience}}
 Tone: {{tone}}
-{{cta}}`,
+{{cta}}
+
+─── SECTION 1: HOOK (first 3 lines before "see more") ───
+
+Choose the best hook type for this topic:
+- Bold statement: "Most [professionals] get [topic] completely wrong."
+- Contrarian take: "Unpopular opinion: [common belief] is killing your [result]."
+- Numbers/data: "[Stat]% of [audience] do X. Here's what the other [100-stat]% know."
+- Personal story: "I [failed/succeeded] at [thing]. Here's what nobody told me."
+- Question: "What if everything you know about [topic] is outdated?"
+
+Rules:
+- First line = pattern interrupt (max 10 words, stops the scroll)
+- Line 2-3 = curiosity gap (incomplete info that demands resolution)
+- Must compel "see more" click
+
+─── SECTION 2: BODY (adapted to format) ───
+
+IF format = "text post":
+  - Opening context (2-3 short paragraphs, max 3 lines each)
+  - Personal insight or experience that builds credibility
+  - Framework/methodology with 3-5 numbered takeaways
+  - Each takeaway: bold title + 1-line explanation
+  - Use line breaks liberally (1 idea per line = higher readability)
+  - Total length: 1,200-1,500 characters (sweet spot for engagement)
+
+IF format = "carousel/document":
+  - Slide 1: Hook title + subtitle (same as hook)
+  - Slide 2: Problem/context (why this matters now)
+  - Slides 3-7: One key insight per slide with visual hierarchy
+  - Slide 8: Summary framework or checklist
+  - Slide 9: CTA slide (follow, comment, save)
+  - Each slide: headline (max 8 words) + supporting text (max 30 words)
+  - Optimal: 8-10 slides
+
+IF format = "story post":
+  - Situation: Set the scene (when, where, what happened)
+  - Struggle: The challenge or failure faced
+  - Solution: What changed and the breakthrough moment
+  - System: The framework/method that emerged
+  - Takeaway: What the reader can apply today
+
+─── SECTION 3: ENGAGEMENT TRIGGERS ───
+
+End the post with ONE of these engagement patterns:
+- Debate starter: "Agree or disagree? I want to hear your take."
+- Experience ask: "What's your experience with [topic]? Drop it below."
+- Tag prompt: "Tag someone who needs to hear this."
+- Poll suggestion: "[Option A] vs [Option B] — which works better for you?"
+- Save trigger: "Bookmark this for your next [situation]."
+
+─── SECTION 4: HASHTAGS & OPTIMIZATION ───
+
+- 3-5 hashtags max (algorithm penalizes 6+)
+- Mix: 1 broad (#Marketing), 1 niche (#B2BContentStrategy), 1 branded or trending
+- Place hashtags in first comment OR at the very end
+- Suggest optimal posting time for the target audience
+- Suggest a 1-line comment to post immediately after publishing (algorithm boost)`,
     variables: [
-      { name: "topic", description: "Main topic or thesis", required: true },
-      { name: "audience", description: "Who you're writing for", required: false, default: "profesionales de marketing" },
-      { name: "tone", description: "Voice tone", required: false, default: "profesional pero cercano" },
-      { name: "cta", description: "Call to action", required: false },
+      { name: "topic", description: "Main topic, thesis or contrarian take", required: true },
+      { name: "audience", description: "Who you're writing for", required: false, default: "profesionales de marketing y founders" },
+      { name: "tone", description: "Voice tone", required: false, default: "profesional pero cercano, con autoridad ganada" },
+      { name: "format", description: "Post format: text, carousel, or story", required: false, default: "text" },
+      { name: "goal", description: "Post goal: authority, leads, engagement, or awareness", required: false, default: "authority" },
+      { name: "cta", description: "Specific call to action (optional)", required: false },
     ],
-    exampleOutput: `¿Sabías que el 73% de los equipos de marketing aún crean contenido sin un sistema de templates?\n\nDespués de automatizar la producción de contenido para 12 empresas, descubrí algo contraintuitivo: la creatividad no muere con los templates. Florece.\n\nCuando eliminas la parálisis del lienzo en blanco, tu equipo dedica su energía a lo que realmente importa: la estrategia y el mensaje.\n\n3 lecciones clave:\n1. Los templates reducen el tiempo de producción un 80%\n2. La consistencia de marca mejora un 60%\n3. El engagement sube porque la calidad es más predecible\n\n¿Tu equipo ya usa templates de contenido? ¿Qué resultado han visto?\n\n#MarketingDigital #ContentMarketing #Productividad`,
-    tags: ["authority", "engagement", "thought-leadership"],
+    exampleOutput: `La mayoría de los spas invierten en Instagram y olvidan LinkedIn.\n\nError costoso.\n\n→ Sigue leyendo\n\nEn los últimos 8 meses trabajando con Berke Spa, descubrimos que LinkedIn generaba 3x más reservas de tratamientos premium que Instagram.\n\n¿La razón? Las clientas que buscan tratamientos de $150.000+ CLP investigan. Comparan. Y confían en contenido profesional.\n\nAquí el framework que usamos:\n\n𝟏. 𝗖𝗼𝗻𝘁𝗲𝗻𝗶𝗱𝗼 𝗲𝗱𝘂𝗰𝗮𝘁𝗶𝘃𝗼 > 𝗽𝗿𝗼𝗺𝗼𝗰𝗶𝗼𝗻𝗮𝗹\nEl 80% de posts explican skincare science. Solo el 20% vende.\n\n𝟐. 𝗦𝘁𝗼𝗿𝘆𝘁𝗲𝗹𝗹𝗶𝗻𝗴 𝗱𝗲 𝗿𝗲𝘀𝘂𝗹𝘁𝗮𝗱𝗼𝘀\nAntes/después con contexto: qué tratamiento, cuántas sesiones, qué cambió.\n\n𝟑. 𝗔𝘂𝘁𝗼𝗿𝗶𝗱𝗮𝗱 𝘁é𝗰𝗻𝗶𝗰𝗮\nLa directora comparte papers y tendencias de dermocosmética.\n\n𝟒. 𝗣𝗿𝘂𝗲𝗯𝗮 𝘀𝗼𝗰𝗶𝗮𝗹\nReseñas reales de clientas (con permiso) integradas en el storytelling.\n\nResultado: engagement rate del 8.2% (vs 2.1% promedio del sector).\n\n¿Tu negocio de belleza/bienestar usa LinkedIn como canal de adquisición? Cuéntame tu experiencia 👇\n\n#WellnessMarketing #SpaMarketing #LinkedInStrategy\n\n💡 Primer comentario sugerido:\n"Si quieres el template completo del calendario editorial que usamos, comenta 'TEMPLATE' y te lo envío por DM."\n\n⏰ Mejor hora para publicar: Martes o Miércoles, 8:00-10:00 AM hora local`,
+    tags: ["authority", "engagement", "thought-leadership", "personal-branding", "hooks", "algorithm"],
   },
   {
     templateId: "tpl_twitter_thread",
