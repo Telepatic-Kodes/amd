@@ -431,34 +431,127 @@ Readability:
   {
     templateId: "tpl_blog_howto",
     name: "Guía Paso a Paso (How-To)",
-    description: "Tutorial práctico con pasos numerados, ideal para capturar tráfico de búsqueda",
+    description: "Tutorial completo con HowTo schema, pasos accionables con tiempo estimado y dificultad, prerequisites checklist, troubleshooting section, FAQ para People Also Ask y visual suggestions por paso",
     category: "blog" as const,
-    industry: ["saas", "consulting", "general"],
+    industry: ["saas", "consulting", "ecommerce", "beauty", "wellness", "general"],
     contentType: "blog",
     channels: ["blog"],
-    promptTemplate: `Write a step-by-step how-to guide about "{{topic}}".
+    promptTemplate: `Write a comprehensive step-by-step how-to guide about "{{topic}}".
 
-Structure:
-1. Title: "Cómo [result] en [number] pasos" format
-2. Introduction: Why this matters, what they'll achieve
-3. Prerequisites or "Before you start" section
-4. 5-8 numbered steps, each with:
-   - Clear action title
-   - 2-3 paragraphs of explanation
-   - Pro tip or common mistake
-5. Expected results / what success looks like
-6. FAQ section (3 questions)
-
-Target length: 1500-2000 words
+Difficulty level: {{difficulty}}
+Target length: {{length}}
 Target audience: {{audience}}
-Tone: {{tone}}`,
+Tone: {{tone}}
+
+─── SECTION 1: SEO METADATA ───
+
+Title: "Cómo [Result] en [Number] Pasos ([Year])" format
+- Include primary keyword in first 3 words
+- Max 60 characters
+- Use a specific number (odd numbers perform 20% better in CTR)
+
+Meta Description:
+- 150-160 chars
+- Pattern: "Aprende cómo [result] paso a paso. Guía práctica con [N] pasos, tips de experto y [bonus]. [Tiempo estimado: X min]."
+
+URL Slug: /como-[keyword]-paso-a-paso
+
+─── SECTION 2: GUIDE HEADER ───
+
+Quick Reference Box (above the fold):
+- ⏱ Tiempo estimado: [X minutos/horas]
+- 📊 Dificultad: [Principiante / Intermedio / Avanzado]
+- 🛠 Herramientas necesarias: [list]
+- ✅ Resultado esperado: [1-line outcome]
+- 📅 Última actualización: [date]
+
+─── SECTION 3: INTRODUCTION (150-200 words) ───
+
+- Hook: Start with the transformation or end result
+- Pain point: What happens if they DON'T follow this guide
+- Credibility: Why this guide is different (experience, data, results)
+- Promise: "Al terminar esta guía, vas a poder [specific outcome]"
+- Include primary keyword in first 100 words
+- Add a table of contents (links to each step)
+
+─── SECTION 4: PREREQUISITES / "Antes de Empezar" ───
+
+Checklist format:
+- [ ] Required tools/accounts/materials
+- [ ] Estimated time commitment
+- [ ] Knowledge level assumed
+- [ ] Any costs involved
+- 💡 "If you don't have X, here's a free alternative: [suggestion]"
+
+─── SECTION 5: STEP-BY-STEP GUIDE (5-8 steps) ───
+
+Each step follows this structure:
+
+## Paso N: [Action Verb] + [Specific Outcome]
+
+**⏱ Tiempo:** [X minutos]
+**📊 Dificultad:** [Fácil/Medio/Difícil]
+
+[2-3 paragraphs of detailed explanation]
+- What to do (specific actions)
+- Why this step matters
+- How to know you did it right
+
+**📸 Visual suggestion:** [Screenshot, diagram, or photo description]
+
+**💡 Pro Tip:** [Expert insight that saves time or improves results]
+
+**⚠️ Error común:** [What most people get wrong and how to avoid it]
+
+[Optional: Before/after comparison for this step]
+
+─── SECTION 6: RESULTS / "Qué Esperar" ───
+
+- What success looks like after completing all steps
+- Timeline: when to expect visible results
+- Metrics to track progress
+- Before/after comparison (if applicable)
+
+─── SECTION 7: TROUBLESHOOTING ───
+
+Common problems and solutions (captures long-tail queries):
+- "¿Qué hago si [problem A]?" → Solution
+- "¿Por qué no funciona [step X]?" → Solution
+- "¿Cómo sé si [thing] está bien?" → Verification method
+
+─── SECTION 8: FAQ (5 questions) ───
+
+Format each as H3 question (maps to People Also Ask):
+- Q1: "¿Cuánto tiempo toma [result]?"
+- Q2: "¿Se puede [do this] sin [requirement]?"
+- Q3: "¿Cuál es el error más común al [topic]?"
+- Q4: "¿Cuánto cuesta [topic]?"
+- Q5: "¿Con qué frecuencia debo [action]?"
+
+Each answer: 40-60 words (featured snippet optimized)
+
+─── SECTION 9: CONCLUSION + CTA ───
+
+- 3-bullet summary of key steps
+- Encouragement message
+- Primary CTA (next action)
+- Secondary CTA (related guide or service)
+
+─── SECTION 10: SCHEMA MARKUP ───
+
+Suggest HowTo JSON-LD schema:
+- name, description, totalTime, estimatedCost
+- Each step: name, text, image suggestion, url
+- Also suggest FAQ schema for the FAQ section`,
     variables: [
       { name: "topic", description: "What readers will learn to do", required: true },
-      { name: "audience", description: "Who the guide is for", required: false, default: "principiantes y nivel intermedio" },
-      { name: "tone", description: "Writing tone", required: false, default: "práctico y motivador" },
+      { name: "audience", description: "Who the guide is for", required: false, default: "principiantes y nivel intermedio que buscan resultados prácticos" },
+      { name: "tone", description: "Writing tone", required: false, default: "práctico, motivador y paso a paso" },
+      { name: "difficulty", description: "Guide difficulty: beginner, intermediate, or advanced", required: false, default: "beginner" },
+      { name: "length", description: "Target word count", required: false, default: "1800-2500 palabras" },
     ],
-    exampleOutput: `# Cómo Automatizar tu Marketing de Contenido en 6 Pasos\n\n## ¿Por qué automatizar?\nEl 67% de los marketers reportan que la automatización les ahorra más de 6 horas semanales...\n\n## Antes de empezar\nNecesitarás:\n- Una cuenta en tu CMS preferido\n- Acceso a una herramienta de IA\n- 30 minutos de tiempo dedicado\n\n## Paso 1: Define tus pilares de contenido\n...`,
-    tags: ["tutorial", "seo", "how-to"],
+    exampleOutput: `─── SEO METADATA ───\n\nTitle: Cómo Armar tu Rutina de Skincare en 7 Pasos (2026)\nMeta: Aprende cómo crear una rutina de skincare personalizada paso a paso. 7 pasos con tips de esteticistas profesionales. Tiempo: 15 min de lectura.\nSlug: /como-armar-rutina-skincare-paso-a-paso\n\n─── QUICK REFERENCE ───\n\n⏱ Tiempo de lectura: 15 minutos\n📊 Dificultad: Principiante\n🛠 Necesitas: Espejo con buena luz, tu piel limpia, los productos que ya tienes\n✅ Resultado: Una rutina AM/PM personalizada para tu tipo de piel\n📅 Actualizado: Febrero 2026\n\n─── GUÍA ───\n\n# Cómo Armar tu Rutina de Skincare en 7 Pasos (2026)\n\n## Introducción\n\nEl 78% de las mujeres usa productos de skincare, pero solo el 15% los aplica en el orden correcto.\n\nResultado: gastan dinero en sérums de $50.000 CLP que no penetran porque la crema ya selló la piel.\n\nDespués de asesorar a más de 500 clientas en Berke Spa, creamos esta guía paso a paso para que armes tu rutina perfecta en 15 minutos — sin importar tu presupuesto.\n\nAl terminar, vas a tener una rutina AM y PM personalizada para tu tipo de piel.\n\n📋 **Contenido:**\n1. Identifica tu tipo de piel\n2. Elige tu limpiador\n3. Aplica el tónico\n4. Sérum (el paso que más importa)\n5. Contorno de ojos\n6. Hidratante\n7. Protector solar (solo AM)\n\n## Antes de Empezar\n\n- [ ] Lava tu cara y sécala suavemente\n- [ ] Ten tus productos actuales a mano\n- [ ] Espejo con buena iluminación\n- [ ] 15 minutos sin interrupciones\n- 💡 ¿No tienes productos? Al final de cada paso sugerimos opciones desde $5.000 CLP\n\n## Paso 1: Identifica tu Tipo de Piel\n\n**⏱ Tiempo:** 2 minutos\n**📊 Dificultad:** Fácil\n\nLava tu cara solo con agua y espera 30 minutos sin aplicar nada.\n\nObserva:\n- **Brilla en zona T (frente, nariz, mentón):** Piel mixta\n- **Brilla en toda la cara:** Piel grasa\n- **Se siente tirante o descama:** Piel seca\n- **Se enrojece fácilmente:** Piel sensible\n- **No presenta ningún síntoma:** Piel normal\n\n**📸 Visual:** Infografía comparativa de los 5 tipos de piel con fotos de ejemplo.\n\n**💡 Pro Tip:** "El tipo de piel cambia con las estaciones. Reevalúa cada 3 meses." — Esteticista Berke Spa\n\n**⚠️ Error común:** Asumir que tienes piel grasa cuando en realidad es deshidratada (produce grasa para compensar la falta de agua).\n\n## Paso 2: Elige tu Limpiador\n\n**⏱ Tiempo:** 1 minuto\n**📊 Dificultad:** Fácil\n\n[... continúa pasos 2-7 con misma estructura ...]\n\n## Qué Esperar\n\n- **Semana 1:** Piel se adapta, posible purga leve si usas ácidos\n- **Semana 2-3:** Textura más suave, menos brotes\n- **Mes 1:** Luminosidad visible, piel más hidratada\n- **Mes 3:** Resultados significativos en manchas y líneas finas\n\n## Troubleshooting\n\n### ¿Qué hago si mi piel se irrita con el sérum?\nReduce la frecuencia a día por medio. Si persiste 5+ días, cambia a una concentración menor (del 20% al 10% en vitamina C, por ejemplo).\n\n### ¿Por qué me salen más granitos después de empezar la rutina?\nEs probable que sea "purga" — tu piel está eliminando impurezas. Dura 2-4 semanas. Si dura más, consulta un dermatólogo.\n\n### ¿Cómo sé si estoy aplicando en el orden correcto?\nRegla general: de más líquido a más espeso. Tónico → Sérum → Crema → SPF.\n\n## Preguntas Frecuentes\n\n### ¿Cuánto tiempo toma ver resultados con una rutina de skincare?\nLos primeros resultados visibles aparecen entre las 2-4 semanas con uso consistente. Para cambios significativos en textura, manchas o líneas finas, espera al menos 3 meses de rutina constante.\n\n### ¿Se puede tener una buena rutina de skincare con bajo presupuesto?\nSí. Una rutina básica efectiva (limpiador + hidratante + SPF) puede costar desde $15.000 CLP mensuales. Los sérums son opcionales al inicio.\n\n### ¿Cuál es el error más común al armar una rutina?\nAplicar los productos en el orden incorrecto. Un sérum de $50.000 CLP no funciona si lo aplicas después de la crema, porque la crema sella la piel.\n\n### ¿Cuánto cuesta mantener una rutina completa?\nRango en Chile: $25.000-$120.000 CLP/mes dependiendo de los productos. Una rutina intermedia cuesta aprox $45.000 CLP/mes.\n\n### ¿Con qué frecuencia debo cambiar mi rutina?\nReevalúa cada cambio de estación (cada 3 meses). Tu piel tiene necesidades distintas en verano vs. invierno.\n\n## Conclusión\n\nArmar tu rutina de skincare es más simple de lo que parece:\n\n✅ Identifica tu tipo de piel (Paso 1)\n✅ Sigue el orden: limpieza → tratamiento → hidratación → protección\n✅ Sé consistente por al menos 4 semanas antes de evaluar\n\nTu piel te va a agradecer este regalo.\n\n¿Quieres que una profesional revise tu rutina? En Berke Spa hacemos diagnósticos de piel gratuitos.\n\n[Reserva tu diagnóstico gratuito →]\n\n📖 Guía relacionada: [Tratamientos Faciales: Guía Completa →]\n\n─── SCHEMA (HowTo JSON-LD) ───\n\n{\n  "@context": "https://schema.org",\n  "@type": "HowTo",\n  "name": "Cómo Armar tu Rutina de Skincare en 7 Pasos",\n  "description": "Guía paso a paso para crear una rutina de skincare personalizada",\n  "totalTime": "PT15M",\n  "estimatedCost": { "@type": "MonetaryAmount", "currency": "CLP", "value": "25000-120000" },\n  "step": [\n    { "@type": "HowToStep", "name": "Identifica tu tipo de piel", "text": "Lava tu cara con agua y espera 30 min..." },\n    { "@type": "HowToStep", "name": "Elige tu limpiador", "text": "..." }\n  ]\n}`,
+    tags: ["tutorial", "seo", "how-to", "schema", "featured-snippets", "faq"],
   },
   {
     templateId: "tpl_blog_listicle",
