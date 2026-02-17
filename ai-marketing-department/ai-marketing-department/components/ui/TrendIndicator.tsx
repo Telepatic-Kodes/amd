@@ -129,7 +129,7 @@ export function CompactTrend({ value, suffix = '%', className }: CompactTrendPro
 
   return (
     <span className={cn("font-medium", color, className)}>
-      {arrow} {Math.abs(value)}{suffix}
+      {arrow} {Math.min(Math.abs(value), 999).toFixed(1)}{suffix}
     </span>
   );
 }

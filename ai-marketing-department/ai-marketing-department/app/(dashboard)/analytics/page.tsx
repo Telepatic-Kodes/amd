@@ -68,7 +68,7 @@ export default function AnalyticsPage() {
                 key={range.value}
                 onClick={() => setDaysBack(range.value)}
                 className={cn(
-                  "px-3 py-1.5 text-sm font-medium transition-colors",
+                  "px-3 py-1.5 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-[var(--accent)]/50",
                   daysBack === range.value
                     ? "bg-[var(--accent)] text-white"
                     : "bg-[var(--surface-0)] text-[var(--text-secondary)] hover:bg-[var(--surface-1)]"
@@ -110,7 +110,7 @@ export default function AnalyticsPage() {
         <button
           onClick={handleExport}
           disabled={exporting || !exportContent}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--accent)] text-white text-sm font-medium hover:bg-[var(--accent-hover)] disabled:opacity-50 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--accent)] text-white text-sm font-medium hover:bg-[var(--accent-hover)] disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-[var(--accent)]/50 transition-colors"
         >
           <Download className="h-4 w-4" />
           {exporting ? "Exportando..." : "Exportar JSON"}

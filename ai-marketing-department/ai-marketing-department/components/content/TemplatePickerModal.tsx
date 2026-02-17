@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { useQuery, useAction, useMutation } from "convex/react";
 import { api } from "@convex/_generated/api";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   X,
   Sparkles,
@@ -28,6 +28,8 @@ import {
   Plus,
   RefreshCw,
   User,
+  Lightbulb,
+  Zap,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/components/ui/Toast";
@@ -94,6 +96,7 @@ export function TemplatePickerModal({ isOpen, onClose, preselectedTemplateId }: 
   const [categoryFilter, setCategoryFilter] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(preselectedTemplateId ?? null);
+  const [skippedPreview, setSkippedPreview] = useState(false);
 
   // Variable form state
   const [topic, setTopic] = useState("");
@@ -157,6 +160,47 @@ export function TemplatePickerModal({ isOpen, onClose, preselectedTemplateId }: 
     const allTemplates = [...(templates ?? []), ...(myTemplates ?? [])];
     return allTemplates.find((t) => t.templateId === selectedTemplateId) ?? null;
   }, [selectedTemplateId, templates, myTemplates]);
+
+  // Build quick suggestions: brand topics paired with best-matching template
+  const quickSuggestions = useMemo(() => {
+    const bpStrategy = brandProfile?.strategy as { topics?: string[]; channels?: string[] } | undefined;
+    const topics = bpStrategy?.topics || [];
+    if (topics.length === 0 || !templates || templates.length === 0) return [];
+
+    const SUGGESTION_COLORS = [
+      "border-purple-300 bg-purple-500/5 hover:bg-purple-500/10",
+      "border-sky-300 bg-sky-500/5 hover:bg-sky-500/10",
+      "border-orange-300 bg-[var(--accent-subtle)]/40 hover:bg-[var(--accent-subtle)]/70",
+      "border-pink-300 bg-pink-500/5 hover:bg-pink-500/10",
+      "border-green-300 bg-green-500/5 hover:bg-green-500/10",
+    ];
+
+    return topics.map((topicName, idx) => {
+      // Pick a template — cycle through available ones for variety
+      const template = templates[idx % templates.length];
+      return {
+        id: `quick-${idx}`,
+        topic: topicName,
+        templateId: template.templateId,
+        templateName: template.name,
+        color: SUGGESTION_COLORS[idx % SUGGESTION_COLORS.length],
+      };
+    });
+  }, [brandProfile, templates]);
+
+  const handleQuickSuggestion = (suggestion: { topic: string; templateId: string }) => {
+    setSelectedTemplateId(suggestion.templateId);
+    setTopic(suggestion.topic);
+    // Pre-fill from brand profile
+    if (brandProfile) {
+      const audienceVal = brandProfile.audience?.segments?.[0]?.name || "";
+      const toneVal = brandProfile.voice?.tone?.slice(0, 3).join(", ") || "";
+      if (audienceVal) setAudience(audienceVal);
+      if (toneVal) setTone(toneVal);
+    }
+    setSkippedPreview(true);
+    setPhase("fill");
+  };
 
   const handleSelectTemplate = (templateId: string) => {
     setSelectedTemplateId(templateId);
@@ -281,7 +325,7 @@ export function TemplatePickerModal({ isOpen, onClose, preselectedTemplateId }: 
 
   const handleBack = () => {
     if (phase === "preview") setPhase("browse");
-    else if (phase === "fill") setPhase("preview");
+    else if (phase === "fill") { setPhase(skippedPreview ? "browse" : "preview"); setSkippedPreview(false); }
     else if (phase === "result") setPhase("fill");
     else if (phase === "create") setPhase("browse");
   };
@@ -339,16 +383,11 @@ export function TemplatePickerModal({ isOpen, onClose, preselectedTemplateId }: 
 
         {/* Body */}
         <div className="px-6 py-5 max-h-[70vh] overflow-y-auto">
-          <AnimatePresence mode="wait">
+          <>
             {/* ── PHASE: BROWSE ── */}
             {phase === "browse" && (
-              <motion.div
-                key="browse"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                className="space-y-4"
-              >
+              <div className="space-y-4">
+
                 {/* Search Bar */}
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-tertiary)]" />
@@ -381,6 +420,38 @@ export function TemplatePickerModal({ isOpen, onClose, preselectedTemplateId }: 
                     </button>
                   ))}
                 </div>
+
+                {/* Quick Suggestions from Strategy */}
+                {quickSuggestions.length > 0 && !searchQuery && !categoryFilter && (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Lightbulb className="w-3.5 h-3.5 text-purple-400" />
+                      <p className="text-xs font-medium text-[var(--text-tertiary)] uppercase tracking-wider">Generar rápido</p>
+                    </div>
+                    <div className="flex gap-2 overflow-x-auto pb-1">
+                      {quickSuggestions.map((suggestion) => (
+                        <button
+                          key={suggestion.id}
+                          onClick={() => handleQuickSuggestion(suggestion)}
+                          className={cn(
+                            "flex items-center gap-2 px-3 py-2 rounded-lg border transition-all text-left shrink-0",
+                            suggestion.color
+                          )}
+                        >
+                          <Zap className="w-3.5 h-3.5 text-[var(--text-secondary)] shrink-0" />
+                          <div className="min-w-0">
+                            <p className="text-xs font-medium text-[var(--text-primary)] whitespace-nowrap">
+                              {suggestion.topic}
+                            </p>
+                            <p className="text-[10px] text-[var(--text-tertiary)] whitespace-nowrap">
+                              {suggestion.templateName}
+                            </p>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {/* Template Grid */}
                 {!templates ? (
@@ -465,18 +536,13 @@ export function TemplatePickerModal({ isOpen, onClose, preselectedTemplateId }: 
                     </button>
                   </div>
                 )}
-              </motion.div>
+              </div>
             )}
 
             {/* ── PHASE: PREVIEW ── */}
             {phase === "preview" && selectedTemplate && (
-              <motion.div
-                key="preview"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                className="space-y-4"
-              >
+              <div className="space-y-4">
+
                 <div className="flex items-center gap-2 text-sm text-[var(--text-tertiary)]">
                   <span className={cn("px-2 py-0.5 rounded text-xs font-medium border", CATEGORY_COLORS[selectedTemplate.category])}>
                     {selectedTemplate.category}
@@ -541,18 +607,13 @@ export function TemplatePickerModal({ isOpen, onClose, preselectedTemplateId }: 
                     ))}
                   </div>
                 </div>
-              </motion.div>
+              </div>
             )}
 
             {/* ── PHASE: FILL ── */}
-            {phase === "fill" && selectedTemplate && (
-              <motion.div
-                key="fill"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                className="space-y-4"
-              >
+            {phase === "fill" && (
+              <div className="space-y-4">
+
                 {/* Topic (always required) */}
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium text-[var(--text-secondary)]">
@@ -602,7 +663,7 @@ export function TemplatePickerModal({ isOpen, onClose, preselectedTemplateId }: 
                 </div>
 
                 {/* CTA (if template has it) */}
-                {selectedTemplate.variables.some((v) => v.name === "cta") && (
+                {selectedTemplate?.variables?.some((v) => v.name === "cta") && (
                   <div className="space-y-1.5">
                     <label className="text-sm font-medium text-[var(--text-secondary)]">
                       Call to Action <span className="text-[var(--text-tertiary)] font-normal">(opcional)</span>
@@ -630,18 +691,13 @@ export function TemplatePickerModal({ isOpen, onClose, preselectedTemplateId }: 
                     className="w-full px-4 py-2.5 rounded-lg bg-[var(--card-bg)] border border-[var(--border-hover)] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/50 focus:border-[var(--accent)] transition resize-none text-sm"
                   />
                 </div>
-              </motion.div>
+              </div>
             )}
 
             {/* ── PHASE: GENERATING ── */}
             {phase === "generating" && (
-              <motion.div
-                key="generating"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="py-16 flex flex-col items-center justify-center text-center"
-              >
+              <div className="py-16 flex flex-col items-center justify-center text-center">
+
                 <div className="relative">
                   <Loader2 className="w-12 h-12 text-purple-500 animate-spin" />
                   <Sparkles className="w-5 h-5 text-[var(--accent)] absolute -top-1 -right-1 animate-pulse" />
@@ -650,18 +706,13 @@ export function TemplatePickerModal({ isOpen, onClose, preselectedTemplateId }: 
                 <p className="text-sm text-[var(--text-tertiary)] mt-1">
                   Usando &ldquo;{selectedTemplate?.name}&rdquo; + tu perfil de marca
                 </p>
-              </motion.div>
+              </div>
             )}
 
             {/* ── PHASE: RESULT ── */}
             {phase === "result" && (
-              <motion.div
-                key="result"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                className="space-y-4"
-              >
+              <div className="space-y-4">
+
                 <div className="flex items-center gap-2 text-[var(--badge-green-text)]">
                   <CheckCircle2 className="w-5 h-5" />
                   <p className="text-sm font-medium">Contenido creado como borrador</p>
@@ -692,18 +743,13 @@ export function TemplatePickerModal({ isOpen, onClose, preselectedTemplateId }: 
                     Generar Otro
                   </button>
                 </div>
-              </motion.div>
+              </div>
             )}
 
             {/* ── PHASE: CREATE ── */}
             {phase === "create" && (
-              <motion.div
-                key="create"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                className="space-y-4"
-              >
+              <div className="space-y-4">
+
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <label className="text-sm font-medium text-[var(--text-secondary)]">
@@ -796,9 +842,9 @@ export function TemplatePickerModal({ isOpen, onClose, preselectedTemplateId }: 
                     className="w-full px-3 py-2 rounded-lg bg-[var(--card-bg)] border border-[var(--border-hover)] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition text-sm"
                   />
                 </div>
-              </motion.div>
+              </div>
             )}
-          </AnimatePresence>
+          </>
         </div>
 
         {/* Footer */}

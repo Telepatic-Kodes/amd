@@ -12,6 +12,21 @@ const STATUS_VARIANT: Record<string, "success" | "error" | "warning" | "default"
   scheduled: "info",
 };
 
+const STATUS_LABELS: Record<string, string> = {
+  published: "Publicado",
+  failed: "Fallido",
+  pending: "Pendiente",
+  scheduled: "Programado",
+  deleted: "Eliminado",
+};
+
+const PLATFORM_LABELS: Record<string, string> = {
+  linkedin: "LinkedIn",
+  twitter: "Twitter/X",
+  instagram: "Instagram",
+  email: "Email",
+};
+
 export function PublishHistoryTable() {
   const history = useQuery(api.crossPlatform.queries.getUnifiedPublishHistory, { limit: 50 });
   const isLoading = history === undefined;
@@ -66,11 +81,11 @@ export function PublishHistoryTable() {
                 {item.contentTitle}
               </td>
               <td className="px-4 py-3">
-                <Badge variant="info">{item.platform}</Badge>
+                <Badge variant="info">{PLATFORM_LABELS[item.platform] ?? item.platform}</Badge>
               </td>
               <td className="px-4 py-3">
                 <Badge variant={STATUS_VARIANT[item.status] ?? "default"}>
-                  {item.status}
+                  {STATUS_LABELS[item.status] ?? item.status}
                 </Badge>
               </td>
               <td className="px-4 py-3 text-xs text-[var(--text-secondary)]">

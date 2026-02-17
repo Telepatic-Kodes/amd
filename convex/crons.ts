@@ -182,6 +182,19 @@ crons.weekly(
 );
 
 // ===========================================
+// CONTENT AUTOPILOT (Weekly Briefs)
+// ===========================================
+
+// Generate weekly content briefs every Monday at 7:30 AM UTC
+// Proposes 5-8 content briefs based on CMO strategy for user approval
+crons.weekly(
+  "generate-weekly-content-briefs",
+  { dayOfWeek: "monday", hourUTC: 7, minuteUTC: 30 },
+  internal.contentAutopilot.triggerWeeklyBriefs,
+  {}
+);
+
+// ===========================================
 // CONTENT RECYCLING (P7)
 // ===========================================
 

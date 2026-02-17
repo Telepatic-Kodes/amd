@@ -70,6 +70,7 @@ export const getAllBrandProfiles = query({
       maturityScore: p.maturityScore,
       maturityLevel: p.maturityLevel,
       status: p.status,
+      visual: p.visual,
     }));
   },
 });
@@ -153,73 +154,76 @@ export const rollbackBrandProfile = mutation({
 // MUTATIONS
 // ===========================================
 
-export const saveBrandProfile = mutation({
-  args: {
-    companyName: v.string(),
-    industry: v.string(),
-    website: v.optional(v.string()),
-    description: v.string(),
-    voice: v.object({
-      tone: v.array(v.string()),
-      personality: v.array(v.string()),
-      dos: v.array(v.string()),
-      donts: v.array(v.string()),
-    }),
-    audience: v.object({
-      segments: v.array(
-        v.object({
-          name: v.string(),
-          demographics: v.optional(v.string()),
-          painPoints: v.array(v.string()),
-        })
-      ),
-    }),
-    strategy: v.object({
-      topics: v.array(v.string()),
-      channels: v.array(v.string()),
-      postingFrequency: v.optional(v.string()),
-    }),
-    competitors: v.array(
+// Shared brand profile args validator (reused by save and create mutations)
+const brandProfileArgs = {
+  companyName: v.string(),
+  industry: v.string(),
+  website: v.optional(v.string()),
+  description: v.string(),
+  voice: v.object({
+    tone: v.array(v.string()),
+    personality: v.array(v.string()),
+    dos: v.array(v.string()),
+    donts: v.array(v.string()),
+  }),
+  audience: v.object({
+    segments: v.array(
       v.object({
         name: v.string(),
-        url: v.optional(v.string()),
-        notes: v.optional(v.string()),
+        demographics: v.optional(v.string()),
+        painPoints: v.array(v.string()),
       })
     ),
-    references: v.optional(v.array(v.string())),
-    visual: v.optional(
-      v.object({
-        primaryColor: v.optional(v.string()),
-        secondaryColor: v.optional(v.string()),
-        accentColor: v.optional(v.string()),
-        backgroundColor: v.optional(v.string()),
-        textColor: v.optional(v.string()),
-        logoDescription: v.optional(v.string()),
-        logoStorageId: v.optional(v.id("_storage")),
-        fontPrimary: v.optional(v.string()),
-        fontSecondary: v.optional(v.string()),
-        styleNotes: v.optional(v.string()),
-      })
-    ),
-    messaging: v.optional(
-      v.object({
-        guide: v.optional(v.string()),
-        problem: v.optional(v.string()),
-        solution: v.optional(v.string()),
-        successVision: v.optional(v.string()),
-        failureVision: v.optional(v.string()),
-        callToAction: v.optional(v.string()),
-      })
-    ),
-    positioning: v.optional(
-      v.object({
-        uniqueValue: v.optional(v.string()),
-        category: v.optional(v.string()),
-        differentiators: v.optional(v.array(v.string())),
-        proofPoints: v.optional(v.array(v.string())),
-      })
-    ),
-  },
+  }),
+  strategy: v.object({
+    topics: v.array(v.string()),
+    channels: v.array(v.string()),
+    postingFrequency: v.optional(v.string()),
+  }),
+  competitors: v.array(
+    v.object({
+      name: v.string(),
+      url: v.optional(v.string()),
+      notes: v.optional(v.string()),
+    })
+  ),
+  references: v.optional(v.array(v.string())),
+  visual: v.optional(
+    v.object({
+      primaryColor: v.optional(v.string()),
+      secondaryColor: v.optional(v.string()),
+      accentColor: v.optional(v.string()),
+      backgroundColor: v.optional(v.string()),
+      textColor: v.optional(v.string()),
+      logoDescription: v.optional(v.string()),
+      logoStorageId: v.optional(v.id("_storage")),
+      fontPrimary: v.optional(v.string()),
+      fontSecondary: v.optional(v.string()),
+      styleNotes: v.optional(v.string()),
+    })
+  ),
+  messaging: v.optional(
+    v.object({
+      guide: v.optional(v.string()),
+      problem: v.optional(v.string()),
+      solution: v.optional(v.string()),
+      successVision: v.optional(v.string()),
+      failureVision: v.optional(v.string()),
+      callToAction: v.optional(v.string()),
+    })
+  ),
+  positioning: v.optional(
+    v.object({
+      uniqueValue: v.optional(v.string()),
+      category: v.optional(v.string()),
+      differentiators: v.optional(v.array(v.string())),
+      proofPoints: v.optional(v.array(v.string())),
+    })
+  ),
+};
+
+export const saveBrandProfile = mutation({
+  args: brandProfileArgs,
   handler: async (ctx, args) => {
     const userId = await getUserId(ctx);
     const now = Date.now();
@@ -268,6 +272,26 @@ export const saveBrandProfile = mutation({
       });
       return existing._id;
     }
+
+    return await ctx.db.insert("brandProfiles", {
+      userId,
+      ...args,
+      status: "complete",
+      createdAt: now,
+      updatedAt: now,
+    });
+  },
+});
+
+/**
+ * createNewBrandProfile — Always creates a NEW brand profile (no upsert).
+ * Used when adding additional brands from the Brand Switcher.
+ */
+export const createNewBrandProfile = mutation({
+  args: brandProfileArgs,
+  handler: async (ctx, args) => {
+    const userId = await getUserId(ctx);
+    const now = Date.now();
 
     return await ctx.db.insert("brandProfiles", {
       userId,

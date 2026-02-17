@@ -81,7 +81,7 @@ function SegmentCard({
           <button
             type="button"
             onClick={addPainPoint}
-            className="px-2.5 py-2 rounded-lg bg-[var(--accent-muted)]0/10 text-[var(--accent)] hover:bg-[var(--accent-muted)]0/20 transition"
+            className="px-2.5 py-2 rounded-lg bg-[var(--accent-muted)]/10 text-[var(--accent)] hover:bg-[var(--accent-muted)]/20 transition"
           >
             <Plus className="w-3.5 h-3.5" />
           </button>

@@ -76,6 +76,7 @@ export default function SettingsPage() {
   const seedMonitoring = useMutation(api.seedMonitoring.seedMonitoringData);
   const seedKB = useMutation(api.seedKnowledgeBase.seed);
   const seedBrand = useMutation(api.seedBrandProfile.seed);
+  const seedPublishing = useMutation(api.seedPublishing.seed);
   const [seeding, setSeeding] = useState(false);
 
   const completeStep = useMutation(api.guidance.completeSetupStep);
@@ -1011,9 +1012,10 @@ export default function SettingsPage() {
                           await seedMonitoring();
                           await seedKB();
                           await seedBrand();
+                          await seedPublishing();
                           toast.success(
                             "Demo cargada",
-                            "37 agentes, campañas, tareas, contenido, templates, reportes, monitoreo, KB y perfil de marca creados."
+                            "37 agentes, campañas, contenido, templates, reportes, monitoreo, KB, marca y publicaciones creados."
                           );
                         } catch (_err: unknown) {
                           toast.error(
@@ -1025,7 +1027,7 @@ export default function SettingsPage() {
                         }
                       }}
                       disabled={seeding}
-                      className="px-4 py-2 rounded-lg bg-[var(--accent)] text-white text-sm font-medium hover:bg-[var(--accent-muted)]0 transition-colors disabled:opacity-50"
+                      className="px-4 py-2 rounded-lg bg-[var(--accent)] text-white text-sm font-medium hover:bg-[var(--accent-muted)] transition-colors disabled:opacity-50"
                     >
                       {seeding ? "Cargando..." : "Cargar datos de demo"}
                     </button>
@@ -1071,7 +1073,7 @@ export default function SettingsPage() {
                           }
                         }
                       }}
-                      className="px-4 py-2 rounded-lg bg-[var(--badge-red-bg)] text-[var(--badge-red-text)] text-sm font-medium hover:bg-[var(--badge-red-bg)]0/20 transition-colors border border-[var(--badge-red-bg)]"
+                      className="px-4 py-2 rounded-lg bg-[var(--badge-red-bg)] text-[var(--badge-red-text)] text-sm font-medium hover:bg-[var(--badge-red-bg)]/20 transition-colors border border-[var(--badge-red-bg)]"
                     >
                       Restablecer
                     </button>

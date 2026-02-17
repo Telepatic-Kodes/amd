@@ -34,10 +34,10 @@ interface Props {
 }
 
 const priorityConfig = {
-  immediate: { color: "bg-[var(--badge-red-bg)]0", label: "Inmediato", textColor: "text-[var(--badge-red-text)]", bgColor: "bg-[var(--badge-red-bg)]" },
-  short: { color: "bg-[var(--badge-amber-bg)]0", label: "Corto plazo", textColor: "text-[var(--badge-amber-text)]", bgColor: "bg-[var(--badge-amber-bg)]" },
-  medium: { color: "bg-[var(--badge-blue-bg)]0", label: "Medio plazo", textColor: "text-[var(--badge-blue-text)]", bgColor: "bg-[var(--badge-blue-bg)]" },
-  long: { color: "bg-[var(--badge-green-bg)]0", label: "Largo plazo", textColor: "text-[var(--badge-green-text)]", bgColor: "bg-[var(--badge-green-bg)]" },
+  immediate: { color: "bg-[var(--badge-red-bg)]", label: "Inmediato", textColor: "text-[var(--badge-red-text)]", bgColor: "bg-[var(--badge-red-bg)]" },
+  short: { color: "bg-[var(--badge-amber-bg)]", label: "Corto plazo", textColor: "text-[var(--badge-amber-text)]", bgColor: "bg-[var(--badge-amber-bg)]" },
+  medium: { color: "bg-[var(--badge-blue-bg)]", label: "Medio plazo", textColor: "text-[var(--badge-blue-text)]", bgColor: "bg-[var(--badge-blue-bg)]" },
+  long: { color: "bg-[var(--badge-green-bg)]", label: "Largo plazo", textColor: "text-[var(--badge-green-text)]", bgColor: "bg-[var(--badge-green-bg)]" },
 };
 
 const platformIcons: Record<string, React.ReactNode> = {

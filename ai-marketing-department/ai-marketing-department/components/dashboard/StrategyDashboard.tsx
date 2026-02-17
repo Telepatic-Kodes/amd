@@ -359,7 +359,7 @@ export function StrategyDashboard({ strategyDocId }: StrategyDashboardProps) {
                     <div className="flex items-center gap-2">
                       <div className="w-16 h-1.5 bg-[var(--surface-1)] rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-[var(--accent-subtle)]0 rounded-full"
+                          className="h-full bg-[var(--accent-subtle)] rounded-full"
                           style={{ width: `${bs.percentage}%` }}
                         />
                       </div>

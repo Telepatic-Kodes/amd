@@ -74,11 +74,17 @@ export function SimpleCounter({
 }: SimpleCounterProps) {
   const [displayValue, setDisplayValue] = useState(0);
   const ref = useRef<HTMLSpanElement>(null);
-  const isInView = useInView(ref, { once: true, margin: '-50px' });
+  const isInView = useInView(ref, { margin: '-50px' });
   const prevValue = useRef(0);
 
   useEffect(() => {
-    if (!isInView) return;
+    // When not in view, update value instantly (no animation)
+    // so counters don't stay stuck at 0 when data loads off-screen
+    if (!isInView) {
+      setDisplayValue(value);
+      prevValue.current = value;
+      return;
+    }
 
     const startValue = prevValue.current;
     const endValue = value;

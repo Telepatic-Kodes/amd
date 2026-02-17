@@ -24,10 +24,10 @@ const TYPES = [
 
 const STATUSES = [
   { id: "all", label: "Todos" },
-  { id: "active", label: "Active" },
-  { id: "planning", label: "Planning" },
-  { id: "paused", label: "Paused" },
-  { id: "completed", label: "Completed" },
+  { id: "active", label: "Activa" },
+  { id: "planning", label: "Planificando" },
+  { id: "paused", label: "Pausada" },
+  { id: "completed", label: "Completada" },
 ];
 
 export default function CampaignsPage() {
@@ -70,7 +70,7 @@ export default function CampaignsPage() {
         <div>
           <h1 className="text-2xl font-bold text-[var(--text-primary)]">Campañas</h1>
           <p className="text-[var(--text-secondary)] text-sm">
-            {stats.total} campañas · {stats.active} activas
+            {campaigns === undefined ? "Cargando..." : `${stats.total} campañas · ${stats.active} activas`}
           </p>
         </div>
       </div>

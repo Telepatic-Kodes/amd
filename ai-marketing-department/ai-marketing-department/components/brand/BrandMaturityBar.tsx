@@ -33,10 +33,10 @@ const sectionLabels: Record<string, string> = {
 };
 
 function getBarColor(score: number): string {
-  if (score >= 80) return "bg-[var(--accent-muted)]0";
-  if (score >= 60) return "bg-[var(--badge-green-bg)]0";
+  if (score >= 80) return "bg-[var(--accent-muted)]";
+  if (score >= 60) return "bg-[var(--badge-green-bg)]";
   if (score >= 30) return "bg-yellow-500";
-  return "bg-[var(--badge-red-bg)]0";
+  return "bg-[var(--badge-red-bg)]";
 }
 
 function getDotColor(score: number): string {
@@ -59,10 +59,10 @@ export function BrandMaturityBar({ score, level, breakdown }: Props) {
           <span
             className={cn(
               "px-2.5 py-0.5 rounded-full text-xs font-semibold border",
-              level === "empty" && "bg-[var(--badge-red-bg)]0/10 border-red-500/20 text-[var(--error)]",
+              level === "empty" && "bg-[var(--badge-red-bg)]/10 border-red-500/20 text-[var(--error)]",
               level === "partial" && "bg-yellow-500/10 border-yellow-500/20 text-yellow-400",
-              level === "complete" && "bg-[var(--badge-green-bg)]0/10 border-green-500/20 text-[var(--success)]",
-              level === "enriched" && "bg-[var(--accent-muted)]0/10 border-[var(--accent)]/20 text-[var(--accent)]"
+              level === "complete" && "bg-[var(--badge-green-bg)]/10 border-green-500/20 text-[var(--success)]",
+              level === "enriched" && "bg-[var(--accent-muted)]/10 border-[var(--accent)]/20 text-[var(--accent)]"
             )}
           >
             {levelConfig.label}

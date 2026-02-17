@@ -79,7 +79,7 @@ export function BrandStepStrategy({ data, onChange }: Props) {
             <button
               type="button"
               onClick={addTopic}
-              className="px-3 py-2.5 rounded-lg bg-[var(--accent-muted)]0/10 text-[var(--accent)] hover:bg-[var(--accent-muted)]0/20 transition"
+              className="px-3 py-2.5 rounded-lg bg-[var(--accent-muted)]/10 text-[var(--accent)] hover:bg-[var(--accent-muted)]/20 transition"
             >
               <Plus className="w-4 h-4" />
             </button>

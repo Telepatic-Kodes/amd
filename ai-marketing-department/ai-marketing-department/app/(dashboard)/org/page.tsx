@@ -24,8 +24,8 @@ const DEPARTMENTS = [
 
 const STATUSES = [
   { id: "all", label: "Todos" },
-  { id: "active", label: "Active" },
-  { id: "paused", label: "Paused" },
+  { id: "active", label: "Activo" },
+  { id: "paused", label: "Pausado" },
   { id: "error", label: "Error" },
 ];
 
@@ -102,7 +102,7 @@ export default function OrgPage() {
         <div>
           <h1 className="text-2xl font-bold text-[var(--text-primary)]">Organigrama</h1>
           <p className="text-[var(--text-secondary)] text-sm">
-            {stats.total} agentes · {stats.departments} departamentos · {stats.active} activos
+            {agents === undefined ? "Cargando..." : `${stats.total} agentes · ${stats.departments} departamentos · ${stats.active} activos`}
           </p>
         </div>
       </div>

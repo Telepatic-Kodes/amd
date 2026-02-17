@@ -70,7 +70,7 @@ export function BrandVersionHistory({ brandProfileId }: BrandVersionHistoryProps
               <div className={cn(
                 "absolute left-1.5 top-1.5 w-3 h-3 rounded-full border-2",
                 i === 0
-                  ? "bg-[var(--accent-muted)]0 border-[var(--accent)]"
+                  ? "bg-[var(--accent-muted)] border-[var(--accent)]"
                   : "bg-[var(--card-bg)] border-[var(--border-hover)]"
               )} />
 

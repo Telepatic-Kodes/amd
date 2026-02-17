@@ -56,7 +56,7 @@ export function KBCard({ kb, isSelected, onSelect }: KBCardProps) {
         <div className="flex items-center gap-2">
           <Badge>{kb.category}</Badge>
           <span className="text-xs text-[var(--text-tertiary)]">
-            {kb.metadata?.documentCount ?? kb.documentCount ?? 0} documentos
+            {kb.metadata?.documentCount ?? kb.documentCount ?? 0} documento{(kb.metadata?.documentCount ?? kb.documentCount ?? 0) !== 1 ? "s" : ""}
           </span>
         </div>
       </CardContent>

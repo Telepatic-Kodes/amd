@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Sparkline } from "@/components/charts/Sparkline";
 import { SimpleCounter, PercentageCounter, CurrencyCounter } from "@/components/ui/AnimatedCounter";
-import { TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { TrendingUp, TrendingDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface HeroMetricProps {
@@ -15,28 +15,24 @@ interface HeroMetricProps {
   sparkData?: number[];
   sparkColor?: string;
   trend?: number; // percentage change vs previous period
+  trendSuffix?: string; // "%" (default) or "pp" for percentage-point diffs
   href?: string;  // click-to-navigate
 }
 
-function TrendBadge({ trend }: { trend: number }) {
-  const isPositive = trend > 0;
-  const isNeutral = trend === 0;
-  const Icon = isNeutral ? Minus : isPositive ? TrendingUp : TrendingDown;
-  const color = isNeutral
-    ? "text-[var(--text-tertiary)]"
-    : isPositive
-      ? "text-[#2FCC71]"
-      : "text-[#E5484D]";
-  const bgColor = isNeutral
-    ? "bg-[var(--surface-1)]"
-    : isPositive
-      ? "bg-[#2FCC71]/10"
-      : "bg-[#E5484D]/10";
+function TrendBadge({ trend, suffix = "%" }: { trend: number; suffix?: string }) {
+  // Hide badge for negligible or missing trends
+  if (Math.abs(trend) < 0.1) return null;
+
+  const clamped = Math.max(-99.9, Math.min(99.9, trend));
+  const isPositive = clamped > 0;
+  const Icon = isPositive ? TrendingUp : TrendingDown;
+  const color = isPositive ? "text-[#2FCC71]" : "text-[#E5484D]";
+  const bgColor = isPositive ? "bg-[#2FCC71]/10" : "bg-[#E5484D]/10";
 
   return (
     <span className={cn("inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-medium tabular-nums", color, bgColor)}>
       <Icon className="h-2.5 w-2.5" />
-      {isNeutral ? "0%" : `${isPositive ? "+" : ""}${trend.toFixed(1)}%`}
+      {`${isPositive ? "+" : ""}${clamped.toFixed(1)}${suffix}`}
     </span>
   );
 }
@@ -50,6 +46,7 @@ export function HeroMetric({
   sparkData,
   sparkColor = "var(--accent)",
   trend,
+  trendSuffix,
   href,
 }: HeroMetricProps) {
   const sparkPoints = sparkData?.map((v) => ({ value: v }));
@@ -64,7 +61,7 @@ export function HeroMetric({
         <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)] font-medium">
           {label}
         </p>
-        {trend !== undefined && <TrendBadge trend={trend} />}
+        {trend !== undefined && <TrendBadge trend={trend} suffix={trendSuffix} />}
       </div>
 
       <div className="flex items-end justify-between gap-4">

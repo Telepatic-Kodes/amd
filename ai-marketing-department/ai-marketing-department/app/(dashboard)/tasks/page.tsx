@@ -68,7 +68,7 @@ export default function TasksPage() {
               setSelectedTaskId(null);
             }}
             className={cn(
-              "px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors",
+              "px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:ring-[var(--accent)]/50",
               activeTab === tab.id
                 ? "bg-[var(--accent)] text-white"
                 : "text-[var(--text-secondary)] hover:bg-[var(--surface-1)]"

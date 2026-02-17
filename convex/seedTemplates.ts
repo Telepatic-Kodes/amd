@@ -556,33 +556,233 @@ Suggest HowTo JSON-LD schema:
   {
     templateId: "tpl_blog_listicle",
     name: "Listicle (Top N)",
-    description: "Artículo tipo lista que genera clics y es fácil de compartir",
+    description: "Artículo lista optimizado para featured snippets (2x más tráfico que how-to): título con número impar, items con mini-review + datos concretos, tabla comparativa para table snippet, FAQ para People Also Ask y schema ItemList",
     category: "blog" as const,
-    industry: ["ecommerce", "saas", "general"],
+    industry: ["ecommerce", "saas", "consulting", "beauty", "wellness", "general"],
     contentType: "blog",
     channels: ["blog"],
-    promptTemplate: `Write a listicle article about "{{topic}}".
+    promptTemplate: `Crea un artículo listicle sobre "{{topic}}" optimizado para featured snippets y máximo CTR.
 
-Structure:
-1. Title: "N [category] para [result] en [year]" format
-2. Introduction: Quick context + promise of value
-3. 7-10 items, each with:
-   - Numbered subtitle
-   - 2-3 paragraph description
-   - Why it matters / pro tip
-4. Conclusion with "best overall" pick
-5. Brief FAQ (2-3 questions)
+─── SEO METADATA ───
 
-Target length: 1200-1500 words
-Target audience: {{audience}}
-Tone: {{tone}}`,
+1. Title tag (55-60 chars): "[Número impar] [Categoría] para [Resultado] en [Año]"
+   → Usar número impar (7, 9, 11) — mejor rendimiento psicológico
+   → Incluir keyword principal + año
+2. Meta description (150-160 chars): Resumen con número + beneficio principal + qualifier temporal
+3. Slug: /mejores-[keyword]-[año] o /top-[N]-[keyword]
+4. Featured snippet target: Lista de 6 items con máx 44 palabras por item (promedio que gana Position Zero)
+
+─── INTRODUCCIÓN ───
+
+1. Hook con dato/estadística impactante (1-2 líneas)
+2. Problema que resuelve esta lista (por qué importa filtrar opciones)
+3. Credenciales: por qué esta selección es confiable (probamos X, analizamos Y, consultamos Z)
+4. Promise: qué va a obtener el lector al terminar
+5. Tabla de contenido con anclas a cada item
+
+─── ITEMS ({{count}} items) ───
+
+Para CADA item del listado:
+
+### N. [Nombre del Item] — [Subtítulo con beneficio clave]
+
+**Veredicto rápido:** 1 línea con calificación (⭐ rating o "Mejor para X")
+
+**Descripción** (2-3 párrafos):
+- Qué es y qué lo hace destacar
+- Datos concretos: precio, métricas, resultados medibles
+- Para quién es ideal vs. para quién NO es ideal
+
+**Pros y Contras:**
+✅ Pro 1
+✅ Pro 2
+❌ Contra 1
+
+**💡 Pro Tip:** Consejo práctico de uso que solo alguien con experiencia sabría
+
+**📸 Visual sugerido:** Captura, foto de producto, o infografía comparativa
+
+─── TABLA COMPARATIVA ───
+
+Crear tabla de comparación (5 filas × 2-4 columnas) optimizada para table snippet:
+| Item | Mejor Para | Precio | Rating |
+→ Las tablas representan 6.3% de featured snippets
+→ Formato: máx 5 filas, 2-4 columnas, 40-45 palabras totales
+
+─── VEREDICTO FINAL ───
+
+1. "Mejor opción general": [Item] — por qué
+2. "Mejor calidad-precio": [Item] — por qué
+3. "Mejor para principiantes": [Item] — por qué
+4. Resumen en 1 párrafo con recomendación según perfil del lector
+
+─── FAQ (5 preguntas) ───
+
+5 preguntas tipo "People Also Ask" con respuestas de 40-60 palabras:
+→ ¿Cuál es el/la mejor [keyword] en [año]?
+→ ¿Cuánto cuesta [keyword]?
+→ ¿[Keyword] vale la pena?
+→ ¿Cómo elegir [keyword]?
+→ ¿Cuál es la diferencia entre [item A] y [item B]?
+
+─── SCHEMA MARKUP (ItemList) ───
+
+Incluir JSON-LD con:
+- @type: ItemList
+- itemListElement: array con ListItem (position, name, url)
+- También incluir FAQPage schema para la sección FAQ
+
+─── NOTAS DE OPTIMIZACIÓN ───
+
+- Usar números impares en título (7, 9, 11 convierten mejor que pares)
+- Primer item = tu recomendación principal (mayoría de lectores solo ven top 3)
+- Internal links: mínimo 3 hacia artículos relacionados
+- Actualizar título cada 6 meses con nuevo año para mantener CTR
+- Agregar "Actualizado: [Mes Año]" visible en la intro
+- Alt text descriptivo en todas las imágenes
+- Dato clave: listicles generan 2x más tráfico que artículos how-to
+
+Target: {{length}}
+Audiencia: {{audience}}
+Tono: {{tone}}
+Intent: {{intent}}`,
     variables: [
       { name: "topic", description: "List topic", required: true },
       { name: "audience", description: "Target reader", required: false, default: "profesionales y decisores" },
       { name: "tone", description: "Writing tone", required: false, default: "informativo y comparativo" },
+      { name: "count", description: "Number of items (odd numbers recommended: 7, 9, 11)", required: false, default: "7-9" },
+      { name: "intent", description: "Search intent: comparison, recommendation, educational", required: false, default: "comparison" },
+      { name: "length", description: "Target word count", required: false, default: "1500-2000 palabras" },
     ],
-    exampleOutput: `# 8 Herramientas de Content Marketing que Todo Equipo Necesita en 2026\n\n## Introducción\nEl ecosistema de herramientas de marketing cambia rápido. Estas son las que realmente valen la inversión...\n\n## 1. Plataforma de Templates Inteligentes\nPor qué: Reduce el tiempo de creación un 80%...`,
-    tags: ["listicle", "seo", "shareable"],
+    exampleOutput: `─── SEO METADATA ───
+
+Title: 9 Tratamientos Faciales Más Efectivos en Santiago (2026)
+Meta: Comparamos los 9 tratamientos faciales con mejores resultados en Santiago. Precios desde $35.000 CLP, ratings reales y para quién es cada uno.
+Slug: /mejores-tratamientos-faciales-santiago-2026
+Snippet target: Lista de 9 tratamientos faciales efectivos con precios y resultados.
+
+─── ARTÍCULO ───
+
+# 9 Tratamientos Faciales Más Efectivos en Santiago (2026)
+
+📅 Actualizado: Febrero 2026
+
+## Introducción
+
+El mercado de tratamientos faciales en Chile creció un 34% en 2025, pero el 60% de las clientas no sabe cuál elegir para su tipo de piel.
+
+Después de analizar más de 200 reseñas, consultar con 5 esteticistas certificadas y probar 15 tratamientos en Berke Spa, seleccionamos los 9 que realmente entregan resultados medibles.
+
+Al terminar, vas a saber exactamente cuál es el mejor para tu piel, presupuesto y objetivo.
+
+📖 **En este artículo:**
+1. Hydrafacial
+2. Limpieza Profunda con Extracción
+3. Peeling Químico
+4. Dermapen (Microneedling)
+5. Radiofrecuencia Facial
+6. LED Therapy
+7. Facial Coreano (K-Beauty)
+8. Vitamina C Concentrada
+9. Crioterapia Facial
+
+---
+
+### 1. Hydrafacial — El Más Completo sin Downtime
+
+**⭐ Mejor opción general**
+
+El Hydrafacial combina limpieza, exfoliación, extracción e hidratación en 30 minutos. Es el único tratamiento que muestra resultados visibles desde la primera sesión sin enrojecimiento.
+
+En Berke Spa, el 89% de las clientas reportan piel más luminosa en las primeras 24 horas. Precio: $65.000 CLP por sesión, con packs de 3 sesiones a $170.000 CLP.
+
+Ideal para pieles mixtas a secas que buscan glow inmediato. No recomendado para pieles con acné activo severo.
+
+✅ Resultados inmediatos (mismo día)
+✅ Sin tiempo de recuperación
+✅ Apto para piel sensible
+❌ Precio premium vs. limpieza tradicional
+❌ Resultados no permanentes (repetir cada 4-6 semanas)
+
+💡 **Pro Tip:** Agenda tu Hydrafacial 3-5 días antes de un evento importante, no el mismo día — la piel absorbe mejor el maquillaje después de 48h.
+
+📸 **Visual:** Foto antes/después de clienta real (con consentimiento) + comparativa de textura de piel.
+
+### 2. Limpieza Profunda con Extracción — La Mejor Calidad-Precio
+
+**⭐ Mejor para presupuesto limitado**
+
+[... continúa items 2-9 con misma estructura ...]
+
+---
+
+## Tabla Comparativa
+
+| Tratamiento | Mejor Para | Precio (CLP) | Sesiones |
+|---|---|---|---|
+| Hydrafacial | Glow inmediato | $65.000 | Mensual |
+| Limpieza Profunda | Presupuesto | $25.000 | Mensual |
+| Peeling Químico | Manchas | $45.000 | 4-6 sesiones |
+| Dermapen | Anti-edad | $80.000 | 3-4 sesiones |
+| Radiofrecuencia | Flacidez | $55.000 | 6-8 sesiones |
+
+---
+
+## Veredicto Final
+
+🏆 **Mejor opción general:** Hydrafacial — resultados inmediatos, cero downtime, apto para el 80% de los tipos de piel.
+
+💰 **Mejor calidad-precio:** Limpieza Profunda con Extracción — desde $25.000 CLP con resultados visibles en piel grasa/mixta.
+
+🌱 **Mejor para principiantes:** Facial Coreano — suave, relajante, y excelente introducción al cuidado profesional de la piel.
+
+Si nunca te has hecho un tratamiento facial, empieza por la Limpieza Profunda. Si buscas el mejor resultado por sesión, el Hydrafacial es imbatible.
+
+---
+
+## Preguntas Frecuentes
+
+### ¿Cuál es el mejor tratamiento facial en Santiago en 2026?
+El Hydrafacial es el tratamiento más completo disponible en Santiago. Combina 4 pasos en 30 minutos con resultados visibles desde la primera sesión. Precio promedio: $65.000 CLP en centros especializados como Berke Spa.
+
+### ¿Cuánto cuesta un tratamiento facial profesional en Chile?
+Los precios varían entre $25.000 CLP (limpieza básica) y $120.000 CLP (tratamientos avanzados como Dermapen). El promedio para un tratamiento de calidad es $50.000-$70.000 CLP por sesión.
+
+### ¿Con qué frecuencia debo hacerme tratamientos faciales?
+La frecuencia óptima depende del tratamiento: limpiezas faciales cada 4-6 semanas, peelings cada 2-3 meses, y tratamientos intensivos como Dermapen 3-4 veces al año.
+
+### ¿Los tratamientos faciales valen la pena o puedo hacer skincare en casa?
+Ambos se complementan. El skincare diario mantiene los resultados, pero los tratamientos profesionales logran exfoliación y penetración de activos que los productos domésticos no alcanzan.
+
+### ¿Cuál es la diferencia entre Hydrafacial y Limpieza Profunda?
+El Hydrafacial usa tecnología de succión con serums para limpiar, exfoliar e hidratar simultáneamente. La Limpieza Profunda es manual con extracción. Hydrafacial es más suave y sin downtime; la Limpieza es más económica pero puede dejar enrojecimiento temporal.
+
+---
+
+─── SCHEMA (ItemList + FAQPage JSON-LD) ───
+
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "9 Tratamientos Faciales Más Efectivos en Santiago",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Hydrafacial", "url": "#hydrafacial" },
+    { "@type": "ListItem", "position": 2, "name": "Limpieza Profunda", "url": "#limpieza-profunda" }
+  ]
+}
+
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "¿Cuál es el mejor tratamiento facial en Santiago en 2026?",
+      "acceptedAnswer": { "@type": "Answer", "text": "El Hydrafacial es el tratamiento más completo..." }
+    }
+  ]
+}`,
+    tags: ["listicle", "seo", "shareable", "featured-snippets", "comparison", "schema", "faq"],
   },
 
   // ── EMAIL (2) ───────────────────────────────

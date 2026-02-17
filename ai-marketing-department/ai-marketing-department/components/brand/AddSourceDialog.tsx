@@ -312,7 +312,7 @@ export function AddSourceDialog({ brandProfileId, isOpen, onClose }: Props) {
 
           {/* Error */}
           {error && (
-            <div className="p-3 rounded-lg bg-[var(--badge-red-bg)]0/10 border border-red-500/20 text-[var(--error)] text-xs">
+            <div className="p-3 rounded-lg bg-[var(--badge-red-bg)]/10 border border-red-500/20 text-[var(--error)] text-xs">
               {error}
             </div>
           )}
@@ -333,7 +333,7 @@ export function AddSourceDialog({ brandProfileId, isOpen, onClose }: Props) {
               "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition",
               loading
                 ? "bg-[var(--surface-1)] text-[var(--text-tertiary)] cursor-not-allowed"
-                : "bg-[var(--accent)] hover:bg-[var(--accent-muted)]0 text-white"
+                : "bg-[var(--accent)] hover:bg-[var(--accent-muted)] text-white"
             )}
           >
             {loading ? (

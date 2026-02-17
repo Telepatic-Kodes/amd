@@ -17,7 +17,10 @@ function stripMarkdown(text: string): string {
     .replace(/`{1,3}[^`]*`{1,3}/g, "")  // inline code / code blocks
     .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1") // links
     .replace(/^[>\-*+]\s+/gm, "")       // blockquotes, list markers
+    .replace(/^(Contenido Mejorado\s*)/gm, "") // AI metadata prefix
+    .replace(/^(Tipo|Titulo|Asunto|Canal|Formato):\s*[^\n]*/gm, "") // AI metadata lines
     .replace(/\n{2,}/g, " ")            // collapse multiple newlines
+    .replace(/\s{2,}/g, " ")            // collapse multiple spaces
     .trim();
 }
 import {
@@ -68,6 +71,7 @@ import { AnalyzeButton } from "@/components/content/AnalyzeButton";
 import { ContentAnalysisPanel } from "@/components/content/ContentAnalysisPanel";
 import { AIGeneratedBadge } from "@/components/content/AIGeneratedBadge";
 import { RepurposePanel } from "@/components/content/RepurposePanel";
+import { ContentAutopilotPanel } from "@/components/content/ContentAutopilotPanel";
 
 const EditContentModal = dynamic(
   () => import("@/components/content/EditContentModal").then((m) => m.EditContentModal),
@@ -485,6 +489,9 @@ export default function ContentPage() {
           </button>
         </div>
       </div>
+
+      {/* Autopilot Panel */}
+      <ContentAutopilotPanel />
 
       {/* Tabs */}
       <div className="flex items-center gap-1 p-1 rounded-xl bg-[var(--surface-0,#f5f5f4)] w-fit">

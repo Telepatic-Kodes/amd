@@ -105,7 +105,7 @@ export function QuickActions({
   actions.push({
     label: "Ver resultados",
     icon: BarChart3,
-    href: "/results",
+    href: "/analytics",
     priority: 12,
     variant: "normal",
   });

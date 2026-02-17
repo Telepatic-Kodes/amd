@@ -8,7 +8,7 @@ import { HeroMetric, HeroMetricSkeleton } from "@/components/dashboard/HeroMetri
 import { ActivitySummary } from "@/components/dashboard/ActivitySummary";
 import { DecisionsPending } from "@/components/dashboard/DecisionsPending";
 import { DepartmentKanban } from "@/components/dashboard/DepartmentKanban";
-import { ResultsSummary } from "@/components/dashboard/ResultsSummary";
+import { ResultsSummary, ResultsSummarySkeleton } from "@/components/dashboard/ResultsSummary";
 import { SmartGreeting } from "@/components/dashboard/SmartGreeting";
 import { TodayBriefing } from "@/components/dashboard/TodayBriefing";
 import { QuickActions } from "@/components/dashboard/QuickActions";
@@ -87,6 +87,26 @@ export default function DashboardPage() {
   const isLoading = !analytics;
   const totalContent = content?.length ?? 0;
 
+  // Derive smart greeting props from real data
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const todayMs = todayStart.getTime();
+
+  const publishedToday = content?.filter(
+    (c: { status: string; publishedAt?: number }) => c.status === "published" && c.publishedAt && c.publishedAt >= todayMs
+  ).length ?? 0;
+
+  const scheduledContent = content?.filter(
+    (c: { status: string }) => c.status === "scheduled"
+  ).length ?? 0;
+
+  const tasksCompleted = analytics?.overview?.totalExecutions
+    ? Math.round((analytics.overview.totalExecutions * analytics.overview.successRate) / 100)
+    : 0;
+  const tasksFailed = analytics?.overview?.totalExecutions
+    ? analytics.overview.totalExecutions - tasksCompleted
+    : 0;
+
   return (
     <div className="space-y-6">
       {/* Header — context-aware greeting */}
@@ -94,23 +114,22 @@ export default function DashboardPage() {
         userName={userName}
         contentInReview={computed.attentionData.contentInReview}
         agentErrors={computed.attentionData.agentErrors}
-        publishedToday={0}
-        strategyProgress={undefined}
-        tasksCompleted={0}
-        tasksFailed={0}
+        publishedToday={publishedToday}
+        tasksCompleted={tasksCompleted}
+        tasksFailed={tasksFailed}
         onExecuteAgent={() => setShowExecuteModal(true)}
       />
 
       {/* Today Briefing — collapsible summary */}
       <TodayBriefing
-        scheduledContent={0}
+        scheduledContent={scheduledContent}
         contentInReview={computed.attentionData.contentInReview}
         agentErrors={computed.attentionData.agentErrors}
         topMetricChange={
           computed.trends.executions
             ? {
                 label: "Ejecuciones",
-                value: `${computed.trends.executions > 0 ? "+" : ""}${Math.min(computed.trends.executions, 999).toFixed(1)}%`,
+                value: `${computed.trends.executions > 0 ? "+" : ""}${Math.max(-99.9, Math.min(computed.trends.executions, 99.9)).toFixed(1)}%`,
                 trend: computed.trends.executions >= 0 ? "up" : "down",
               }
             : undefined
@@ -152,6 +171,7 @@ export default function DashboardPage() {
                 isPercentage
                 sparkColor="#16a34a"
                 trend={computed.trends.successRate}
+                trendSuffix="pp"
               />
               <HeroMetric
                 label="Costo"
@@ -186,12 +206,16 @@ export default function DashboardPage() {
       {/* Zone 3: Results (2/3) + Activity (1/3) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <ResultsSummary
-            chartData={computed.chartData}
-            topContent={computed.topContent}
-            totalImpressions={computed.engagementStats.totalImpressions}
-            totalInteractions={computed.engagementStats.totalInteractions}
-          />
+          {content === undefined ? (
+            <ResultsSummarySkeleton />
+          ) : (
+            <ResultsSummary
+              chartData={computed.chartData}
+              topContent={computed.topContent}
+              totalImpressions={computed.engagementStats.totalImpressions}
+              totalInteractions={computed.engagementStats.totalInteractions}
+            />
+          )}
         </div>
         <div>
           <ActivitySummary activities={activity} />

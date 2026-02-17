@@ -224,29 +224,27 @@ export function useDashboardData({
   }, [content]);
 
   // Use real engagement data if available, otherwise use derived data
-  const performanceItems = normalizedPerformance || derivedPerformance;
-
-  // Engagement stats
-  const engagementStats = useMemo(() => {
-    if (!performanceItems || performanceItems.length === 0) {
-      return { totalImpressions: 0, totalInteractions: 0 };
+  // Memoize together so engagementStats and topContent are always in sync
+  const { engagementStats, topContent } = useMemo(() => {
+    const items = normalizedPerformance || derivedPerformance;
+    if (!items || items.length === 0) {
+      return {
+        engagementStats: { totalImpressions: 0, totalInteractions: 0 },
+        topContent: [] as { title: string; type: string; impressions: number; interactions: number }[],
+      };
     }
-    return performanceItems.reduce(
+    const stats = items.reduce(
       (acc, item) => ({
         totalImpressions: acc.totalImpressions + item.impressions,
         totalInteractions: acc.totalInteractions + item.interactions,
       }),
       { totalImpressions: 0, totalInteractions: 0 }
     );
-  }, [performanceItems]);
-
-  // Top 3 content
-  const topContent = useMemo(() => {
-    if (!performanceItems || performanceItems.length === 0) return [];
-    return [...performanceItems]
+    const top = [...items]
       .sort((a, b) => b.impressions - a.impressions)
       .slice(0, 3);
-  }, [performanceItems]);
+    return { engagementStats: stats, topContent: top };
+  }, [normalizedPerformance, derivedPerformance]);
 
   return {
     attentionData,

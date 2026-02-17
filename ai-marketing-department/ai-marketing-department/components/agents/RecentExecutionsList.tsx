@@ -72,11 +72,11 @@ export function RecentExecutionsList() {
               </span>
               {exec.duration != null && (
                 <span className="text-[10px] text-[var(--text-secondary)] flex-shrink-0">
-                  {(exec.duration as number).toFixed(1)}s
+                  {((exec.duration as number) / 1000).toFixed(1)}s
                 </span>
               )}
               <span className="text-[10px] text-[var(--text-secondary)] flex-shrink-0">
-                {formatTimestamp(exec._creationTime as number)}
+                {formatTimestamp((exec.timestamp ?? exec._creationTime) as number)}
               </span>
             </div>
           ))}

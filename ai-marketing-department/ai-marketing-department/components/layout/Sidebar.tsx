@@ -43,7 +43,7 @@ import { usePreference } from "@/hooks/usePreferences";
 // Navigation grouped into 4 logical sections
 const navGroups = [
     {
-        title: "Overview",
+        title: "Inicio",
         icon: LayoutDashboard,
         items: [
             { name: translate("home"), href: "/", icon: Home },

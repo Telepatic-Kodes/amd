@@ -31,8 +31,9 @@ const GenerateContentModal = dynamic(
   () => import("@/components/content/GenerateContentModal").then((m) => m.GenerateContentModal),
   { ssr: false }
 );
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { type BrandData, DEFAULT_BRAND_DATA } from "@/lib/brand-utils";
+import { useBrandContext } from "@/hooks/useBrandContext";
 
 const TOTAL_STEPS = 8;
 
@@ -51,9 +52,13 @@ const DEFAULT_DATA = DEFAULT_BRAND_DATA;
 
 export default function BrandPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isNewBrand = searchParams.get("new") === "true";
   const profile = useQuery(api.brandProfile.getBrandProfile);
   const saveBrandProfile = useMutation(api.brandProfile.saveBrandProfile);
+  const createNewBrandProfile = useMutation(api.brandProfile.createNewBrandProfile);
   const syncBrandToKB = useAction(api.brandProfile.syncBrandToKB);
+  const { switchBrand } = useBrandContext();
 
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState(1);
@@ -63,17 +68,27 @@ export default function BrandPage() {
   const [showAddSource, setShowAddSource] = useState(false);
   const [data, setData] = useState<BrandData>(DEFAULT_DATA);
   const [isEditing, setIsEditing] = useState(false);
+  const [isCreatingNew, setIsCreatingNew] = useState(false);
 
   const maturity = useQuery(api.brandMaturity.computeBrandMaturity);
 
   const { success, error: showError } = useToast();
 
+  // Detect ?new=true and enter creation mode with blank data
+  useEffect(() => {
+    if (isNewBrand && !isCreatingNew) {
+      setIsCreatingNew(true);
+      setData(DEFAULT_DATA);
+      setStep(0);
+    }
+  }, [isNewBrand, isCreatingNew]);
+
   // Redirect to onboarding if no profile exists (must be in useEffect, not render)
   useEffect(() => {
-    if (profile === null && !isEditing) {
+    if (profile === null && !isEditing && !isCreatingNew) {
       router.push("/onboarding");
     }
-  }, [profile, isEditing, router]);
+  }, [profile, isEditing, isCreatingNew, router]);
 
   // Populate form from existing profile
   useEffect(() => {
@@ -161,7 +176,7 @@ export default function BrandPage() {
     };
   }, [data, isEditing, profile]);
 
-  const hasCompletedProfile = profile && profile.status === "complete" && !isEditing;
+  const hasCompletedProfile = profile && profile.status === "complete" && !isEditing && !isCreatingNew;
 
   const canNext = () => {
     switch (step) {
@@ -203,7 +218,7 @@ export default function BrandPage() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const profileId = await saveBrandProfile({
+      const saveArgs = {
         companyName: data.companyName,
         industry: data.industry,
         website: data.website || undefined,
@@ -238,7 +253,12 @@ export default function BrandPage() {
           differentiators: data.positioning.differentiators.length > 0 ? data.positioning.differentiators : undefined,
           proofPoints: data.positioning.proofPoints.length > 0 ? data.positioning.proofPoints : undefined,
         },
-      });
+      };
+
+      // Use createNewBrandProfile when adding a new brand, saveBrandProfile for editing
+      const profileId = isCreatingNew
+        ? await createNewBrandProfile(saveArgs)
+        : await saveBrandProfile(saveArgs);
 
       // Sync to KB
       setKbSyncing(true);
@@ -248,8 +268,18 @@ export default function BrandPage() {
       // C. Clear draft on successful save
       localStorage.removeItem("amd-brand-draft");
 
+      // Switch to the new brand and navigate to brand page (without ?new=true)
+      if (isCreatingNew) {
+        switchBrand(profileId);
+        setIsCreatingNew(false);
+        router.replace("/brand");
+      }
+
       setIsEditing(false);
-      success("Marca guardada", "Tu perfil de marca se ha sincronizado con la Knowledge Base.");
+      success(
+        isCreatingNew ? "Nueva marca creada" : "Marca guardada",
+        "Tu perfil de marca se ha sincronizado con la Knowledge Base."
+      );
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : "Error desconocido";
       showError("Error", message || "No se pudo guardar el perfil de marca.");
@@ -532,13 +562,13 @@ export default function BrandPage() {
     );
   }
 
-  // No profile exists → redirecting via useEffect above
-  if (profile === null && !isEditing) {
+  // No profile exists → redirecting via useEffect above (unless creating new)
+  if (profile === null && !isEditing && !isCreatingNew) {
     return null;
   }
 
-  // Still loading profile query
-  if (profile === undefined) {
+  // Still loading profile query (unless creating new — show wizard immediately)
+  if (profile === undefined && !isCreatingNew) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
         <Loader2 className="w-6 h-6 animate-spin text-[var(--text-tertiary)]" />
@@ -606,7 +636,13 @@ export default function BrandPage() {
           <button
             onClick={
               step === 0
-                ? () => setIsEditing(false)
+                ? () => {
+                    setIsEditing(false);
+                    if (isCreatingNew) {
+                      setIsCreatingNew(false);
+                      router.replace("/brand");
+                    }
+                  }
                 : back
             }
             className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] hover:bg-[var(--surface-0)]"
@@ -635,7 +671,7 @@ export default function BrandPage() {
                 "flex items-center gap-2 px-8 py-2.5 rounded-lg text-sm font-semibold transition",
                 saving || kbSyncing
                   ? "bg-[var(--surface-2)] text-[var(--text-tertiary)] cursor-not-allowed"
-                  : "bg-[var(--success)] hover:bg-[var(--badge-green-bg)]0 text-white"
+                  : "bg-[var(--success)] hover:bg-green-600 text-white"
               )}
             >
               {saving ? (

@@ -35,6 +35,12 @@ export function PublishingSummaryStats() {
       color: "text-sky-500",
     },
     {
+      label: "Instagram",
+      value: summary?.instagram?.published ?? 0,
+      icon: Instagram,
+      color: "text-pink-500",
+    },
+    {
       label: "Tasa de Exito",
       value: summary ? `${Math.round(successRate)}%` : "0%",
       icon: TrendingUp,
@@ -43,7 +49,7 @@ export function PublishingSummaryStats() {
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+    <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
       {statCards.map((stat) => (
         <Card key={stat.label}>
           <CardContent className="p-4 flex items-center gap-3">

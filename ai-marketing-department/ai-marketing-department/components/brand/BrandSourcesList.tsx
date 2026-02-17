@@ -156,7 +156,7 @@ export function BrandSourcesList({ brandProfileId, onAddSource }: Props) {
                     )}
                     <button
                       onClick={() => handleDelete(source._id)}
-                      className="p-1.5 rounded hover:bg-[var(--badge-red-bg)]0/10 text-[var(--text-tertiary)] hover:text-[var(--error)] transition-colors"
+                      className="p-1.5 rounded hover:bg-red-500/10 text-[var(--text-tertiary)] hover:text-[var(--error)] transition-colors"
                       title="Eliminar"
                     >
                       <Trash2 className="w-3.5 h-3.5" />

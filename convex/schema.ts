@@ -1871,6 +1871,69 @@ export default defineSchema({
     .index("by_brandProfileId", ["brandProfileId"]),
 
   // ===========================================
+  // CONTENT BRIEFS — Autopilot brief proposals
+  // ===========================================
+  contentBriefs: defineTable({
+    briefId: v.string(),
+    brandProfileId: v.id("brandProfiles"),
+    strategyId: v.optional(v.string()),
+    // Brief content
+    title: v.string(),
+    description: v.string(),
+    channel: v.string(),
+    contentType: v.string(),
+    // Framework metadata
+    pillarId: v.optional(v.id("contentPillars")),
+    pillarName: v.optional(v.string()),
+    contentTier: v.optional(v.union(
+      v.literal("hero"),
+      v.literal("hub"),
+      v.literal("hygiene")
+    )),
+    funnelStage: v.optional(v.union(
+      v.literal("reach"),
+      v.literal("act"),
+      v.literal("convert"),
+      v.literal("engage")
+    )),
+    tayaCategory: v.optional(v.union(
+      v.literal("cost"),
+      v.literal("problems"),
+      v.literal("comparisons"),
+      v.literal("reviews"),
+      v.literal("best")
+    )),
+    // Scheduling
+    dayOfWeek: v.optional(v.string()),
+    suggestedDate: v.optional(v.number()),
+    // Generation
+    promptInstructions: v.optional(v.string()),
+    templateId: v.optional(v.string()),
+    // Lifecycle
+    status: v.union(
+      v.literal("suggested"),
+      v.literal("approved"),
+      v.literal("generating"),
+      v.literal("generated"),
+      v.literal("dismissed"),
+      v.literal("failed")
+    ),
+    // Iteration
+    userFeedback: v.optional(v.string()),
+    // Links
+    generatedContentId: v.optional(v.id("content")),
+    // Scoring
+    successProbability: v.optional(v.number()),
+    // Batch
+    batchId: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_status", ["status"])
+    .index("by_brandProfileId_status", ["brandProfileId", "status"])
+    .index("by_batchId", ["batchId"]),
+
+  // ===========================================
   // MEDIA ASSETS — File storage & media library
   // ===========================================
   mediaAssets: defineTable({

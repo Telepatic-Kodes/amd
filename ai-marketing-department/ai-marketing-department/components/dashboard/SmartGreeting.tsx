@@ -55,7 +55,7 @@ export const SmartGreeting = memo(function SmartGreeting({
     } else if (hour < 18) {
       // Afternoon
       if (publishedToday > 0) parts.push(`${publishedToday} posts publicados hoy`);
-      if (contentInReview > 0) parts.push(`${contentInReview} pendientes de revision`);
+      if (contentInReview > 0) parts.push(`${contentInReview} pendiente${contentInReview > 1 ? "s" : ""} de revisión`);
     } else {
       // Evening
       if (tasksCompleted > 0 || tasksFailed > 0) {

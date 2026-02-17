@@ -70,7 +70,7 @@ export default function MonitoringPage() {
         <button
           onClick={() => setActiveView("digests")}
           className={cn(
-            "inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors",
+            "inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-[var(--accent)]/50",
             activeView === "digests"
               ? "bg-[var(--accent)] text-white"
               : "text-[var(--text-secondary)] hover:bg-[var(--surface-1)]"
@@ -82,7 +82,7 @@ export default function MonitoringPage() {
         <button
           onClick={() => setActiveView("feeds")}
           className={cn(
-            "inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors",
+            "inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-[var(--accent)]/50",
             activeView === "feeds"
               ? "bg-[var(--accent)] text-white"
               : "text-[var(--text-secondary)] hover:bg-[var(--surface-1)]"
@@ -119,7 +119,7 @@ export default function MonitoringPage() {
                 key={filter.id}
                 onClick={() => setStatusFilter(filter.id)}
                 className={cn(
-                  "px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors",
+                  "px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:ring-[var(--accent)]/50",
                   statusFilter === filter.id
                     ? "bg-[var(--accent)] text-white"
                     : "text-[var(--text-secondary)] hover:bg-[var(--surface-1)]"
