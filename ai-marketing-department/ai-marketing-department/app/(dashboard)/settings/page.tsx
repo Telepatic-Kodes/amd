@@ -29,6 +29,7 @@ import { LinkedInConnectionCard } from "@/components/linkedin/LinkedInConnection
 import { TwitterConnectionCard } from "@/components/twitter/TwitterConnectionCard";
 import { InstagramConnectionCard } from "@/components/instagram/InstagramConnectionCard";
 import { EmailConnectionCard } from "@/components/email/EmailConnectionCard";
+import { GoogleDriveConnectionCard } from "@/components/googledrive/GoogleDriveConnectionCard";
 import { SubscriberListPanel } from "@/components/email/SubscriberListPanel";
 import { QuickModeToggle } from "@/components/guided-ux/QuickModeToggle";
 import { TeamManagement } from "@/components/team/TeamManagement";
@@ -382,6 +383,13 @@ export default function SettingsPage() {
                     }
                   />
                   <EmailConnectionCard />
+                  <GoogleDriveConnectionCard
+                    convexSiteUrl={
+                      typeof window !== "undefined"
+                        ? process.env.NEXT_PUBLIC_CONVEX_URL?.replace(".cloud", ".site")
+                        : undefined
+                    }
+                  />
                 </CardContent>
               </Card>
 
