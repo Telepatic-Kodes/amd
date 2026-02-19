@@ -1,20 +1,24 @@
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
-import { useQuery } from "convex/react";
+import { useQuery, useAction } from "convex/react";
 import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
-import { BookOpen, Search } from "lucide-react";
+import { BookOpen, Search, HardDrive } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { KBCard } from "@/components/knowledge-base/KBCard";
 import { KBDetailPanel } from "@/components/knowledge-base/KBDetailPanel";
 import { KBSearchResults } from "@/components/knowledge-base/KBSearchResults";
+import { DriveFilePicker } from "@/components/googledrive/DriveFilePicker";
 
 export default function KnowledgeBasePage() {
   const [selectedKBId, setSelectedKBId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [debounceTimer, setDebounceTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
+  const [drivePickerOpen, setDrivePickerOpen] = useState(false);
+
+  const importFromDrive = useAction(api.googledrive.actions.importFiles);
 
   const knowledgeBases = useQuery(api.kb.queries.listKnowledgeBases, {});
 
@@ -42,6 +46,16 @@ export default function KnowledgeBasePage() {
     [debounceTimer]
   );
 
+  const handleDriveImport = async (fileIds: string[]) => {
+    const activeKbId = selectedKBId ?? knowledgeBases?.[0]?._id;
+    if (!activeKbId) return;
+    await importFromDrive({
+      fileIds,
+      destination: "kb",
+      kbId: activeKbId as Id<"knowledgeBases">,
+    });
+  };
+
   const isLoading = knowledgeBases === undefined;
   const isSearching = debouncedQuery.length >= 2;
   const searchIsLoading = isSearching && searchResults === undefined;
@@ -66,6 +80,14 @@ export default function KnowledgeBasePage() {
             </p>
           </div>
         </div>
+
+        <button
+          onClick={() => setDrivePickerOpen(true)}
+          className="flex items-center gap-2 rounded-lg border border-[var(--border)] px-3 py-2 text-sm font-medium text-[var(--text-secondary)] transition hover:bg-[var(--surface-0)]"
+        >
+          <HardDrive className="h-4 w-4 text-blue-500" />
+          Importar desde Drive
+        </button>
       </div>
 
       {/* Search Bar */}
@@ -129,6 +151,15 @@ export default function KnowledgeBasePage() {
           )}
         </div>
       )}
+
+      {/* Drive File Picker */}
+      <DriveFilePicker
+        open={drivePickerOpen}
+        onClose={() => setDrivePickerOpen(false)}
+        onImport={handleDriveImport}
+        acceptTypes={["application/pdf", "application/vnd.openxmlformats", "text/"]}
+        title="Importar documentos desde Google Drive"
+      />
     </div>
   );
 }
