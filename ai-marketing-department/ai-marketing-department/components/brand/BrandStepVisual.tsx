@@ -1,6 +1,10 @@
 "use client";
 
-import { Palette, Type, Image as ImageIcon, Eye } from "lucide-react";
+import { useState } from "react";
+import { useAction } from "convex/react";
+import { api } from "@convex/_generated/api";
+import { Palette, Type, Image as ImageIcon, Eye, HardDrive } from "lucide-react";
+import { DriveFilePicker } from "@/components/googledrive/DriveFilePicker";
 
 const GOOGLE_FONTS = [
   "Inter", "Roboto", "Open Sans", "Lato", "Montserrat",
@@ -71,6 +75,13 @@ function ColorInput({
 }
 
 export function BrandStepVisual({ data, onChange, companyName }: Props) {
+  const [drivePickerOpen, setDrivePickerOpen] = useState(false);
+  const importFromDrive = useAction(api.googledrive.actions.importFiles);
+
+  const handleLogoImport = async (fileIds: string[]) => {
+    await importFromDrive({ fileIds, destination: "brand" });
+  };
+
   return (
     <div className="space-y-8 max-w-2xl mx-auto">
       <div className="text-center space-y-2">
@@ -158,10 +169,13 @@ export function BrandStepVisual({ data, onChange, companyName }: Props) {
             className="w-full px-4 py-3 rounded-lg bg-[var(--surface-0)] border border-[var(--border)] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/50 transition resize-none text-sm"
           />
           <div className="px-3 py-2 rounded-lg bg-[var(--surface-0)] border border-dashed border-[var(--border-hover)] text-center">
-            <p className="text-xs text-[var(--text-tertiary)]">
-              Subida de logo via Convex Storage disponible proximamente.
-              El campo <code className="text-[var(--text-tertiary)]">logoStorageId</code> ya esta preparado en el schema.
-            </p>
+            <button
+              onClick={() => setDrivePickerOpen(true)}
+              className="flex items-center gap-2 rounded-lg border border-dashed border-[var(--border-hover)] px-4 py-2.5 text-sm text-[var(--text-tertiary)] transition hover:border-blue-500/50 hover:bg-blue-500/5"
+            >
+              <HardDrive className="h-4 w-4 text-blue-500" />
+              Importar logo desde Drive
+            </button>
           </div>
         </div>
 
@@ -254,6 +268,16 @@ export function BrandStepVisual({ data, onChange, companyName }: Props) {
           </div>
         </div>
       </div>
+
+      {/* Drive File Picker for logo */}
+      <DriveFilePicker
+        open={drivePickerOpen}
+        onClose={() => setDrivePickerOpen(false)}
+        onImport={handleLogoImport}
+        acceptTypes={["image/"]}
+        maxFiles={1}
+        title="Seleccionar logo desde Google Drive"
+      />
     </div>
   );
 }
