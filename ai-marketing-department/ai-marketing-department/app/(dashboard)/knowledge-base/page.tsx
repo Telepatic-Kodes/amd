@@ -157,7 +157,14 @@ export default function KnowledgeBasePage() {
         open={drivePickerOpen}
         onClose={() => setDrivePickerOpen(false)}
         onImport={handleDriveImport}
-        acceptTypes={["application/pdf", "application/vnd.openxmlformats", "text/"]}
+        acceptTypes={[
+          "application/pdf",
+          "application/vnd.openxmlformats",
+          "text/",
+          "application/vnd.google-apps.document",
+          "application/vnd.google-apps.spreadsheet",
+          "application/vnd.google-apps.presentation",
+        ]}
         title="Importar documentos desde Google Drive"
       />
     </div>
