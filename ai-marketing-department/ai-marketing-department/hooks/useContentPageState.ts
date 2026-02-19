@@ -36,7 +36,7 @@ const initialFilters: ContentFilters = {
 };
 
 const initialState: ContentPageState = {
-  activeTab: "list",
+  activeTab: "pipeline",
   viewMode: "grid",
   filters: initialFilters,
   showAdvancedFilters: false,
