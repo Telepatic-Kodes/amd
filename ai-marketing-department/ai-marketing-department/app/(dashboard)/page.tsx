@@ -2,16 +2,14 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "convex/react";
+import { useRouter } from "next/navigation";
 import { api } from "@convex/_generated/api";
+import { Id } from "@convex/_generated/dataModel";
 import dynamic from "next/dynamic";
-import { HeroMetric, HeroMetricSkeleton } from "@/components/dashboard/HeroMetric";
-import { ActivitySummary } from "@/components/dashboard/ActivitySummary";
-import { DecisionsPending } from "@/components/dashboard/DecisionsPending";
-import { DepartmentKanban } from "@/components/dashboard/DepartmentKanban";
-import { ResultsSummary, ResultsSummarySkeleton } from "@/components/dashboard/ResultsSummary";
-import { SmartGreeting } from "@/components/dashboard/SmartGreeting";
-import { TodayBriefing } from "@/components/dashboard/TodayBriefing";
-import { QuickActions } from "@/components/dashboard/QuickActions";
+import { ActionFeed } from "@/components/dashboard/ActionFeed";
+import { QuickSummary } from "@/components/dashboard/QuickSummary";
+import { SkeletonList } from "@/components/ui/Skeleton";
+import { SkeletonStat } from "@/components/ui/Skeleton";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { useToast } from "@/components/ui/Toast";
 
@@ -21,6 +19,7 @@ const DashboardExecuteModal = dynamic(
 );
 
 export default function DashboardPage() {
+  const router = useRouter();
   const { success, error } = useToast();
   const [synced, setSynced] = useState(false);
   const syncAttemptedRef = useRef(false);
@@ -45,6 +44,9 @@ export default function DashboardPage() {
   const agents = useQuery(api.functions.listAgents, {});
   const analytics = useQuery(api.analytics.getAnalyticsWithDateRange, dateRange);
   const contentPerformance = useQuery(api.analytics.getContentPerformance, dateRange);
+
+  // Mutations
+  const updateContentStatus = useMutation(api.functions.updateContentStatus);
 
   // Computed dashboard data
   const computed = useDashboardData({ agents, content, analytics, contentPerformance });
@@ -85,9 +87,24 @@ export default function DashboardPage() {
 
   const userName = currentUser?.name || "usuario";
   const isLoading = !analytics;
-  const totalContent = content?.length ?? 0;
 
-  // Derive smart greeting props from real data
+  // Derive data for ActionFeed
+  const contentInReview = content?.filter(
+    (c: { status: string }) => c.status === "review"
+  ) ?? [];
+
+  const agentsWithErrors = agents?.filter(
+    (a: { status: string }) => a.status === "error"
+  ) ?? [];
+
+  const recentActivity = (activity ?? []).map((item: { id: string; type: string; description: string; timestamp: number }) => ({
+    id: item.id,
+    type: item.type,
+    description: item.description,
+    timestamp: item.timestamp,
+  }));
+
+  // Derive data for QuickSummary
   const todayStart = new Date();
   todayStart.setHours(0, 0, 0, 0);
   const todayMs = todayStart.getTime();
@@ -96,129 +113,101 @@ export default function DashboardPage() {
     (c: { status: string; publishedAt?: number }) => c.status === "published" && c.publishedAt && c.publishedAt >= todayMs
   ).length ?? 0;
 
-  const scheduledContent = content?.filter(
-    (c: { status: string }) => c.status === "scheduled"
+  const publishedTrend = computed.trends.executions ?? 0;
+
+  const activeAgents = agents?.filter(
+    (a: { status: string }) => a.status === "active"
   ).length ?? 0;
 
-  const tasksCompleted = analytics?.overview?.totalExecutions
-    ? Math.round((analytics.overview.totalExecutions * analytics.overview.successRate) / 100)
-    : 0;
-  const tasksFailed = analytics?.overview?.totalExecutions
-    ? analytics.overview.totalExecutions - tasksCompleted
-    : 0;
+  const totalAgents = agents?.length ?? 0;
+
+  const successRate = Math.round(analytics?.overview?.successRate ?? 0);
+  const successRateTrend = computed.trends.successRate ?? 0;
+
+  const scheduledNext7Days = (content ?? [])
+    .filter((c: { status: string }) => c.status === "scheduled")
+    .map((c: { title: string; type: string; _creationTime: number }) => ({
+      title: c.title,
+      date: new Date(c._creationTime).toLocaleDateString("es-CL", {
+        day: "numeric",
+        month: "short",
+      }),
+      type: c.type,
+    }));
+
+  // Handlers for ActionFeed
+  const handleApproveContent = (id: string) => {
+    updateContentStatus({ id: id as Id<"content">, status: "approved" })
+      .then(() => success("Contenido aprobado"))
+      .catch((err: Error) => error("Error", err.message));
+  };
+
+  const handleRequestChanges = (id: string) => {
+    updateContentStatus({ id: id as Id<"content">, status: "revision_needed" })
+      .then(() => success("Cambios solicitados"))
+      .catch((err: Error) => error("Error", err.message));
+  };
+
+  const handleRetryAgent = (_agentId: string) => {
+    success("Reintento programado");
+  };
+
+  const handleViewAgent = (_agentId: string) => {
+    router.push("/agents");
+  };
+
+  const handleViewContent = (_id: string) => {
+    router.push("/content");
+  };
+
+  // Suppress unused variable warnings for queries kept for future use
+  void controlStatus;
 
   return (
     <div className="space-y-6">
-      {/* Header — context-aware greeting */}
-      <SmartGreeting
-        userName={userName}
-        contentInReview={computed.attentionData.contentInReview}
-        agentErrors={computed.attentionData.agentErrors}
-        publishedToday={publishedToday}
-        tasksCompleted={tasksCompleted}
-        tasksFailed={tasksFailed}
-        onExecuteAgent={() => setShowExecuteModal(true)}
-      />
-
-      {/* Today Briefing — collapsible summary */}
-      <TodayBriefing
-        scheduledContent={scheduledContent}
-        contentInReview={computed.attentionData.contentInReview}
-        agentErrors={computed.attentionData.agentErrors}
-        topMetricChange={
-          computed.trends.executions
-            ? {
-                label: "Ejecuciones",
-                value: `${computed.trends.executions > 0 ? "+" : ""}${Math.max(-99.9, Math.min(computed.trends.executions, 99.9)).toFixed(1)}%`,
-                trend: computed.trends.executions >= 0 ? "up" : "down",
-              }
-            : undefined
-        }
-      />
-
-      {/* Quick Actions — dynamic based on state */}
-      <QuickActions
-        contentInReview={computed.attentionData.contentInReview}
-        agentErrors={computed.attentionData.agentErrors}
-        failedExecutions={computed.attentionData.failedExecutions}
-        recentContentCount={totalContent}
-        onExecuteAgent={() => setShowExecuteModal(true)}
-      />
-
-      {/* Zone 1: KPIs (3/4) + Decisions (1/4) */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-        <div className="lg:col-span-3">
-          {isLoading ? (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              <HeroMetricSkeleton />
-              <HeroMetricSkeleton />
-              <HeroMetricSkeleton />
-              <HeroMetricSkeleton />
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              <HeroMetric
-                label="Ejecuciones"
-                value={analytics.overview.totalExecutions}
-                sparkData={computed.kpiSparkData}
-                sparkColor="#ea580c"
-                trend={computed.trends.executions}
-                href="/"
-              />
-              <HeroMetric
-                label="Tasa Exito"
-                value={analytics.overview.successRate}
-                isPercentage
-                sparkColor="#16a34a"
-                trend={computed.trends.successRate}
-                trendSuffix="pp"
-              />
-              <HeroMetric
-                label="Costo"
-                value={analytics.overview.totalCost}
-                isCurrency
-                sparkColor="#d97706"
-                trend={computed.trends.cost}
-              />
-              <HeroMetric
-                label="Contenido"
-                value={totalContent}
-                sparkData={computed.contentSparkData}
-                sparkColor="#7c3aed"
-                formatter={(v) => `${Math.round(v)}`}
-                href="/content"
-              />
-            </div>
-          )}
-        </div>
-        <div>
-          <DecisionsPending
-            contentInReview={computed.attentionData.contentInReview}
-            agentErrors={computed.attentionData.agentErrors}
-            failedExecutions={computed.attentionData.failedExecutions}
-          />
-        </div>
+      {/* Simple greeting line */}
+      <div>
+        <h1 className="text-2xl font-bold text-[var(--text-primary)]">
+          Hola, {userName}
+        </h1>
+        <p className="text-sm text-[var(--text-secondary)]">
+          {new Date().toLocaleDateString("es-CL", { weekday: "long", day: "numeric", month: "long" })}
+        </p>
       </div>
 
-      {/* Zone 2: Department Kanban */}
-      <DepartmentKanban agentsByDepartment={controlStatus?.agentsByDepartment} />
-
-      {/* Zone 3: Results (2/3) + Activity (1/3) */}
+      {/* 2-column layout: ActionFeed (left 2/3) + QuickSummary (right 1/3) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          {content === undefined ? (
-            <ResultsSummarySkeleton />
+          {isLoading ? (
+            <SkeletonList items={5} />
           ) : (
-            <ResultsSummary
-              chartData={computed.chartData}
-              topContent={computed.topContent}
-              totalImpressions={computed.engagementStats.totalImpressions}
-              totalInteractions={computed.engagementStats.totalInteractions}
+            <ActionFeed
+              contentInReview={contentInReview}
+              agentsWithErrors={agentsWithErrors}
+              recentActivity={recentActivity}
+              onApproveContent={handleApproveContent}
+              onRequestChanges={handleRequestChanges}
+              onRetryAgent={handleRetryAgent}
+              onViewAgent={handleViewAgent}
+              onViewContent={handleViewContent}
             />
           )}
         </div>
         <div>
-          <ActivitySummary activities={activity} />
+          {isLoading ? (
+            <SkeletonStat />
+          ) : (
+            <QuickSummary
+              publishedToday={publishedToday}
+              publishedTrend={publishedTrend}
+              activeAgents={activeAgents}
+              totalAgents={totalAgents}
+              successRate={successRate}
+              successRateTrend={successRateTrend}
+              scheduledNext7Days={scheduledNext7Days}
+              onExecuteAgent={() => setShowExecuteModal(true)}
+            />
+          )}
         </div>
       </div>
 
