@@ -907,6 +907,59 @@ export default defineSchema({
     .index("by_connectionId", ["connectionId"])
     .index("by_status", ["status"]),
 
+  // =========== GOOGLE DRIVE ===========
+
+  googleDriveConnections: defineTable({
+    userId: v.optional(v.string()),
+    googleAccountId: v.string(),
+    email: v.string(),
+    displayName: v.string(),
+    profilePicture: v.optional(v.string()),
+    accessToken: v.string(),
+    refreshToken: v.string(),
+    accessTokenExpiresAt: v.number(),
+    scopes: v.array(v.string()),
+    status: v.union(
+      v.literal("connected"),
+      v.literal("expired"),
+      v.literal("disconnected"),
+      v.literal("revoked")
+    ),
+    connectedAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_googleAccountId", ["googleAccountId"])
+    .index("by_status", ["status"])
+    .index("by_userId", ["userId"]),
+
+  googleDriveImportLog: defineTable({
+    connectionId: v.id("googleDriveConnections"),
+    driveFileId: v.string(),
+    fileName: v.string(),
+    mimeType: v.string(),
+    fileSize: v.optional(v.number()),
+    destination: v.union(
+      v.literal("media"),
+      v.literal("kb"),
+      v.literal("brand")
+    ),
+    destinationId: v.optional(v.string()),
+    storageId: v.optional(v.id("_storage")),
+    status: v.union(
+      v.literal("pending"),
+      v.literal("downloading"),
+      v.literal("processing"),
+      v.literal("completed"),
+      v.literal("failed")
+    ),
+    errorMessage: v.optional(v.string()),
+    createdAt: v.number(),
+    completedAt: v.optional(v.number()),
+  })
+    .index("by_connectionId", ["connectionId"])
+    .index("by_status", ["status"])
+    .index("by_driveFileId", ["driveFileId"]),
+
   // ===========================================
   // EMAIL_PROVIDER_CONNECTIONS - API key-based email provider
   // ===========================================
