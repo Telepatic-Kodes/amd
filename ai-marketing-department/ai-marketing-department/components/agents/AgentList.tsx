@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
-import { Doc } from "@/convex/_generated/dataModel";
+import type { Doc } from "@convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
 import { AgentListItem } from "./AgentListItem";
 

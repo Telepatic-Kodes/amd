@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { AlertCircle, CheckCircle2, FileText, Inbox, Zap } from "lucide-react";
-import { Doc } from "@/convex/_generated/dataModel";
+import type { Doc } from "@convex/_generated/dataModel";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ActionFeedItem, ActionItem } from "./ActionFeedItem";
 

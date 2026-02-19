@@ -7,12 +7,12 @@ import { motion } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
 
 export interface ActionItem {
-  id: string;
+  id?: string;
   icon: LucideIcon;
   iconColor?: string;
   title: string;
   description?: string;
-  timestamp: number;
+  timestamp?: number;
   badge?: {
     label: string;
     variant: "default" | "success" | "warning" | "error";
@@ -53,19 +53,12 @@ export function ActionFeedItem({ item }: { item: ActionItem }) {
     >
       {/* Icon */}
       <div
-        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
-        style={{
-          backgroundColor: item.iconColor
-            ? `${item.iconColor}1A`
-            : "var(--accent-muted)",
-        }}
+        className={cn(
+          "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg",
+          item.iconColor ?? "bg-[var(--accent-muted)] text-[var(--accent)]"
+        )}
       >
-        <Icon
-          className="h-4 w-4"
-          style={{
-            color: item.iconColor ?? "var(--accent)",
-          }}
-        />
+        <Icon className="h-4 w-4" />
       </div>
 
       {/* Content */}
@@ -85,9 +78,11 @@ export function ActionFeedItem({ item }: { item: ActionItem }) {
             {item.description}
           </p>
         )}
-        <span className="text-xs text-[var(--text-tertiary)]">
-          {formatTimeAgo(item.timestamp)}
-        </span>
+        {item.timestamp != null && (
+          <span className="text-xs text-[var(--text-tertiary)]">
+            {formatTimeAgo(item.timestamp)}
+          </span>
+        )}
       </div>
 
       {/* Action buttons */}
