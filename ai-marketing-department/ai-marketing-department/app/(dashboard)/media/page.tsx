@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { useQuery } from "convex/react";
+import { useQuery, useAction } from "convex/react";
 import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
 import { AnimatePresence, motion } from "framer-motion";
-import { ImageIcon, Search, Upload, LayoutGrid, List, Folder, X } from "lucide-react";
+import { ImageIcon, Search, Upload, LayoutGrid, List, Folder, X, HardDrive } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatFileSize } from "@/lib/media-utils";
 import type { MediaType } from "@/lib/media-utils";
@@ -14,6 +14,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { MediaCard } from "@/components/media/MediaCard";
 import { MediaDetailPanel } from "@/components/media/MediaDetailPanel";
 import { MediaUploadModal } from "@/components/media/MediaUploadModal";
+import { DriveFilePicker } from "@/components/googledrive/DriveFilePicker";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -41,6 +42,10 @@ export default function MediaPage() {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<Doc<"mediaAssets"> | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<Id<"mediaAssets">>>(new Set());
+  const [drivePickerOpen, setDrivePickerOpen] = useState(false);
+
+  // Actions
+  const importFromDrive = useAction(api.googledrive.actions.importFiles);
 
   // Queries
   const stats = useQuery(api.mediaLibrary.getStats);
@@ -77,6 +82,10 @@ export default function MediaPage() {
     });
   };
 
+  const handleDriveImport = async (fileIds: string[]) => {
+    await importFromDrive({ fileIds, destination: "media" });
+  };
+
   const handleDetailClose = () => {
     setSelectedAsset(null);
   };
@@ -109,13 +118,22 @@ export default function MediaPage() {
           </div>
         </div>
 
-        <button
-          onClick={() => setShowUploadModal(true)}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-sm font-medium transition-colors"
-        >
-          <Upload className="w-4 h-4" />
-          Subir archivos
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setDrivePickerOpen(true)}
+            className="flex items-center gap-2 rounded-lg border border-[var(--border)] px-3 py-2 text-sm font-medium text-[var(--text-secondary)] transition hover:bg-[var(--surface-0)]"
+          >
+            <HardDrive className="h-4 w-4 text-blue-500" />
+            Importar desde Drive
+          </button>
+          <button
+            onClick={() => setShowUploadModal(true)}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-sm font-medium transition-colors"
+          >
+            <Upload className="w-4 h-4" />
+            Subir archivos
+          </button>
+        </div>
       </div>
 
       {/* Toolbar: Search + Type Tabs + View Toggle */}
@@ -308,6 +326,14 @@ export default function MediaPage() {
         isOpen={showUploadModal}
         onClose={() => setShowUploadModal(false)}
         defaultFolder={selectedFolder ?? undefined}
+      />
+
+      {/* Drive File Picker */}
+      <DriveFilePicker
+        open={drivePickerOpen}
+        onClose={() => setDrivePickerOpen(false)}
+        onImport={handleDriveImport}
+        title="Importar assets desde Google Drive"
       />
     </div>
   );
