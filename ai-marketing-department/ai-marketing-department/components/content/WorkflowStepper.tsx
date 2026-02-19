@@ -4,10 +4,10 @@ import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
 
 const STEPS = [
-  { key: "draft", label: "Borrador" },
-  { key: "review", label: "Revisión" },
-  { key: "approved", label: "Aprobado" },
-  { key: "published", label: "Publicado" },
+  { key: "draft", label: "Borrador", short: "D" },
+  { key: "review", label: "Revisión", short: "R" },
+  { key: "approved", label: "Aprobado", short: "A" },
+  { key: "published", label: "Publicado", short: "P" },
 ] as const;
 
 const statusToStep: Record<string, number> = {
@@ -82,7 +82,8 @@ export function WorkflowStepper({
               )}
             >
               {isCompleted && <Check className="h-3 w-3" />}
-              {step.label}
+              <span className="hidden sm:inline">{step.label}</span>
+              <span className="sm:hidden">{isCurrent ? step.label : step.short}</span>
             </button>
           </div>
         );

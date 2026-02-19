@@ -153,7 +153,7 @@ export function Sidebar({ overlay, onClose }: SidebarProps) {
             className={cn(
                 "flex h-screen flex-col bg-[#1c1917] border-r border-[#44403c] transition-all duration-200",
                 overlay
-                    ? "w-72"
+                    ? "w-64 sm:w-72"
                     : cn(
                         "hidden md:flex fixed left-0 top-0",
                         isCollapsed ? "w-16" : "w-56"

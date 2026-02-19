@@ -279,7 +279,7 @@ export default function ContentPage() {
   return (
     <div data-tour="content-section" className="space-y-12">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-xl bg-[var(--accent-subtle)]">
             <FileText className="h-6 w-6 text-[var(--accent)]" />
@@ -451,7 +451,7 @@ export default function ContentPage() {
                 variants={containerVariants}
                 initial="hidden"
                 animate="show"
-                className="grid gap-8 md:grid-cols-2 lg:grid-cols-3"
+                className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3"
               >
                 {filteredContent.map((item) => {
                   const TypeIcon = typeIcons[item.type] || FileText;

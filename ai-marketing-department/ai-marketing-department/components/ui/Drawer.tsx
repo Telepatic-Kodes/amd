@@ -6,9 +6,9 @@ import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const WIDTH_CLASSES = {
-  sm: "max-w-sm",
-  md: "max-w-md",
-  lg: "max-w-lg",
+  sm: "md:max-w-sm",
+  md: "md:max-w-md",
+  lg: "md:max-w-lg",
 } as const;
 
 interface DrawerProps {
@@ -86,7 +86,7 @@ export function Drawer({
                 }}
               >
                 <h2
-                  className="text-lg font-semibold"
+                  className="text-lg font-semibold truncate"
                   style={{ color: "var(--text-primary)" }}
                 >
                   {title}
