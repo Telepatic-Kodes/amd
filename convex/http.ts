@@ -928,4 +928,164 @@ http.route({
   }),
 });
 
+// =========== GOOGLE DRIVE OAuth ===========
+
+/**
+ * Google Drive OAuth: Start authorization flow
+ * GET /googledrive/auth
+ *
+ * Generates CSRF state, builds Google authorization URL, and redirects user.
+ */
+http.route({
+  path: "/googledrive/auth",
+  method: "GET",
+  handler: httpAction(async (ctx, request) => {
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+    const frontendUrl = getFrontendUrl();
+
+    if (!clientId) {
+      return new Response("Google Drive credentials no configuradas", {
+        status: 500,
+      });
+    }
+
+    // Build callback URL using the Convex .site domain
+    const url = new URL(request.url);
+    const redirectUri = `${url.origin}/googledrive/callback`;
+
+    // Generate CSRF state token
+    const state = crypto.randomUUID();
+
+    // Build Google OAuth 2.0 authorization URL
+    const scopes =
+      "https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile";
+    const authUrl = new URL("https://accounts.google.com/o/oauth2/v2/auth");
+    authUrl.searchParams.set("client_id", clientId);
+    authUrl.searchParams.set("redirect_uri", redirectUri);
+    authUrl.searchParams.set("response_type", "code");
+    authUrl.searchParams.set("scope", scopes);
+    authUrl.searchParams.set("access_type", "offline");
+    authUrl.searchParams.set("prompt", "consent");
+    authUrl.searchParams.set("state", state);
+
+    // Store state in a short-lived cookie for CSRF validation
+    return new Response(null, {
+      status: 302,
+      headers: {
+        Location: authUrl.toString(),
+        "Set-Cookie": `gdrive_oauth_state=${state}; Path=/; HttpOnly; SameSite=Lax; Max-Age=600`,
+      },
+    });
+  }),
+});
+
+/**
+ * Google Drive OAuth: Handle callback
+ * GET /googledrive/callback?code=xxx&state=xxx
+ *
+ * Exchanges authorization code for tokens, fetches profile, stores connection.
+ */
+http.route({
+  path: "/googledrive/callback",
+  method: "GET",
+  handler: httpAction(async (ctx, request) => {
+    const frontendUrl = getFrontendUrl();
+
+    const url = new URL(request.url);
+    const code = url.searchParams.get("code");
+    const state = url.searchParams.get("state");
+    const error = url.searchParams.get("error");
+    const errorDescription = url.searchParams.get("error_description");
+
+    // Clear state cookie helper
+    const clearCookie =
+      "gdrive_oauth_state=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0";
+
+    // Handle user denied or error
+    if (error) {
+      const redirectUrl = new URL(`${frontendUrl}/settings`);
+      redirectUrl.searchParams.set("google_drive", "error");
+      redirectUrl.searchParams.set("error", errorDescription || error);
+      return new Response(null, {
+        status: 302,
+        headers: {
+          Location: redirectUrl.toString(),
+          "Set-Cookie": clearCookie,
+        },
+      });
+    }
+
+    if (!code || !state) {
+      const redirectUrl = new URL(`${frontendUrl}/settings`);
+      redirectUrl.searchParams.set("google_drive", "error");
+      redirectUrl.searchParams.set("error", "Parámetros inválidos");
+      return new Response(null, {
+        status: 302,
+        headers: {
+          Location: redirectUrl.toString(),
+          "Set-Cookie": clearCookie,
+        },
+      });
+    }
+
+    // Validate state cookie for CSRF protection
+    const cookies = request.headers.get("cookie") || "";
+    const stateCookie = cookies.match(/gdrive_oauth_state=([^;]+)/)?.[1];
+
+    if (!stateCookie) {
+      console.warn(
+        "Google Drive OAuth: state cookie missing (third-party cookies may be blocked)"
+      );
+    } else if (stateCookie !== state) {
+      const redirectUrl = new URL(`${frontendUrl}/settings`);
+      redirectUrl.searchParams.set("google_drive", "error");
+      redirectUrl.searchParams.set("error", "Estado de autenticación inválido");
+      return new Response(null, {
+        status: 302,
+        headers: {
+          Location: redirectUrl.toString(),
+          "Set-Cookie": clearCookie,
+        },
+      });
+    }
+
+    // Build redirect URI (must match the one used in /googledrive/auth)
+    const redirectUri = `${url.origin}/googledrive/callback`;
+
+    try {
+      // Exchange code for tokens and store connection
+      const result = await ctx.runAction(
+        internal.googledrive.actions.exchangeCodeForTokens,
+        { code, redirectUri }
+      );
+
+      // Redirect back to settings with success
+      const redirectUrl = new URL(`${frontendUrl}/settings`);
+      redirectUrl.searchParams.set("google_drive", "connected");
+      redirectUrl.searchParams.set("name", result.displayName);
+      return new Response(null, {
+        status: 302,
+        headers: {
+          Location: redirectUrl.toString(),
+          "Set-Cookie": clearCookie,
+        },
+      });
+    } catch (err: any) {
+      const redirectUrl = new URL(`${frontendUrl}/settings`);
+      redirectUrl.searchParams.set("google_drive", "error");
+      redirectUrl.searchParams.set(
+        "error",
+        err.message || "Error de autenticación"
+      );
+      return new Response(null, {
+        status: 302,
+        headers: {
+          Location: redirectUrl.toString(),
+          "Set-Cookie": clearCookie,
+        },
+      });
+    }
+  }),
+});
+
 export default http;
